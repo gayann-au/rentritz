@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>{% block title %}RentRight Dubai{% endblock %}</title>
+  <title>{% block title %}Rentritz Dubai{% endblock %}</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Serif+Display&display=swap" rel="stylesheet" />
@@ -16,7 +16,7 @@
 {% if current_user.is_authenticated and current_user.role != 'admin' %}
 <nav class="nav">
   <div class="nav-inner">
-    <a href="{{ url_for('core.dashboard') }}" class="nav-logo">RentRight <span>Dubai</span></a>
+    <a href="{{ url_for('core.dashboard') }}" class="nav-logo">Rentritz <span>Dubai</span></a>
     <div class="nav-links">
       <a href="{{ url_for('core.dashboard') }}" class="{% if request.endpoint == 'core.dashboard' %}active{% endif %}">Dashboard</a>
       <a href="{{ url_for('core.history') }}">History</a>
@@ -32,7 +32,7 @@
 {% if current_user.is_authenticated and current_user.role == 'admin' %}
 <nav class="nav nav-admin">
   <div class="nav-inner">
-    <a href="/manage/" class="nav-logo">RentRight <span>Admin</span></a>
+    <a href="/manage/" class="nav-logo">Rentritz <span>Admin</span></a>
     <div class="nav-links">
       <a href="/manage/">Overview</a>
       <a href="/manage/categories">Categories</a>

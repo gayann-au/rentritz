@@ -46,7 +46,7 @@ class Config:
     MAIL_USE_TLS        = True
     MAIL_USERNAME       = 'apikey'
     MAIL_PASSWORD       = os.environ.get('SENDGRID_API_KEY')
-    MAIL_DEFAULT_SENDER = 'noreply@rentrightdubai.com'
+    MAIL_DEFAULT_SENDER = 'noreply@rentritz.com'
 
     NGENIUS_OUTLET_ID = os.environ.get('NGENIUS_OUTLET_ID')
     NGENIUS_API_KEY   = os.environ.get('NGENIUS_API_KEY')

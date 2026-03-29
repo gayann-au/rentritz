@@ -1,4 +1,4 @@
-const CACHE = 'rentright-v1';
+const CACHE = 'rentritz-v1';
 const OFFLINE = '/offline';
 
 const PRECACHE = [

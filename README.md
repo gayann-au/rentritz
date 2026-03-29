@@ -1,4 +1,4 @@
-# RentRight Dubai
+# Rentritz Dubai
 
 A Dubai tenancy law consultation portal that guides tenants and landlords through their legal rights and obligations under UAE rental law.
 
@@ -59,8 +59,8 @@ Users register as either a **tenant** or a **landlord**, then navigate a role-aw
 **1. Clone the repository**
 
 ```bash
-git clone https://github.com/gayann-au/rentright.git
-cd rentright
+git clone https://github.com/gayann-au/rentritz.git
+cd rentritz
 ```
 
 **2. Create and activate a virtual environment**
@@ -84,7 +84,7 @@ pip install -r requirements.txt
 **4. Create a PostgreSQL database**
 
 ```sql
-CREATE DATABASE rentright;
+CREATE DATABASE rentritz;
 ```
 
 **5. Configure environment variables**
@@ -136,7 +136,7 @@ The app will **refuse to start** if `DATABASE_URL`, `SECRET_KEY`, `ADMIN_EMAIL`,
 ## Project Structure
 
 ```
-rentright/
+rentritz/
 ├── app/
 │   ├── __init__.py          # App factory, blueprints, error handlers
 │   ├── models.py            # SQLAlchemy models
