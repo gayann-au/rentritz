@@ -1,4 +1,5 @@
 from datetime import datetime
+from urllib.parse import urlparse
 from flask import Blueprint, render_template, redirect, url_for, flash, request, current_app
 from flask_login import login_user, logout_user, login_required, current_user
 from app.models import db, User, CreditLog, VALID_ROLES
@@ -92,6 +93,10 @@ def login():
         login_user(user, remember=remember)
 
         next_page = request.args.get('next')
+        if next_page:
+            parsed = urlparse(next_page)
+            if parsed.netloc or parsed.scheme or next_page.startswith('//'):
+                next_page = None
         return redirect(next_page or url_for('core.dashboard'))
 
     return render_template('auth/login.html')

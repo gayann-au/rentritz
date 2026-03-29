@@ -1,0 +1,96 @@
+{% extends "admin/base_admin.html" %}
+
+{% block title %}Review Import{% endblock %}
+
+{% block topbar_title %}Review Import <span>{{ drafts|length }} scenario(s) — {{ category.title }}</span>{% endblock %}
+
+{% block topbar_actions %}
+  <a href="{{ url_for('admin.bulk_import') }}" class="btn btn-outline btn-sm">← Start over</a>
+{% endblock %}
+
+{% block main %}
+<div class="admin-content">
+
+  <form method="POST" action="{{ url_for('admin.bulk_import_review') }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+    {% for draft in drafts %}
+    {% set i = loop.index0 %}
+    <div class="card" style="margin-bottom:24px;">
+      <div class="card-header" style="display:flex; align-items:center; gap:12px;">
+        <label style="display:flex; align-items:center; gap:8px; cursor:pointer;">
+          <input type="checkbox" name="include_{{ i }}" checked style="width:16px; height:16px;">
+          <span class="card-title" style="margin:0;">Scenario {{ loop.index }}</span>
+        </label>
+        <span style="color:var(--text-muted); font-size:13px;">{{ draft.for_role }}</span>
+      </div>
+
+      <div class="form-grid" style="grid-template-columns: 1fr 1fr; gap:16px; padding:0 24px 8px;">
+
+        <div class="form-group">
+          <label class="form-label">Title</label>
+          <input type="text" name="title_{{ i }}" class="form-input" value="{{ draft.title }}" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Slug</label>
+          <input type="text" name="slug_{{ i }}" class="form-input" value="{{ draft.slug }}" required>
+        </div>
+
+        <div class="form-group" style="grid-column: 1 / -1;">
+          <label class="form-label">Headline</label>
+          <input type="text" name="headline_{{ i }}" class="form-input" value="{{ draft.headline }}">
+        </div>
+
+        <div class="form-group" style="grid-column: 1 / -1;">
+          <label class="form-label">Situation</label>
+          <textarea name="situation_{{ i }}" class="form-input" rows="4">{{ draft.situation }}</textarea>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Tenant Rights</label>
+          <textarea name="tenant_rights_{{ i }}" class="form-input" rows="4">{{ draft.tenant_rights }}</textarea>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Landlord Rights</label>
+          <textarea name="landlord_rights_{{ i }}" class="form-input" rows="4">{{ draft.landlord_rights }}</textarea>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">What To Do</label>
+          <textarea name="what_to_do_{{ i }}" class="form-input" rows="4">{{ draft.what_to_do }}</textarea>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Law Refs</label>
+          <textarea name="law_refs_{{ i }}" class="form-input" rows="4">{{ draft.law_refs }}</textarea>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Keywords</label>
+          <input type="text" name="keywords_{{ i }}" class="form-input" value="{{ draft.keywords }}">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">For Role</label>
+          <select name="for_role_{{ i }}" class="form-input">
+            <option value="both"     {% if draft.for_role == 'both' %}selected{% endif %}>Both</option>
+            <option value="tenant"   {% if draft.for_role == 'tenant' %}selected{% endif %}>Tenant</option>
+            <option value="landlord" {% if draft.for_role == 'landlord' %}selected{% endif %}>Landlord</option>
+          </select>
+        </div>
+
+      </div>
+    </div>
+    {% endfor %}
+
+    <div class="form-actions" style="padding-bottom:32px;">
+      <button type="submit" class="btn btn-primary">Save selected as drafts</button>
+      <a href="{{ url_for('admin.bulk_import') }}" class="btn btn-outline">Cancel</a>
+    </div>
+
+  </form>
+
+</div>
+{% endblock %}

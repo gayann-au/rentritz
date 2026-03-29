@@ -1,0 +1,73 @@
+{% extends "admin/base_admin.html" %}
+
+{% block title %}Bulk Import{% endblock %}
+
+{% block topbar_title %}Bulk Import <span>Scenarios</span>{% endblock %}
+
+{% block topbar_actions %}
+  <a href="{{ url_for('admin.scenarios') }}" class="btn btn-outline btn-sm">← Back to Scenarios</a>
+{% endblock %}
+
+{% block main %}
+<div class="admin-content">
+
+  <div class="card" style="max-width:860px;">
+    <div class="card-header">
+      <div class="card-title">Paste scenario data</div>
+      <div class="card-desc">
+        Separate multiple scenarios with <code>---</code> on its own line.
+        Supported fields: <code>Title:</code>, <code>Slug:</code>, <code>Headline:</code>,
+        <code>For Role:</code>, <code>Situation:</code>, <code>Tenant Rights:</code>,
+        <code>Landlord Rights:</code>, <code>What To Do:</code>, <code>Law Refs:</code>, <code>Keywords:</code>
+      </div>
+    </div>
+
+    <form method="POST" action="{{ url_for('admin.bulk_import') }}">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+      <div class="form-group">
+        <label class="form-label" for="category_id">Category</label>
+        <select name="category_id" id="category_id" class="form-input" required>
+          <option value="">— select a category —</option>
+          {% for cat in categories %}
+          <option value="{{ cat.id }}">{{ cat.title }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="content">Scenario content</label>
+        <textarea
+          name="content"
+          id="content"
+          class="form-input"
+          rows="20"
+          style="font-family: monospace; font-size: 13px;"
+          placeholder="Title: Landlord raised rent without notice
+Headline: Rent increased without the required 90-day notice
+Situation:
+Under UAE law, landlords must give 90 days notice before increasing rent.
+Tenant Rights:
+- Right to dispute the increase at RDSC
+- Right to remain in the property during the dispute
+What To Do:
+- File a complaint at the RDSC portal
+- Gather evidence of the rental agreement
+Law Refs:
+- Law No. 26 of 2007, Article 9
+Keywords: rent increase, notice, 90 days
+---
+Title: Second scenario here
+..."
+          required
+        ></textarea>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary">Parse &amp; Review</button>
+      </div>
+    </form>
+  </div>
+
+</div>
+{% endblock %}

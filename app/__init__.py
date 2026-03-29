@@ -3,11 +3,13 @@ import logging
 from flask import Flask, abort, render_template
 from flask_login import LoginManager
 from flask_mail import Mail
+from flask_wtf.csrf import CSRFProtect
 from app.models import db, User
 from config.settings import config
 
 login_manager = LoginManager()
 mail          = Mail()
+csrf          = CSRFProtect()
 logger        = logging.getLogger(__name__)
 
 
@@ -17,11 +19,12 @@ def create_app(env=None):
         template_folder = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'templates'),
         static_folder   = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'static'))
     app.config.from_object(config.get(env, config['production']))
-    app.config['TEMPLATES_AUTO_RELOAD'] = True
+    app.config['TEMPLATES_AUTO_RELOAD'] = (env == 'development')
 
     db.init_app(app)
     login_manager.init_app(app)
     mail.init_app(app)
+    csrf.init_app(app)
 
     login_manager.login_view    = 'auth.login'
     login_manager.login_message = 'Please sign in to continue.'

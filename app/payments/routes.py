@@ -6,9 +6,33 @@ from app.models import db, Payment, CreditLog
 payments_bp = Blueprint('payments', __name__)
 
 
-def _ngenius_headers():
+def _ngenius_base_url():
+    env = current_app.config.get('NGENIUS_ENV', 'TEST')
+    if env == 'TEST':
+        return 'https://api-gateway.sandbox.ngenius-payments.com'
+    return 'https://api-gateway.ngenius-payments.com'
+
+
+def _get_bearer_token():
+    """Fetch a short-lived Bearer token from the nGenius identity endpoint."""
+    api_key  = current_app.config.get('NGENIUS_API_KEY')
+    base_url = _ngenius_base_url()
+    resp = http.post(
+        f'{base_url}/identity/auth/access-token',
+        headers={
+            'Authorization': f'Basic {api_key}',
+            'Content-Type': 'application/vnd.ni-identity.v1+json',
+        },
+        json={},
+        timeout=10,
+    )
+    resp.raise_for_status()
+    return resp.json()['access_token']
+
+
+def _ngenius_headers(token):
     return {
-        'Authorization': f'Basic {current_app.config["NGENIUS_API_KEY"]}',
+        'Authorization': f'Bearer {token}',
         'Content-Type': 'application/vnd.ni-payment.v2+json',
         'Accept': 'application/vnd.ni-payment.v2+json',
     }
@@ -39,8 +63,7 @@ def create_order():
     if not outlet_id or not api_key:
         return jsonify({'error': 'Payment gateway not configured yet.'}), 503
 
-    env      = current_app.config.get('NGENIUS_ENV', 'TEST')
-    base_url = 'https://api-gateway.sandbox.ngenius-payments.com' if env == 'TEST' else 'https://api-gateway.ngenius-payments.com'
+    base_url = _ngenius_base_url()
 
     payload = {
         'action': 'SALE',
@@ -53,14 +76,16 @@ def create_order():
     }
 
     try:
-        resp = http.post(
+        token = _get_bearer_token()
+        resp  = http.post(
             f'{base_url}/transactions/outlets/{outlet_id}/orders',
-            json=payload, headers=_ngenius_headers(), timeout=10,
+            json=payload, headers=_ngenius_headers(token), timeout=10,
         )
         resp.raise_for_status()
         order = resp.json()
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        current_app.logger.error(f'nGenius order creation failed: {e}')
+        return jsonify({'error': 'Payment gateway error. Please try again.'}), 500
 
     order_id = order.get('reference')
     pay_url  = next(
@@ -92,15 +117,16 @@ def callback():
         flash('Payment record not found.', 'error')
         return redirect(url_for('core.credits'))
 
-    env      = current_app.config.get('NGENIUS_ENV', 'TEST')
-    base_url = 'https://api-gateway.sandbox.ngenius-payments.com' if env == 'TEST' else 'https://api-gateway.ngenius-payments.com'
+    base_url  = _ngenius_base_url()
     outlet_id = current_app.config.get('NGENIUS_OUTLET_ID')
 
     try:
+        token      = _get_bearer_token()
         resp       = http.get(
             f'{base_url}/transactions/outlets/{outlet_id}/orders/{ref}',
-            headers=_ngenius_headers(), timeout=10
+            headers=_ngenius_headers(token), timeout=10,
         )
+        resp.raise_for_status()
         order_data = resp.json()
         status     = order_data.get('status', '').lower()
     except Exception:

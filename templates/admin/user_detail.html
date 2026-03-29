@@ -1,0 +1,147 @@
+{% extends "admin/base_admin.html" %}
+
+{% block title %}{{ user.full_name }}{% endblock %}
+
+{% block topbar_title %}User Detail <span>{{ user.full_name }}</span>{% endblock %}
+
+{% block topbar_actions %}
+  <a href="{{ url_for('admin.users') }}" class="btn btn-outline btn-sm">← Back to Users</a>
+{% endblock %}
+
+{% block main %}
+<div class="admin-content">
+
+  <div style="display:grid; grid-template-columns: 320px 1fr; gap:24px; align-items:start;">
+
+    <!-- Profile card -->
+    <div class="card">
+      <div style="text-align:center; padding:8px 0 16px;">
+        <div class="user-avatar" style="width:64px; height:64px; font-size:28px; margin:0 auto 12px;">
+          {{ user.full_name[0] | upper }}
+        </div>
+        <div style="font-weight:600; font-size:16px;">{{ user.full_name }}</div>
+        <div style="color:var(--text-muted); font-size:13px; margin-top:4px;">{{ user.email }}</div>
+        <div style="margin-top:10px;">
+          <span class="badge badge-{{ user.role }}">{{ user.role }}</span>
+          <span class="badge badge-{{ 'active' if user.is_active else 'inactive' }}" style="margin-left:4px;">
+            {{ 'Active' if user.is_active else 'Inactive' }}
+          </span>
+        </div>
+      </div>
+
+      <div style="border-top:1px solid var(--border); padding-top:16px; display:flex; flex-direction:column; gap:12px;">
+        <div style="display:flex; justify-content:space-between; font-size:13px;">
+          <span style="color:var(--text-muted);">Credits</span>
+          <span class="credits-badge">{{ user.available_credits }}</span>
+        </div>
+        <div style="display:flex; justify-content:space-between; font-size:13px;">
+          <span style="color:var(--text-muted);">Consultations</span>
+          <span>{{ user.total_asked }}</span>
+        </div>
+        <div style="display:flex; justify-content:space-between; font-size:13px;">
+          <span style="color:var(--text-muted);">Joined</span>
+          <span>{{ user.created_at.strftime('%d %b %Y') }}</span>
+        </div>
+        {% if user.last_login %}
+        <div style="display:flex; justify-content:space-between; font-size:13px;">
+          <span style="color:var(--text-muted);">Last login</span>
+          <span>{{ user.last_login.strftime('%d %b %Y') }}</span>
+        </div>
+        {% endif %}
+      </div>
+
+      <div style="border-top:1px solid var(--border); padding-top:16px; margin-top:4px;">
+        <form method="POST" action="{{ url_for('admin.add_credits', user_id=user.id) }}" style="display:flex; gap:8px;">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <input type="number" name="amount" class="form-input" placeholder="Credits" min="1" max="999" style="flex:1;">
+          <button type="submit" class="btn btn-outline btn-sm">Add</button>
+        </form>
+        <form method="POST" action="{{ url_for('admin.toggle_user', id=user.id) }}" style="margin-top:8px;">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <button type="submit" class="btn btn-sm {{ 'btn-danger' if user.is_active else 'btn-outline' }}" style="width:100%;">
+            {{ 'Disable account' if user.is_active else 'Enable account' }}
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Right column -->
+    <div style="display:flex; flex-direction:column; gap:24px;">
+
+      <!-- Consultations -->
+      <div class="card" style="padding:0; overflow:hidden;">
+        <div class="card-header">
+          <div class="card-title">Consultations ({{ questions|length }})</div>
+        </div>
+        {% if questions %}
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Category</th>
+              <th>Status</th>
+              <th>Credit used</th>
+              <th>Date</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for q in questions %}
+            <tr>
+              <td>{{ q.category_slug | replace('_', ' ') | title }}</td>
+              <td><span class="badge badge-{{ q.status }}">{{ q.status }}</span></td>
+              <td style="color:var(--text-muted);">{{ 'Yes' if q.credit_used else 'No' }}</td>
+              <td style="color:var(--text-muted); font-size:12px;">{{ q.created_at.strftime('%d %b %Y %H:%M') }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        {% else %}
+        <div class="empty-state" style="padding:32px;">
+          <div class="empty-icon">◎</div>
+          <div class="empty-title">No consultations yet</div>
+        </div>
+        {% endif %}
+      </div>
+
+      <!-- Credit log -->
+      <div class="card" style="padding:0; overflow:hidden;">
+        <div class="card-header">
+          <div class="card-title">Credit log ({{ logs|length }})</div>
+        </div>
+        {% if logs %}
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Action</th>
+              <th>Amount</th>
+              <th>Balance after</th>
+              <th>Note</th>
+              <th>Date</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for log in logs %}
+            <tr>
+              <td>{{ log.action }}</td>
+              <td style="color: {{ 'var(--success)' if log.amount > 0 else 'var(--danger)' }}; font-weight:600;">
+                {{ '+' if log.amount > 0 else '' }}{{ log.amount }}
+              </td>
+              <td>{{ log.balance }}</td>
+              <td style="color:var(--text-muted); font-size:12px;">{{ log.note or '—' }}</td>
+              <td style="color:var(--text-muted); font-size:12px;">{{ log.created_at.strftime('%d %b %Y %H:%M') }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        {% else %}
+        <div class="empty-state" style="padding:32px;">
+          <div class="empty-icon">◉</div>
+          <div class="empty-title">No credit activity yet</div>
+        </div>
+        {% endif %}
+      </div>
+
+    </div>
+  </div>
+
+</div>
+{% endblock %}
