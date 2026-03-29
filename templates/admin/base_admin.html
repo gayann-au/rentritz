@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Admin{% endblock %} — RentRight Dubai</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+  {% block head %}{% endblock %}
+</head>
+<body>
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+  <div class="flash-messages" id="flash-container">
+    {% for category, message in messages %}
+    <div class="flash {{ category }}" onclick="this.remove()">
+      <span>{{ message }}</span>
+      <button class="flash-close">×</button>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+{% endwith %}
+
+{% block fullpage %}
+<div class="admin-shell">
+  <aside class="admin-sidebar">
+    <div class="sidebar-brand">
+      <span class="brand-name">RentRight</span>
+      <span class="brand-sub">Admin Panel</span>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-section-label">Overview</div>
+      <a href="{{ url_for('admin.dashboard') }}" class="nav-link {% if request.endpoint == 'admin.dashboard' %}active{% endif %}">
+        <span class="nav-icon">◈</span> Dashboard
+      </a>
+      <div class="nav-section-label">Content</div>
+      <a href="{{ url_for('admin.categories') }}" class="nav-link {% if 'categor' in request.endpoint %}active{% endif %}">
+        <span class="nav-icon">⊞</span> Categories
+      </a>
+      <a href="{{ url_for('admin.scenarios') }}" class="nav-link {% if 'scenario' in request.endpoint %}active{% endif %}">
+        <span class="nav-icon">◇</span> Scenarios
+      </a>
+      <div class="nav-section-label">People</div>
+      <a href="{{ url_for('admin.users') }}" class="nav-link {% if request.endpoint == 'admin.users' %}active{% endif %}">
+        <span class="nav-icon">○</span> Users
+      </a>
+      <div class="nav-section-label">Activity</div>
+      <a href="{{ url_for('admin.questions') }}" class="nav-link {% if request.endpoint == 'admin.questions' %}active{% endif %}">
+        <span class="nav-icon">◎</span> Questions
+      </a>
+      <a href="{{ url_for('admin.payments') }}" class="nav-link {% if request.endpoint == 'admin.payments' %}active{% endif %}">
+        <span class="nav-icon">◉</span> Payments
+      </a>
+    </nav>
+    <div class="sidebar-footer">
+      <a href="{{ url_for('admin.logout') }}" class="logout-btn">
+        <span>→</span> Sign out
+      </a>
+    </div>
+  </aside>
+  <div class="admin-main">
+    <div class="admin-topbar">
+      <div class="topbar-title">{% block topbar_title %}{% endblock %}</div>
+      <div class="topbar-actions">{% block topbar_actions %}{% endblock %}</div>
+    </div>
+    {% block main %}{% endblock %}
+  </div>
+</div>
+{% endblock %}
+
+<script>
+setTimeout(() => {
+  const c = document.getElementById('flash-container');
+  if (c) c.remove();
+}, 5000);
+</script>
+{% block scripts %}{% endblock %}
+</body>
+</html>

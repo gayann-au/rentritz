@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RentRight - Management</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'DM Sans',sans-serif;background:#0f0f0f;color:#fff;min-height:100vh;display:flex;align-items:center;justify-content:center}
+    .box{background:#1a1a1a;border:1px solid #2a2a2a;border-radius:12px;padding:48px 40px;width:100%;max-width:400px}
+    .logo{font-size:13px;letter-spacing:2px;text-transform:uppercase;color:#f59e0b;margin-bottom:32px}
+    h1{font-size:22px;font-weight:600;margin-bottom:8px}
+    p{font-size:14px;color:#666;margin-bottom:32px}
+    label{display:block;font-size:13px;font-weight:500;color:#aaa;margin-bottom:6px}
+    input{width:100%;padding:12px 14px;background:#111;border:1px solid #333;border-radius:8px;color:#fff;font-size:15px;outline:none;margin-bottom:20px}
+    input:focus{border-color:#f59e0b}
+    button{width:100%;padding:13px;background:#f59e0b;color:#000;font-weight:600;font-size:15px;border:none;border-radius:8px;cursor:pointer}
+    button:hover{background:#d97706}
+    .error{background:#3b0000;border:1px solid #7f1d1d;color:#fca5a5;padding:12px;border-radius:8px;font-size:14px;margin-bottom:20px}
+  </style>
+</head>
+<body>
+  <div class="box">
+    <div class="logo">RentRight Dubai</div>
+    <h1>Management Access</h1>
+    <p>Authorised personnel only.</p>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% for cat, msg in messages %}
+        <div class="error">{{ msg }}</div>
+      {% endfor %}
+    {% endwith %}
+    <form method="POST">
+      <label>Email</label>
+      <input type="email" name="email" required autofocus>
+      <label>Password</label>
+      <input type="password" name="password" required>
+      <button type="submit">Sign In</button>
+    </form>
+  </div>
+</body>
+</html>

@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+{% block title %}Dashboard — RentRight Dubai{% endblock %}
+{% block body_class %}dashboard-page{% endblock %}
+
+{% block content %}
+<div class="container">
+
+    <div class="dashboard-header">
+        <div class="dashboard-welcome">
+            <h1>Good to see you, {{ current_user.full_name.split()[0] }}.</h1>
+            <p>Select a topic below to start your consultation.</p>
+        </div>
+        <div class="dashboard-credits">
+            <div class="credits-display">
+                <span class="credits-number">{{ current_user.available_credits }}</span>
+                <span class="credits-label">credit{% if current_user.available_credits != 1 %}s{% endif %} remaining</span>
+            </div>
+            {% if current_user.available_credits == 0 %}
+            <a href="{{ url_for('core.credits') }}" class="btn btn-amber btn-sm">Buy credits</a>
+            {% elif current_user.available_credits <= 2 %}
+            <a href="{{ url_for('core.credits') }}" class="btn btn-outline btn-sm">Top up</a>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="category-grid">
+        {% for cat in categories %}
+        <a href="{{ url_for('core.consult', category_slug=cat.slug) }}"
+           class="category-card {% if not cat.has_tree %}category-card-locked{% endif %}">
+            <div class="category-card-inner">
+                <div class="category-icon">
+                    {% if cat.slug == 'rent_increase' %}📈
+                    {% elif cat.slug == 'eviction' %}🚪
+                    {% elif cat.slug == 'maintenance' %}🔧
+                    {% elif cat.slug == 'deposit' %}💰
+                    {% elif cat.slug == 'dispute' %}⚖️
+                    {% elif cat.slug == 'landlord_rights' %}🔑
+                    {% else %}📋{% endif %}
+                </div>
+                <div class="category-content">
+                    <h3>{{ cat.title }}</h3>
+                    <p>{{ cat.description }}</p>
+                </div>
+                <div class="category-arrow">
+                    {% if cat.has_tree %}
+                    →
+                    {% else %}
+                    <span class="coming-soon-tag">Coming soon</span>
+                    {% endif %}
+                </div>
+            </div>
+        </a>
+        {% else %}
+        <div class="empty-state">
+            <p>No topics available yet. Check back soon.</p>
+        </div>
+        {% endfor %}
+    </div>
+
+    {% if recent %}
+    <div class="recent-section">
+        <h2>Recent consultations</h2>
+        <div class="recent-list">
+            {% for q in recent %}
+            <a href="{{ url_for('core.answer', question_id=q.id) }}" class="recent-item">
+                <div class="recent-item-left">
+                    <div class="recent-category">{{ q.category_slug | replace('_', ' ') | title }}</div>
+                    <div class="recent-date">{{ q.created_at.strftime('%d %b %Y') }}</div>
+                </div>
+                <div class="recent-status">
+                    {% if q.is_answered %}
+                    <span class="badge badge-active">Answered</span>
+                    {% else %}
+                    <span class="badge badge-inactive">Incomplete</span>
+                    {% endif %}
+                </div>
+            </a>
+            {% endfor %}
+        </div>
+        <a href="{{ url_for('core.history') }}" class="text-muted text-sm">View all history →</a>
+    </div>
+    {% endif %}
+
+</div>
+{% endblock %}

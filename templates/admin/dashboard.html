@@ -1,0 +1,89 @@
+{% extends "admin/base_admin.html" %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block topbar_title %}Dashboard{% endblock %}
+
+{% block main %}
+<div class="admin-content">
+  <div class="stats-grid">
+    <div class="stat-card accent">
+      <div class="stat-value">{{ stats.users }}</div>
+      <div class="stat-label">Total Users</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">{{ stats.scenarios }}</div>
+      <div class="stat-label">Scenarios</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">{{ stats.questions }}</div>
+      <div class="stat-label">Consultations</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">AED {{ stats.revenue }}</div>
+      <div class="stat-label">Revenue</div>
+    </div>
+  </div>
+
+  <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px;">
+    <div class="card">
+      <div class="section-header">
+        <h2 class="section-title">Categories</h2>
+        <a href="{{ url_for('admin.new_category') }}" class="btn btn-primary btn-sm">+ New</a>
+      </div>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Title</th>
+            <th>Role</th>
+            <th>Status</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for c in categories %}
+          <tr>
+            <td style="font-weight:500;">{{ c.title }}</td>
+            <td><span class="badge badge-{{ c.for_role }}">{{ c.for_role }}</span></td>
+            <td><span class="badge badge-{{ 'active' if c.is_active else 'inactive' }}">{{ 'Active' if c.is_active else 'Off' }}</span></td>
+            <td>
+              <a href="{{ url_for('admin.edit_category', id=c.id) }}" class="btn btn-ghost btn-sm">Edit</a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card">
+      <div class="section-header">
+        <h2 class="section-title">Recent Questions</h2>
+      </div>
+      {% if recent_q %}
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>User</th>
+            <th>Status</th>
+            <th>Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for q in recent_q %}
+          <tr>
+            <td>{{ q.user.full_name }}</td>
+            <td><span class="badge badge-{{ q.status }}">{{ q.status }}</span></td>
+            <td style="color:var(--text-muted); font-size:12px;">{{ q.created_at.strftime('%d %b %Y') }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+      <div class="empty-state" style="padding:30px 0;">
+        <div class="empty-desc">No consultations yet.</div>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

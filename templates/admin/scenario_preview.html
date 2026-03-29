@@ -1,0 +1,97 @@
+{% extends "admin/base_admin.html" %}
+
+{% block title %}Preview — {{ scenario.title }}{% endblock %}
+
+{% block topbar_title %}Preview <span>{{ scenario.title }}</span>{% endblock %}
+
+{% block topbar_actions %}
+<a href="{{ url_for('admin.edit_scenario', id=scenario.id) }}" class="btn btn-outline">Edit</a>
+<a href="{{ url_for('admin.scenarios') }}" class="btn btn-ghost">Back to Scenarios</a>
+{% endblock %}
+
+{% block main %}
+<div class="admin-content">
+
+  <div class="card" style="margin-bottom:24px;">
+    <div style="display:flex; gap:16px; align-items:center; flex-wrap:wrap;">
+      <span class="badge badge-{{ scenario.for_role }}">{{ scenario.for_role }}</span>
+      <span class="badge badge-{{ 'active' if scenario.is_active else 'inactive' }}">{{ 'Active' if scenario.is_active else 'Inactive' }}</span>
+      {% if scenario.is_complete %}
+      <span class="badge badge-complete">✓ Complete</span>
+      {% else %}
+      <span class="badge badge-incomplete">Incomplete</span>
+      {% endif %}
+      <span style="font-size:12px; color:var(--text-muted); font-family:monospace;">{{ scenario.slug }}</span>
+      {% if category %}
+      <span style="font-size:12px; color:var(--text-muted);">{{ category.title }}</span>
+      {% endif %}
+    </div>
+  </div>
+
+  {% if scenario.headline %}
+  <div class="card" style="margin-bottom:24px;">
+    <div style="font-size:11px; text-transform:uppercase; letter-spacing:.08em; color:var(--text-muted); margin-bottom:8px;">Headline</div>
+    <div style="font-size:20px; font-weight:600; color:var(--white);">{{ scenario.headline }}</div>
+  </div>
+  {% endif %}
+
+  {% if scenario.situation %}
+  <div class="card" style="margin-bottom:24px;">
+    <div style="font-size:11px; text-transform:uppercase; letter-spacing:.08em; color:var(--text-muted); margin-bottom:12px;">Situation</div>
+    <div style="color:var(--off-white); line-height:1.7;">{{ scenario.situation }}</div>
+  </div>
+  {% endif %}
+
+  {% if scenario.tenant_rights %}
+  <div class="card" style="margin-bottom:24px;">
+    <div style="font-size:11px; text-transform:uppercase; letter-spacing:.08em; color:var(--text-muted); margin-bottom:12px;">Tenant Rights</div>
+    <ul style="margin:0; padding-left:20px; display:flex; flex-direction:column; gap:8px;">
+      {% for item in scenario.tenant_rights %}
+      <li style="color:var(--off-white); line-height:1.6;">{{ item }}</li>
+      {% endfor %}
+    </ul>
+  </div>
+  {% endif %}
+
+  {% if scenario.landlord_rights %}
+  <div class="card" style="margin-bottom:24px;">
+    <div style="font-size:11px; text-transform:uppercase; letter-spacing:.08em; color:var(--text-muted); margin-bottom:12px;">Landlord Rights</div>
+    <ul style="margin:0; padding-left:20px; display:flex; flex-direction:column; gap:8px;">
+      {% for item in scenario.landlord_rights %}
+      <li style="color:var(--off-white); line-height:1.6;">{{ item }}</li>
+      {% endfor %}
+    </ul>
+  </div>
+  {% endif %}
+
+  {% if scenario.what_to_do %}
+  <div class="card" style="margin-bottom:24px;">
+    <div style="font-size:11px; text-transform:uppercase; letter-spacing:.08em; color:var(--text-muted); margin-bottom:12px;">What To Do</div>
+    <ol style="margin:0; padding-left:20px; display:flex; flex-direction:column; gap:8px;">
+      {% for item in scenario.what_to_do %}
+      <li style="color:var(--off-white); line-height:1.6;">{{ item }}</li>
+      {% endfor %}
+    </ol>
+  </div>
+  {% endif %}
+
+  {% if scenario.law_refs %}
+  <div class="card" style="margin-bottom:24px;">
+    <div style="font-size:11px; text-transform:uppercase; letter-spacing:.08em; color:var(--text-muted); margin-bottom:12px;">Law References</div>
+    <ul style="margin:0; padding-left:20px; display:flex; flex-direction:column; gap:8px;">
+      {% for item in scenario.law_refs %}
+      <li style="color:var(--text-light); line-height:1.6; font-size:14px;">{{ item }}</li>
+      {% endfor %}
+    </ul>
+  </div>
+  {% endif %}
+
+  {% if scenario.keywords %}
+  <div class="card">
+    <div style="font-size:11px; text-transform:uppercase; letter-spacing:.08em; color:var(--text-muted); margin-bottom:12px;">Keywords</div>
+    <div style="color:var(--text-muted); font-size:13px; font-family:monospace;">{{ scenario.keywords }}</div>
+  </div>
+  {% endif %}
+
+</div>
+{% endblock %}

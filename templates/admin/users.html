@@ -1,0 +1,110 @@
+{% extends "admin/base_admin.html" %}
+
+{% block title %}Users{% endblock %}
+
+{% block topbar_title %}Users <span>{{ users|length }} registered</span>{% endblock %}
+
+{% block main %}
+<div class="admin-content">
+
+  <div class="filter-bar">
+    <input type="text" class="filter-input" placeholder="Search name or email…" id="search-input" oninput="filterUsers()">
+    <select class="filter-select" id="role-filter" onchange="filterUsers()">
+      <option value="">All roles</option>
+      <option value="tenant" {% if role_filter == 'tenant' %}selected{% endif %}>Tenants</option>
+      <option value="landlord" {% if role_filter == 'landlord' %}selected{% endif %}>Landlords</option>
+    </select>
+    <select class="filter-select" id="status-filter" onchange="filterUsers()">
+      <option value="">All statuses</option>
+      <option value="active">Active</option>
+      <option value="inactive">Inactive</option>
+    </select>
+    <span style="font-size:12px; color:var(--text-muted);" id="filter-count"></span>
+  </div>
+
+  {% if users %}
+  <div class="card" style="padding:0; overflow:hidden;">
+    <table class="data-table" id="users-table">
+      <thead>
+        <tr>
+          <th>User</th>
+          <th>Role</th>
+          <th>Credits</th>
+          <th>Consultations</th>
+          <th>Joined</th>
+          <th>Status</th>
+          <th>Add Credits</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for u in users %}
+        <tr data-name="{{ u.full_name | lower }}" data-email="{{ u.email | lower }}" data-role="{{ u.role }}" data-status="{{ 'active' if u.is_active else 'inactive' }}">
+          <td>
+            <div class="user-cell">
+              <div class="user-avatar">{{ u.full_name[0] | upper }}</div>
+              <div>
+                <div class="user-name">{{ u.full_name }}</div>
+                <div class="user-email">{{ u.email }}</div>
+              </div>
+            </div>
+          </td>
+          <td><span class="badge badge-{{ u.role }}">{{ u.role }}</span></td>
+          <td><span class="credits-badge">{{ u.available_credits }}</span></td>
+          <td style="color:var(--text-muted);">{{ u.total_asked }}</td>
+          <td style="color:var(--text-muted); font-size:12px;">{{ u.created_at.strftime('%d %b %Y') }}</td>
+          <td><span class="badge badge-{{ 'active' if u.is_active else 'inactive' }}">{{ 'Active' if u.is_active else 'Inactive' }}</span></td>
+          <td>
+            <form method="POST" action="{{ url_for('admin.add_credits', user_id=u.id) }}" class="adjust-form">
+              <input type="number" name="amount" class="adjust-input" placeholder="±0" min="-99" max="99">
+              <input type="hidden" name="note" value="Admin credit adjustment">
+              <button type="submit" class="btn btn-outline btn-sm">Apply</button>
+            </form>
+          </td>
+          <td>
+            <form method="POST" action="{{ url_for('admin.toggle_user', id=u.id) }}">
+              <button type="submit" class="btn btn-sm {{ 'btn-danger' if u.is_active else 'btn-outline' }}">
+                {{ 'Disable' if u.is_active else 'Enable' }}
+              </button>
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="empty-state">
+    <div class="empty-icon">○</div>
+    <div class="empty-title">No users yet</div>
+    <div class="empty-desc">Registered users will appear here.</div>
+  </div>
+  {% endif %}
+
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function filterUsers() {
+  const search = document.getElementById('search-input').value.toLowerCase();
+  const role   = document.getElementById('role-filter').value;
+  const status = document.getElementById('status-filter').value;
+  const rows   = document.querySelectorAll('#users-table tbody tr');
+  let visible  = 0;
+
+  rows.forEach(row => {
+    const matchSearch = !search || row.dataset.name.includes(search) || row.dataset.email.includes(search);
+    const matchRole   = !role   || row.dataset.role   === role;
+    const matchStatus = !status || row.dataset.status === status;
+    const show = matchSearch && matchRole && matchStatus;
+    row.style.display = show ? '' : 'none';
+    if (show) visible++;
+  });
+
+  document.getElementById('filter-count').textContent = visible + ' user' + (visible !== 1 ? 's' : '');
+}
+
+filterUsers();
+</script>
+{% endblock %}

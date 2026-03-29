@@ -1,0 +1,307 @@
+{% extends "base.html" %}
+{% block title %}Your Answer — RentRight Dubai{% endblock %}
+{% block body_class %}answer-page{% endblock %}
+
+{% block content %}
+
+<div class="answer-hero">
+  <div class="answer-hero-inner">
+    <span class="answer-category-tag">{{ category.title if category else question.category_slug | replace('_',' ') | title }}</span>
+    <h1 class="answer-headline">{{ scenario.landlord_headline if current_user.role == 'landlord' and scenario.landlord_headline else scenario.headline }}</h1>
+    {% if question.wizard_path %}
+    <div class="answer-path">
+      {% for step in question.wizard_path %}
+      <span class="path-chip">{{ step.answer }}</span>
+      {% endfor %}
+    </div>
+    {% endif %}
+  </div>
+</div>
+
+<div class="answer-body">
+
+  <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px; margin-bottom:16px;">
+    <span style="font-size:0.8rem; color:var(--text-muted);">{{ question.answered_at.strftime('%d %B %Y') if question.answered_at else question.created_at.strftime('%d %B %Y') }}</span>
+    <div class="read-aloud-controls">
+      <select class="read-speed-select" id="readSpeed" onchange="applySpeed()">
+        <option value="0.75">Slow</option>
+        <option value="1" selected>Normal</option>
+        <option value="1.4">Fast</option>
+      </select>
+      <button class="read-aloud-btn" id="btnRead" onclick="toggleRead()">
+        <span class="read-icon" id="readIcon">▶</span>
+        <span class="read-label" id="readLabel">Read aloud</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="read-progress-bar" id="read-progress" style="display:none;">
+    <div class="read-progress-sections" id="read-progress-sections"></div>
+  </div>
+  <div class="read-section-label" id="read-section-label" style="display:none;"></div>
+
+{% set situation_text = scenario.landlord_situation if current_user.role == 'landlord' and scenario.landlord_situation else scenario.situation %}
+  {% if situation_text %}
+  <div class="answer-section" id="section-situation">
+    <div class="answer-section-title">Situation</div>
+    <p class="answer-situation" id="text-situation">{{ situation_text }}</p>
+  </div>
+  {% endif %}
+
+  {% if scenario.tenant_rights and current_user.role == 'tenant' %}
+  <div class="answer-section" id="section-rights">
+    <div class="answer-section-title">Your Rights as a Tenant</div>
+    <ul class="answer-list" id="text-rights">
+      {% for item in scenario.tenant_rights %}
+      <li>
+        <span class="answer-list-bullet"></span>
+        <span>{{ item }}</span>
+      </li>
+      {% endfor %}
+    </ul>
+  </div>
+  {% endif %}
+
+  {% if scenario.landlord_rights and current_user.role == 'landlord' %}
+  <div class="answer-section" id="section-rights">
+    <div class="answer-section-title">Your Rights as a Landlord</div>
+    <ul class="answer-list" id="text-rights">
+      {% for item in scenario.landlord_rights %}
+      <li>
+        <span class="answer-list-bullet"></span>
+        <span>{{ item }}</span>
+      </li>
+      {% endfor %}
+    </ul>
+  </div>
+  {% endif %}
+
+{% if current_user.role == 'landlord' and scenario.landlord_what_to_do %}
+  <div class="answer-section" id="section-what-to-do">
+    <div class="answer-section-title">What To Do</div>
+    <ul class="answer-list" id="text-what-to-do">
+      {% for item in scenario.landlord_what_to_do %}
+      <li>
+        <span class="answer-list-bullet"></span>
+        <span>{{ item }}</span>
+      </li>
+      {% endfor %}
+    </ul>
+  </div>
+  {% elif scenario.what_to_do %}
+  <div class="answer-section" id="section-what-to-do">
+    <div class="answer-section-title">What To Do</div>
+    <ul class="answer-list" id="text-what-to-do">
+      {% for item in scenario.what_to_do %}
+      <li>
+        <span class="answer-list-bullet"></span>
+        <span>{{ item }}</span>
+      </li>
+      {% endfor %}
+    </ul>
+  </div>
+  {% endif %}
+
+  {% if scenario.law_refs %}
+  <div class="answer-section" id="section-law">
+    <div class="answer-section-title">Law References</div>
+    <div class="law-refs" id="text-law">
+      {% for ref in scenario.law_refs %}
+      <span class="law-ref-tag">{{ ref }}</span>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  {% if scenario.show_rera_button %}
+  <div class="answer-section" style="background:var(--amber-glow); border:1px solid rgba(245,158,11,0.25);">
+    <div class="answer-section-title" style="color:var(--amber-dark);">RERA Rental Index</div>
+    <p style="font-size:0.9rem; color:var(--text); margin-bottom:16px; line-height:1.7;">
+      Your answer references the RERA Rental Index. Use the official Dubai Land Department calculator to check the permitted increase for your specific property.
+    </p>
+    <a href="https://dubailand.gov.ae/en/eservices/rental-index/rental-index/#/" target="_blank" rel="noopener noreferrer" class="btn btn-amber">
+      Open RERA Rental Index →
+    </a>
+  </div>
+  {% endif %}
+
+  <div class="answer-disclaimer">
+    <strong>General guidance only.</strong> This answer is based on Dubai tenancy law and is not legal advice. For disputes involving significant amounts or legal proceedings, consult a qualified legal professional or contact the Rental Dispute Settlement Centre (RDSC).
+  </div>
+
+  <div class="answer-actions">
+    <a href="{{ url_for('core.dashboard') }}" class="btn btn-primary">New consultation</a>
+    <a href="{{ url_for('core.history') }}" class="btn btn-outline">View history</a>
+  </div>
+
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+let sentences  = [];
+let idx        = 0;
+let paused     = false;
+let playing    = false;
+
+function getSections() {
+  return [
+    { id: 'section-situation',  label: 'Situation' },
+    { id: 'section-rights',     label: 'Your Rights' },
+    { id: 'section-what-to-do', label: 'What To Do' },
+    { id: 'section-law',        label: 'Law References' },
+  ];
+}
+
+function buildSentences() {
+  const result = [];
+  getSections().forEach(sec => {
+    const el = document.getElementById(sec.id);
+    if (!el) return;
+    const text = el.innerText.trim();
+    const parts = text.match(/[^.!?]+[.!?]+/g) || [text];
+    parts.forEach(p => {
+      const t = p.trim();
+      if (t.length > 4) {
+        result.push({ text: t, sectionId: sec.id, label: sec.label });
+      }
+    });
+  });
+  return result;
+}
+
+function buildBar() {
+  const bar = document.getElementById('read-progress-sections');
+  bar.innerHTML = '';
+  sentences.forEach((s, i) => {
+    const seg = document.createElement('div');
+    seg.className = 'progress-seg';
+    seg.id = 'seg-' + i;
+    seg.style.flex = '1';
+    bar.appendChild(seg);
+  });
+  document.getElementById('read-progress').style.display = 'block';
+  document.getElementById('read-section-label').style.display = 'block';
+}
+
+function updateBar(i) {
+  sentences.forEach((s, j) => {
+    const seg = document.getElementById('seg-' + j);
+    if (!seg) return;
+    if (j < i)      seg.className = 'progress-seg done';
+    else if (j===i) seg.className = 'progress-seg active';
+    else            seg.className = 'progress-seg';
+  });
+
+  const label = document.getElementById('read-section-label');
+  if (sentences[i]) {
+    label.textContent = sentences[i].label;
+    label.style.opacity = '1';
+  }
+
+  document.querySelectorAll('.answer-section').forEach(el => el.classList.remove('reading'));
+  if (sentences[i]) {
+    const sec = document.getElementById(sentences[i].sectionId);
+    if (sec) {
+      sec.classList.add('reading');
+      sec.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  }
+}
+
+function speakNext() {
+  if (!playing || idx >= sentences.length) {
+    finishAll();
+    return;
+  }
+
+  updateBar(idx);
+
+  const speed = parseFloat(document.getElementById('readSpeed').value);
+  const u = new SpeechSynthesisUtterance(sentences[idx].text);
+  u.lang = 'en-GB';
+  u.rate = speed;
+
+  u.onend = () => {
+    if (playing && !paused) {
+      idx++;
+      speakNext();
+    }
+  };
+
+  u.onerror = () => {
+    if (playing && !paused) {
+      idx++;
+      speakNext();
+    }
+  };
+
+  window.speechSynthesis.cancel();
+  window.speechSynthesis.speak(u);
+}
+
+function toggleRead() {
+  if (!playing && !paused) {
+    sentences = buildSentences();
+    if (!sentences.length) return;
+    idx = 0;
+    buildBar();
+    playing = true;
+    paused  = false;
+    setBtn('pause');
+    speakNext();
+
+  } else if (playing && !paused) {
+    paused  = true;
+    playing = false;
+    window.speechSynthesis.cancel();
+    setBtn('resume');
+
+  } else if (paused) {
+    playing = true;
+    paused  = false;
+    setBtn('pause');
+    speakNext();
+  }
+}
+function finishAll() {
+  playing = false;
+  paused  = false;
+  idx     = 0;
+  window.speechSynthesis.cancel();
+  setBtn('start');
+  document.querySelectorAll('.answer-section').forEach(el => el.classList.remove('reading'));
+  document.getElementById('read-section-label').style.opacity = '0';
+  sentences.forEach((s, i) => {
+    const seg = document.getElementById('seg-' + i);
+    if (seg) seg.className = 'progress-seg done';
+  });
+}
+
+function setBtn(state) {
+  const icon  = document.getElementById('readIcon');
+  const label = document.getElementById('readLabel');
+  const btn   = document.getElementById('btnRead');
+  if (state === 'start') {
+    icon.textContent  = '▶';
+    label.textContent = 'Read aloud';
+    btn.className     = 'read-aloud-btn';
+  } else if (state === 'pause') {
+    icon.textContent  = '⏸';
+    label.textContent = 'Pause';
+    btn.className     = 'read-aloud-btn speaking';
+  } else if (state === 'resume') {
+    icon.textContent  = '▶';
+    label.textContent = 'Resume';
+    btn.className     = 'read-aloud-btn paused';
+  }
+}
+
+function applySpeed() {
+  if (playing && !paused) {
+    window.speechSynthesis.cancel();
+    speakNext();
+  }
+}
+</script>
+{% endblock %}

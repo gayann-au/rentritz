@@ -1,0 +1,77 @@
+{% extends "admin/base_admin.html" %}
+
+{% block title %}Categories{% endblock %}
+
+{% block topbar_title %}Categories{% endblock %}
+
+{% block topbar_actions %}
+<a href="{{ url_for('admin.new_category') }}" class="btn btn-primary">+ New Category</a>
+{% endblock %}
+
+{% block main %}
+<div class="admin-content">
+  {% if categories %}
+  <div class="card" style="padding:0; overflow:hidden;">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Title</th>
+          <th>Slug</th>
+          <th>Role</th>
+          <th>Order</th>
+          <th>Scenarios</th>
+          <th>Tree</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for cat in categories %}
+        <tr>
+          <td>
+            <div style="font-weight:500;">{{ cat.title }}</div>
+            <div style="font-size:12px; color:var(--text-muted);">{{ cat.description }}</div>
+          </td>
+          <td style="font-family:monospace; font-size:12px; color:var(--text-muted);">{{ cat.slug }}</td>
+          <td><span class="badge badge-{{ cat.for_role }}">{{ cat.for_role }}</span></td>
+          <td style="color:var(--text-muted);">{{ cat.order }}</td>
+          <td style="color:var(--text-muted);">{{ cat.scenarios.count() }}</td>
+          <td>
+            {% if cat.has_tree %}
+            <span class="badge badge-tree">✓ Built</span>
+            {% else %}
+            <span class="badge badge-inactive">Not built</span>
+            {% endif %}
+          </td>
+          <td>
+            <span class="badge badge-{{ 'active' if cat.is_active else 'inactive' }}">
+              {{ 'Active' if cat.is_active else 'Inactive' }}
+            </span>
+          </td>
+          <td>
+            <div class="table-actions">
+              <a href="{{ url_for('admin.edit_category', id=cat.id) }}" class="btn btn-ghost btn-sm">Edit</a>
+              <a href="{{ url_for('admin.scenarios', category_id=cat.id) }}" class="btn btn-ghost btn-sm">Scenarios</a>
+<a href="{{ url_for('admin.tree_builder', id=cat.id) }}" class="btn btn-outline btn-sm">Build Tree</a>
+              <form method="POST" action="{{ url_for('admin.toggle_category', id=cat.id) }}">
+                <button type="submit" class="btn btn-ghost btn-sm">
+                  {{ 'Deactivate' if cat.is_active else 'Activate' }}
+                </button>
+              </form>
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="empty-state">
+    <div class="empty-icon">⊞</div>
+    <div class="empty-title">No categories yet</div>
+    <div class="empty-desc">Create a category to start building wizard trees and scenarios.</div>
+    <a href="{{ url_for('admin.new_category') }}" class="btn btn-primary">Create First Category</a>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

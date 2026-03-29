@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+{% block title %}Create Account — RentRight Dubai{% endblock %}
+{% block body_class %}auth-page{% endblock %}
+
+{% block content %}
+<div class="auth-wrap">
+    <div class="auth-card auth-card-wide">
+        <div class="auth-header">
+            <a href="{{ url_for('core.index') }}" class="auth-logo">RentRight <span>Dubai</span></a>
+            <h1>Get started free</h1>
+            <p>2 free consultations included — no card required</p>
+        </div>
+
+        <form method="POST" action="{{ url_for('auth.register') }}" novalidate>
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() if csrf_token is defined else '' }}">
+
+            <div class="form-group">
+                <label for="full_name">Full name</label>
+                <input type="text" id="full_name" name="full_name"
+                       placeholder="Your full name"
+                       value="{{ request.form.get('full_name', '') }}" required autocomplete="name">
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email address</label>
+                <input type="email" id="email" name="email"
+                       placeholder="you@example.com"
+                       value="{{ request.form.get('email', '') }}" required autocomplete="email">
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password <span class="text-muted text-sm">(min. 8 characters)</span></label>
+                <input type="password" id="password" name="password"
+                       placeholder="Create a password" required autocomplete="new-password" minlength="8">
+            </div>
+
+            <div class="form-group">
+                <label>I am a</label>
+                <div class="role-selector">
+                    <label class="role-option {% if request.form.get('role') == 'tenant' %}selected{% endif %}">
+                        <input type="radio" name="role" value="tenant"
+                               {% if request.form.get('role') == 'tenant' %}checked{% endif %} required>
+                        <div class="role-card">
+                            <div class="role-icon">🏠</div>
+                            <div class="role-label">Tenant</div>
+                            <div class="role-desc">I rent a property in Dubai</div>
+                        </div>
+                    </label>
+                    <label class="role-option {% if request.form.get('role') == 'landlord' %}selected{% endif %}">
+                        <input type="radio" name="role" value="landlord"
+                               {% if request.form.get('role') == 'landlord' %}checked{% endif %} required>
+                        <div class="role-card">
+                            <div class="role-icon">🔑</div>
+                            <div class="role-label">Landlord</div>
+                            <div class="role-desc">I own property in Dubai</div>
+                        </div>
+                    </label>
+                </div>
+                <p class="text-muted text-sm" style="margin-top:8px">
+                    Your role cannot be changed after registration.
+                </p>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-full">Create account</button>
+        </form>
+
+        <div class="auth-footer">
+            Already have an account? <a href="{{ url_for('auth.login') }}">Sign in</a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.querySelectorAll('.role-option input[type=radio]').forEach(function(radio) {
+        radio.addEventListener('change', function() {
+            document.querySelectorAll('.role-option').forEach(function(el) {
+                el.classList.remove('selected');
+            });
+            this.closest('.role-option').classList.add('selected');
+        });
+    });
+</script>
+{% endblock %}

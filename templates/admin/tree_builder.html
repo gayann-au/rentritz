@@ -1,0 +1,483 @@
+{% extends "admin/base_admin.html" %}
+
+{% block title %}Tree Builder — {{ category.title }}{% endblock %}
+
+{% block topbar_title %}Tree Builder <span>{{ category.title }}</span>{% endblock %}
+
+{% block topbar_actions %}
+<div class="save-status" id="save-status">
+  <div class="save-dot"></div>
+  <span id="save-status-text">No changes</span>
+</div>
+<form method="POST" action="{{ url_for('admin.tree_clear', id=category.id) }}" onsubmit="return confirm('Clear the entire tree? This cannot be undone.');" style="display:contents;">
+  <button type="submit" class="btn btn-ghost btn-sm">Clear Tree</button>
+</form>
+<a href="{{ url_for('admin.categories') }}" class="btn btn-ghost">Back</a>
+<button class="btn btn-primary" id="save-btn" onclick="saveTree()">Save Tree</button>
+{% endblock %}
+
+{% block fullpage %}
+<div class="admin-shell">
+  <aside class="admin-sidebar">
+    <div class="sidebar-brand">
+      <span class="brand-name">RentRight</span>
+      <span class="brand-sub">Admin Panel</span>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-section-label">Overview</div>
+      <a href="{{ url_for('admin.dashboard') }}" class="nav-link">
+        <span class="nav-icon">◈</span> Dashboard
+      </a>
+      <div class="nav-section-label">Content</div>
+      <a href="{{ url_for('admin.categories') }}" class="nav-link active">
+        <span class="nav-icon">⊞</span> Categories
+      </a>
+      <a href="{{ url_for('admin.scenarios') }}" class="nav-link">
+        <span class="nav-icon">◇</span> Scenarios
+      </a>
+      <div class="nav-section-label">People</div>
+      <a href="{{ url_for('admin.users') }}" class="nav-link">
+        <span class="nav-icon">○</span> Users
+      </a>
+      <div class="nav-section-label">Activity</div>
+      <a href="{{ url_for('admin.questions') }}" class="nav-link">
+        <span class="nav-icon">◎</span> Questions
+      </a>
+      <a href="{{ url_for('admin.payments') }}" class="nav-link">
+        <span class="nav-icon">◉</span> Payments
+      </a>
+    </nav>
+    <div class="sidebar-footer">
+      <a href="{{ url_for('admin.logout') }}" class="logout-btn">
+        <span>→</span> Sign out
+      </a>
+    </div>
+  </aside>
+
+  <div class="admin-main">
+    <div class="admin-topbar">
+      <div class="topbar-title">{% block topbar_title_inner %}Tree Builder <span>{{ category.title }}</span>{% endblock %}</div>
+      <div class="topbar-actions">
+        <div class="save-status" id="save-status">
+          <div class="save-dot"></div>
+          <span id="save-status-text">No changes</span>
+        </div>
+        <form method="POST" action="{{ url_for('admin.tree_clear', id=category.id) }}" onsubmit="return confirm('Clear the entire tree? This cannot be undone.');" style="display:contents;">
+          <button type="submit" class="btn btn-ghost btn-sm">Clear Tree</button>
+        </form>
+        <a href="{{ url_for('admin.categories') }}" class="btn btn-ghost">Back</a>
+        <button class="btn btn-primary" id="save-btn" onclick="saveTree()">Save Tree</button>
+      </div>
+    </div>
+
+    <div class="tree-builder-layout">
+
+      <div class="tree-nav-panel">
+        <div class="tree-nav-header">
+          <h3>Tree Structure</h3>
+          <button class="btn btn-sm btn-primary" onclick="addRootNode()" id="add-root-btn">+ Root</button>
+        </div>
+        <div class="tree-nav-scroll" id="tree-nav"></div>
+      </div>
+
+      <div class="tree-editor-panel">
+        <div id="editor-area">
+          <div class="tree-empty-state" id="empty-state">
+            <div class="tree-empty-icon">◇</div>
+            <div class="tree-empty-title">No tree yet</div>
+            <div class="tree-empty-desc">Click "+ Root" to create the first question node for this category.</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay hidden" id="scenario-modal">
+  <div class="modal-box">
+    <div class="modal-header">
+      <div class="modal-title">Link a Scenario</div>
+      <button class="modal-close" onclick="closeModal()">×</button>
+    </div>
+    <div class="modal-search">
+      <input type="text" class="modal-search-input" id="modal-search" placeholder="Search scenarios…" oninput="filterScenarios()">
+    </div>
+    <div class="modal-list" id="modal-list"></div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="confirmScenario()">Link Scenario</button>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+const SCENARIOS = {{ scenarios | tojson }};
+const CATEGORY_ID = {{ category.id }};
+const SAVE_URL = "{{ url_for('admin.tree_save', id=category.id) }}";
+const EXISTING_TREE = {{ (category.tree_json | tojson) if category.tree_json else 'null' }};
+
+let tree = null;
+let selectedPath = null;
+let dirty = false;
+let modalTargetPath = null;
+let modalSelectedSlug = null;
+
+function generateKey() {
+  return 'node_' + Math.random().toString(36).substr(2, 8);
+}
+
+function getNode(path) {
+  if (!tree) return null;
+  if (path.length === 0) return tree;
+  let node = tree;
+  for (let i = 0; i < path.length; i++) {
+    const idx = path[i];
+    if (!node.options || !node.options[idx]) return null;
+    if (i === path.length - 1) return node.options[idx].next || null;
+    node = node.options[idx].next;
+    if (!node) return null;
+  }
+  return node;
+}
+
+function setDirty() {
+  dirty = true;
+  const s = document.getElementById('save-status');
+  const t = document.getElementById('save-status-text');
+  s.className = 'save-status dirty';
+  t.textContent = 'Unsaved changes';
+}
+
+function setSaved() {
+  dirty = false;
+  const s = document.getElementById('save-status');
+  const t = document.getElementById('save-status-text');
+  s.className = 'save-status saved';
+  t.textContent = 'Saved';
+  setTimeout(() => {
+    s.className = 'save-status';
+    t.textContent = 'No changes';
+  }, 3000);
+}
+
+function addRootNode() {
+  tree = { key: generateKey(), question: '', options: [] };
+  selectedPath = [];
+  dirty = true;
+  render();
+}
+
+function render() {
+  renderNav();
+  renderEditor();
+  document.getElementById('empty-state') && (document.getElementById('empty-state').style.display = tree ? 'none' : 'flex');
+}
+
+function renderNav() {
+  const nav = document.getElementById('tree-nav');
+  if (!tree) { nav.innerHTML = ''; return; }
+  nav.innerHTML = renderNavNode(tree, [], 0);
+}
+
+function renderNavNode(node, path, depth) {
+  const isSelected = selectedPath && JSON.stringify(selectedPath) === JSON.stringify(path);
+  const indent = depth * 14;
+  let html = `<div class="nav-node ${isSelected ? 'active' : ''}" style="padding-left:${16 + indent}px" onclick="selectNode(${JSON.stringify(path)})">
+    <div class="nav-node-dot"></div>
+    <div class="nav-node-text">${node.question || '<em style="opacity:.5">Untitled question</em>'}</div>
+    <div class="nav-node-meta">${(node.options || []).length} opt</div>
+  </div>`;
+
+  (node.options || []).forEach((opt, i) => {
+    const hasDest = opt.scenario || opt.next;
+    const tag = opt.scenario
+      ? `<span class="nav-tag nav-tag-answer">→ ${opt.scenario}</span>`
+      : opt.next
+        ? `<span class="nav-tag nav-tag-branch">↓ branch</span>`
+        : `<span class="nav-tag nav-tag-empty">unlinked</span>`;
+    html += `<div class="nav-option-row" style="padding-left:${24 + indent}px">
+      <span class="nav-option-line">└</span>
+      <span class="nav-option-label">${opt.label || '<em style="opacity:.5">Untitled option</em>'}</span>
+      ${tag}
+    </div>`;
+    if (opt.next) {
+      html += renderNavNode(opt.next, [...path, i], depth + 1);
+    }
+  });
+
+  return html;
+}
+
+function selectNode(path) {
+  selectedPath = path;
+  renderNav();
+  renderEditor();
+}
+
+function renderEditor() {
+  const area = document.getElementById('editor-area');
+  if (!tree) {
+    area.innerHTML = `<div class="tree-empty-state" id="empty-state">
+      <div class="tree-empty-icon">◇</div>
+      <div class="tree-empty-title">No tree yet</div>
+      <div class="tree-empty-desc">Click "+ Root" to create the first question node for this category.</div>
+    </div>`;
+    return;
+  }
+  if (selectedPath === null) {
+    area.innerHTML = `<div class="tree-empty-state">
+      <div class="tree-empty-icon">◈</div>
+      <div class="tree-empty-title">Select a node</div>
+      <div class="tree-empty-desc">Click any node in the tree navigator to edit it.</div>
+    </div>`;
+    return;
+  }
+
+  const node = getNode(selectedPath);
+  if (!node) { selectedPath = null; renderEditor(); return; }
+
+  const breadcrumb = buildBreadcrumb(selectedPath);
+  const isRoot = selectedPath.length === 0;
+
+  let html = `<div class="tree-editor-topbar">
+    <div class="node-breadcrumb">${breadcrumb}</div>
+    ${!isRoot ? `<button class="node-delete-btn" onclick="deleteNode()">✕ Delete node</button>` : ''}
+  </div>
+  <div class="tree-editor-scroll">
+  <div class="node-editor">
+    <div class="node-question-section">
+      <div class="node-section-label">Question</div>
+      <textarea class="node-question-input" rows="2" placeholder="What do you want to ask the user?" oninput="updateQuestion(this.value)">${node.question || ''}</textarea>
+    </div>
+    <div class="node-section-label">Options</div>
+    <div class="options-list" id="options-list">`;
+
+  (node.options || []).forEach((opt, i) => {
+    const isFirst = i === 0;
+    const isLast = i === (node.options.length - 1);
+    let destHtml = '';
+    if (opt.scenario) {
+      const sc = SCENARIOS.find(s => s.slug === opt.scenario);
+      const title = sc ? sc.title : opt.scenario;
+      destHtml = `<span class="dest-icon">✓</span>
+        <span class="dest-text connected answer">→ ${title}</span>
+        <div class="dest-actions">
+          <button class="dest-btn" onclick="changeScenario(${i})">Change</button>
+          <button class="dest-btn danger" onclick="unlinkOption(${i})">Unlink</button>
+        </div>`;
+    } else if (opt.next) {
+      destHtml = `<span class="dest-icon">↓</span>
+        <span class="dest-text connected branch">Branches to child question</span>
+        <div class="dest-actions">
+          <button class="dest-btn" onclick="goToChild(${i})">Go to child</button>
+          <button class="dest-btn danger" onclick="unlinkOption(${i})">Remove branch</button>
+        </div>`;
+    } else {
+      destHtml = `<span class="dest-icon" style="opacity:.4">○</span>
+        <span class="dest-text">Not linked yet</span>
+        <div class="dest-actions">
+          <button class="dest-btn primary" onclick="openModal(${i})">Link scenario</button>
+          <button class="dest-btn" onclick="addChildNode(${i})">Add branch</button>
+        </div>`;
+    }
+
+    html += `<div class="option-card">
+      <div class="option-card-header">
+        <span class="option-drag-handle">⠿</span>
+        <span class="option-num">${i + 1}</span>
+        <input class="option-label-input" type="text" placeholder="Option label…" value="${opt.label || ''}" oninput="updateOptionLabel(${i}, this.value)">
+        <div class="option-order-btns">
+          <button class="order-btn" onclick="moveOption(${i}, -1)" ${isFirst ? 'disabled' : ''}>↑</button>
+          <button class="order-btn" onclick="moveOption(${i}, 1)" ${isLast ? 'disabled' : ''}>↓</button>
+        </div>
+        <button class="option-remove-btn" onclick="removeOption(${i})">✕</button>
+      </div>
+      <div class="option-card-body">
+        <div class="option-destination">${destHtml}</div>
+      </div>
+    </div>`;
+  });
+
+  html += `</div>
+    <button class="btn btn-outline btn-sm" onclick="addOption()">+ Add Option</button>
+  </div></div>`;
+
+  area.innerHTML = html;
+}
+
+function buildBreadcrumb(path) {
+  if (path.length === 0) return `<span class="crumb current">Root question</span>`;
+  let html = `<span class="crumb" onclick="selectNode([])" style="cursor:pointer;">Root</span>`;
+  let node = tree;
+  for (let i = 0; i < path.length; i++) {
+    const idx = path[i];
+    const opt = node.options[idx];
+    html += `<span class="sep">›</span><span class="crumb">${opt.label || 'Option ' + (idx + 1)}</span>`;
+    if (i < path.length - 1) node = opt.next;
+  }
+  html = html.replace(/class="crumb"([^>]*)>([^<]*)$/, 'class="crumb current"$1>$2');
+  return html;
+}
+
+function updateQuestion(val) {
+  const node = getNode(selectedPath);
+  if (node) { node.question = val; setDirty(); renderNav(); }
+}
+
+function updateOptionLabel(idx, val) {
+  const node = getNode(selectedPath);
+  if (node && node.options[idx]) { node.options[idx].label = val; setDirty(); renderNav(); }
+}
+
+function addOption() {
+  const node = getNode(selectedPath);
+  if (!node) return;
+  if (!node.options) node.options = [];
+  node.options.push({ label: '' });
+  setDirty();
+  render();
+}
+
+function removeOption(idx) {
+  const node = getNode(selectedPath);
+  if (!node) return;
+  node.options.splice(idx, 1);
+  setDirty();
+  render();
+}
+
+function moveOption(idx, dir) {
+  const node = getNode(selectedPath);
+  if (!node) return;
+  const newIdx = idx + dir;
+  if (newIdx < 0 || newIdx >= node.options.length) return;
+  const tmp = node.options[idx];
+  node.options[idx] = node.options[newIdx];
+  node.options[newIdx] = tmp;
+  setDirty();
+  render();
+}
+
+function addChildNode(optIdx) {
+  const node = getNode(selectedPath);
+  if (!node) return;
+  node.options[optIdx].next = { key: generateKey(), question: '', options: [] };
+  delete node.options[optIdx].scenario;
+  setDirty();
+  const childPath = [...selectedPath, optIdx];
+  selectedPath = childPath;
+  render();
+}
+
+function goToChild(optIdx) {
+  selectedPath = [...selectedPath, optIdx];
+  render();
+}
+
+function unlinkOption(optIdx) {
+  const node = getNode(selectedPath);
+  if (!node) return;
+  delete node.options[optIdx].scenario;
+  delete node.options[optIdx].next;
+  setDirty();
+  render();
+}
+
+function deleteNode() {
+  if (selectedPath.length === 0) return;
+  const parentPath = selectedPath.slice(0, -1);
+  const optIdx = selectedPath[selectedPath.length - 1];
+  const parent = getNode(parentPath);
+  if (!parent) return;
+  delete parent.options[optIdx].next;
+  selectedPath = parentPath;
+  setDirty();
+  render();
+}
+
+function openModal(optIdx) {
+  modalTargetPath = optIdx;
+  modalSelectedSlug = null;
+  document.getElementById('modal-search').value = '';
+  filterScenarios();
+  document.getElementById('scenario-modal').classList.remove('hidden');
+}
+
+function changeScenario(optIdx) { openModal(optIdx); }
+
+function closeModal() {
+  document.getElementById('scenario-modal').classList.add('hidden');
+  modalTargetPath = null;
+  modalSelectedSlug = null;
+}
+
+function filterScenarios() {
+  const q = document.getElementById('modal-search').value.toLowerCase();
+  const list = document.getElementById('modal-list');
+  const filtered = SCENARIOS.filter(s => s.title.toLowerCase().includes(q) || s.slug.toLowerCase().includes(q));
+  if (!filtered.length) {
+    list.innerHTML = `<div style="padding:24px;text-align:center;color:var(--text-muted);font-size:13px;">No scenarios found</div>`;
+    return;
+  }
+  list.innerHTML = filtered.map(s => `
+    <div class="modal-scenario-item ${modalSelectedSlug === s.slug ? 'selected' : ''}" onclick="selectScenario('${s.slug}')">
+      <div class="modal-scenario-title">${s.title}</div>
+      <div class="modal-scenario-meta">${s.slug} · ${s.for_role}</div>
+    </div>`).join('');
+}
+
+function selectScenario(slug) {
+  modalSelectedSlug = slug;
+  filterScenarios();
+}
+
+function confirmScenario() {
+  if (!modalSelectedSlug) return;
+  const node = getNode(selectedPath);
+  if (!node) return;
+  node.options[modalTargetPath].scenario = modalSelectedSlug;
+  delete node.options[modalTargetPath].next;
+  setDirty();
+  closeModal();
+  render();
+}
+
+async function saveTree() {
+  if (!tree) return;
+  const btn = document.getElementById('save-btn');
+  btn.textContent = 'Saving…';
+  btn.disabled = true;
+  try {
+    const resp = await fetch(SAVE_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ tree })
+    });
+    const data = await resp.json();
+    if (data.ok) {
+      setSaved();
+    } else {
+      alert('Save failed: ' + data.error);
+    }
+  } catch (e) {
+    alert('Save failed: ' + e.message);
+  } finally {
+    btn.textContent = 'Save Tree';
+    btn.disabled = false;
+  }
+}
+
+window.addEventListener('beforeunload', e => {
+  if (dirty) { e.preventDefault(); e.returnValue = ''; }
+});
+
+if (EXISTING_TREE) {
+  tree = EXISTING_TREE;
+  selectedPath = [];
+}
+render();
+</script>
+{% endblock %}

@@ -1,0 +1,93 @@
+{% extends 'base.html' %}
+{% block title %}Consultation — {{ category.title }} — RentRight Dubai{% endblock %}
+{% block body_class %}wizard-page{% endblock %}
+
+{% block content %}
+<div class="wizard-wrap">
+
+  <div class="wizard-header">
+    <a href="{{ url_for('core.dashboard') }}" class="wizard-back" id="wizardBack">← Back to dashboard</a>
+    <div class="wizard-category">{{ category.title }}</div>
+    <div class="wizard-step-indicator">Step {{ step }}</div>
+  </div>
+
+  {% if path %}
+  <div class="wizard-trail">
+    {% for p in path %}
+    <div class="trail-item">
+      <span class="trail-question">{{ p.question }}</span>
+      <span class="trail-answer">{{ p.answer }}</span>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <div class="wizard-body">
+    <div class="wizard-card" id="wizardCard">
+      <div class="wizard-question-label">Question {{ step }}</div>
+      <h2 class="wizard-question">{{ node.question }}</h2>
+
+      <form method="POST" action="{{ url_for('core.wizard_step', category_slug=category.slug) }}" id="wizardForm">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() if csrf_token is defined else '' }}">
+
+        <div class="wizard-options">
+          {% for option in node.options if not option.for_role or option.for_role == 'both' or option.for_role == current_user.role %}
+          <label class="wizard-option">
+            <input type="radio" name="answer" value="{{ option.label }}" required style="display:none;">
+            <div class="wizard-option-inner">
+              <div class="wizard-option-indicator"></div>
+              <span class="wizard-option-label">{{ option.label }}</span>
+            </div>
+          </label>
+          {% endfor %}
+        </div>
+
+        <div class="wizard-actions">
+          <button type="submit" class="btn btn-primary btn-lg wizard-submit" id="wizardSubmit" disabled>
+            Continue →
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <div class="wizard-assurance">
+      <span>🔒</span>
+      Your consultation is private. 1 credit will be used when your answer is ready.
+    </div>
+  </div>
+
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+var radios = document.querySelectorAll('.wizard-option input[type=radio]');
+var submit = document.getElementById('wizardSubmit');
+var card   = document.getElementById('wizardCard');
+var back   = document.getElementById('wizardBack');
+
+radios.forEach(function(radio) {
+  radio.addEventListener('change', function() {
+    document.querySelectorAll('.wizard-option').forEach(function(opt) {
+      opt.classList.remove('selected');
+    });
+    this.closest('.wizard-option').classList.add('selected');
+    submit.disabled = false;
+    submit.classList.add('ready');
+  });
+});
+
+document.getElementById('wizardForm').addEventListener('submit', function() {
+  submit.disabled = true;
+  submit.textContent = 'Finding your answer…';
+  card.classList.add('submitting');
+});
+
+back.addEventListener('click', function(e) {
+  e.preventDefault();
+  if (confirm('If you go back, your current consultation will be cancelled and your credit will be returned. Continue?')) {
+    window.location.href = this.getAttribute('href');
+  }
+});
+</script>
+{% endblock %}

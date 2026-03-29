@@ -1,0 +1,182 @@
+{% extends "admin/base_admin.html" %}
+
+{% block title %}{{ 'Edit' if scenario else 'New' }} Scenario{% endblock %}
+
+{% block topbar_title %}
+  {{ 'Edit Scenario' if scenario else 'New Scenario' }}
+  <span>{{ scenario.title if scenario else '' }}</span>
+{% endblock %}
+
+{% block topbar_actions %}
+<a href="{{ url_for('admin.scenarios') }}" class="btn btn-outline">← Back</a>
+{% endblock %}
+
+{% block main %}
+<div class="admin-content">
+  <form method="POST" id="scenario-form">
+    <div style="display:grid; grid-template-columns:1fr 320px; gap:16px; align-items:start;">
+
+      <div style="display:flex; flex-direction:column; gap:14px;">
+
+        <div class="card">
+          <div style="font-size:11px; text-transform:uppercase; letter-spacing:0.1em; color:var(--text-muted); margin-bottom:14px; font-weight:500;">Identity</div>
+          <div class="form-grid" style="margin-bottom:0;">
+            <div class="form-group">
+              <label class="form-label">Title <span class="required">*</span></label>
+              <input type="text" name="title" class="form-input"
+                value="{{ scenario.title if scenario else '' }}"
+                placeholder="e.g. Illegal Rent Increase" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Slug <span class="required">*</span></label>
+              <input type="text" name="slug" class="form-input" id="slug-input"
+                value="{{ scenario.slug if scenario else '' }}"
+                placeholder="e.g. illegal-rent-increase" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Category <span class="required">*</span></label>
+              <select name="category_id" class="form-select" required>
+                <option value="">— Select —</option>
+                {% for cat in categories %}
+                <option value="{{ cat.id }}" {{ 'selected' if scenario and scenario.category_id == cat.id }}>{{ cat.title }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Visible to</label>
+              <select name="for_role" class="form-select" id="for-role-select">
+                {% for val, label in [('both','Tenant & Landlord'),('tenant','Tenant only'),('landlord','Landlord only')] %}
+                <option value="{{ val }}" {{ 'selected' if scenario and scenario.for_role == val }}>{{ label }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="form-group form-col-span">
+              <label class="form-label">Headline</label>
+              <input type="text" name="headline" class="form-input"
+                value="{{ scenario.headline if scenario else '' }}"
+                placeholder="Short headline shown at top of answer page">
+            </div>
+          
+        </div>
+
+        <div class="card">
+          <div style="font-size:11px; text-transform:uppercase; letter-spacing:0.1em; color:var(--text-muted); margin-bottom:14px; font-weight:500;">Content</div>
+          <div style="display:flex; flex-direction:column; gap:14px;">
+            <div class="form-group">
+              <label class="form-label">Situation</label>
+              <span class="form-hint" style="margin-bottom:4px; display:block;">Plain text description of the situation</span>
+              <textarea name="situation" class="form-textarea tall" placeholder="Describe the situation in plain language…">{{ scenario.situation if scenario and scenario.situation else '' }}</textarea>
+            </div>
+            <div class="form-group" id="tenant-rights-group">
+              <label class="form-label">Tenant Rights</label>
+              <span class="form-hint" style="margin-bottom:4px; display:block;">One right per line</span>
+              <textarea name="tenant_rights" class="form-textarea" placeholder="As a tenant, you have the right to…&#10;You are entitled to…">{{ (scenario.tenant_rights | join('\n')) if scenario and scenario.tenant_rights else '' }}</textarea>
+            </div>
+            <div class="form-group" id="landlord-rights-group">
+              <label class="form-label">Landlord Rights</label>
+              <span class="form-hint" style="margin-bottom:4px; display:block;">One right per line</span>
+              <textarea name="landlord_rights" class="form-textarea" placeholder="As a landlord, you have the right to…&#10;You are entitled to…">{{ (scenario.landlord_rights | join('\n')) if scenario and scenario.landlord_rights else '' }}</textarea>
+            </div>
+            <div class="form-group">
+              <label class="form-label">What To Do</label>
+              <span class="form-hint" style="margin-bottom:4px; display:block;">One action step per line</span>
+              <textarea name="what_to_do" class="form-textarea tall" placeholder="Step 1: …&#10;Step 2: …&#10;Step 3: …">{{ (scenario.what_to_do | join('\n')) if scenario and scenario.what_to_do else '' }}</textarea>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <div style="display:flex; flex-direction:column; gap:14px; position:sticky; top:0;">
+
+        <div class="card">
+          <div style="font-size:11px; text-transform:uppercase; letter-spacing:0.1em; color:var(--text-muted); margin-bottom:14px; font-weight:500;">Publishing</div>
+          <div class="toggle-row">
+            <div class="toggle-info">
+              <div class="toggle-name">Active</div>
+              <div class="toggle-desc">Inactive scenarios won't be delivered to users</div>
+            </div>
+            <label class="toggle-switch">
+              <input type="checkbox" name="is_active" {{ 'checked' if not scenario or scenario.is_active }}>
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+          <div class="toggle-row" style="margin-top:12px;">
+            <div class="toggle-info">
+              <div class="toggle-name">Show RERA Calculator button</div>
+              <div class="toggle-desc">Displays a link to the official RERA Rental Index on the answer page</div>
+            </div>
+            <label class="toggle-switch">
+              <input type="checkbox" name="show_rera_button" {{ 'checked' if scenario and scenario.show_rera_button }}>
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+          <div style="margin-top:16px; display:flex; flex-direction:column; gap:8px;">
+            <button type="submit" class="btn btn-primary" style="width:100%; justify-content:center;">
+              {{ 'Save Changes' if scenario else 'Create Scenario' }}
+            </button>
+            <a href="{{ url_for('admin.scenarios') }}" class="btn btn-outline" style="width:100%; justify-content:center; text-align:center;">Cancel</a>
+            {% if scenario %}
+            <button type="button" class="btn btn-danger" style="width:100%; justify-content:center;" onclick="confirmDelete()">Delete Scenario</button>
+            {% endif %}
+          </div>
+        </div>
+
+        <div class="card">
+          <div style="font-size:11px; text-transform:uppercase; letter-spacing:0.1em; color:var(--text-muted); margin-bottom:14px; font-weight:500;">Metadata</div>
+          <div style="display:flex; flex-direction:column; gap:12px;">
+            <div class="form-group">
+              <label class="form-label">Law References</label>
+              <span class="form-hint" style="margin-bottom:4px; display:block;">One reference per line</span>
+              <textarea name="law_refs" class="form-textarea short" placeholder="RERA Law No. 26 of 2007&#10;Decree No. 43 of 2013">{{ (scenario.law_refs | join('\n')) if scenario and scenario.law_refs else '' }}</textarea>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Keywords</label>
+              <span class="form-hint" style="margin-bottom:4px; display:block;">Space-separated, used for search</span>
+              <textarea name="keywords" class="form-textarea short" placeholder="rent increase notice RERA">{{ scenario.keywords if scenario and scenario.keywords else '' }}</textarea>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </form>
+
+  {% if scenario %}
+  <form method="POST" action="{{ url_for('admin.delete_scenario', id=scenario.id) }}" id="delete-form">
+  </form>
+  {% endif %}
+
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+const titleInput    = document.querySelector('input[name="title"]');
+const slugInput     = document.getElementById('slug-input');
+const roleSelect    = document.getElementById('for-role-select');
+const tenantGroup   = document.getElementById('tenant-rights-group');
+const landlordGroup = document.getElementById('landlord-rights-group');
+
+function updateRightsVisibility() {
+  const val = roleSelect.value;
+  tenantGroup.style.display   = (val === 'landlord') ? 'none' : '';
+  landlordGroup.style.display = (val === 'tenant')   ? 'none' : '';
+}
+
+roleSelect.addEventListener('change', updateRightsVisibility);
+updateRightsVisibility();
+
+function confirmDelete() {
+  if (confirm('Delete this scenario permanently? This cannot be undone and will break any tree that links to it.')) {
+    document.getElementById('delete-form').submit();
+  }
+}
+
+{% if not scenario %}
+titleInput.addEventListener('input', () => {
+  slugInput.value = titleInput.value.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+});
+{% endif %}
+</script>
+{% endblock %}

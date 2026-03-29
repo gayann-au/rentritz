@@ -1,0 +1,76 @@
+# ── Environment & secrets ──────────────────────────────────────────────────────
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+
+# ── Python ─────────────────────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+wheels/
+pip-wheel-metadata/
+MANIFEST
+
+# ── Virtual environment ────────────────────────────────────────────────────────
+venv/
+env/
+ENV/
+.venv/
+.env/
+
+# ── Database files ─────────────────────────────────────────────────────────────
+instance/
+*.db
+*.sqlite
+*.sqlite3
+
+# ── Logs ───────────────────────────────────────────────────────────────────────
+*.log
+logs/
+log/
+
+# ── OS files ───────────────────────────────────────────────────────────────────
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+Desktop.ini
+
+# ── IDE & editor ───────────────────────────────────────────────────────────────
+.vscode/
+.idea/
+*.swp
+*.swo
+*.swn
+*~
+.project
+.settings/
+
+# ── Backup & temp files ────────────────────────────────────────────────────────
+*.bak
+*.orig
+*.tmp
+*.temp
+*.old
+
+# ── Claude Code local settings ────────────────────────────────────────────────
+.claude/
+
+# ── Seed / utility scripts (contain local DB logic, not for production) ────────
+seed_*.py
+update_scenarios_*.py
+check_content.py

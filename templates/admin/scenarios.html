@@ -1,0 +1,108 @@
+{% extends "admin/base_admin.html" %}
+
+{% block title %}Scenarios{% endblock %}
+
+{% block topbar_title %}Scenarios{% endblock %}
+
+{% block topbar_actions %}
+<a href="{{ url_for('admin.new_scenario') }}" class="btn btn-primary">+ New Scenario</a>
+{% endblock %}
+
+{% block main %}
+<div class="admin-content">
+
+  <div class="filter-bar">
+    <form method="GET" style="display:contents;">
+      <select name="category_id" class="filter-select" onchange="this.form.submit()">
+        <option value="">All categories</option>
+        {% for cat in categories %}
+        <option value="{{ cat.id }}" {{ 'selected' if selected_category == cat.id }}>{{ cat.title }}</option>
+        {% endfor %}
+      </select>
+      <select name="role" class="filter-select" onchange="this.form.submit()">
+        <option value="">All roles</option>
+        <option value="tenant" {{ 'selected' if role_filter == 'tenant' }}>Tenant only</option>
+        <option value="landlord" {{ 'selected' if role_filter == 'landlord' }}>Landlord only</option>
+        <option value="both" {{ 'selected' if role_filter == 'both' }}>Both</option>
+      </select>
+      <select name="status" class="filter-select" onchange="this.form.submit()">
+        <option value="">All statuses</option>
+        <option value="active" {{ 'selected' if status_filter == 'active' }}>Active</option>
+        <option value="inactive" {{ 'selected' if status_filter == 'inactive' }}>Inactive</option>
+      </select>
+      {% if selected_category or role_filter or status_filter %}
+      <a href="{{ url_for('admin.scenarios') }}" class="btn btn-ghost btn-sm">Clear filters</a>
+      {% endif %}
+    </form>
+    <span style="font-size:12px; color:var(--text-muted);">{{ scenarios|length }} scenario{{ 's' if scenarios|length != 1 else '' }}</span>
+  </div>
+
+  {% if scenarios %}
+  <div class="card" style="padding:0; overflow:hidden;">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Title</th>
+          <th>Category</th>
+          <th>Role</th>
+          <th>Complete</th>
+          <th>Status</th>
+          <th>Added (GST)</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for s in scenarios %}
+        <tr>
+          <td>
+            <div style="font-weight:500;">{{ s.title }}</div>
+            <div style="font-size:12px; color:var(--text-muted); font-family:monospace;">{{ s.slug }}</div>
+          </td>
+          <td>{{ s.category.title if s.category else '—' }}</td>
+          <td><span class="badge badge-{{ s.for_role }}">{{ s.for_role }}</span></td>
+          <td>
+            {% if s.is_complete %}
+            <span class="badge badge-complete">✓ Complete</span>
+            {% else %}
+            <span class="badge badge-incomplete">Incomplete</span>
+            {% endif %}
+          </td>
+          <td>
+            <span class="badge badge-{{ 'active' if s.is_active else 'inactive' }}">
+              {{ 'Active' if s.is_active else 'Inactive' }}
+            </span>
+          </td>
+          <td style="font-size:12px; color:var(--text-muted); white-space:nowrap;">
+            {% if s.created_at %}
+            {{ s.created_at.strftime('%d %b %Y, %H:%M') }}
+            {% else %}
+            —
+            {% endif %}
+          </td>
+          <td>
+            <div class="table-actions">
+              <a href="{{ url_for('admin.edit_scenario', id=s.id) }}" class="btn btn-ghost btn-sm">Edit</a>
+              <a href="{{ url_for('admin.preview_scenario', id=s.id) }}" class="btn btn-ghost btn-sm">Preview</a>
+              <form method="POST" action="{{ url_for('admin.toggle_scenario', id=s.id) }}" style="display:contents;">
+                <button type="submit" class="btn btn-ghost btn-sm">
+                  {{ 'Deactivate' if s.is_active else 'Activate' }}
+                </button>
+              </form>
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="empty-state">
+    <div class="empty-icon">◇</div>
+    <div class="empty-title">No scenarios found</div>
+    <div class="empty-desc">Try adjusting your filters or create a new scenario.</div>
+    <a href="{{ url_for('admin.new_scenario') }}" class="btn btn-primary">Create New Scenario</a>
+  </div>
+  {% endif %}
+
+</div>
+{% endblock %}

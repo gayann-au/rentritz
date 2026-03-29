@@ -1,0 +1,65 @@
+{% extends "admin/base_admin.html" %}
+
+{% block title %}Payments{% endblock %}
+
+{% block topbar_title %}Payments{% endblock %}
+
+{% block main %}
+<div class="admin-content">
+
+  {% if payments %}
+  <div class="card" style="padding:0; overflow:hidden;">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>User</th>
+          <th>Type</th>
+          <th>Credits</th>
+          <th>Amount</th>
+          <th>Status</th>
+          <th>nGenius Ref</th>
+          <th>Date</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for p in payments %}
+        <tr>
+          <td>
+            <div class="user-cell">
+              <div class="user-avatar">{{ p.user.full_name[0].upper() }}</div>
+              <div>
+                <div class="user-name">{{ p.user.full_name }}</div>
+                <div class="user-email">{{ p.user.email }}</div>
+              </div>
+            </div>
+          </td>
+          <td style="font-size:13px;">{{ p.payment_type | replace('_', ' ') | title }}</td>
+          <td>
+            <span class="credits-badge">{{ p.credits_purchased }}</span>
+          </td>
+          <td style="font-size:13px; color:var(--white);">AED {{ '%.2f' | format(p.amount_aed) }}</td>
+          <td>
+            <span class="badge badge-{{ 'active' if p.status == 'captured' else 'inactive' if p.status == 'failed' else 'incomplete' }}">
+              {{ p.status | title }}
+            </span>
+          </td>
+          <td style="font-size:12px; color:var(--text-muted); font-family:monospace;">
+            {{ p.ngenius_ref or '—' }}
+          </td>
+          <td style="font-size:13px; color:var(--text-muted);">{{ p.created_at.strftime('%d %b %Y %H:%M') }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="empty-state">
+    <div class="empty-icon">◇</div>
+    <div class="empty-title">No payments yet</div>
+    <div class="empty-desc">Credit pack purchases will appear here.</div>
+  </div>
+  {% endif %}
+
+</div>
+{% endblock %}
+

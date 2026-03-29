@@ -1,0 +1,66 @@
+{% extends "admin/base_admin.html" %}
+
+{% block title %}Questions{% endblock %}
+
+{% block topbar_title %}Questions{% endblock %}
+
+{% block main %}
+<div class="admin-content">
+
+  {% if questions %}
+  <div class="card" style="padding:0; overflow:hidden;">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>User</th>
+          <th>Category</th>
+          <th>Status</th>
+          <th>Credit Used</th>
+          <th>Asked</th>
+          <th>Answered</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for q in questions %}
+        <tr>
+          <td>
+            <div class="user-cell">
+              <div class="user-avatar">{{ q.user.full_name[0].upper() }}</div>
+              <div>
+                <div class="user-name">{{ q.user.full_name }}</div>
+                <div class="user-email">{{ q.user.email }}</div>
+              </div>
+            </div>
+          </td>
+          <td>{{ q.category_slug | replace('_', ' ') | title }}</td>
+          <td>
+            <span class="badge badge-{{ 'active' if q.status == 'answered' else 'inactive' }}">
+              {{ q.status | title }}
+            </span>
+          </td>
+          <td>
+            {% if q.credit_used %}
+            <span class="badge badge-complete">Yes</span>
+            {% else %}
+            <span class="badge badge-incomplete">No</span>
+            {% endif %}
+          </td>
+          <td style="font-size:13px; color:var(--text-muted);">{{ q.created_at.strftime('%d %b %Y %H:%M') }}</td>
+          <td style="font-size:13px; color:var(--text-muted);">
+            {{ q.answered_at.strftime('%d %b %Y %H:%M') if q.answered_at else '—' }}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="empty-state">
+    <div class="empty-icon">◇</div>
+    <div class="empty-title">No questions yet</div>
+    <div class="empty-desc">Answered consultations will appear here.</div>
+  </div>
+  {% endif %}
+
+</div>
+{% endblock %}
