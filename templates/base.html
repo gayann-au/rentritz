@@ -21,7 +21,7 @@
       <a href="{{ url_for('core.dashboard') }}" class="{% if request.endpoint == 'core.dashboard' %}active{% endif %}">Dashboard</a>
       <a href="{{ url_for('core.history') }}">History</a>
       <a href="{{ url_for('core.credits') }}">
-        <span class="credit-chip">{{ current_user.credits }} credits</span>
+        <span class="credit-chip">{{ current_user.available_credits }} credits</span>
       </a>
       <a href="{{ url_for('auth.logout') }}" class="nav-logout">Sign out</a>
     </div>

@@ -21,7 +21,11 @@ class User(UserMixin, db.Model):
     credits       = db.Column(db.Integer, default=0)
     total_asked   = db.Column(db.Integer, default=0)
     created_at    = db.Column(db.DateTime, default=datetime.utcnow)
-    last_login    = db.Column(db.DateTime)
+    last_login              = db.Column(db.DateTime)
+    reset_token             = db.Column(db.String(100), nullable=True, index=True)
+    reset_token_expiry      = db.Column(db.DateTime, nullable=True)
+    failed_login_count      = db.Column(db.Integer, default=0, nullable=False)
+    failed_login_lockout    = db.Column(db.DateTime, nullable=True)
 
     questions    = db.relationship('Question',          backref='user', lazy='dynamic')
     payments     = db.relationship('Payment',           backref='user', lazy='dynamic')
@@ -148,6 +152,7 @@ class Question(db.Model):
     wizard_path   = db.Column(JSONB)
     status        = db.Column(db.String(20), default='pending')
     credit_used   = db.Column(db.Boolean, default=False)
+    has_been_viewed = db.Column(db.Boolean, default=False, nullable=False, server_default='false')
     created_at    = db.Column(db.DateTime, default=datetime.utcnow)
     answered_at   = db.Column(db.DateTime, nullable=True)
 

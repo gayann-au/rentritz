@@ -761,6 +761,14 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   margin-bottom: 20px;
 }
 
+.forgot-link {
+  font-size: 0.8125rem;
+  color: var(--amber-dark);
+  text-decoration: none;
+  font-weight: 500;
+}
+.forgot-link:hover { text-decoration: underline; }
+
 .checkbox-label {
   display: flex;
   align-items: center;

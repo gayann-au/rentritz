@@ -19,7 +19,11 @@
         <div class="history-item-meta">{{ q.created_at.strftime('%d %B %Y') }} · {{ q.status | title }}</div>
       </div>
       {% if q.status == 'answered' %}
-      <a href="{{ url_for('core.answer', question_id=q.id) }}" class="btn btn-outline btn-sm">View answer</a>
+        {% if q.has_been_viewed %}
+        <span class="badge badge-inactive">Completed</span>
+        {% else %}
+        <a href="{{ url_for('core.answer', question_id=q.id) }}" class="btn btn-outline btn-sm">View</a>
+        {% endif %}
       {% else %}
       <span class="badge badge-{{ q.status }}">{{ q.status | title }}</span>
       {% endif %}

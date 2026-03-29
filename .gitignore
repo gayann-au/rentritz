@@ -39,6 +39,8 @@ instance/
 *.log
 logs/
 log/
+payments.log
+admin_access.log
 
 # ── OS files ───────────────────────────────────────────────────────────────────
 .DS_Store

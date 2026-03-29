@@ -1,13 +1,42 @@
 import json
 import logging
+import os
 from functools import wraps
 from datetime import datetime, timedelta
-from flask import Blueprint, render_template, redirect, url_for, request, flash, session, jsonify
+from flask import Blueprint, render_template, redirect, url_for, request, flash, session, jsonify, g
 from flask_login import current_user, login_user, logout_user
+from app import limiter
 from app.models import db, User, Category, Scenario, Question, Payment, CreditLog
 
 admin_bp = Blueprint('admin', __name__)
 logger   = logging.getLogger(__name__)
+
+# Dedicated file logger for admin access events
+_admin_access_logger = logging.getLogger('admin_access')
+_admin_access_logger.setLevel(logging.INFO)
+_admin_access_logger.propagate = False
+_admin_log_path = os.path.join(
+    os.path.dirname(os.path.dirname(os.path.dirname(__file__))), 'admin_access.log'
+)
+_afh = logging.FileHandler(_admin_log_path, encoding='utf-8')
+_afh.setFormatter(logging.Formatter('%(asctime)s %(levelname)s %(message)s'))
+_admin_access_logger.addHandler(_afh)
+
+
+def _log_admin_access(event, email, ip, success, detail=None):
+    rid = getattr(g, 'request_id', '-')
+    parts = [
+        'event=%s' % event,
+        'email=%s' % email,
+        'ip=%s' % ip,
+        'success=%s' % success,
+        'request_id=%s' % rid,
+    ]
+    if detail:
+        parts.append('detail=%s' % detail)
+    msg = ' '.join(parts)
+    _admin_access_logger.info(msg)
+    logger.info('[admin_access] %s' % msg)
 
 
 def admin_required(f):
@@ -24,6 +53,7 @@ def admin_required(f):
 # ── AUTH ──────────────────────────────────────────────────────────────────────
 
 @admin_bp.route('/login', methods=['GET', 'POST'])
+@limiter.limit("3 per minute; 10 per hour", methods=["POST"])
 def login():
     if current_user.is_authenticated and current_user.role == 'admin' and session.get('admin_verified'):
         return redirect(url_for('admin.dashboard'))
@@ -31,6 +61,7 @@ def login():
     if request.method == 'POST':
         email    = request.form.get('email', '').strip().lower()
         password = request.form.get('password', '')
+        ip       = request.remote_addr
         user     = User.query.filter_by(email=email, role='admin').first()
 
         if user and user.check_password(password) and user.is_active:
@@ -38,10 +69,11 @@ def login():
             session['admin_verified'] = True
             user.last_login = datetime.utcnow()
             db.session.commit()
-            logger.info(f'Admin login: {email} from {request.remote_addr}')
+            _log_admin_access('admin_login', email, ip, success=True)
             return redirect(url_for('admin.dashboard'))
 
-        logger.warning(f'Failed admin login: {email} from {request.remote_addr}')
+        _log_admin_access('admin_login', email, ip, success=False,
+                          detail='bad_credentials' if not user else 'wrong_password_or_inactive')
         flash('Invalid credentials.', 'error')
 
     return render_template('admin/login.html')

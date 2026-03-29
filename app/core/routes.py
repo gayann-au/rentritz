@@ -1,6 +1,7 @@
 from datetime import datetime
-from flask import Blueprint, render_template, redirect, url_for, flash, request, session, abort, current_app
+from flask import Blueprint, render_template, redirect, url_for, flash, request, session, abort, current_app, make_response
 from flask_login import login_required, current_user
+from sqlalchemy import text
 from app.models import db, Category, Scenario, Question, CreditLog
 
 core_bp = Blueprint('core', __name__)
@@ -230,12 +231,38 @@ def _deliver_answer(wizard, scenario_slug, category):
 @core_bp.route('/answer/<int:question_id>')
 @login_required
 def answer(question_id):
-    q        = Question.query.filter_by(id=question_id, user_id=current_user.id).first_or_404()
+    q = Question.query.filter_by(id=question_id, user_id=current_user.id).first_or_404()
     if not q.is_answered:
         abort(403)
+
+    # Read has_been_viewed directly from DB (bypasses any stale ORM cache)
+    with db.engine.connect() as conn:
+        row = conn.execute(
+            text('SELECT has_been_viewed FROM questions WHERE id = :id'),
+            {'id': question_id}
+        ).fetchone()
+    already_viewed = row[0] if row else False
+
+    if already_viewed:
+        flash('This consultation has already been viewed.', 'info')
+        return redirect(url_for('core.history'))
+
+    # Use a direct engine connection so the write persists regardless of
+    # ORM session state (important under Waitress multi-thread environment).
+    with db.engine.connect() as conn:
+        conn.execute(
+            text('UPDATE questions SET has_been_viewed = TRUE WHERE id = :id'),
+            {'id': question_id}
+        )
+        conn.commit()
+    db.session.expire(q)   # force ORM to re-read from DB for any lazy loads below
+
     scenario = q.scenario
     category = Category.query.filter_by(slug=q.category_slug).first()
-    return render_template('core/answer.html', question=q, scenario=scenario, category=category)
+    resp = make_response(render_template('core/answer.html', question=q, scenario=scenario, category=category))
+    resp.headers['Cache-Control'] = 'no-store, no-cache, must-revalidate, max-age=0'
+    resp.headers['Pragma'] = 'no-cache'
+    return resp
 
 
 @core_bp.route('/history')
@@ -243,7 +270,10 @@ def answer(question_id):
 def history():
     questions = Question.query.filter_by(user_id=current_user.id)\
                     .order_by(Question.created_at.desc()).all()
-    return render_template('core/history.html', questions=questions)
+    resp = make_response(render_template('core/history.html', questions=questions))
+    resp.headers['Cache-Control'] = 'no-store, no-cache, must-revalidate, max-age=0'
+    resp.headers['Pragma'] = 'no-cache'
+    return resp
 
 
 @core_bp.route('/credits')

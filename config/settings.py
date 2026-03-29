@@ -1,5 +1,6 @@
 import os
 import sys
+from datetime import timedelta
 from sqlalchemy.engine.url import make_url
 
 
@@ -41,16 +42,21 @@ class Config:
         'pool_pre_ping':     True,
     }
 
-    MAIL_SERVER         = 'smtp.sendgrid.net'
+    MAIL_SERVER         = 'smtp.gmail.com'
     MAIL_PORT           = 587
     MAIL_USE_TLS        = True
-    MAIL_USERNAME       = 'apikey'
-    MAIL_PASSWORD       = os.environ.get('SENDGRID_API_KEY')
-    MAIL_DEFAULT_SENDER = 'noreply@rentritz.com'
+    MAIL_USERNAME       = os.environ.get('MAIL_USERNAME')
+    MAIL_PASSWORD       = (os.environ.get('MAIL_PASSWORD') or '').replace(' ', '')
+    MAIL_DEFAULT_SENDER = os.environ.get('MAIL_USERNAME')
 
     NGENIUS_OUTLET_ID = os.environ.get('NGENIUS_OUTLET_ID')
     NGENIUS_API_KEY   = os.environ.get('NGENIUS_API_KEY')
     NGENIUS_ENV       = os.environ.get('NGENIUS_ENV', 'TEST')
+
+    SESSION_COOKIE_HTTPONLY   = True
+    SESSION_COOKIE_SAMESITE   = 'Lax'
+    SESSION_COOKIE_NAME       = '_rs'
+    PERMANENT_SESSION_LIFETIME = timedelta(hours=24)
 
     FREE_CREDITS_ON_SIGNUP = 2
 
@@ -86,11 +92,12 @@ class Config:
 
 
 class DevelopmentConfig(Config):
-    pass
+    SESSION_COOKIE_SECURE = False
 
 
 class ProductionConfig(Config):
-    DEBUG = False
+    DEBUG                 = False
+    SESSION_COOKIE_SECURE = True
 
 
 config = {

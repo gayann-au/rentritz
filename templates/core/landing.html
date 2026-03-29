@@ -1,244 +1,1378 @@
 {% extends 'base.html' %}
-{% block title %}Rentritz Dubai — Know Exactly Where You Stand{% endblock %}
+{% block title %}Rentritz | Dubai Tenancy Law, Simplified{% endblock %}
 {% block body_class %}landing-page{% endblock %}
 
 {% block content %}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&family=Cormorant+Garamond:wght@400;500;600&display=swap" rel="stylesheet">
 
-<section class="hero">
-  <div class="hero-inner">
-    <div class="hero-eyebrow">Dubai Tenancy Law — Simplified</div>
-    <h1 class="hero-headline">
-      Dubai tenancy law is complex.<br>
-      <em>Your answer should not be.</em>
+<style>
+/* ============================================================
+   LANDING PAGE RESET
+   ============================================================ */
+.landing-page .nav,
+.landing-page > nav { display: none !important; }
+
+.landing-page .main-content {
+  padding: 0 !important;
+  margin: 0 !important;
+  max-width: none !important;
+  width: 100% !important;
+}
+
+.landing-page .flash-wrap {
+  position: fixed;
+  top: 80px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2000;
+  width: 90%;
+  max-width: 480px;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+/* ============================================================
+   CSS VARIABLES
+   ============================================================ */
+:root {
+  --black:      #0a0a0a;
+  --near-black: #111111;
+  --dark-card:  #1a1a1a;
+  --amber:      #f59e0b;
+  --amber-dark: #d97706;
+  --white:      #ffffff;
+  --off-white:  #f8f7f4;
+  --text-muted: #888888;
+  --radius:     12px;
+  --ease:       cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-out:   cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* ============================================================
+   SCROLL REVEAL
+   ============================================================ */
+.sr {
+  opacity: 0;
+  transform: translateY(48px);
+  transition: opacity 0.78s var(--ease-out), transform 0.78s var(--ease-out);
+}
+.sr.in      { opacity: 1; transform: translateY(0); }
+.sr-d1      { transition-delay: 0.08s; }
+.sr-d2      { transition-delay: 0.16s; }
+.sr-d3      { transition-delay: 0.24s; }
+.sr-d4      { transition-delay: 0.32s; }
+.sr-d5      { transition-delay: 0.40s; }
+.sr-d6      { transition-delay: 0.48s; }
+
+/* ============================================================
+   SHARED LAYOUT
+   ============================================================ */
+.lp-container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 48px;
+}
+
+.lp-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.67rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--amber);
+  margin-bottom: 18px;
+}
+.lp-label::before {
+  content: '';
+  display: block;
+  width: 22px;
+  height: 1px;
+  background: var(--amber);
+  flex-shrink: 0;
+}
+
+.lp-section-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(2.2rem, 3.8vw, 3.2rem);
+  font-weight: 500;
+  color: var(--black);
+  line-height: 1.12;
+  margin: 0;
+}
+.lp-section-title-white {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(2.2rem, 3.8vw, 3.2rem);
+  font-weight: 500;
+  color: var(--white);
+  line-height: 1.12;
+  margin: 0;
+}
+
+/* ============================================================
+   NAVBAR
+   ============================================================ */
+.lp-nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 1000;
+  height: 72px;
+  padding: 0 48px;
+  display: flex;
+  align-items: center;
+  background: transparent;
+  border-bottom: 1px solid transparent;
+  transition: background 0.38s ease, border-color 0.38s ease, box-shadow 0.38s ease;
+}
+.lp-nav.solid {
+  background: var(--black);
+  border-color: rgba(255,255,255,0.07);
+  box-shadow: 0 4px 32px rgba(0,0,0,0.5);
+}
+.lp-nav-inner {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.lp-logo {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.6rem;
+  font-weight: 500;
+  color: var(--amber);
+  text-decoration: none;
+  letter-spacing: 0.01em;
+  line-height: 1;
+}
+.lp-nav-links {
+  display: flex;
+  align-items: center;
+  gap: 36px;
+}
+.lp-nav-links a {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 400;
+  color: rgba(255,255,255,0.9);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+.lp-nav-links a:hover { color: var(--amber); }
+.lp-nav-cta {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--black) !important;
+  background: var(--amber);
+  padding: 10px 22px;
+  border-radius: 6px;
+  text-decoration: none;
+  transition: background 0.2s ease, transform 0.2s ease;
+  white-space: nowrap;
+}
+.lp-nav-cta:hover {
+  background: var(--amber-dark) !important;
+  color: var(--black) !important;
+  transform: translateY(-1px);
+}
+
+/* Hamburger */
+.lp-hamburger {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 4px;
+  outline: none;
+}
+.lp-hamburger span {
+  display: block;
+  width: 24px;
+  height: 2px;
+  background: var(--white);
+  border-radius: 2px;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+.lp-hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.lp-hamburger.open span:nth-child(2) { opacity: 0; }
+.lp-hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+/* Mobile slide-down menu */
+.lp-mobile-menu {
+  position: fixed;
+  top: 72px; left: 0; right: 0;
+  z-index: 999;
+  background: var(--black);
+  border-bottom: 1px solid rgba(255,255,255,0.07);
+  overflow: hidden;
+  max-height: 0;
+  transition: max-height 0.4s var(--ease);
+}
+.lp-mobile-menu.open { max-height: 300px; }
+.lp-mobile-inner {
+  padding: 28px 24px 36px;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+.lp-mobile-inner a {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1rem;
+  font-weight: 400;
+  color: rgba(255,255,255,0.85);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+.lp-mobile-inner a:hover { color: var(--amber); }
+.lp-mobile-inner .lp-nav-cta { text-align: center; margin-top: 4px; }
+
+/* ============================================================
+   HERO
+   ============================================================ */
+.lp-hero {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  min-height: 640px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+.lp-hero-bg {
+  position: absolute;
+  top: -20%;
+  left: 0;
+  right: 0;
+  bottom: -20%;
+  background-image: url('https://images.unsplash.com/photo-1512453979798-5ea266f8880c?w=1920&q=80');
+  background-size: cover;
+  background-position: center;
+  z-index: 0;
+  will-change: transform;
+}
+.lp-hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.75);
+  z-index: 1;
+}
+.lp-hero-glow {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -52%);
+  width: 700px;
+  height: 480px;
+  background: radial-gradient(ellipse at center, rgba(245,158,11,0.10) 0%, transparent 68%);
+  z-index: 2;
+  pointer-events: none;
+}
+.lp-hero-content {
+  position: relative;
+  z-index: 3;
+  text-align: center;
+  padding: 0 24px;
+  max-width: 880px;
+}
+.lp-hero-pill {
+  display: inline-block;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.73rem;
+  font-weight: 500;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: var(--amber);
+  border: 1px solid rgba(245,158,11,0.5);
+  border-radius: 100px;
+  padding: 8px 20px;
+  margin-bottom: 36px;
+  opacity: 0;
+  animation: lpFadeDown 0.6s 0.1s forwards;
+}
+.lp-hero-headline {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(3.5rem, 8vw, 7rem);
+  font-weight: 500;
+  line-height: 1.04;
+  margin: 0 0 28px;
+  letter-spacing: -0.01em;
+}
+.lp-hero-headline .word {
+  display: inline-block;
+  opacity: 0;
+  transform: translateY(60px);
+  transition: opacity 0.65s var(--ease-out), transform 0.65s var(--ease-out);
+}
+.lp-hero-headline .word.vis { opacity: 1; transform: translateY(0); }
+.lp-line-white { color: var(--white); }
+.lp-line-amber { color: var(--amber); display: block; }
+.lp-hero-sub {
+  font-family: 'Outfit', sans-serif;
+  font-size: clamp(0.95rem, 2vw, 1.1rem);
+  font-weight: 300;
+  line-height: 1.8;
+  color: rgba(255,255,255,0.88);
+  max-width: 580px;
+  margin: 0 auto 40px;
+  opacity: 0;
+  animation: lpFadeUp 0.8s 0.9s forwards;
+}
+.lp-hero-btns {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  opacity: 0;
+  animation: lpFadeUp 0.8s 1.1s forwards;
+}
+.lp-btn-primary {
+  display: inline-block;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--black);
+  background: var(--amber);
+  padding: 15px 32px;
+  border-radius: 8px;
+  text-decoration: none;
+  animation: lpBreathe 3s ease-in-out 2.2s infinite;
+  transition: background 0.25s ease, transform 0.25s ease, box-shadow 0.25s ease;
+}
+.lp-btn-primary:hover {
+  background: var(--amber-dark);
+  color: var(--black);
+  transform: translateY(-2px);
+  animation: none;
+  box-shadow: 0 10px 32px rgba(245,158,11,0.45);
+}
+.lp-btn-ghost {
+  display: inline-block;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--white);
+  border: 1.5px solid rgba(255,255,255,0.45);
+  padding: 14px 32px;
+  border-radius: 8px;
+  text-decoration: none;
+  transition: border-color 0.25s ease, transform 0.25s ease;
+}
+.lp-btn-ghost:hover {
+  border-color: var(--white);
+  color: var(--white);
+  transform: translateY(-2px);
+}
+.lp-hero-note {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.77rem;
+  font-weight: 400;
+  color: rgba(255,255,255,0.4);
+  margin-top: 18px;
+  opacity: 0;
+  animation: lpFadeUp 0.8s 1.35s forwards;
+}
+.lp-hero-trust-row {
+  position: absolute;
+  bottom: 36px;
+  left: 0; right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  flex-wrap: wrap;
+  z-index: 3;
+  opacity: 0;
+  animation: lpFadeUp 0.8s 1.6s forwards;
+}
+.lp-trust-chip {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.7rem;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  color: rgba(255,255,255,0.55);
+  border: 1px solid rgba(255,255,255,0.14);
+  border-radius: 100px;
+  padding: 6px 16px;
+  white-space: nowrap;
+}
+
+/* ============================================================
+   STATS BAR
+   ============================================================ */
+.lp-stats {
+  background: var(--near-black);
+  padding: 80px 0;
+  border-top: 1px solid rgba(255,255,255,0.04);
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+}
+.lp-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+}
+.lp-stat-item {
+  padding: 24px 40px;
+  border-right: 1px solid rgba(255,255,255,0.06);
+  text-align: center;
+}
+.lp-stat-item:last-child { border-right: none; }
+.lp-stat-num {
+  display: block;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(2.6rem, 3.8vw, 3.8rem);
+  font-weight: 600;
+  color: var(--amber);
+  line-height: 1;
+  margin-bottom: 14px;
+  letter-spacing: -0.02em;
+}
+.lp-stat-text {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.83rem;
+  font-weight: 400;
+  color: var(--text-muted);
+  line-height: 1.6;
+  max-width: 196px;
+  margin: 0 auto;
+}
+
+/* ============================================================
+   HOW IT WORKS
+   ============================================================ */
+.lp-how {
+  background: var(--off-white);
+  padding: 108px 0;
+}
+.lp-how-header {
+  text-align: center;
+  margin-bottom: 72px;
+}
+.lp-how-steps {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 52px;
+  margin-bottom: 72px;
+}
+.lp-step-num {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 5.5rem;
+  font-weight: 300;
+  color: rgba(245,158,11,0.16);
+  line-height: 1;
+  margin-bottom: 16px;
+  letter-spacing: -0.02em;
+}
+.lp-step h3 {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.02rem;
+  font-weight: 600;
+  color: var(--black);
+  margin: 0 0 10px;
+}
+.lp-step p {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 400;
+  color: #595959;
+  line-height: 1.75;
+  margin: 0;
+}
+.lp-how-visual {
+  width: 100%;
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1px solid rgba(245,158,11,0.18);
+  box-shadow: 0 20px 60px rgba(0,0,0,0.09);
+}
+.lp-how-visual img {
+  width: 100%;
+  height: 380px;
+  object-fit: cover;
+  display: block;
+}
+
+/* ============================================================
+   WHO WE SERVE
+   ============================================================ */
+.lp-who {
+  background: var(--black);
+  padding: 108px 0;
+}
+.lp-who-layout {
+  display: grid;
+  grid-template-columns: 1fr 360px;
+  gap: 80px;
+  align-items: start;
+}
+.lp-who-cards {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 18px;
+  margin-top: 48px;
+}
+.lp-card {
+  background: var(--dark-card);
+  border-radius: var(--radius);
+  padding: 28px 26px;
+  border: 1px solid rgba(255,255,255,0.04);
+  border-top: 2px solid transparent;
+  transition: transform 0.3s var(--ease), border-top-color 0.3s ease, box-shadow 0.3s ease;
+  cursor: default;
+}
+.lp-card:hover {
+  transform: translateY(-6px);
+  border-top-color: var(--amber);
+  box-shadow: 0 14px 44px rgba(245,158,11,0.11);
+}
+.lp-card-icon {
+  width: 42px;
+  height: 42px;
+  color: var(--amber);
+  margin-bottom: 16px;
+}
+.lp-card h3 {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.98rem;
+  font-weight: 600;
+  color: var(--white);
+  margin: 0 0 9px;
+}
+.lp-card p {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.84rem;
+  font-weight: 400;
+  color: var(--text-muted);
+  line-height: 1.68;
+  margin: 0;
+}
+.lp-who-image {
+  position: sticky;
+  top: 100px;
+  border-radius: 14px;
+  overflow: hidden;
+  border: 2px solid rgba(245,158,11,0.22);
+  box-shadow: 0 24px 72px rgba(0,0,0,0.45);
+}
+.lp-who-image img {
+  width: 100%;
+  height: 520px;
+  object-fit: cover;
+  display: block;
+}
+
+/* ============================================================
+   WHAT WE COVER
+   ============================================================ */
+.lp-cover {
+  background: var(--off-white);
+  padding: 108px 0;
+}
+.lp-cover-header {
+  text-align: center;
+  margin-bottom: 60px;
+}
+.lp-cover-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 22px;
+}
+.lp-cover-card {
+  background: var(--white);
+  border-radius: var(--radius);
+  padding: 32px 28px;
+  border: 1px solid rgba(0,0,0,0.06);
+  border-top: 2px solid transparent;
+  transition: transform 0.3s var(--ease), border-top-color 0.3s ease, box-shadow 0.3s ease;
+  cursor: default;
+}
+.lp-cover-card:hover {
+  transform: translateY(-6px);
+  border-top-color: var(--amber);
+  box-shadow: 0 14px 44px rgba(0,0,0,0.08);
+}
+.lp-cover-card .lp-card-icon { color: var(--amber); }
+.lp-cover-card h3 {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.98rem;
+  font-weight: 600;
+  color: var(--black);
+  margin: 0 0 9px;
+}
+.lp-cover-card p {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.84rem;
+  font-weight: 400;
+  color: #606060;
+  line-height: 1.7;
+  margin: 0;
+}
+
+/* ============================================================
+   TRUST SECTION
+   ============================================================ */
+.lp-trust {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  min-height: 620px;
+}
+.lp-trust-img {
+  overflow: hidden;
+}
+.lp-trust-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.lp-trust-body {
+  background: var(--near-black);
+  padding: 88px 72px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.lp-trust-body .lp-section-title-white {
+  margin-bottom: 24px;
+}
+.lp-trust-para {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.93rem;
+  font-weight: 400;
+  color: rgba(255,255,255,0.60);
+  line-height: 1.82;
+  margin: 0 0 40px;
+}
+.lp-trust-checks {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+.lp-check-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.lp-check-row svg {
+  width: 20px;
+  height: 20px;
+  color: var(--amber);
+  flex-shrink: 0;
+}
+.lp-check-row span {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.92rem;
+  font-weight: 500;
+  color: var(--white);
+}
+
+/* ============================================================
+   FINAL CTA
+   ============================================================ */
+.lp-cta {
+  background: var(--amber);
+  padding: 108px 48px;
+  text-align: center;
+}
+.lp-cta h2 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(2.8rem, 5.5vw, 4.8rem);
+  font-weight: 500;
+  color: var(--black);
+  line-height: 1.08;
+  margin: 0 0 20px;
+}
+.lp-cta p {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1rem;
+  font-weight: 400;
+  color: rgba(10,10,10,0.7);
+  margin: 0 0 40px;
+}
+.lp-btn-dark {
+  display: inline-block;
+  font-family: 'Outfit', sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--white);
+  background: var(--black);
+  padding: 17px 44px;
+  border-radius: 8px;
+  text-decoration: none;
+  transition: background 0.25s ease, transform 0.25s ease;
+}
+.lp-btn-dark:hover {
+  background: #222;
+  color: var(--white);
+  transform: translateY(-2px);
+}
+.lp-cta-note {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.77rem;
+  font-weight: 400;
+  color: rgba(10,10,10,0.5);
+  margin-top: 18px;
+}
+
+/* ============================================================
+   FOOTER
+   ============================================================ */
+.lp-footer {
+  background: var(--black);
+  padding: 80px 0 0;
+}
+.lp-footer-grid {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr 1.8fr;
+  gap: 64px;
+  padding-bottom: 64px;
+}
+.lp-footer-logo {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.5rem;
+  font-weight: 500;
+  color: var(--amber);
+  text-decoration: none;
+  display: block;
+  margin-bottom: 10px;
+}
+.lp-footer-tagline {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.83rem;
+  font-weight: 400;
+  color: var(--text-muted);
+}
+.lp-footer h4 {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin: 0 0 20px;
+}
+.lp-footer-links {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 13px;
+}
+.lp-footer-links a {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.88rem;
+  font-weight: 400;
+  color: rgba(255,255,255,0.48);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+.lp-footer-links a:hover { color: var(--amber); }
+.lp-footer-disclaimer {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 400;
+  color: var(--text-muted);
+  line-height: 1.78;
+}
+.lp-footer-bar {
+  border-top: 1px solid rgba(255,255,255,0.06);
+  padding: 22px 0;
+}
+.lp-footer-bar p {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.76rem;
+  font-weight: 400;
+  color: rgba(255,255,255,0.22);
+  margin: 0;
+  text-align: center;
+}
+
+/* ============================================================
+   KEYFRAMES
+   ============================================================ */
+@keyframes lpFadeDown {
+  from { opacity: 0; transform: translateY(-14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes lpFadeUp {
+  from { opacity: 0; transform: translateY(18px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes lpBreathe {
+  0%,  100% { box-shadow: 0 0  0  0   rgba(245,158,11,0);    }
+  50%        { box-shadow: 0 0 28px 6px rgba(245,158,11,0.38); }
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width: 1024px) {
+  .lp-who-layout {
+    grid-template-columns: 1fr;
+    gap: 48px;
+  }
+  .lp-who-image { display: none; }
+  .lp-trust {
+    grid-template-columns: 1fr;
+  }
+  .lp-trust-img { height: 320px; }
+  .lp-trust-body { padding: 64px 48px; }
+}
+
+@media (max-width: 860px) {
+  .lp-container { padding: 0 28px; }
+  .lp-cover-grid { grid-template-columns: repeat(2, 1fr); }
+  .lp-how-steps  { grid-template-columns: 1fr; gap: 36px; }
+  .lp-stats-grid { grid-template-columns: repeat(2, 1fr); }
+  .lp-stat-item {
+    border-right: none;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    padding: 28px 24px;
+  }
+  .lp-stat-item:nth-child(odd)  { border-right: 1px solid rgba(255,255,255,0.06); }
+  .lp-stat-item:nth-last-child(-n+2) { border-bottom: none; }
+  .lp-footer-grid { grid-template-columns: 1fr 1fr; gap: 40px; }
+}
+
+@media (max-width: 768px) {
+  .lp-nav        { padding: 0 20px; }
+  .lp-nav-links  { display: none; }
+  .lp-hamburger  { display: flex; }
+  .lp-mobile-inner { padding: 28px 20px 36px; }
+  .lp-container  { padding: 0 20px; }
+  .lp-how        { padding: 80px 0; }
+  .lp-who        { padding: 80px 0; }
+  .lp-cover      { padding: 80px 0; }
+  .lp-cta        { padding: 80px 24px; }
+  .lp-stats      { padding: 64px 0; }
+  .lp-footer     { padding: 64px 0 0; }
+  .lp-trust-body { padding: 52px 28px; }
+  .lp-who-cards  { grid-template-columns: 1fr; gap: 14px; }
+  .lp-cover-grid { grid-template-columns: 1fr; }
+  .lp-hero-trust-row { bottom: 20px; gap: 8px; padding: 0 16px; }
+  .lp-footer-grid { grid-template-columns: 1fr; gap: 32px; padding-bottom: 48px; }
+  .lp-footer-disclaimer { max-width: 100%; }
+}
+
+@media (max-width: 420px) {
+  .lp-hero-btns { flex-direction: column; align-items: center; }
+  .lp-btn-primary, .lp-btn-ghost { width: 100%; text-align: center; }
+}
+</style>
+
+<!-- ============================================================
+     NAVBAR
+     ============================================================ -->
+<nav class="lp-nav" id="lpNav">
+  <div class="lp-nav-inner">
+    <a href="/" class="lp-logo">Rentritz</a>
+    <div class="lp-nav-links">
+      <a href="#how-it-works">How It Works</a>
+      <a href="#what-we-cover">What We Cover</a>
+      <a href="{{ url_for('auth.register') }}" class="lp-nav-cta">Get Started Free</a>
+    </div>
+    <button class="lp-hamburger" id="lpHamburger" aria-label="Toggle navigation">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<!-- Mobile slide-down menu -->
+<div class="lp-mobile-menu" id="lpMobileMenu">
+  <div class="lp-mobile-inner">
+    <a href="#how-it-works">How It Works</a>
+    <a href="#what-we-cover">What We Cover</a>
+    <a href="{{ url_for('auth.login') }}">Sign In</a>
+    <a href="{{ url_for('auth.register') }}" class="lp-nav-cta">Get Started Free</a>
+  </div>
+</div>
+
+<!-- ============================================================
+     HERO
+     ============================================================ -->
+<section class="lp-hero">
+  <div class="lp-hero-bg" id="heroParallax"></div>
+  <div class="lp-hero-overlay"></div>
+  <div class="lp-hero-glow"></div>
+
+  <div class="lp-hero-content">
+    <div class="lp-hero-pill">Dubai Tenancy Law, Simplified</div>
+
+    <h1 class="lp-hero-headline" id="lpHeadline">
+      <span class="lp-line-white">
+        <span class="word">Know</span>&nbsp;<span class="word">exactly</span>
+      </span>
+      <span class="lp-line-amber">
+        <span class="word">where</span>&nbsp;<span class="word">you</span>&nbsp;<span class="word">stand.</span>
+      </span>
     </h1>
-    <p class="hero-sub">
-      Rentritz delivers precise, consultant-written guidance on Dubai tenancy law —
-      matched to your exact situation. Whether you are renting, letting, managing,
-      or simply need to understand your position — this is where you get a real answer.
+
+    <p class="lp-hero-sub">
+      Rentritz delivers consultant-written legal guidance matched to your exact situation in Dubai.
+      Tenants, landlords, and property professionals get precise answers based on UAE rental law.
     </p>
-    <div class="hero-actions">
-      <a href="{{ url_for('auth.register') }}" class="btn btn-amber btn-lg">
-        Get your answer free →
-      </a>
-      <a href="#how" class="btn btn-outline-white btn-lg">See how it works</a>
+
+    <div class="lp-hero-btns">
+      <a href="{{ url_for('auth.register') }}" class="lp-btn-primary">Start Free, No Card Needed</a>
+      <a href="#how-it-works" class="lp-btn-ghost">See How It Works</a>
     </div>
-    <p class="hero-note">No credit card required. Your first consultations are complimentary.</p>
+
+    <p class="lp-hero-note">2 free consultations on signup. No credit card required.</p>
   </div>
-  <div class="hero-scroll">
-    <div class="scroll-line"></div>
-    <span>Scroll</span>
+
+  <div class="lp-hero-trust-row">
+    <span class="lp-trust-chip">UAE Law Verified</span>
+    <span class="lp-trust-chip">Consultant Written</span>
+    <span class="lp-trust-chip">RERA Compliant</span>
   </div>
 </section>
 
-<section class="problem-strip">
-  <div class="container">
-    <div class="section-eyebrow">The reality</div>
-    <h2>
-      Dubai has one of the most structured tenancy frameworks<br>
-      in the region — and it works in your favour, when you know it.
-    </h2>
-    <p>
-      The law is clear, detailed, and designed to protect everyone involved.
-      The challenge is knowing which part of it applies to your specific situation —
-      and what it means for you in plain language.
-    </p>
-  </div>
-</section>
+<!-- ============================================================
+     STATS BAR
+     ============================================================ -->
+<section class="lp-stats">
+  <div class="lp-container">
+    <div class="lp-stats-grid">
 
-<section class="difference-section">
-  <div class="difference-inner">
-    <div class="difference-text">
-      <div class="section-eyebrow">What makes us different</div>
-      <h2>Written by a consultant.<br>Delivered in seconds.</h2>
-      <p>
-        Every answer on Rentritz is prepared by a licensed Dubai property consultant
-        with direct experience in tenancy matters. You receive the same quality of guidance
-        they would provide to a paying client — matched precisely to your situation.
-      </p>
-      <div class="difference-points">
-        <div class="diff-point">
-          <div class="diff-check">✓</div>
-          <span>Specific to Dubai tenancy law — not generic UAE content</span>
-        </div>
-        <div class="diff-point">
-          <div class="diff-check">✓</div>
-          <span>Guided questions match you to the right answer instantly</span>
-        </div>
-        <div class="diff-point">
-          <div class="diff-check">✓</div>
-          <span>Grounded in Law No. 26 of 2007 and Decree No. 43 of 2013</span>
-        </div>
-        <div class="diff-point">
-          <div class="diff-check">✓</div>
-          <span>Human-written answers — not generated, not approximated</span>
-        </div>
-        <div class="diff-point">
-          <div class="diff-check">✓</div>
-          <span>Clear next steps — not just information, but direction</span>
-        </div>
+      <div class="lp-stat-item sr">
+        <span class="lp-stat-num" data-target="73" data-suffix="%" data-counted="false">0%</span>
+        <p class="lp-stat-text">of tenants do not know their rights when facing eviction</p>
       </div>
-    </div>
 
-    <div class="difference-visual">
-      <div class="vs-grid">
-        <div class="vs-col vs-them">
-          <h4>Google &amp; AI</h4>
-          <div class="vs-item">
-            <span class="vs-icon">✗</span>
-            Generic content not written for your case
-          </div>
-          <div class="vs-item">
-            <span class="vs-icon">✗</span>
-            No understanding of your specific situation
-          </div>
-          <div class="vs-item">
-            <span class="vs-icon">✗</span>
-            May reference outdated or incorrect law
-          </div>
-          <div class="vs-item">
-            <span class="vs-icon">✗</span>
-            Leaves you uncertain what to actually do
-          </div>
-          <div class="vs-item">
-            <span class="vs-icon">✗</span>
-            No accountability for the advice given
-          </div>
-        </div>
-        <div class="vs-divider"></div>
-        <div class="vs-col vs-us">
-          <h4>Rentritz</h4>
-          <div class="vs-item">
-            <span class="vs-icon">✓</span>
-            Written precisely for your scenario
-          </div>
-          <div class="vs-item">
-            <span class="vs-icon">✓</span>
-            Guided questions match you to the right answer
-          </div>
-          <div class="vs-item">
-            <span class="vs-icon">✓</span>
-            Based on current, verified Dubai tenancy law
-          </div>
-          <div class="vs-item">
-            <span class="vs-icon">✓</span>
-            Clear steps — exactly what to do next
-          </div>
-          <div class="vs-item">
-            <span class="vs-icon">✓</span>
-            Prepared by a licensed property consultant
-          </div>
-        </div>
+      <div class="lp-stat-item sr sr-d1">
+        <span class="lp-stat-num" data-target="3200" data-prefix="AED " data-format="comma" data-counted="false">AED 0</span>
+        <p class="lp-stat-text">average cost of a single legal consultation in Dubai</p>
       </div>
+
+      <div class="lp-stat-item sr sr-d2">
+        <span class="lp-stat-num" data-target="68" data-suffix="%" data-counted="false">0%</span>
+        <p class="lp-stat-text">of disputes can be resolved without a lawyer with proper guidance</p>
+      </div>
+
+      <div class="lp-stat-item sr sr-d3">
+        <span class="lp-stat-num" data-target="6" data-counted="false">0</span>
+        <p class="lp-stat-text">legal categories fully covered under UAE tenancy law</p>
+      </div>
+
     </div>
   </div>
 </section>
 
-<section class="how-section" id="how">
-  <div class="container">
-    <div class="section-header">
-      <div class="section-eyebrow">How it works</div>
-      <h2>From your situation<br>to a real answer — in minutes</h2>
+<!-- ============================================================
+     HOW IT WORKS
+     ============================================================ -->
+<section class="lp-how" id="how-it-works">
+  <div class="lp-container">
+
+    <div class="lp-how-header">
+      <div class="lp-label sr">Simple by Design</div>
+      <h2 class="lp-section-title sr sr-d1">Three steps to a real answer.</h2>
     </div>
-    <div class="steps-row">
-      <div class="step-card">
-        <div class="step-num">01</div>
-        <h3>Select your situation</h3>
-        <p>Choose the category that matches your issue — rent increase, eviction notice, security deposit, and more.</p>
+
+    <div class="lp-how-steps">
+      <div class="lp-step sr">
+        <div class="lp-step-num">01</div>
+        <h3>Tell us your situation</h3>
+        <p>Select your role and the area of your tenancy that needs clarity.</p>
       </div>
-      <div class="step-card">
-        <div class="step-num">02</div>
-        <h3>Answer guided questions</h3>
-        <p>A short sequence of focused questions narrows down exactly which part of Dubai law applies to your case.</p>
+      <div class="lp-step sr sr-d2">
+        <div class="lp-step-num">02</div>
+        <h3>Navigate the questions</h3>
+        <p>Answer a short set of questions. We map your exact legal scenario under UAE law.</p>
       </div>
-      <div class="step-card">
-        <div class="step-num">03</div>
+      <div class="lp-step sr sr-d4">
+        <div class="lp-step-num">03</div>
         <h3>Receive your answer</h3>
-        <p>Your rights, the relevant law, and the precise steps to take — written clearly, without legal jargon.</p>
+        <p>Get a detailed written response citing the exact articles of Dubai law that apply.</p>
       </div>
+    </div>
+
+    <div class="lp-how-visual sr sr-d1">
+      <img
+        src="https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=900&q=80"
+        alt="Person reviewing a contract"
+        loading="lazy"
+      >
+    </div>
+
+  </div>
+</section>
+
+<!-- ============================================================
+     WHO WE SERVE
+     ============================================================ -->
+<section class="lp-who">
+  <div class="lp-container">
+    <div class="lp-who-layout">
+
+      <div>
+        <div class="lp-label sr">Who We Serve</div>
+        <h2 class="lp-section-title-white sr sr-d1">Built for everyone in the<br>Dubai property market.</h2>
+
+        <div class="lp-who-cards">
+
+          <div class="lp-card sr sr-d1">
+            <svg class="lp-card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+              <polyline points="9 22 9 12 15 12 15 22"/>
+            </svg>
+            <h3>Tenants</h3>
+            <p>Understand your rights before a dispute escalates or a deadline passes</p>
+          </div>
+
+          <div class="lp-card sr sr-d2">
+            <svg class="lp-card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <circle cx="11" cy="11" r="4"/>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+              <path d="M11 7v1m0 6v1m-4-4h1m6 0h1"/>
+            </svg>
+            <h3>Landlords</h3>
+            <p>Know your legal obligations and how to protect your property investment</p>
+          </div>
+
+          <div class="lp-card sr sr-d3">
+            <svg class="lp-card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <rect x="2" y="7" width="20" height="14" rx="2" ry="2"/>
+              <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>
+            </svg>
+            <h3>Property Agents</h3>
+            <p>Advise clients with confidence backed by actual UAE legislation</p>
+          </div>
+
+          <div class="lp-card sr sr-d4">
+            <svg class="lp-card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+              <circle cx="12" cy="10" r="3"/>
+            </svg>
+            <h3>New Residents</h3>
+            <p>Navigate your first Dubai tenancy with complete clarity</p>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="lp-who-image sr">
+        <img
+          src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=900&q=80"
+          alt="Dubai building exterior"
+          loading="lazy"
+        >
+      </div>
+
     </div>
   </div>
 </section>
 
-<section class="categories-strip">
-  <div class="container">
-    <div class="section-eyebrow">What we cover</div>
-    <h2>The situations that matter most<br>in Dubai tenancy</h2>
-    <div class="category-pills">
-      <span class="cat-pill">Rent Increase</span>
-      <span class="cat-pill">Eviction Notice</span>
-      <span class="cat-pill">Security Deposit</span>
-      <span class="cat-pill">Maintenance &amp; Repairs</span>
-      <span class="cat-pill">Early Termination</span>
-      <span class="cat-pill">Filing a Dispute</span>
+<!-- ============================================================
+     WHAT WE COVER
+     ============================================================ -->
+<section class="lp-cover" id="what-we-cover">
+  <div class="lp-container">
+
+    <div class="lp-cover-header">
+      <div class="lp-label sr">Coverage</div>
+      <h2 class="lp-section-title sr sr-d1">Every major rental situation in Dubai.</h2>
+    </div>
+
+    <div class="lp-cover-grid">
+
+      <div class="lp-cover-card sr">
+        <svg class="lp-card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/>
+          <polyline points="17 6 23 6 23 12"/>
+        </svg>
+        <h3>Rent Increase</h3>
+        <p>Understand RERA index rules and how to dispute unlawful increases</p>
+      </div>
+
+      <div class="lp-cover-card sr sr-d1">
+        <svg class="lp-card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="12" cy="12" r="10"/>
+          <line x1="12" y1="8" x2="12" y2="12"/>
+          <line x1="12" y1="16" x2="12.01" y2="16"/>
+        </svg>
+        <h3>Eviction Notice</h3>
+        <p>Know required notice periods and valid grounds under UAE law</p>
+      </div>
+
+      <div class="lp-cover-card sr sr-d2">
+        <svg class="lp-card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
+        </svg>
+        <h3>Maintenance and Repairs</h3>
+        <p>Clarify landlord obligations and your available remedies</p>
+      </div>
+
+      <div class="lp-cover-card sr sr-d1">
+        <svg class="lp-card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+        </svg>
+        <h3>Security Deposit</h3>
+        <p>Know when and how your deposit must be returned by law</p>
+      </div>
+
+      <div class="lp-cover-card sr sr-d2">
+        <svg class="lp-card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <line x1="12" y1="2" x2="12" y2="6"/>
+          <line x1="12" y1="18" x2="12" y2="22"/>
+          <path d="M4.93 4.93l2.83 2.83"/>
+          <path d="M16.24 16.24l2.83 2.83"/>
+          <line x1="2" y1="12" x2="22" y2="12"/>
+          <path d="M4.93 19.07l2.83-2.83"/>
+          <path d="M16.24 7.76l2.83-2.83"/>
+        </svg>
+        <h3>Filing a Dispute</h3>
+        <p>Understand the RDC process and how to prepare your case</p>
+      </div>
+
+      <div class="lp-cover-card sr sr-d3">
+        <svg class="lp-card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/>
+          <line x1="8" y1="21" x2="16" y2="21"/>
+          <line x1="12" y1="17" x2="12" y2="21"/>
+        </svg>
+        <h3>Landlord Rights</h3>
+        <p>Know your rights and obligations as a property owner in Dubai</p>
+      </div>
+
     </div>
   </div>
 </section>
 
-<section class="who-section">
-  <div class="container">
-    <div class="section-eyebrow">Who uses Rentritz</div>
-    <h2>Anyone who needs to understand<br>their position under Dubai tenancy law</h2>
-    <div class="who-grid">
-      <div class="who-card">
-        <div class="who-title">Tenants</div>
-        <p>Understand your rights before responding to your landlord. Know exactly where you stand before signing, renewing, or disputing.</p>
-      </div>
-      <div class="who-card">
-        <div class="who-title">Landlords</div>
-        <p>Know what you are legally entitled to do — and what you are not. Avoid disputes by acting within the law from the start.</p>
-      </div>
-      <div class="who-card">
-        <div class="who-title">Property Agents</div>
-        <p>Give your clients accurate, confident guidance backed by real Dubai tenancy law — not assumptions or outdated knowledge.</p>
-      </div>
-      <div class="who-card">
-        <div class="who-title">Anyone Curious</div>
-        <p>Studying UAE property law, advising a friend, or simply want to understand how Dubai tenancy works — start here.</p>
-      </div>
-    </div>
-  </div>
-</section>
+<!-- ============================================================
+     TRUST
+     ============================================================ -->
+<section class="lp-trust">
 
-<section class="trust-section">
-  <div class="container">
-    <div class="section-eyebrow">Why Rentritz</div>
-    <h2>The same guidance a consultant<br>would charge you for — accessible to everyone.</h2>
-    <p>
-      Dubai's tenancy law exists to protect every party — but only if you know it.
-      Rentritz gives you consultant-prepared guidance, delivered instantly,
-      so that anyone can understand exactly where they stand — before making any decision.
+  <div class="lp-trust-img">
+    <img
+      src="https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=900&q=80"
+      alt="Legal documents on a desk"
+      loading="lazy"
+    >
+  </div>
+
+  <div class="lp-trust-body">
+    <div class="lp-label sr">Our Foundation</div>
+    <h2 class="lp-section-title-white sr sr-d1">Grounded entirely<br>in UAE law.</h2>
+    <p class="lp-trust-para sr sr-d2">
+      Every answer on Rentritz is written by property law consultants.
+      We base our guidance on Law No. 26 of 2007, Law No. 33 of 2008, and current RERA regulations.
+      You receive the same quality of guidance a qualified property consultant provides.
     </p>
-    <div class="trust-cta-wrap">
-      <a href="{{ url_for('auth.register') }}" class="btn btn-amber btn-lg">
-        Start free — no card needed
-      </a>
-      <a href="{{ url_for('auth.login') }}" class="btn btn-outline-white btn-lg">
-        Sign in
-      </a>
+    <div class="lp-trust-checks sr sr-d3">
+      <div class="lp-check-row">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <polyline points="20 6 9 17 4 12"/>
+        </svg>
+        <span>UAE Law Verified</span>
+      </div>
+      <div class="lp-check-row">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <polyline points="20 6 9 17 4 12"/>
+        </svg>
+        <span>Consultant Written Content</span>
+      </div>
+      <div class="lp-check-row">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <polyline points="20 6 9 17 4 12"/>
+        </svg>
+        <span>Based on RERA Regulations</span>
+      </div>
     </div>
-    <p class="trust-legal">
-      Rentritz provides general guidance based on Dubai tenancy law and is not a substitute
-      for formal legal advice. For complex disputes or legal proceedings, consult a qualified
-      legal professional or contact the Rental Dispute Settlement Centre (RDSC).
-    </p>
+  </div>
+
+</section>
+
+<!-- ============================================================
+     FINAL CTA
+     ============================================================ -->
+<section class="lp-cta">
+  <div class="sr">
+    <h2>Your answer is waiting.</h2>
+    <p>Join thousands of Dubai residents who got clarity on their tenancy situation.</p>
+    <a href="{{ url_for('auth.register') }}" class="lp-btn-dark">Get Started Free</a>
+    <p class="lp-cta-note">2 free consultations included. No credit card required.</p>
   </div>
 </section>
 
-<footer class="footer">
-  <div class="footer-inner">
-    <div class="footer-logo">Rentritz <span>Dubai</span></div>
-    <div class="footer-links">
-      <a href="{{ url_for('auth.login') }}">Sign in</a>
-      <a href="{{ url_for('auth.register') }}">Register</a>
+<!-- ============================================================
+     FOOTER
+     ============================================================ -->
+<footer class="lp-footer">
+  <div class="lp-container">
+    <div class="lp-footer-grid">
+
+      <div>
+        <a href="/" class="lp-footer-logo">Rentritz</a>
+        <p class="lp-footer-tagline">Dubai tenancy law, simplified.</p>
+      </div>
+
+      <div>
+        <h4>Navigation</h4>
+        <ul class="lp-footer-links">
+          <li><a href="#how-it-works">How It Works</a></li>
+          <li><a href="#what-we-cover">What We Cover</a></li>
+          <li><a href="{{ url_for('auth.register') }}">Get Started</a></li>
+          <li><a href="{{ url_for('auth.login') }}">Sign In</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h4>Disclaimer</h4>
+        <p class="lp-footer-disclaimer">
+          Rentritz provides legal information, not legal advice. For complex matters,
+          always consult a qualified UAE legal professional.
+        </p>
+      </div>
+
     </div>
-    <div class="footer-legal">
-      General guidance only. Not legal advice.
-      Based on UAE Law No. 26 of 2007 and subsequent amendments.
-    </div>
-    <div class="footer-copyright">
-      © 2026 Rentritz Dubai. All rights reserved.
+  </div>
+  <div class="lp-footer-bar">
+    <div class="lp-container">
+      <p>2025 Rentritz. All rights reserved.</p>
     </div>
   </div>
 </footer>
+
+<!-- ============================================================
+     JAVASCRIPT
+     ============================================================ -->
+<script>
+(function () {
+  'use strict';
+
+  /* -------- NAVBAR scroll solid -------- */
+  var nav = document.getElementById('lpNav');
+  function handleScroll() {
+    if (window.scrollY > 80) {
+      nav.classList.add('solid');
+    } else {
+      nav.classList.remove('solid');
+    }
+  }
+  window.addEventListener('scroll', handleScroll, { passive: true });
+
+  /* -------- HAMBURGER mobile menu -------- */
+  var hamburger   = document.getElementById('lpHamburger');
+  var mobileMenu  = document.getElementById('lpMobileMenu');
+  hamburger.addEventListener('click', function () {
+    var isOpen = mobileMenu.classList.toggle('open');
+    hamburger.classList.toggle('open', isOpen);
+    hamburger.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+  });
+  /* Close mobile menu when a link is clicked */
+  mobileMenu.querySelectorAll('a').forEach(function (a) {
+    a.addEventListener('click', function () {
+      mobileMenu.classList.remove('open');
+      hamburger.classList.remove('open');
+    });
+  });
+
+  /* -------- HERO headline word-by-word animation -------- */
+  var words = document.querySelectorAll('#lpHeadline .word');
+  words.forEach(function (word, i) {
+    setTimeout(function () {
+      word.classList.add('vis');
+    }, 300 + i * 140);
+  });
+
+  /* -------- HERO parallax -------- */
+  var heroBg = document.getElementById('heroParallax');
+  function onScrollParallax() {
+    var scrollY = window.scrollY;
+    heroBg.style.transform = 'translateY(' + (scrollY * 0.4) + 'px)';
+  }
+  window.addEventListener('scroll', onScrollParallax, { passive: true });
+
+  /* -------- SMOOTH SCROLL for anchor links -------- */
+  document.querySelectorAll('a[href^="#"]').forEach(function (anchor) {
+    anchor.addEventListener('click', function (e) {
+      var targetId = this.getAttribute('href').slice(1);
+      if (!targetId) return;
+      var target = document.getElementById(targetId);
+      if (target) {
+        e.preventDefault();
+        var offset = 72;
+        var top = target.getBoundingClientRect().top + window.scrollY - offset;
+        window.scrollTo({ top: top, behavior: 'smooth' });
+      }
+    });
+  });
+
+  /* -------- SCROLL REVEAL IntersectionObserver -------- */
+  var srObserver = new IntersectionObserver(function (entries) {
+    entries.forEach(function (entry) {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('in');
+        srObserver.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.12 });
+
+  document.querySelectorAll('.sr').forEach(function (el) {
+    srObserver.observe(el);
+  });
+
+  /* -------- STATS COUNTER -------- */
+  function formatNum(n, fmt) {
+    if (fmt === 'comma') {
+      return n.toLocaleString('en-US');
+    }
+    return String(n);
+  }
+
+  function countUp(el) {
+    if (el.dataset.counted === 'true') return;
+    el.dataset.counted = 'true';
+
+    var target   = parseInt(el.dataset.target, 10);
+    var prefix   = el.dataset.prefix   || '';
+    var suffix   = el.dataset.suffix   || '';
+    var fmt      = el.dataset.format   || '';
+    var duration = 1800;
+    var start    = null;
+
+    function step(ts) {
+      if (!start) start = ts;
+      var progress  = Math.min((ts - start) / duration, 1);
+      var eased     = 1 - Math.pow(1 - progress, 3);
+      var current   = Math.round(eased * target);
+      el.textContent = prefix + formatNum(current, fmt) + suffix;
+      if (progress < 1) {
+        requestAnimationFrame(step);
+      } else {
+        el.textContent = prefix + formatNum(target, fmt) + suffix;
+      }
+    }
+    requestAnimationFrame(step);
+  }
+
+  var statObserver = new IntersectionObserver(function (entries) {
+    entries.forEach(function (entry) {
+      if (entry.isIntersecting) {
+        countUp(entry.target);
+        statObserver.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.5 });
+
+  document.querySelectorAll('[data-target]').forEach(function (el) {
+    statObserver.observe(el);
+  });
+
+})();
+</script>
 
 {% endblock %}

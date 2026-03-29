@@ -1,15 +1,23 @@
 import os
+import uuid
 import logging
-from flask import Flask, abort, render_template
-from flask_login import LoginManager
+from flask import Flask, abort, render_template, g, request
+from flask_login import LoginManager, current_user
 from flask_mail import Mail
 from flask_wtf.csrf import CSRFProtect
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
 from app.models import db, User
 from config.settings import config
 
 login_manager = LoginManager()
 mail          = Mail()
 csrf          = CSRFProtect()
+limiter       = Limiter(
+    key_func=get_remote_address,
+    default_limits=["200 per day", "100 per hour"],
+    storage_uri="memory://",
+)
 logger        = logging.getLogger(__name__)
 
 
@@ -25,6 +33,7 @@ def create_app(env=None):
     login_manager.init_app(app)
     mail.init_app(app)
     csrf.init_app(app)
+    limiter.init_app(app)
 
     login_manager.login_view    = 'auth.login'
     login_manager.login_message = 'Please sign in to continue.'
@@ -33,12 +42,40 @@ def create_app(env=None):
     def load_user(user_id):
         return db.session.get(User, int(user_id))
 
+    @app.before_request
+    def assign_request_id():
+        g.request_id = uuid.uuid4().hex
+
     @app.after_request
     def set_security_headers(response):
         response.headers['X-Content-Type-Options']  = 'nosniff'
         response.headers['X-Frame-Options']         = 'DENY'
         response.headers['X-XSS-Protection']        = '1; mode=block'
         response.headers['Referrer-Policy']         = 'strict-origin-when-cross-origin'
+        response.headers['Permissions-Policy']      = 'geolocation=(), microphone=(), camera=()'
+        response.headers['Content-Security-Policy'] = (
+            "default-src 'self'; "
+            "script-src 'self' 'unsafe-inline' fonts.googleapis.com; "
+            "style-src 'self' 'unsafe-inline' fonts.googleapis.com fonts.gstatic.com; "
+            "font-src fonts.gstatic.com; "
+            "img-src 'self' images.unsplash.com data:; "
+            "connect-src 'self'"
+        )
+        if not app.config.get('DEBUG'):
+            response.headers['Strict-Transport-Security'] = 'max-age=31536000; includeSubDomains'
+        response.headers.remove('Server')
+        response.headers.remove('X-Powered-By')
+
+        # Log all 4xx and 5xx responses
+        status = response.status_code
+        if status >= 400:
+            uid = current_user.id if current_user.is_authenticated else None
+            logger.warning(
+                'HTTP %s  ip=%s  route=%s  user_id=%s  request_id=%s',
+                status, request.remote_addr, request.path, uid,
+                getattr(g, 'request_id', '-'),
+            )
+
         return response
 
     @app.route('/admin')
@@ -58,24 +95,61 @@ def create_app(env=None):
     app.register_blueprint(api_bp,      url_prefix='/api/v1')
     app.register_blueprint(admin_bp,    url_prefix='/manage')
 
-    @app.errorhandler(404)
-    def not_found(e):
-        return render_template('errors/404.html'), 404
+    @app.errorhandler(400)
+    def bad_request(e):
+        return render_template('errors/400.html'), 400
+
+    @app.errorhandler(401)
+    def unauthorized(e):
+        return render_template('errors/401.html'), 401
 
     @app.errorhandler(403)
     def forbidden(e):
         return render_template('errors/403.html'), 403
 
+    @app.errorhandler(404)
+    def not_found(e):
+        return render_template('errors/404.html'), 404
+
+    @app.errorhandler(429)
+    def too_many_requests(e):
+        return render_template('errors/429.html'), 429
+
     @app.errorhandler(500)
     def server_error(e):
-        logger.error(f'Server error: {e}')
+        logger.error(
+            'HTTP 500  ip=%s  route=%s  user_id=%s  request_id=%s  error=%s',
+            request.remote_addr, request.path,
+            current_user.id if current_user.is_authenticated else None,
+            getattr(g, 'request_id', '-'), e,
+        )
         return render_template('errors/500.html'), 500
 
     with app.app_context():
         db.create_all()
+        _migrate_schema()
         _seed_initial_data()
 
     return app
+
+
+def _migrate_schema():
+    """Add any new columns to existing tables that db.create_all() won't add."""
+    from sqlalchemy import text
+    stmts = [
+        'ALTER TABLE questions ADD COLUMN IF NOT EXISTS answer_viewed BOOLEAN NOT NULL DEFAULT FALSE',
+        'ALTER TABLE questions ADD COLUMN IF NOT EXISTS has_been_viewed BOOLEAN NOT NULL DEFAULT FALSE',
+        'ALTER TABLE users ADD COLUMN IF NOT EXISTS reset_token VARCHAR(100)',
+        'ALTER TABLE users ADD COLUMN IF NOT EXISTS reset_token_expiry TIMESTAMP',
+        'ALTER TABLE users ADD COLUMN IF NOT EXISTS failed_login_count INTEGER NOT NULL DEFAULT 0',
+        'ALTER TABLE users ADD COLUMN IF NOT EXISTS failed_login_lockout TIMESTAMP',
+    ]
+    for stmt in stmts:
+        try:
+            db.session.execute(text(stmt))
+            db.session.commit()
+        except Exception:
+            db.session.rollback()
 
 
 def _seed_initial_data():
