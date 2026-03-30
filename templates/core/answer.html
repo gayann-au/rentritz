@@ -1,144 +1,673 @@
 {% extends "base.html" %}
 {% block title %}Your Answer | Rentritz Dubai{% endblock %}
-{% block body_class %}answer-page{% endblock %}
+{% block body_class %}dashboard-page{% endblock %}
 
 {% block content %}
+<style>
+  :root {
+    --black:      #0a0a0a;
+    --hero-bg:    #0d0d0d;
+    --card:       #1a1a1a;
+    --amber:      #f59e0b;
+    --amber-dark: #d97706;
+    --white:      #ffffff;
+    --border:     rgba(255,255,255,0.07);
+    --muted:      rgba(255,255,255,0.35);
+    --body-text:  rgba(255,255,255,0.82);
+  }
 
-<div class="answer-hero">
-  <div class="answer-hero-inner">
-    <span class="answer-category-tag">{{ category.title if category else question.category_slug | replace('_',' ') | title }}</span>
-    <h1 class="answer-headline">{{ scenario.landlord_headline if current_user.role == 'landlord' and scenario.landlord_headline else scenario.headline }}</h1>
-    {% if question.wizard_path %}
-    <div class="answer-path">
-      {% for step in question.wizard_path %}
-      <span class="path-chip">{{ step.answer }}</span>
-      {% endfor %}
+  .ans-page {
+    background: var(--black);
+    min-height: 100vh;
+  }
+
+  /* ── HERO ── */
+  .ans-hero {
+    background: radial-gradient(ellipse 90% 70% at 50% 0%, rgba(245,158,11,0.09) 0%, #0d0d0d 65%);
+    padding: 72px 24px 52px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .ans-hero-inner {
+    max-width: 780px;
+    margin: 0 auto;
+  }
+
+  .ans-hero-tag,
+  .ans-hero-headline,
+  .ans-path,
+  .ans-meta-row {
+    opacity: 0;
+    transform: translateY(16px);
+    animation: heroIn 0.55s ease forwards;
+  }
+  .ans-hero-tag      { animation-delay: 0.08s; }
+  .ans-hero-headline { animation-delay: 0.22s; }
+  .ans-path          { animation-delay: 0.38s; }
+  .ans-meta-row      { animation-delay: 0.52s; }
+
+  @keyframes heroIn {
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .ans-hero-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    border: 1px solid rgba(245,158,11,0.35);
+    border-radius: 100px;
+    padding: 5px 16px;
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.73rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--amber);
+    margin-bottom: 22px;
+  }
+  .ans-hero-tag::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--amber);
+    flex-shrink: 0;
+  }
+
+  .ans-hero-headline {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: clamp(2rem, 5vw, 3.2rem);
+    font-weight: 600;
+    color: var(--white);
+    line-height: 1.25;
+    margin: 0 0 26px;
+  }
+
+  /* Path chips */
+  .ans-path {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+    margin-bottom: 36px;
+  }
+
+  .path-chip {
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.78rem;
+    color: rgba(255,255,255,0.6);
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(245,158,11,0.25);
+    border-radius: 100px;
+    padding: 5px 13px;
+    opacity: 0;
+    transform: scale(0.9);
+    animation: chipIn 0.4s ease forwards;
+  }
+  .path-chip:nth-child(1) { animation-delay: 0.5s; }
+  .path-chip:nth-child(2) { animation-delay: 0.6s; }
+  .path-chip:nth-child(3) { animation-delay: 0.7s; }
+  .path-chip:nth-child(4) { animation-delay: 0.8s; }
+  .path-chip:nth-child(5) { animation-delay: 0.9s; }
+
+  @keyframes chipIn {
+    to { opacity: 1; transform: scale(1); }
+  }
+
+  /* Meta row */
+  .ans-meta-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .ans-date {
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.8rem;
+    color: var(--muted);
+  }
+
+  .read-aloud-controls {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .read-speed-select {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    color: rgba(255,255,255,0.6);
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.78rem;
+    padding: 7px 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .read-speed-select:focus { border-color: rgba(245,158,11,0.4); }
+
+  .read-aloud-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--amber);
+    color: #000;
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.8rem;
+    font-weight: 700;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.15s;
+  }
+  .read-aloud-btn:hover { background: var(--amber-dark); transform: translateY(-1px); }
+  .read-aloud-btn.speaking { background: #16a34a; color: #fff; }
+  .read-aloud-btn.paused {
+    background: transparent;
+    color: var(--amber);
+    border: 1px solid rgba(245,158,11,0.5);
+  }
+
+  /* ── READ PROGRESS BAR ── */
+  .read-progress-bar {
+    height: 3px;
+    background: rgba(255,255,255,0.05);
+    width: 100%;
+  }
+
+  .read-progress-sections {
+    display: flex;
+    height: 100%;
+  }
+
+  .progress-seg {
+    flex: 1;
+    height: 100%;
+    background: rgba(255,255,255,0.05);
+    transition: background 0.25s;
+  }
+  .progress-seg.done   { background: rgba(245,158,11,0.55); }
+  .progress-seg.active { background: var(--amber); }
+
+  .read-section-label {
+    text-align: center;
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.7rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--amber);
+    padding: 7px 0;
+    opacity: 0;
+    transition: opacity 0.3s;
+    background: var(--black);
+  }
+
+  /* ── CONTENT BODY ── */
+  .ans-body {
+    max-width: 780px;
+    margin: 0 auto;
+    padding: 40px 24px 80px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  /* ── SECTION CARDS ── */
+  .answer-section {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-top: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 36px;
+    /* Scroll reveal start state */
+    opacity: 0;
+    transform: translateY(22px);
+    transition: opacity 0.5s ease, transform 0.5s ease,
+                border-top-color 0.25s, box-shadow 0.25s;
+  }
+  .answer-section.in {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .answer-section:hover {
+    border-top-color: rgba(245,158,11,0.3);
+  }
+  .answer-section.reading {
+    box-shadow: 0 0 0 1px rgba(245,158,11,0.15), 0 6px 24px rgba(245,158,11,0.07);
+    border-top-color: rgba(245,158,11,0.5);
+  }
+
+  /* ── SECTION EYEBROW ── */
+  .answer-section-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--amber);
+    margin-bottom: 20px;
+  }
+  .answer-section-title::before {
+    content: '';
+    display: block;
+    width: 24px;
+    height: 2px;
+    background: var(--amber);
+    border-radius: 2px;
+    flex-shrink: 0;
+  }
+
+  /* ── SITUATION ── */
+  .answer-situation {
+    font-family: 'Outfit', sans-serif;
+    font-size: 1rem;
+    color: var(--body-text);
+    line-height: 1.85;
+    margin: 0;
+  }
+
+  /* ── RIGHTS: amber left accent + tint ── */
+  #section-rights {
+    border-left: 3px solid var(--amber);
+    background: rgba(245,158,11,0.025);
+  }
+
+  /* ── SHARED LIST ── */
+  .answer-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .answer-list li {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.95rem;
+    color: var(--body-text);
+    line-height: 1.75;
+  }
+
+  .answer-list-bullet {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--amber);
+    flex-shrink: 0;
+    margin-top: 9px;
+  }
+
+  /* ── WHAT TO DO: numbered steps with animated connecting line ── */
+  #section-what-to-do .answer-list {
+    gap: 0;
+  }
+
+  #section-what-to-do .answer-list li {
+    position: relative;
+    padding: 0 0 28px 60px;
+    gap: 0;
+  }
+  #section-what-to-do .answer-list li:last-child {
+    padding-bottom: 0;
+  }
+
+  /* Vertical connecting line between steps */
+  #section-what-to-do .answer-list li::after {
+    content: '';
+    position: absolute;
+    left: 19px;
+    top: 42px;
+    bottom: 0;
+    width: 1px;
+    background: linear-gradient(to bottom, rgba(245,158,11,0.35), transparent);
+    transform: scaleY(0);
+    transform-origin: top;
+    transition: transform 0.7s ease 0.35s;
+  }
+  #section-what-to-do .answer-list li:last-child::after { display: none; }
+
+  #section-what-to-do.in .answer-list li::after {
+    transform: scaleY(1);
+  }
+
+  .step-num {
+    position: absolute;
+    left: 0;
+    top: -6px;
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 2.5rem;
+    font-weight: 300;
+    color: var(--amber);
+    line-height: 1;
+    width: 44px;
+    text-align: center;
+    opacity: 0.85;
+  }
+
+  #section-what-to-do .answer-list-bullet { display: none; }
+
+  /* ── LAW REFERENCES ── */
+  .law-refs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .law-ref-tag {
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.8rem;
+    color: var(--amber);
+    background: rgba(245,158,11,0.05);
+    border: 1px solid rgba(245,158,11,0.4);
+    border-radius: 100px;
+    padding: 6px 16px;
+    transition: background 0.2s, box-shadow 0.2s;
+    cursor: default;
+    display: inline-block;
+  }
+  .law-ref-tag:hover {
+    background: rgba(245,158,11,0.12);
+    box-shadow: 0 0 14px rgba(245,158,11,0.22);
+  }
+
+  /* ── RERA CALLOUT ── */
+  .rera-section {
+    background: var(--amber);
+    border: none;
+  }
+  .rera-section:hover { border-top-color: transparent; }
+  .rera-section .answer-section-title { color: #000; }
+  .rera-section .answer-section-title::before { background: #000; }
+  .rera-section p {
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.9rem;
+    color: rgba(0,0,0,0.7);
+    line-height: 1.75;
+    margin-bottom: 20px;
+  }
+  .btn-rera {
+    display: inline-block;
+    background: #000;
+    color: #fff;
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.88rem;
+    font-weight: 600;
+    padding: 10px 22px;
+    border-radius: 8px;
+    text-decoration: none;
+    transition: background 0.2s, transform 0.15s;
+  }
+  .btn-rera:hover { background: #1a1a1a; transform: translateY(-1px); }
+
+  /* ── DISCLAIMER ── */
+  .ans-disclaimer {
+    text-align: center;
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.78rem;
+    font-style: italic;
+    color: var(--muted);
+    line-height: 1.75;
+    max-width: 560px;
+    margin: 4px auto 0;
+    padding: 20px 0;
+    border-top: 1px solid var(--border);
+  }
+  .ans-disclaimer strong {
+    font-weight: 600;
+    font-style: normal;
+    color: rgba(255,255,255,0.45);
+  }
+
+  /* ── ACTION BUTTONS ── */
+  .ans-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+    padding: 4px 0 0;
+  }
+
+  .btn-ans-primary {
+    display: inline-block;
+    background: var(--amber);
+    color: #000;
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.92rem;
+    font-weight: 700;
+    padding: 14px 30px;
+    border-radius: 10px;
+    text-decoration: none;
+    animation: glowPulse 3.5s ease-in-out infinite;
+    transition: background 0.2s, transform 0.15s;
+  }
+  .btn-ans-primary:hover {
+    background: var(--amber-dark);
+    transform: translateY(-2px);
+    animation: none;
+    box-shadow: 0 6px 20px rgba(245,158,11,0.3);
+  }
+
+  @keyframes glowPulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(245,158,11,0); }
+    50%       { box-shadow: 0 0 22px 4px rgba(245,158,11,0.22); }
+  }
+
+  .btn-ans-secondary {
+    display: inline-block;
+    background: transparent;
+    color: rgba(255,255,255,0.7);
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.92rem;
+    font-weight: 600;
+    padding: 14px 30px;
+    border: 1px solid rgba(255,255,255,0.18);
+    border-radius: 10px;
+    text-decoration: none;
+    transition: border-color 0.2s, color 0.2s, transform 0.15s;
+  }
+  .btn-ans-secondary:hover {
+    border-color: rgba(255,255,255,0.45);
+    color: var(--white);
+    transform: translateY(-2px);
+  }
+
+  /* ── MOBILE ── */
+  @media (max-width: 600px) {
+    .ans-hero { padding: 48px 16px 36px; }
+    .ans-body { padding: 24px 16px 60px; }
+    .answer-section { padding: 24px 20px; border-radius: 12px; }
+    .ans-meta-row { flex-direction: column; align-items: flex-start; }
+    #section-what-to-do .answer-list li { padding-left: 48px; }
+    .step-num { font-size: 2rem; width: 36px; }
+    .rera-section { border-radius: 12px; }
+  }
+</style>
+
+<div class="ans-page">
+
+  <!-- HERO -->
+  <div class="ans-hero">
+    <div class="ans-hero-inner">
+
+      <div class="ans-hero-tag">
+        {{ category.title if category else question.category_slug | replace('_',' ') | title }}
+      </div>
+
+      <h1 class="ans-hero-headline">
+        {{ scenario.landlord_headline if current_user.role == 'landlord' and scenario.landlord_headline else scenario.headline }}
+      </h1>
+
+      {% if question.wizard_path %}
+      <div class="ans-path">
+        {% for step in question.wizard_path %}
+        <span class="path-chip">{{ step.answer }}</span>
+        {% endfor %}
+      </div>
+      {% endif %}
+
+      <div class="ans-meta-row">
+        <span class="ans-date">
+          {{ question.answered_at.strftime('%d %B %Y') if question.answered_at else question.created_at.strftime('%d %B %Y') }}
+        </span>
+        <div class="read-aloud-controls">
+          <select class="read-speed-select" id="readSpeed" onchange="applySpeed()">
+            <option value="0.75">Slow</option>
+            <option value="1" selected>Normal</option>
+            <option value="1.4">Fast</option>
+          </select>
+          <button class="read-aloud-btn" id="btnRead" onclick="toggleRead()">
+            <span class="read-icon" id="readIcon">&#9654;</span>
+            <span class="read-label" id="readLabel">Read aloud</span>
+          </button>
+        </div>
+      </div>
+
     </div>
-    {% endif %}
-  </div>
-</div>
-
-<div class="answer-body">
-
-  <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px; margin-bottom:16px;">
-    <span style="font-size:0.8rem; color:var(--text-muted);">{{ question.answered_at.strftime('%d %B %Y') if question.answered_at else question.created_at.strftime('%d %B %Y') }}</span>
-    <div class="read-aloud-controls">
-      <select class="read-speed-select" id="readSpeed" onchange="applySpeed()">
-        <option value="0.75">Slow</option>
-        <option value="1" selected>Normal</option>
-        <option value="1.4">Fast</option>
-      </select>
-      <button class="read-aloud-btn" id="btnRead" onclick="toggleRead()">
-        <span class="read-icon" id="readIcon">▶</span>
-        <span class="read-label" id="readLabel">Read aloud</span>
-      </button>
-    </div>
   </div>
 
+  <!-- READ PROGRESS BAR -->
   <div class="read-progress-bar" id="read-progress" style="display:none;">
     <div class="read-progress-sections" id="read-progress-sections"></div>
   </div>
   <div class="read-section-label" id="read-section-label" style="display:none;"></div>
 
-{% set situation_text = scenario.landlord_situation if current_user.role == 'landlord' and scenario.landlord_situation else scenario.situation %}
-  {% if situation_text %}
-  <div class="answer-section" id="section-situation">
-    <div class="answer-section-title">Situation</div>
-    <p class="answer-situation" id="text-situation">{{ situation_text }}</p>
-  </div>
-  {% endif %}
+  <!-- CONTENT -->
+  <div class="ans-body">
 
-  {% if scenario.tenant_rights and current_user.role == 'tenant' %}
-  <div class="answer-section" id="section-rights">
-    <div class="answer-section-title">Your Rights as a Tenant</div>
-    <ul class="answer-list" id="text-rights">
-      {% for item in scenario.tenant_rights %}
-      <li>
-        <span class="answer-list-bullet"></span>
-        <span>{{ item }}</span>
-      </li>
-      {% endfor %}
-    </ul>
-  </div>
-  {% endif %}
-
-  {% if scenario.landlord_rights and current_user.role == 'landlord' %}
-  <div class="answer-section" id="section-rights">
-    <div class="answer-section-title">Your Rights as a Landlord</div>
-    <ul class="answer-list" id="text-rights">
-      {% for item in scenario.landlord_rights %}
-      <li>
-        <span class="answer-list-bullet"></span>
-        <span>{{ item }}</span>
-      </li>
-      {% endfor %}
-    </ul>
-  </div>
-  {% endif %}
-
-{% if current_user.role == 'landlord' and scenario.landlord_what_to_do %}
-  <div class="answer-section" id="section-what-to-do">
-    <div class="answer-section-title">What To Do</div>
-    <ul class="answer-list" id="text-what-to-do">
-      {% for item in scenario.landlord_what_to_do %}
-      <li>
-        <span class="answer-list-bullet"></span>
-        <span>{{ item }}</span>
-      </li>
-      {% endfor %}
-    </ul>
-  </div>
-  {% elif scenario.what_to_do %}
-  <div class="answer-section" id="section-what-to-do">
-    <div class="answer-section-title">What To Do</div>
-    <ul class="answer-list" id="text-what-to-do">
-      {% for item in scenario.what_to_do %}
-      <li>
-        <span class="answer-list-bullet"></span>
-        <span>{{ item }}</span>
-      </li>
-      {% endfor %}
-    </ul>
-  </div>
-  {% endif %}
-
-  {% if scenario.law_refs %}
-  <div class="answer-section" id="section-law">
-    <div class="answer-section-title">Law References</div>
-    <div class="law-refs" id="text-law">
-      {% for ref in scenario.law_refs %}
-      <span class="law-ref-tag">{{ ref }}</span>
-      {% endfor %}
+    {% set situation_text = scenario.landlord_situation if current_user.role == 'landlord' and scenario.landlord_situation else scenario.situation %}
+    {% if situation_text %}
+    <div class="answer-section" id="section-situation">
+      <div class="answer-section-title">Your Situation</div>
+      <p class="answer-situation" id="text-situation">{{ situation_text }}</p>
     </div>
-  </div>
-  {% endif %}
+    {% endif %}
 
-  {% if scenario.show_rera_button %}
-  <div class="answer-section" style="background:var(--amber-glow); border:1px solid rgba(245,158,11,0.25);">
-    <div class="answer-section-title" style="color:var(--amber-dark);">RERA Rental Index</div>
-    <p style="font-size:0.9rem; color:var(--text); margin-bottom:16px; line-height:1.7;">
-      Your answer references the RERA Rental Index. Use the official Dubai Land Department calculator to check the permitted increase for your specific property.
+    {% if scenario.tenant_rights and current_user.role == 'tenant' %}
+    <div class="answer-section" id="section-rights">
+      <div class="answer-section-title">Your Rights</div>
+      <ul class="answer-list" id="text-rights">
+        {% for item in scenario.tenant_rights %}
+        <li>
+          <span class="answer-list-bullet"></span>
+          <span>{{ item }}</span>
+        </li>
+        {% endfor %}
+      </ul>
+    </div>
+    {% endif %}
+
+    {% if scenario.landlord_rights and current_user.role == 'landlord' %}
+    <div class="answer-section" id="section-rights">
+      <div class="answer-section-title">Your Rights</div>
+      <ul class="answer-list" id="text-rights">
+        {% for item in scenario.landlord_rights %}
+        <li>
+          <span class="answer-list-bullet"></span>
+          <span>{{ item }}</span>
+        </li>
+        {% endfor %}
+      </ul>
+    </div>
+    {% endif %}
+
+    {% if current_user.role == 'landlord' and scenario.landlord_what_to_do %}
+    <div class="answer-section" id="section-what-to-do">
+      <div class="answer-section-title">What To Do</div>
+      <ul class="answer-list" id="text-what-to-do">
+        {% for item in scenario.landlord_what_to_do %}
+        <li>
+          <span class="step-num">{{ loop.index }}</span>
+          <span class="answer-list-bullet"></span>
+          <span>{{ item }}</span>
+        </li>
+        {% endfor %}
+      </ul>
+    </div>
+    {% elif scenario.what_to_do %}
+    <div class="answer-section" id="section-what-to-do">
+      <div class="answer-section-title">What To Do</div>
+      <ul class="answer-list" id="text-what-to-do">
+        {% for item in scenario.what_to_do %}
+        <li>
+          <span class="step-num">{{ loop.index }}</span>
+          <span class="answer-list-bullet"></span>
+          <span>{{ item }}</span>
+        </li>
+        {% endfor %}
+      </ul>
+    </div>
+    {% endif %}
+
+    {% if scenario.law_refs %}
+    <div class="answer-section" id="section-law">
+      <div class="answer-section-title">Legal References</div>
+      <div class="law-refs" id="text-law">
+        {% for ref in scenario.law_refs %}
+        <span class="law-ref-tag">{{ ref }}</span>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+
+    {% if scenario.show_rera_button %}
+    <div class="answer-section rera-section">
+      <div class="answer-section-title">RERA Rental Index</div>
+      <p>
+        Your answer references the RERA Rental Index. Use the official Dubai Land Department calculator to check the permitted increase for your specific property.
+      </p>
+      <a href="https://dubailand.gov.ae/en/eservices/rental-index/rental-index/#/" target="_blank" rel="noopener noreferrer" class="btn-rera">
+        Open RERA Rental Index &rarr;
+      </a>
+    </div>
+    {% endif %}
+
+    <p class="ans-disclaimer">
+      <strong>General guidance only.</strong> This answer is based on Dubai tenancy law and is not legal advice. For disputes involving significant amounts or legal proceedings, consult a qualified legal professional or contact the Rental Dispute Settlement Centre (RDSC).
     </p>
-    <a href="https://dubailand.gov.ae/en/eservices/rental-index/rental-index/#/" target="_blank" rel="noopener noreferrer" class="btn btn-amber">
-      Open RERA Rental Index →
-    </a>
-  </div>
-  {% endif %}
 
-  <div class="answer-disclaimer">
-    <strong>General guidance only.</strong> This answer is based on Dubai tenancy law and is not legal advice. For disputes involving significant amounts or legal proceedings, consult a qualified legal professional or contact the Rental Dispute Settlement Centre (RDSC).
-  </div>
+    <div class="ans-actions">
+      <a href="{{ url_for('core.dashboard') }}" class="btn-ans-primary">New consultation</a>
+      <a href="{{ url_for('core.history') }}" class="btn-ans-secondary">View history</a>
+    </div>
 
-  <div class="answer-actions">
-    <a href="{{ url_for('core.dashboard') }}" class="btn btn-primary">New consultation</a>
-    <a href="{{ url_for('core.history') }}" class="btn btn-outline">View history</a>
   </div>
-
 </div>
 {% endblock %}
 
 {% block scripts %}
 <script>
+// ── Scroll reveal with staggered delay ────────────────────────
+(function() {
+  var sections = document.querySelectorAll('.answer-section');
+  if (!sections.length) return;
+  var io = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('in');
+        io.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.08 });
+  sections.forEach(function(el, i) {
+    el.style.transitionDelay = (i * 0.07) + 's';
+    io.observe(el);
+  });
+})();
+
+// ── Text-to-speech (unchanged) ────────────────────────────────
 let sentences  = [];
 let idx        = 0;
 let paused     = false;
@@ -264,6 +793,7 @@ function toggleRead() {
     speakNext();
   }
 }
+
 function finishAll() {
   playing = false;
   paused  = false;
@@ -283,15 +813,15 @@ function setBtn(state) {
   const label = document.getElementById('readLabel');
   const btn   = document.getElementById('btnRead');
   if (state === 'start') {
-    icon.textContent  = '▶';
+    icon.textContent  = '\u25B6';
     label.textContent = 'Read aloud';
     btn.className     = 'read-aloud-btn';
   } else if (state === 'pause') {
-    icon.textContent  = '⏸';
+    icon.textContent  = '\u23F8';
     label.textContent = 'Pause';
     btn.className     = 'read-aloud-btn speaking';
   } else if (state === 'resume') {
-    icon.textContent  = '▶';
+    icon.textContent  = '\u25B6';
     label.textContent = 'Resume';
     btn.className     = 'read-aloud-btn paused';
   }

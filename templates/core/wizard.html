@@ -3,75 +3,428 @@
 {% block body_class %}wizard-page{% endblock %}
 
 {% block content %}
-<div class="wizard-wrap">
+<style>
+  :root {
+    --black:      #0a0a0a;
+    --card:       #1a1a1a;
+    --card-deep:  #111111;
+    --amber:      #f59e0b;
+    --amber-dark: #d97706;
+    --white:      #ffffff;
+    --border:     rgba(255,255,255,0.08);
+    --muted:      rgba(255,255,255,0.35);
+    --subtle:     rgba(255,255,255,0.55);
+  }
 
-  <div class="wizard-header">
-    <a href="{{ url_for('core.dashboard') }}" class="wizard-back" id="wizardBack">← Back to dashboard</a>
-    <div class="wizard-category">{{ category.title }}</div>
-    <div class="wizard-step-indicator">Step {{ step }}</div>
+  .wz-page {
+    background: var(--black);
+    min-height: 100vh;
+    padding-bottom: 80px;
+  }
+
+  /* ── Top bar ── */
+  .wz-topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 28px 24px 0;
+    gap: 12px;
+  }
+
+  .wz-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.85rem;
+    color: var(--muted);
+    text-decoration: none;
+    transition: color 0.2s;
+    flex-shrink: 0;
+  }
+  .wz-back:hover { color: var(--white); }
+  .wz-back svg { width: 14px; height: 14px; }
+
+  .wz-category {
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--amber);
+    text-align: center;
+    flex: 1;
+  }
+
+  .wz-step-badge {
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.8rem;
+    color: var(--muted);
+    flex-shrink: 0;
+    text-align: right;
+    min-width: 56px;
+  }
+
+  /* ── Progress dots ── */
+  .wz-progress {
+    max-width: 720px;
+    margin: 20px auto 0;
+    padding: 0 24px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .wz-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.12);
+    transition: background 0.3s;
+    flex-shrink: 0;
+  }
+  .wz-dot.done {
+    background: var(--amber-dark);
+  }
+  .wz-dot.current {
+    width: 22px;
+    border-radius: 3px;
+    background: var(--amber);
+  }
+  .wz-progress-line {
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* ── Main content area ── */
+  .wz-content {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 32px 24px 0;
+  }
+
+  /* ── Trail (previous steps) ── */
+  .wz-trail {
+    margin-bottom: 28px;
+  }
+
+  .wz-trail-item {
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .wz-trail-item:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+  .wz-trail-item:first-child {
+    padding-top: 0;
+  }
+
+  .wz-trail-q {
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.78rem;
+    color: var(--muted);
+    margin-bottom: 4px;
+    line-height: 1.4;
+  }
+
+  .wz-trail-a {
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--white);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .wz-trail-a::before {
+    content: '';
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--amber);
+    flex-shrink: 0;
+  }
+
+  /* ── Question card ── */
+  .wz-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 40px;
+    transition: opacity 0.25s;
+  }
+  .wz-card.submitting { opacity: 0.5; pointer-events: none; }
+
+  .wz-q-label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--amber);
+    margin-bottom: 16px;
+  }
+  .wz-q-label::before {
+    content: '';
+    display: block;
+    width: 24px;
+    height: 2px;
+    background: var(--amber);
+    border-radius: 2px;
+  }
+
+  .wz-question {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: clamp(1.6rem, 3vw, 2.2rem);
+    font-weight: 600;
+    color: var(--white);
+    line-height: 1.35;
+    margin: 0 0 32px;
+  }
+
+  /* ── Options ── */
+  .wz-options {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 28px;
+  }
+
+  .wz-option {
+    display: block;
+    cursor: pointer;
+    animation: optionIn 0.35s ease both;
+  }
+
+  @keyframes optionIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .wz-option:nth-child(1) { animation-delay: 0.04s; }
+  .wz-option:nth-child(2) { animation-delay: 0.10s; }
+  .wz-option:nth-child(3) { animation-delay: 0.16s; }
+  .wz-option:nth-child(4) { animation-delay: 0.22s; }
+  .wz-option:nth-child(5) { animation-delay: 0.28s; }
+  .wz-option:nth-child(6) { animation-delay: 0.34s; }
+
+  .wz-option-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    background: var(--card-deep);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px 20px;
+    transition: border-color 0.2s, background 0.2s, border-left-width 0.15s;
+    border-left: 3px solid transparent;
+  }
+
+  .wz-option-text {
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.95rem;
+    color: rgba(255,255,255,0.75);
+    line-height: 1.5;
+    transition: color 0.2s;
+  }
+
+  .wz-option-dot {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    border: 2px solid rgba(255,255,255,0.15);
+    flex-shrink: 0;
+    transition: border-color 0.2s, background 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .wz-option-dot::after {
+    content: '';
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--amber);
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+
+  .wz-option:hover .wz-option-inner {
+    border-color: rgba(255,255,255,0.16);
+    border-left-color: rgba(245,158,11,0.3);
+  }
+  .wz-option:hover .wz-option-text { color: var(--white); }
+
+  .wz-option.selected .wz-option-inner {
+    border-color: rgba(245,158,11,0.3);
+    border-left-color: var(--amber);
+    background: rgba(245,158,11,0.06);
+  }
+  .wz-option.selected .wz-option-text { color: var(--white); }
+  .wz-option.selected .wz-option-dot {
+    border-color: var(--amber);
+  }
+  .wz-option.selected .wz-option-dot::after { opacity: 1; }
+
+  /* ── Submit button ── */
+  .wz-submit-wrap {
+    margin-top: 4px;
+  }
+
+  .wz-submit {
+    width: 100%;
+    padding: 15px 28px;
+    background: var(--amber);
+    color: #000;
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.15s, opacity 0.2s;
+  }
+  .wz-submit:hover:not(:disabled) {
+    background: var(--amber-dark);
+    transform: translateY(-1px);
+  }
+  .wz-submit:active:not(:disabled) { transform: translateY(0); }
+  .wz-submit:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+  }
+
+  /* ── Assurance note ── */
+  .wz-assurance {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 20px;
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.78rem;
+    color: var(--muted);
+    text-align: center;
+    line-height: 1.5;
+  }
+  .wz-assurance svg {
+    width: 13px;
+    height: 13px;
+    flex-shrink: 0;
+    opacity: 0.5;
+  }
+
+  /* ── Mobile ── */
+  @media (max-width: 600px) {
+    .wz-topbar { padding: 20px 16px 0; }
+    .wz-progress { padding: 0 16px; }
+    .wz-content { padding: 24px 16px 0; }
+    .wz-card { padding: 24px 20px; border-radius: 12px; }
+    .wz-question { margin-bottom: 24px; }
+    .wz-trail { display: none; }
+  }
+</style>
+
+<div class="wz-page">
+
+  <div class="wz-topbar">
+    <a href="{{ url_for('core.dashboard') }}" class="wz-back" id="wizardBack">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M19 12H5M12 5l-7 7 7 7"/>
+      </svg>
+      Back
+    </a>
+    <div class="wz-category">{{ category.title }}</div>
+    <div class="wz-step-badge">Step {{ step }}</div>
   </div>
 
-  {% if path %}
-  <div class="wizard-trail">
+  <!-- Progress dots -->
+  <div class="wz-progress">
     {% for p in path %}
-    <div class="trail-item">
-      <span class="trail-question">{{ p.question }}</span>
-      <span class="trail-answer">{{ p.answer }}</span>
-    </div>
+    <div class="wz-dot done"></div>
     {% endfor %}
+    <div class="wz-dot current"></div>
+    <div class="wz-progress-line"></div>
   </div>
-  {% endif %}
 
-  <div class="wizard-body">
-    <div class="wizard-card" id="wizardCard">
-      <div class="wizard-question-label">Question {{ step }}</div>
-      <h2 class="wizard-question">{{ node.question }}</h2>
+  <div class="wz-content">
+
+    <!-- Trail: previous questions and answers -->
+    {% if path %}
+    <div class="wz-trail">
+      {% for p in path %}
+      <div class="wz-trail-item">
+        <div class="wz-trail-q">{{ p.question }}</div>
+        <div class="wz-trail-a">{{ p.answer }}</div>
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Current question card -->
+    <div class="wz-card" id="wizardCard">
+      <div class="wz-q-label">Question {{ step }}</div>
+      <h2 class="wz-question">{{ node.question }}</h2>
 
       <form method="POST" action="{{ url_for('core.wizard_step', category_slug=category.slug) }}" id="wizardForm">
         <input type="hidden" name="csrf_token" value="{{ csrf_token() if csrf_token is defined else '' }}">
 
-        <div class="wizard-options">
+        <div class="wz-options">
           {% for option in node.options if not option.for_role or option.for_role == 'both' or option.for_role == current_user.role %}
-          <label class="wizard-option">
+          <label class="wz-option">
             <input type="radio" name="answer" value="{{ option.label }}" required style="display:none;">
-            <div class="wizard-option-inner">
-              <div class="wizard-option-indicator"></div>
-              <span class="wizard-option-label">{{ option.label }}</span>
+            <div class="wz-option-inner">
+              <span class="wz-option-text">{{ option.label }}</span>
+              <div class="wz-option-dot"></div>
             </div>
           </label>
           {% endfor %}
         </div>
 
-        <div class="wizard-actions">
-          <button type="submit" class="btn btn-primary btn-lg wizard-submit" id="wizardSubmit" disabled>
-            Continue →
+        <div class="wz-submit-wrap">
+          <button type="submit" class="wz-submit" id="wizardSubmit" disabled>
+            Continue &rarr;
           </button>
         </div>
       </form>
     </div>
 
-    <div class="wizard-assurance">
-      <span>🔒</span>
-      Your consultation is private. 1 credit will be used when your answer is ready.
+    <!-- Assurance note -->
+    <div class="wz-assurance">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+        <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+      </svg>
+      Your consultation is private. One credit will be used when your answer is ready.
     </div>
-  </div>
 
+  </div>
 </div>
 {% endblock %}
 
 {% block scripts %}
 <script>
-var radios = document.querySelectorAll('.wizard-option input[type=radio]');
+var radios = document.querySelectorAll('.wz-option input[type=radio]');
 var submit = document.getElementById('wizardSubmit');
 var card   = document.getElementById('wizardCard');
 var back   = document.getElementById('wizardBack');
 
 radios.forEach(function(radio) {
   radio.addEventListener('change', function() {
-    document.querySelectorAll('.wizard-option').forEach(function(opt) {
+    document.querySelectorAll('.wz-option').forEach(function(opt) {
       opt.classList.remove('selected');
     });
-    this.closest('.wizard-option').classList.add('selected');
+    this.closest('.wz-option').classList.add('selected');
     submit.disabled = false;
     submit.classList.add('ready');
   });
@@ -79,7 +432,7 @@ radios.forEach(function(radio) {
 
 document.getElementById('wizardForm').addEventListener('submit', function() {
   submit.disabled = true;
-  submit.textContent = 'Finding your answer…';
+  submit.textContent = 'Finding your answer\u2026';
   card.classList.add('submitting');
 });
 
