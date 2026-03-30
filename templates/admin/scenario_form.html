@@ -36,7 +36,7 @@
             <div class="form-group">
               <label class="form-label">Category <span class="required">*</span></label>
               <select name="category_id" class="form-select" required>
-                <option value="">— Select —</option>
+                <option value="">Select a category</option>
                 {% for cat in categories %}
                 <option value="{{ cat.id }}" {{ 'selected' if scenario and scenario.category_id == cat.id }}>{{ cat.title }}</option>
                 {% endfor %}

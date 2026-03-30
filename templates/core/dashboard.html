@@ -1,85 +1,608 @@
 {% extends 'base.html' %}
-{% block title %}Dashboard — Rentritz Dubai{% endblock %}
+{% block title %}Dashboard | Rentritz Dubai{% endblock %}
 {% block body_class %}dashboard-page{% endblock %}
 
 {% block content %}
-<div class="container">
+<style>
+/* ============================================================
+   CSS VARIABLES
+   ============================================================ */
+:root {
+  --black:      #0a0a0a;
+  --near-black: #111111;
+  --dark-card:  #1a1a1a;
+  --dark-card-hover: #222222;
+  --amber:      #f59e0b;
+  --amber-dark: #d97706;
+  --white:      #ffffff;
+  --text-muted: #888888;
+  --text-dim:   #555555;
+  --border:     rgba(255,255,255,0.07);
+  --border-hover: rgba(245,158,11,0.35);
+  --radius:     14px;
+  --ease:       cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-out:   cubic-bezier(0.22, 1, 0.36, 1);
+}
 
-    <div class="dashboard-header">
-        <div class="dashboard-welcome">
-            <h1>Good to see you, {{ current_user.full_name.split()[0] }}.</h1>
-            <p>Select a topic below to start your consultation.</p>
+/* ============================================================
+   SCROLL REVEAL
+   ============================================================ */
+.sr {
+  opacity: 0;
+  transform: translateY(36px);
+  transition: opacity 0.7s var(--ease-out), transform 0.7s var(--ease-out);
+}
+.sr.in     { opacity: 1; transform: translateY(0); }
+.sr-d1     { transition-delay: 0.06s; }
+.sr-d2     { transition-delay: 0.12s; }
+.sr-d3     { transition-delay: 0.18s; }
+.sr-d4     { transition-delay: 0.24s; }
+.sr-d5     { transition-delay: 0.30s; }
+.sr-d6     { transition-delay: 0.36s; }
+
+/* ============================================================
+   PAGE WRAPPER
+   ============================================================ */
+.db-page {
+  min-height: 100vh;
+  background: var(--black);
+  padding: 56px 0 100px;
+}
+
+.db-container {
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 32px;
+}
+
+/* ============================================================
+   HEADER
+   ============================================================ */
+.db-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 56px;
+}
+
+.db-greeting-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.67rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--amber);
+  margin-bottom: 14px;
+}
+.db-greeting-label::before {
+  content: '';
+  display: block;
+  width: 22px;
+  height: 1px;
+  background: var(--amber);
+  flex-shrink: 0;
+}
+
+.db-greeting h1 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(2.4rem, 5vw, 4rem);
+  font-weight: 400;
+  color: var(--white);
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  margin: 0 0 10px;
+}
+
+.db-greeting p {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1rem;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+.db-credits-block {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.db-credits-display {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  background: rgba(245, 158, 11, 0.08);
+  border: 1px solid rgba(245, 158, 11, 0.2);
+  border-radius: 12px;
+  padding: 14px 20px;
+}
+
+.db-credits-number {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 2.8rem;
+  font-weight: 500;
+  color: var(--amber);
+  line-height: 1;
+}
+
+.db-credits-label {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.db-credits-block .btn {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 500;
+  padding: 8px 18px;
+  border-radius: 8px;
+  text-decoration: none;
+  transition: all 0.2s var(--ease);
+  cursor: pointer;
+}
+
+.db-btn-amber {
+  background: var(--amber);
+  color: #000;
+  border: none;
+}
+.db-btn-amber:hover {
+  background: var(--amber-dark);
+  transform: translateY(-1px);
+}
+
+.db-btn-outline {
+  background: transparent;
+  color: var(--amber);
+  border: 1px solid rgba(245, 158, 11, 0.4);
+}
+.db-btn-outline:hover {
+  background: rgba(245, 158, 11, 0.08);
+  border-color: var(--amber);
+  transform: translateY(-1px);
+}
+
+/* ============================================================
+   SECTION LABEL
+   ============================================================ */
+.db-section-label {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.67rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin-bottom: 20px;
+}
+
+/* ============================================================
+   CATEGORY GRID
+   ============================================================ */
+.db-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  margin-bottom: 72px;
+}
+
+.db-card {
+  display: block;
+  background: var(--dark-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 28px;
+  text-decoration: none;
+  transition: background 0.25s var(--ease), border-color 0.25s var(--ease), transform 0.25s var(--ease-out), box-shadow 0.25s var(--ease);
+  position: relative;
+  overflow: hidden;
+}
+
+.db-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(245,158,11,0.04) 0%, transparent 60%);
+  opacity: 0;
+  transition: opacity 0.3s var(--ease);
+}
+
+.db-card:hover {
+  background: var(--dark-card-hover);
+  border-color: var(--border-hover);
+  transform: translateY(-3px);
+  box-shadow: 0 12px 40px rgba(0,0,0,0.4), 0 0 0 1px rgba(245,158,11,0.1);
+}
+.db-card:hover::before { opacity: 1; }
+
+.db-card-locked {
+  opacity: 0.5;
+  pointer-events: none;
+}
+.db-card-locked:hover {
+  transform: none;
+  box-shadow: none;
+}
+
+.db-card-inner {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  position: relative;
+}
+
+.db-card-icon {
+  font-size: 2rem;
+  line-height: 1;
+  flex-shrink: 0;
+  width: 52px;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255,255,255,0.04);
+  border-radius: 12px;
+  border: 1px solid var(--border);
+}
+
+.db-card-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.db-card-content h3 {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--white);
+  margin: 0 0 5px;
+  line-height: 1.3;
+}
+
+.db-card-content p {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  margin: 0;
+  line-height: 1.5;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.db-card-arrow {
+  flex-shrink: 0;
+  font-size: 1.1rem;
+  color: var(--amber);
+  opacity: 0;
+  transform: translateX(-6px);
+  transition: opacity 0.2s var(--ease), transform 0.2s var(--ease);
+}
+.db-card:hover .db-card-arrow {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.db-coming-soon {
+  flex-shrink: 0;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 6px;
+  padding: 4px 8px;
+}
+
+.db-empty-state {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--text-muted);
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.95rem;
+}
+
+/* ============================================================
+   RECENT CONSULTATIONS
+   ============================================================ */
+.db-recent {
+  border-top: 1px solid var(--border);
+  padding-top: 48px;
+}
+
+.db-recent-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.db-recent-header h2 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.6rem;
+  font-weight: 500;
+  color: var(--white);
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+.db-view-all {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  text-decoration: none;
+  transition: color 0.2s var(--ease);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.db-view-all:hover { color: var(--amber); }
+
+.db-recent-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.db-recent-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  background: var(--dark-card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 16px 20px;
+  text-decoration: none;
+  transition: background 0.2s var(--ease), border-color 0.2s var(--ease);
+}
+.db-recent-item:hover {
+  background: var(--dark-card-hover);
+  border-color: rgba(255,255,255,0.12);
+}
+
+.db-recent-left {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.db-recent-category {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--white);
+}
+
+.db-recent-date {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.db-badge {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 4px 10px;
+  border-radius: 6px;
+  flex-shrink: 0;
+}
+
+.db-badge-answered {
+  color: #4ade80;
+  background: rgba(74, 222, 128, 0.1);
+  border: 1px solid rgba(74, 222, 128, 0.2);
+}
+
+.db-badge-incomplete {
+  color: var(--text-muted);
+  background: rgba(255,255,255,0.05);
+  border: 1px solid var(--border);
+}
+
+.db-recent-empty {
+  text-align: center;
+  padding: 48px 20px;
+  color: var(--text-muted);
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.9rem;
+  background: var(--dark-card);
+  border: 1px dashed var(--border);
+  border-radius: var(--radius);
+}
+
+.db-recent-empty p {
+  margin: 0 0 16px;
+  line-height: 1.6;
+}
+
+.db-recent-empty-icon {
+  font-size: 2rem;
+  display: block;
+  margin-bottom: 14px;
+  opacity: 0.4;
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width: 768px) {
+  .db-page { padding: 40px 0 80px; }
+
+  .db-container { padding: 0 20px; }
+
+  .db-header {
+    flex-direction: column;
+    align-items: flex-start;
+    margin-bottom: 40px;
+  }
+
+  .db-credits-block {
+    align-items: flex-start;
+    flex-direction: row;
+    align-items: center;
+    gap: 14px;
+    width: 100%;
+  }
+
+  .db-credits-display {
+    flex: 1;
+    padding: 12px 16px;
+  }
+
+  .db-credits-number { font-size: 2rem; }
+
+  .db-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+    margin-bottom: 56px;
+  }
+
+  .db-card { padding: 20px; }
+
+  .db-card-content p {
+    white-space: normal;
+    overflow: visible;
+    text-overflow: clip;
+  }
+
+  .db-recent-header { flex-direction: column; align-items: flex-start; gap: 8px; }
+}
+
+@media (max-width: 480px) {
+  .db-greeting h1 { font-size: 2.2rem; }
+  .db-credits-block { flex-direction: column; align-items: flex-start; }
+  .db-credits-display { width: 100%; }
+}
+</style>
+
+<div class="db-page">
+  <div class="db-container">
+
+    <!-- Header -->
+    <div class="db-header sr sr-d1">
+      <div class="db-greeting">
+        <div class="db-greeting-label">Your dashboard</div>
+        <h1>Good to see you, {{ current_user.full_name.split()[0] }}.</h1>
+        <p>Select a topic below to start your consultation.</p>
+      </div>
+      <div class="db-credits-block">
+        <div class="db-credits-display">
+          <span class="db-credits-number">{{ current_user.available_credits }}</span>
+          <span class="db-credits-label">credit{% if current_user.available_credits != 1 %}s{% endif %} remaining</span>
         </div>
-        <div class="dashboard-credits">
-            <div class="credits-display">
-                <span class="credits-number">{{ current_user.available_credits }}</span>
-                <span class="credits-label">credit{% if current_user.available_credits != 1 %}s{% endif %} remaining</span>
-            </div>
-            {% if current_user.available_credits == 0 %}
-            <a href="{{ url_for('core.credits') }}" class="btn btn-amber btn-sm">Buy credits</a>
-            {% elif current_user.available_credits <= 2 %}
-            <a href="{{ url_for('core.credits') }}" class="btn btn-outline btn-sm">Top up</a>
-            {% endif %}
-        </div>
+        {% if current_user.available_credits == 0 %}
+        <a href="{{ url_for('core.credits') }}" class="btn db-btn-amber">Buy credits</a>
+        {% elif current_user.available_credits <= 2 %}
+        <a href="{{ url_for('core.credits') }}" class="btn db-btn-outline">Top up</a>
+        {% endif %}
+      </div>
     </div>
 
-    <div class="category-grid">
-        {% for cat in categories %}
-        <a href="{{ url_for('core.consult', category_slug=cat.slug) }}"
-           class="category-card {% if not cat.has_tree %}category-card-locked{% endif %}">
-            <div class="category-card-inner">
-                <div class="category-icon">
-                    {% if cat.slug == 'rent_increase' %}📈
-                    {% elif cat.slug == 'eviction' %}🚪
-                    {% elif cat.slug == 'maintenance' %}🔧
-                    {% elif cat.slug == 'deposit' %}💰
-                    {% elif cat.slug == 'dispute' %}⚖️
-                    {% elif cat.slug == 'landlord_rights' %}🔑
-                    {% else %}📋{% endif %}
-                </div>
-                <div class="category-content">
-                    <h3>{{ cat.title }}</h3>
-                    <p>{{ cat.description }}</p>
-                </div>
-                <div class="category-arrow">
-                    {% if cat.has_tree %}
-                    →
-                    {% else %}
-                    <span class="coming-soon-tag">Coming soon</span>
-                    {% endif %}
-                </div>
-            </div>
-        </a>
-        {% else %}
-        <div class="empty-state">
-            <p>No topics available yet. Check back soon.</p>
+    <!-- Category Grid -->
+    <div class="db-section-label sr sr-d2">Choose a topic</div>
+    <div class="db-grid">
+      {% for cat in categories %}
+      <a href="{{ url_for('core.consult', category_slug=cat.slug) }}"
+         class="db-card {% if not cat.has_tree %}db-card-locked{% endif %} sr sr-d{{ loop.index if loop.index <= 6 else 6 }}">
+        <div class="db-card-inner">
+          <div class="db-card-icon">
+            {% if cat.slug == 'rent_increase' %}📈
+            {% elif cat.slug == 'eviction' %}🚪
+            {% elif cat.slug == 'maintenance' %}🔧
+            {% elif cat.slug == 'deposit' %}💰
+            {% elif cat.slug == 'dispute' %}⚖️
+            {% elif cat.slug == 'landlord_rights' %}🔑
+            {% elif cat.slug == 'contract' %}📄
+            {% elif cat.slug == 'utilities' %}💡
+            {% elif cat.slug == 'noise' %}🔊
+            {% elif cat.slug == 'subletting' %}🏘️
+            {% else %}📋{% endif %}
+          </div>
+          <div class="db-card-content">
+            <h3>{{ cat.title }}</h3>
+            <p>{{ cat.description }}</p>
+          </div>
+          {% if cat.has_tree %}
+          <div class="db-card-arrow">&#8594;</div>
+          {% else %}
+          <span class="db-coming-soon">Coming soon</span>
+          {% endif %}
         </div>
-        {% endfor %}
+      </a>
+      {% else %}
+      <div class="db-empty-state">
+        No topics available yet. Check back soon.
+      </div>
+      {% endfor %}
     </div>
 
-    {% if recent %}
-    <div class="recent-section">
+    <!-- Recent Consultations -->
+    <div class="db-recent sr sr-d3">
+      <div class="db-recent-header">
         <h2>Recent consultations</h2>
-        <div class="recent-list">
-            {% for q in recent %}
-            <a href="{{ url_for('core.answer', question_id=q.id) }}" class="recent-item">
-                <div class="recent-item-left">
-                    <div class="recent-category">{{ q.category_slug | replace('_', ' ') | title }}</div>
-                    <div class="recent-date">{{ q.created_at.strftime('%d %b %Y') }}</div>
-                </div>
-                <div class="recent-status">
-                    {% if q.is_answered %}
-                    <span class="badge badge-active">Answered</span>
-                    {% else %}
-                    <span class="badge badge-inactive">Incomplete</span>
-                    {% endif %}
-                </div>
-            </a>
-            {% endfor %}
-        </div>
-        <a href="{{ url_for('core.history') }}" class="text-muted text-sm">View all history →</a>
-    </div>
-    {% endif %}
+        {% if recent %}
+        <a href="{{ url_for('core.history') }}" class="db-view-all">View all &#8594;</a>
+        {% endif %}
+      </div>
 
+      {% if recent %}
+      <div class="db-recent-list">
+        {% for q in recent %}
+        <a href="{{ url_for('core.answer', question_id=q.id) }}" class="db-recent-item">
+          <div class="db-recent-left">
+            <div class="db-recent-category">{{ q.category_slug | replace('_', ' ') | title }}</div>
+            <div class="db-recent-date">{{ q.created_at.strftime('%d %b %Y') }}</div>
+          </div>
+          <div>
+            {% if q.is_answered %}
+            <span class="db-badge db-badge-answered">Answered</span>
+            {% else %}
+            <span class="db-badge db-badge-incomplete">Incomplete</span>
+            {% endif %}
+          </div>
+        </a>
+        {% endfor %}
+      </div>
+      {% else %}
+      <div class="db-recent-empty">
+        <span class="db-recent-empty-icon">&#128196;</span>
+        <p>No consultations yet.</p>
+        <p>Pick a topic above to get personalised guidance on Dubai tenancy law.</p>
+      </div>
+      {% endif %}
+    </div>
+
+  </div>
 </div>
+
+<script>
+(function() {
+  var els = document.querySelectorAll('.sr');
+  if (!els.length) return;
+  var io = new IntersectionObserver(function(entries) {
+    entries.forEach(function(e) {
+      if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
+    });
+  }, { threshold: 0.1 });
+  els.forEach(function(el) { io.observe(el); });
+})();
+</script>
 {% endblock %}

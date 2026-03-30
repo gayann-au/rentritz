@@ -126,7 +126,7 @@
                 {{ '+' if log.amount > 0 else '' }}{{ log.amount }}
               </td>
               <td>{{ log.balance }}</td>
-              <td style="color:var(--text-muted); font-size:12px;">{{ log.note or '—' }}</td>
+              <td style="color:var(--text-muted); font-size:12px;">{{ log.note or 'N/A' }}</td>
               <td style="color:var(--text-muted); font-size:12px;">{{ log.created_at.strftime('%d %b %Y %H:%M') }}</td>
             </tr>
             {% endfor %}

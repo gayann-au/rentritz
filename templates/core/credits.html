@@ -1,105 +1,582 @@
 {% extends "base.html" %}
-{% block title %}Credits — Rentritz Dubai{% endblock %}
+{% block title %}Credits | Rentritz Dubai{% endblock %}
+{% block body_class %}dashboard-page{% endblock %}
 
 {% block content %}
+<style>
+/* ============================================================
+   CSS VARIABLES
+   ============================================================ */
+:root {
+  --black:           #0a0a0a;
+  --near-black:      #111111;
+  --dark-card:       #1a1a1a;
+  --dark-card-hover: #222222;
+  --amber:           #f59e0b;
+  --amber-dark:      #d97706;
+  --white:           #ffffff;
+  --text-muted:      #888888;
+  --text-dim:        #555555;
+  --border:          rgba(255,255,255,0.07);
+  --border-amber:    rgba(245,158,11,0.35);
+  --radius:          14px;
+  --ease:            cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-out:        cubic-bezier(0.22, 1, 0.36, 1);
+}
 
-<div class="container" style="padding-top:48px; padding-bottom:80px;">
+/* ============================================================
+   SCROLL REVEAL
+   ============================================================ */
+.sr { opacity: 0; transform: translateY(36px); transition: opacity 0.7s var(--ease-out), transform 0.7s var(--ease-out); }
+.sr.in  { opacity: 1; transform: translateY(0); }
+.sr-d1  { transition-delay: 0.06s; }
+.sr-d2  { transition-delay: 0.12s; }
+.sr-d3  { transition-delay: 0.18s; }
+.sr-d4  { transition-delay: 0.24s; }
 
-  <div style="margin-bottom:40px;">
-    <h1 style="font-family:'Cormorant Garamond',serif; font-size:2.2rem; font-weight:400; letter-spacing:-0.02em; margin-bottom:6px;">Credits</h1>
-    <p style="font-size:0.9rem; color:var(--text-muted);">
-      You have <strong style="color:var(--text);">{{ current_user.available_credits }} credit{{ 's' if current_user.available_credits != 1 }}</strong> remaining.
-      {% if current_user.available_credits == 0 %}
-      Purchase a pack below to continue your consultations.
-      {% elif current_user.available_credits == 1 %}
-      You have one consultation left — top up to avoid interruption.
-      {% else %}
-      Each credit covers one full consultation with a written answer.
-      {% endif %}
-    </p>
-  </div>
+/* ============================================================
+   PAGE WRAPPER
+   ============================================================ */
+.cr-page {
+  min-height: 100vh;
+  background: var(--black);
+  padding: 56px 0 100px;
+}
 
-  <div style="margin-bottom:12px;">
-    <div style="font-size:0.72rem; font-weight:600; letter-spacing:0.1em; text-transform:uppercase; color:var(--text-muted); margin-bottom:20px;">Purchase credits</div>
-    <div class="credits-grid">
+.cr-container {
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 32px;
+}
+
+/* ============================================================
+   PAGE HEADER
+   ============================================================ */
+.cr-header { margin-bottom: 48px; }
+
+.cr-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.67rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--amber);
+  margin-bottom: 14px;
+}
+.cr-eyebrow::before {
+  content: '';
+  display: block;
+  width: 22px;
+  height: 1px;
+  background: var(--amber);
+  flex-shrink: 0;
+}
+
+.cr-header h1 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(2.4rem, 5vw, 4rem);
+  font-weight: 400;
+  color: var(--white);
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  margin: 0 0 10px;
+}
+
+.cr-header p {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1rem;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+/* ============================================================
+   CREDIT STATUS CARD
+   ============================================================ */
+.cr-status {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  background: var(--dark-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 28px 32px;
+  margin-bottom: 48px;
+  flex-wrap: wrap;
+}
+
+.cr-status-count {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.cr-status-number {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 4rem;
+  font-weight: 500;
+  color: var(--amber);
+  line-height: 1;
+}
+
+.cr-status-label {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.cr-status-divider {
+  width: 1px;
+  height: 48px;
+  background: var(--border);
+  flex-shrink: 0;
+}
+
+.cr-status-msg {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.92rem;
+  line-height: 1.6;
+  flex: 1;
+}
+
+.cr-status-msg-warn  { color: var(--amber); }
+.cr-status-msg-caution { color: rgba(245,158,11,0.7); }
+.cr-status-msg-ok    { color: var(--text-muted); }
+
+/* ============================================================
+   SECTION LABEL
+   ============================================================ */
+.cr-section-label {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.67rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin-bottom: 20px;
+}
+
+/* ============================================================
+   PACKS GRID
+   ============================================================ */
+.cr-packs {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.cr-pack {
+  position: relative;
+  background: var(--dark-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 28px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  cursor: pointer;
+  transition: background 0.22s var(--ease), border-color 0.22s var(--ease), transform 0.22s var(--ease-out), box-shadow 0.22s var(--ease);
+}
+
+.cr-pack:hover {
+  background: var(--dark-card-hover);
+  border-color: var(--border-amber);
+  transform: translateY(-3px);
+  box-shadow: 0 12px 40px rgba(0,0,0,0.4), 0 0 0 1px rgba(245,158,11,0.1);
+}
+
+.cr-pack-featured {
+  border-color: var(--border-amber);
+  background: rgba(245,158,11,0.04);
+}
+
+.cr-pack-badge {
+  position: absolute;
+  top: -11px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #000;
+  background: var(--amber);
+  border-radius: 100px;
+  padding: 3px 12px;
+  white-space: nowrap;
+}
+
+.cr-pack-count {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 3.2rem;
+  font-weight: 500;
+  color: var(--white);
+  line-height: 1;
+  margin-bottom: 2px;
+}
+
+.cr-pack-name {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 20px;
+}
+
+.cr-pack-price {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--amber);
+  margin-bottom: 4px;
+}
+
+.cr-pack-per {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin-bottom: 24px;
+  flex: 1;
+}
+
+.cr-buy-btn {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #000;
+  background: var(--amber);
+  border: none;
+  border-radius: 9px;
+  padding: 11px 0;
+  width: 100%;
+  cursor: pointer;
+  transition: background 0.2s var(--ease), transform 0.2s var(--ease);
+  margin-top: auto;
+}
+.cr-buy-btn:hover {
+  background: var(--amber-dark);
+  transform: translateY(-1px);
+}
+
+/* ============================================================
+   GUARANTEE NOTE
+   ============================================================ */
+.cr-guarantee {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.8rem;
+  color: var(--text-dim);
+  line-height: 1.6;
+  padding: 16px 20px;
+  background: rgba(255,255,255,0.02);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  margin-bottom: 64px;
+}
+
+/* ============================================================
+   CREDIT HISTORY
+   ============================================================ */
+.cr-history { border-top: 1px solid var(--border); padding-top: 48px; }
+
+.cr-history-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.cr-history-header h2 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.6rem;
+  font-weight: 500;
+  color: var(--white);
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+.cr-history-count {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
+/* Table */
+.cr-table-wrap {
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  overflow: hidden;
+  margin-bottom: 16px;
+}
+
+.cr-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.cr-table thead tr {
+  background: rgba(255,255,255,0.03);
+  border-bottom: 1px solid var(--border);
+}
+
+.cr-table th {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  padding: 12px 16px;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.cr-table tbody tr {
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+  transition: background 0.15s var(--ease);
+}
+.cr-table tbody tr:last-child { border-bottom: none; }
+.cr-table tbody tr:nth-child(even) { background: rgba(255,255,255,0.015); }
+.cr-table tbody tr:hover { background: rgba(255,255,255,0.04); }
+
+.cr-table td {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.875rem;
+  color: var(--white);
+  padding: 13px 16px;
+  vertical-align: middle;
+}
+
+.cr-amount-pos { font-weight: 600; color: #4ade80; }
+.cr-amount-neg { font-weight: 600; color: #f87171; }
+
+.cr-td-muted  { color: var(--text-muted) !important; font-size: 0.82rem !important; }
+.cr-td-mono   { font-family: 'Outfit', sans-serif; font-size: 0.8rem; color: var(--text-muted); white-space: nowrap; }
+
+/* Pagination */
+.cr-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.cr-page-info {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.82rem;
+  color: var(--text-muted);
+}
+
+.cr-page-btns {
+  display: flex;
+  gap: 6px;
+}
+
+.cr-page-btn {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 500;
+  padding: 7px 14px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-muted);
+  text-decoration: none;
+  transition: background 0.15s var(--ease), color 0.15s var(--ease), border-color 0.15s var(--ease);
+}
+.cr-page-btn:hover {
+  background: rgba(255,255,255,0.06);
+  color: var(--white);
+  border-color: rgba(255,255,255,0.15);
+}
+.cr-page-btn-active {
+  background: var(--amber);
+  color: #000;
+  border-color: var(--amber);
+  font-weight: 700;
+}
+.cr-page-btn-active:hover {
+  background: var(--amber-dark);
+  border-color: var(--amber-dark);
+  color: #000;
+}
+
+/* Empty state */
+.cr-history-empty {
+  text-align: center;
+  padding: 56px 20px;
+  background: var(--dark-card);
+  border: 1px dashed var(--border);
+  border-radius: var(--radius);
+}
+
+.cr-history-empty-icon {
+  font-size: 2rem;
+  opacity: 0.3;
+  display: block;
+  margin-bottom: 14px;
+  line-height: 1;
+}
+
+.cr-history-empty p {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width: 768px) {
+  .cr-page      { padding: 40px 0 80px; }
+  .cr-container { padding: 0 20px; }
+  .cr-header    { margin-bottom: 36px; }
+  .cr-status    { padding: 20px; gap: 16px; }
+  .cr-status-divider { display: none; }
+  .cr-packs     { grid-template-columns: 1fr; gap: 12px; }
+  .cr-table th,
+  .cr-table td  { padding: 11px 12px; }
+}
+
+@media (max-width: 480px) {
+  .cr-header h1      { font-size: 2.2rem; }
+  .cr-status-number  { font-size: 3rem; }
+  .cr-packs          { grid-template-columns: 1fr; }
+}
+</style>
+
+<div class="cr-page">
+  <div class="cr-container">
+
+    <!-- Header -->
+    <div class="cr-header sr sr-d1">
+      <div class="cr-eyebrow">Your account</div>
+      <h1>Consultation Credits</h1>
+      <p>Purchase credits to continue your consultations.</p>
+    </div>
+
+    <!-- Credit status -->
+    <div class="cr-status sr sr-d2">
+      <div class="cr-status-count">
+        <span class="cr-status-number">{{ current_user.available_credits }}</span>
+        <span class="cr-status-label">credit{% if current_user.available_credits != 1 %}s{% endif %} remaining</span>
+      </div>
+      <div class="cr-status-divider"></div>
+      <div class="cr-status-msg
+        {% if current_user.available_credits == 0 %}cr-status-msg-warn
+        {% elif current_user.available_credits == 1 %}cr-status-msg-caution
+        {% else %}cr-status-msg-ok{% endif %}">
+        {% if current_user.available_credits == 0 %}
+        You have no credits remaining. Purchase a pack below.
+        {% elif current_user.available_credits == 1 %}
+        You have one consultation remaining. Top up to avoid interruption.
+        {% else %}
+        Each credit covers one full written consultation.
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Packs -->
+    <div class="cr-section-label sr sr-d2">Purchase credits</div>
+    <div class="cr-packs sr sr-d3">
       {% for pack in packs %}
-      <div class="credit-pack {{ 'featured' if pack.popular }}" onclick="buyPack('{{ pack.id }}')">
-        {% if pack.popular %}<span class="pack-badge">Most popular</span>{% endif %}
-        <div class="pack-count">{{ pack.credits }}</div>
-        <div class="pack-label">consultations</div>
-        <div class="pack-price">AED {{ pack.price_aed }}</div>
-        <div class="pack-per">AED {{ pack.per_consult }} per consultation</div>
-        <button class="btn btn-amber btn-full">Buy now</button>
+      <div class="cr-pack {% if pack.popular %}cr-pack-featured{% endif %}" onclick="buyPack('{{ pack.id }}')">
+        {% if pack.popular %}<span class="cr-pack-badge">Most popular</span>{% endif %}
+        <div class="cr-pack-count">{{ pack.credits }}</div>
+        <div class="cr-pack-name">consultation{% if pack.credits != 1 %}s{% endif %}</div>
+        <div class="cr-pack-price">AED {{ pack.price_aed }}</div>
+        <div class="cr-pack-per">AED {{ pack.per_consult }} per consultation</div>
+        <button class="cr-buy-btn">Buy now</button>
       </div>
       {% endfor %}
     </div>
-  </div>
 
-  <div style="margin-top:8px; padding:16px 20px; background:var(--off-white); border-radius:var(--radius-sm); border:1px solid #e5e5e5; font-size:0.82rem; color:var(--text-muted); line-height:1.6;">
-    Credits never expire. Each consultation uses exactly one credit and is confirmed only when your answer is ready. If no matching answer is found, your credit is returned automatically.
-  </div>
-
-  {% if logs %}
-  <div style="margin-top:48px;">
-    <div style="display:flex; align-items:baseline; justify-content:space-between; margin-bottom:16px; flex-wrap:wrap; gap:8px;">
-      <div style="font-size:0.72rem; font-weight:600; letter-spacing:0.1em; text-transform:uppercase; color:var(--text-muted);">Credit history</div>
-      {% if total > 20 %}
-      <div style="font-size:0.78rem; color:var(--text-muted);">{{ total }} transactions total</div>
-      {% endif %}
+    <div class="cr-guarantee sr sr-d3">
+      Credits never expire. Each consultation uses exactly one credit and is confirmed only when your answer is ready. If no matching answer is found, your credit is returned automatically.
     </div>
 
-    <div class="table-wrap">
-      <table>
-        <thead>
-          <tr>
-            <th>Action</th>
-            <th>Amount</th>
-            <th>Balance after</th>
-            <th>Note</th>
-            <th>Date &amp; time (GST)</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for l in logs %}
-          <tr>
-            <td style="font-weight:500;">{{ l.action | replace('_', ' ') | title }}</td>
-            <td>
-              <span style="font-weight:600; color:{{ '#16a34a' if l.amount > 0 else '#dc2626' }};">
-                {{ '+' if l.amount > 0 else '' }}{{ l.amount }}
-              </span>
-            </td>
-            <td style="color:var(--text-muted);">{{ l.balance }}</td>
-            <td style="color:var(--text-muted); font-size:0.85rem;">{{ l.note or '—' }}</td>
-            <td style="color:var(--text-muted); font-size:0.82rem; white-space:nowrap;">{{ l.created_at.strftime('%d %b %Y, %H:%M') }}</td>
-          </tr>
+    <!-- Credit history -->
+    <div class="cr-history sr sr-d4">
+      <div class="cr-history-header">
+        <h2>Credit History</h2>
+        {% if total > 20 %}
+        <span class="cr-history-count">{{ total }} transactions total</span>
+        {% endif %}
+      </div>
+
+      {% if logs %}
+      <div class="cr-table-wrap">
+        <table class="cr-table">
+          <thead>
+            <tr>
+              <th>Action</th>
+              <th>Amount</th>
+              <th>Balance after</th>
+              <th>Note</th>
+              <th>Date &amp; time (GST)</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for l in logs %}
+            <tr>
+              <td style="font-weight:500;">{{ l.action | replace('_', ' ') | title }}</td>
+              <td>
+                <span class="{{ 'cr-amount-pos' if l.amount > 0 else 'cr-amount-neg' }}">
+                  {{ '+' if l.amount > 0 else '' }}{{ l.amount }}
+                </span>
+              </td>
+              <td class="cr-td-muted">{{ l.balance }}</td>
+              <td class="cr-td-muted">{{ l.note or 'N/A' }}</td>
+              <td class="cr-td-mono">{{ l.created_at.strftime('%d %b %Y, %H:%M') }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      {% if total_pages > 1 %}
+      <div class="cr-pagination">
+        <div class="cr-page-info">Page {{ page }} of {{ total_pages }}</div>
+        <div class="cr-page-btns">
+          {% if page > 1 %}
+          <a href="{{ url_for('core.credits', page=page-1) }}" class="cr-page-btn">&#8592; Previous</a>
+          {% endif %}
+          {% for p in range(1, total_pages + 1) %}
+          <a href="{{ url_for('core.credits', page=p) }}"
+             class="cr-page-btn {% if p == page %}cr-page-btn-active{% endif %}">{{ p }}</a>
           {% endfor %}
-        </tbody>
-      </table>
-    </div>
+          {% if page < total_pages %}
+          <a href="{{ url_for('core.credits', page=page+1) }}" class="cr-page-btn">Next &#8594;</a>
+          {% endif %}
+        </div>
+      </div>
+      {% endif %}
 
-    {% if total_pages > 1 %}
-    <div style="display:flex; align-items:center; justify-content:space-between; margin-top:16px; flex-wrap:wrap; gap:12px;">
-      <div style="font-size:0.82rem; color:var(--text-muted);">
-        Page {{ page }} of {{ total_pages }}
+      {% else %}
+      <div class="cr-history-empty">
+        <span class="cr-history-empty-icon">&#128196;</span>
+        <p>No transactions yet. Your credit history will appear here after your first purchase or consultation.</p>
       </div>
-      <div style="display:flex; gap:8px;">
-        {% if page > 1 %}
-        <a href="{{ url_for('core.credits', page=page-1) }}" class="btn btn-outline btn-sm">← Previous</a>
-        {% endif %}
-        {% for p in range(1, total_pages + 1) %}
-        <a href="{{ url_for('core.credits', page=p) }}"
-           class="btn btn-sm {{ 'btn-primary' if p == page else 'btn-outline' }}">{{ p }}</a>
-        {% endfor %}
-        {% if page < total_pages %}
-        <a href="{{ url_for('core.credits', page=page+1) }}" class="btn btn-outline btn-sm">Next →</a>
-        {% endif %}
-      </div>
+      {% endif %}
+
     </div>
-    {% endif %}
 
   </div>
-  {% endif %}
-
 </div>
 
 <script>
@@ -115,4 +592,16 @@ async function buyPack(packId) {
 }
 </script>
 
+<script>
+(function() {
+  var els = document.querySelectorAll('.sr');
+  if (!els.length) return;
+  var io = new IntersectionObserver(function(entries) {
+    entries.forEach(function(e) {
+      if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
+    });
+  }, { threshold: 0.1 });
+  els.forEach(function(el) { io.observe(el); });
+})();
+</script>
 {% endblock %}

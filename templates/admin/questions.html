@@ -47,7 +47,7 @@
           </td>
           <td style="font-size:13px; color:var(--text-muted);">{{ q.created_at.strftime('%d %b %Y %H:%M') }}</td>
           <td style="font-size:13px; color:var(--text-muted);">
-            {{ q.answered_at.strftime('%d %b %Y %H:%M') if q.answered_at else '—' }}
+            {{ q.answered_at.strftime('%d %b %Y %H:%M') if q.answered_at else 'N/A' }}
           </td>
         </tr>
         {% endfor %}

@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% block title %}Create Account — Rentritz Dubai{% endblock %}
+{% block title %}Create Account | Rentritz Dubai{% endblock %}
 {% block body_class %}auth-page{% endblock %}
 
 {% block content %}
@@ -8,7 +8,7 @@
         <div class="auth-header">
             <a href="{{ url_for('core.index') }}" class="auth-logo">Rentritz <span>Dubai</span></a>
             <h1>Get started free</h1>
-            <p>2 free consultations included — no card required</p>
+            <p>2 free consultations included, no card required</p>
         </div>
 
         <form method="POST" action="{{ url_for('auth.register') }}" novalidate>

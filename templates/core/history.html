@@ -1,41 +1,358 @@
 {% extends "base.html" %}
-{% block title %}Consultation History — Rentritz Dubai{% endblock %}
+{% block title %}Consultation History | Rentritz Dubai{% endblock %}
 {% block body_class %}dashboard-page{% endblock %}
 
 {% block content %}
-<div class="container">
+<style>
+/* ============================================================
+   CSS VARIABLES
+   ============================================================ */
+:root {
+  --black:      #0a0a0a;
+  --near-black: #111111;
+  --dark-card:  #1a1a1a;
+  --dark-card-hover: #222222;
+  --amber:      #f59e0b;
+  --amber-dark: #d97706;
+  --white:      #ffffff;
+  --text-muted: #888888;
+  --text-dim:   #555555;
+  --border:     rgba(255,255,255,0.07);
+  --radius:     14px;
+  --ease:       cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-out:   cubic-bezier(0.22, 1, 0.36, 1);
+}
 
-  <div class="page-header">
-    <h1>History</h1>
-    <p>All your past consultations</p>
-  </div>
+/* ============================================================
+   SCROLL REVEAL
+   ============================================================ */
+.sr {
+  opacity: 0;
+  transform: translateY(36px);
+  transition: opacity 0.7s var(--ease-out), transform 0.7s var(--ease-out);
+}
+.sr.in     { opacity: 1; transform: translateY(0); }
+.sr-d1     { transition-delay: 0.06s; }
+.sr-d2     { transition-delay: 0.12s; }
+.sr-d3     { transition-delay: 0.18s; }
+.sr-d4     { transition-delay: 0.24s; }
+.sr-d5     { transition-delay: 0.30s; }
+.sr-d6     { transition-delay: 0.36s; }
 
-  {% if questions %}
-  <div class="history-list">
-    {% for q in questions %}
-    <div class="history-item">
-      <div>
-        <div class="history-item-title">{{ q.category_slug | replace('_', ' ') | title }}</div>
-        <div class="history-item-meta">{{ q.created_at.strftime('%d %B %Y') }} · {{ q.status | title }}</div>
-      </div>
-      {% if q.status == 'answered' %}
-        {% if q.has_been_viewed %}
-        <span class="badge badge-inactive">Completed</span>
-        {% else %}
-        <a href="{{ url_for('core.answer', question_id=q.id) }}" class="btn btn-outline btn-sm">View</a>
-        {% endif %}
-      {% else %}
-      <span class="badge badge-{{ q.status }}">{{ q.status | title }}</span>
-      {% endif %}
+/* ============================================================
+   PAGE WRAPPER
+   ============================================================ */
+.hist-page {
+  min-height: 100vh;
+  background: var(--black);
+  padding: 56px 0 100px;
+}
+
+.hist-container {
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 32px;
+}
+
+/* ============================================================
+   PAGE HEADER
+   ============================================================ */
+.hist-header {
+  margin-bottom: 56px;
+}
+
+.hist-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.67rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--amber);
+  margin-bottom: 14px;
+}
+.hist-eyebrow::before {
+  content: '';
+  display: block;
+  width: 22px;
+  height: 1px;
+  background: var(--amber);
+  flex-shrink: 0;
+}
+
+.hist-header h1 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(2.4rem, 5vw, 4rem);
+  font-weight: 400;
+  color: var(--white);
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  margin: 0 0 12px;
+}
+
+.hist-header p {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1rem;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+/* ============================================================
+   HISTORY LIST
+   ============================================================ */
+.hist-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.hist-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  background: var(--dark-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 22px 24px;
+  text-decoration: none;
+  transition: background 0.22s var(--ease), border-color 0.22s var(--ease);
+}
+.hist-item:hover {
+  background: var(--dark-card-hover);
+  border-color: rgba(255,255,255,0.12);
+}
+
+.hist-item-left {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 0;
+}
+
+.hist-item-title {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.975rem;
+  font-weight: 600;
+  color: var(--white);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.hist-item-meta {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
+.hist-item-right {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+}
+
+/* View button */
+.hist-btn-view {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--amber);
+  background: rgba(245, 158, 11, 0.08);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  border-radius: 8px;
+  padding: 7px 16px;
+  text-decoration: none;
+  transition: background 0.2s var(--ease), border-color 0.2s var(--ease), transform 0.2s var(--ease);
+  display: inline-block;
+}
+.hist-btn-view:hover {
+  background: rgba(245, 158, 11, 0.15);
+  border-color: var(--amber);
+  transform: translateY(-1px);
+}
+
+/* Badges */
+.hist-badge {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 5px 11px;
+  border-radius: 6px;
+}
+
+.hist-badge-completed {
+  color: var(--text-muted);
+  background: rgba(255,255,255,0.05);
+  border: 1px solid var(--border);
+}
+
+.hist-badge-answered {
+  color: #4ade80;
+  background: rgba(74, 222, 128, 0.1);
+  border: 1px solid rgba(74, 222, 128, 0.2);
+}
+
+.hist-badge-generic {
+  color: var(--text-muted);
+  background: rgba(255,255,255,0.05);
+  border: 1px solid var(--border);
+}
+
+/* ============================================================
+   EMPTY STATE
+   ============================================================ */
+.hist-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  background: var(--dark-card);
+  border: 1px dashed rgba(255,255,255,0.1);
+  border-radius: var(--radius);
+  padding: 72px 32px;
+}
+
+.hist-empty-icon {
+  font-size: 2.4rem;
+  opacity: 0.35;
+  margin-bottom: 20px;
+  display: block;
+  line-height: 1;
+}
+
+.hist-empty h2 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.8rem;
+  font-weight: 500;
+  color: var(--white);
+  margin: 0 0 10px;
+  letter-spacing: -0.01em;
+}
+
+.hist-empty p {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  margin: 0 0 28px;
+  max-width: 320px;
+  line-height: 1.6;
+}
+
+.hist-btn-amber {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #000;
+  background: var(--amber);
+  border: none;
+  border-radius: 9px;
+  padding: 11px 24px;
+  text-decoration: none;
+  transition: background 0.2s var(--ease), transform 0.2s var(--ease);
+  display: inline-block;
+}
+.hist-btn-amber:hover {
+  background: var(--amber-dark);
+  transform: translateY(-1px);
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width: 768px) {
+  .hist-page      { padding: 40px 0 80px; }
+  .hist-container { padding: 0 20px; }
+  .hist-header    { margin-bottom: 40px; }
+
+  .hist-item {
+    padding: 18px 18px;
+    gap: 14px;
+  }
+
+  .hist-item-title {
+    white-space: normal;
+    overflow: visible;
+    text-overflow: clip;
+  }
+}
+
+@media (max-width: 480px) {
+  .hist-header h1 { font-size: 2.2rem; }
+
+  .hist-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .hist-item-right { align-self: flex-start; }
+}
+</style>
+
+<div class="hist-page">
+  <div class="hist-container">
+
+    <!-- Page Header -->
+    <div class="hist-header sr sr-d1">
+      <div class="hist-eyebrow">Your account</div>
+      <h1>Consultation History</h1>
+      <p>Every consultation you have completed, in one place.</p>
     </div>
-    {% endfor %}
-  </div>
-  {% else %}
-  <div class="empty-state">
-    <p>No consultations yet.</p>
-    <a href="{{ url_for('core.dashboard') }}" class="btn btn-primary" style="margin-top:16px;">Start a consultation</a>
-  </div>
-  {% endif %}
 
+    {% if questions %}
+    <!-- History List -->
+    <div class="hist-list">
+      {% for q in questions %}
+      <div class="hist-item sr sr-d{{ loop.index if loop.index <= 6 else 6 }}">
+        <div class="hist-item-left">
+          <div class="hist-item-title">{{ q.category_slug | replace('_', ' ') | title }}</div>
+          <div class="hist-item-meta">{{ q.created_at.strftime('%d %B %Y') }} &middot; {{ q.status | title }}</div>
+        </div>
+        <div class="hist-item-right">
+          {% if q.status == 'answered' %}
+            {% if q.has_been_viewed %}
+            <span class="hist-badge hist-badge-completed">Completed</span>
+            {% else %}
+            <a href="{{ url_for('core.answer', question_id=q.id) }}" class="hist-btn-view">View</a>
+            {% endif %}
+          {% else %}
+          <span class="hist-badge hist-badge-generic">{{ q.status | title }}</span>
+          {% endif %}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
+    {% else %}
+    <!-- Empty State -->
+    <div class="hist-empty sr sr-d2">
+      <span class="hist-empty-icon">&#128196;</span>
+      <h2>No consultations yet.</h2>
+      <p>Pick a topic from your dashboard to get started.</p>
+      <a href="{{ url_for('core.dashboard') }}" class="hist-btn-amber">Go to Dashboard</a>
+    </div>
+    {% endif %}
+
+  </div>
 </div>
+
+<script>
+(function() {
+  var els = document.querySelectorAll('.sr');
+  if (!els.length) return;
+  var io = new IntersectionObserver(function(entries) {
+    entries.forEach(function(e) {
+      if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
+    });
+  }, { threshold: 0.1 });
+  els.forEach(function(el) { io.observe(el); });
+})();
+</script>
 {% endblock %}

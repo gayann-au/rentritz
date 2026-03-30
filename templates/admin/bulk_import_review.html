@@ -2,7 +2,7 @@
 
 {% block title %}Review Import{% endblock %}
 
-{% block topbar_title %}Review Import <span>{{ drafts|length }} scenario(s) — {{ category.title }}</span>{% endblock %}
+{% block topbar_title %}Review Import <span>{{ drafts|length }} scenario(s): {{ category.title }}</span>{% endblock %}
 
 {% block topbar_actions %}
   <a href="{{ url_for('admin.bulk_import') }}" class="btn btn-outline btn-sm">← Start over</a>

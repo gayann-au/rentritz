@@ -117,9 +117,14 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   position: sticky;
   top: 0;
   z-index: 100;
-  background: rgba(255,255,255,0.92);
-  backdrop-filter: blur(12px);
-  border-bottom: 1px solid rgba(0,0,0,0.06);
+  background: transparent;
+  border-bottom: 1px solid transparent;
+  transition: background 0.25s ease, border-color 0.25s ease;
+}
+
+.nav.scrolled {
+  background: #0a0a0a;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
 }
 
 .nav-inner {
@@ -136,10 +141,11 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   font-family: 'Cormorant Garamond', serif;
   font-size: 1.4rem;
   font-weight: 600;
-  color: var(--black);
+  color: var(--amber);
   letter-spacing: -0.02em;
+  text-decoration: none;
 }
-.nav-logo span { color: var(--amber); }
+.nav-logo span { color: rgba(255,255,255,0.6); }
 
 .nav-links {
   display: flex;
@@ -150,30 +156,33 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 .nav-links a {
   font-size: 0.875rem;
   font-weight: 400;
-  color: var(--text-muted);
-  transition: color var(--transition);
+  color: rgba(255,255,255,0.65);
+  transition: color 0.2s ease;
+  text-decoration: none;
 }
-.nav-links a:hover { color: var(--text); }
+.nav-links a:hover,
+.nav-links a.active { color: var(--amber); }
 
 .nav-logout {
   font-size: 0.875rem;
-  color: var(--text-muted) !important;
+  color: rgba(255,255,255,0.4) !important;
 }
+.nav-logout:hover { color: rgba(255,255,255,0.75) !important; }
 
 .credit-chip {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  background: var(--amber-glow);
-  border: 1px solid rgba(245,158,11,0.25);
-  color: var(--amber-dark) !important;
+  background: var(--amber);
+  border: none;
+  color: #000 !important;
   padding: 5px 12px;
   border-radius: 100px;
-  font-size: 0.82rem !important;
-  font-weight: 600 !important;
-  transition: all var(--transition);
+  font-size: 0.78rem !important;
+  font-weight: 700 !important;
+  transition: background 0.2s ease;
 }
-.credit-chip:hover { background: rgba(245,158,11,0.2) !important; }
+.credit-chip:hover { background: var(--amber-dark) !important; }
 .credit-icon { font-size: 0.75rem; }
 
 
@@ -212,6 +221,12 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   color: var(--error-text);
 }
 
+.flash-info {
+  background: rgba(245,158,11,0.12);
+  border: 1px solid rgba(245,158,11,0.4);
+  color: var(--amber);
+}
+
 @keyframes slideIn {
   from { opacity: 0; transform: translateX(20px); }
   to   { opacity: 1; transform: translateX(0); }
@@ -219,17 +234,6 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 
 
 /* ── LANDING PAGE ───────────────────────────────────────────────────────────── */
-
-.landing-page .nav {
-  background: transparent;
-  border-bottom: none;
-  position: absolute;
-  width: 100%;
-}
-
-.landing-page .nav-logo { color: var(--white); }
-.landing-page .nav-links a { color: rgba(255,255,255,0.65); }
-.landing-page .nav-links a:hover { color: var(--white); }
 
 .hero {
   background: var(--black);
@@ -674,7 +678,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 /* ── AUTH PAGES ─────────────────────────────────────────────────────────────── */
 
 .auth-page {
-  background: var(--off-white);
+  background: #0a0a0a;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -689,13 +693,12 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 }
 
 .auth-card {
-  background: var(--white);
+  background: #1a1a1a;
   border-radius: 16px;
   padding: 48px;
   width: 100%;
   max-width: 440px;
-  box-shadow: var(--shadow-lg);
-  border: 1px solid rgba(0,0,0,0.05);
+  border: 1px solid rgba(255,255,255,0.08);
 }
 
 .auth-card-wide { max-width: 560px; }
@@ -704,23 +707,25 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   font-family: 'Cormorant Garamond', serif;
   font-size: 1.3rem;
   font-weight: 600;
-  color: var(--black);
+  color: var(--amber);
   display: block;
   margin-bottom: 24px;
+  text-decoration: none;
 }
-.auth-logo span { color: var(--amber); }
+.auth-logo span { color: rgba(255,255,255,0.55); }
 
 .auth-header h1 {
   font-family: 'Cormorant Garamond', serif;
   font-size: 2rem;
   font-weight: 400;
   letter-spacing: -0.02em;
+  color: var(--white);
   margin-bottom: 6px;
 }
 
 .auth-header p {
   font-size: 0.9rem;
-  color: var(--text-muted);
+  color: rgba(255,255,255,0.4);
   margin-bottom: 32px;
 }
 
@@ -732,7 +737,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   display: block;
   font-size: 0.82rem;
   font-weight: 500;
-  color: var(--text);
+  color: rgba(255,255,255,0.65);
   margin-bottom: 7px;
 }
 
@@ -741,18 +746,18 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 .form-group input[type=password] {
   width: 100%;
   padding: 11px 14px;
-  border: 1.5px solid #e5e5e5;
+  border: 1.5px solid rgba(255,255,255,0.1);
   border-radius: var(--radius-sm);
   font-family: 'Outfit', sans-serif;
   font-size: 0.9rem;
-  color: var(--text);
-  background: var(--white);
-  transition: border-color var(--transition);
+  color: var(--white);
+  background: #111111;
+  transition: border-color 0.2s ease;
   outline: none;
 }
 
 .form-group input:focus { border-color: var(--amber); }
-.form-group input::placeholder { color: #bbb; }
+.form-group input::placeholder { color: rgba(255,255,255,0.2); }
 
 .form-row-split {
   display: flex;
@@ -763,7 +768,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 
 .forgot-link {
   font-size: 0.8125rem;
-  color: var(--amber-dark);
+  color: var(--amber);
   text-decoration: none;
   font-weight: 500;
 }
@@ -774,7 +779,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   align-items: center;
   gap: 8px;
   font-size: 0.85rem;
-  color: var(--text-muted);
+  color: rgba(255,255,255,0.4);
   cursor: pointer;
 }
 
@@ -788,33 +793,33 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 .role-option input[type=radio] { display: none; }
 
 .role-card {
-  border: 2px solid #e5e5e5;
+  border: 1.5px solid rgba(255,255,255,0.1);
   border-radius: var(--radius-sm);
   padding: 20px 16px;
   text-align: center;
-  transition: all var(--transition);
-  background: var(--white);
+  transition: all 0.2s ease;
+  background: rgba(255,255,255,0.03);
 }
 
 .role-option.selected .role-card,
 .role-option:hover .role-card {
   border-color: var(--amber);
-  background: var(--amber-glow);
+  background: rgba(245,158,11,0.08);
 }
 
 .role-icon { font-size: 1.6rem; margin-bottom: 8px; }
-.role-label { font-size: 0.9rem; font-weight: 600; margin-bottom: 4px; }
-.role-desc  { font-size: 0.75rem; color: var(--text-muted); }
+.role-label { font-size: 0.9rem; font-weight: 600; color: var(--white); margin-bottom: 4px; }
+.role-desc  { font-size: 0.75rem; color: rgba(255,255,255,0.35); }
 
 .auth-footer {
   text-align: center;
   margin-top: 24px;
   font-size: 0.875rem;
-  color: var(--text-muted);
+  color: rgba(255,255,255,0.35);
 }
 
 .auth-footer a {
-  color: var(--amber-dark);
+  color: var(--amber);
   font-weight: 500;
 }
 
@@ -1436,8 +1441,8 @@ tbody tr:hover { background: #fafafa; }
 }
 
 .nav-admin .nav-logo { color: #fff; }
-.nav-admin .nav-links a { color: #666; }
-.nav-admin .nav-links a:hover { color: #ccc; }
+.nav-admin .nav-links a { color: rgba(255,255,255,0.55); }
+.nav-admin .nav-links a:hover { color: var(--white); }
 
 .admin-container {
   max-width: 1200px;
