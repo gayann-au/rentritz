@@ -26,6 +26,7 @@ class User(UserMixin, db.Model):
     reset_token_expiry      = db.Column(db.DateTime, nullable=True)
     failed_login_count      = db.Column(db.Integer, default=0, nullable=False)
     failed_login_lockout    = db.Column(db.DateTime, nullable=True)
+    has_seen_onboarding     = db.Column(db.Boolean, default=False, nullable=False)
 
     questions    = db.relationship('Question',          backref='user', lazy='dynamic')
     payments     = db.relationship('Payment',           backref='user', lazy='dynamic')

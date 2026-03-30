@@ -1,5 +1,5 @@
 from datetime import datetime
-from flask import Blueprint, render_template, redirect, url_for, flash, request, session, abort, current_app, make_response
+from flask import Blueprint, render_template, redirect, url_for, flash, request, session, abort, current_app, make_response, jsonify
 from flask_login import login_required, current_user
 from sqlalchemy import text
 from app.models import db, Category, Scenario, Question, CreditLog
@@ -55,7 +55,16 @@ def dashboard():
     visible    = [c for c in categories if c.for_role in ('both', current_user.role)]
     recent     = Question.query.filter_by(user_id=current_user.id)\
                     .order_by(Question.created_at.desc()).limit(5).all()
-    return render_template('core/dashboard.html', categories=visible, recent=recent)
+    return render_template('core/dashboard.html', categories=visible, recent=recent,
+                           has_seen_onboarding=current_user.has_seen_onboarding)
+
+
+@core_bp.route('/onboarding/complete', methods=['POST'])
+@login_required
+def onboarding_complete():
+    current_user.has_seen_onboarding = True
+    db.session.commit()
+    return jsonify({'ok': True})
 
 
 @core_bp.route('/consult/<category_slug>')

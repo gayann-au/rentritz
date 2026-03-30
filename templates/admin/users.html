@@ -2,44 +2,189 @@
 
 {% block title %}Users{% endblock %}
 
-{% block topbar_title %}Users <span>{{ users|length }} registered</span>{% endblock %}
+{% block head %}
+<style>
+  /* ── Filter bar ────────────────────────────────────────────────────────── */
+  .users-filter-bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+  }
+  .search-wrap {
+    position: relative;
+    flex: 1;
+    min-width: 200px;
+    max-width: 320px;
+  }
+  .search-wrap .search-icon {
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-muted);
+    font-size: 13px;
+    pointer-events: none;
+  }
+  .search-wrap .filter-input {
+    padding-left: 30px;
+    width: 100%;
+  }
+  .filter-meta {
+    margin-left: auto;
+    font-size: 12px;
+    color: var(--text-muted);
+    white-space: nowrap;
+  }
+
+  /* ── Table status badges ──────────────────────────────────────────────── */
+  .badge-locked {
+    background: var(--danger-glow);
+    color: var(--danger);
+    border: 1px solid rgba(239,68,68,0.3);
+  }
+
+  /* ── Verified indicator ───────────────────────────────────────────────── */
+  .verified-yes { color: var(--success); font-size: 14px; }
+  .verified-no  { color: var(--dark-line); font-size: 14px; }
+
+  /* ── Clickable row ────────────────────────────────────────────────────── */
+  .data-table tbody tr { cursor: pointer; }
+
+  /* ── Pagination ───────────────────────────────────────────────────────── */
+  .pagination {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 18px;
+    border-top: 1px solid var(--dark-line);
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .pagination-info {
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+  .pagination-pages {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .pg-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 32px;
+    height: 32px;
+    padding: 0 8px;
+    border-radius: 5px;
+    font-size: 13px;
+    color: var(--text-muted);
+    background: transparent;
+    border: 1px solid transparent;
+    text-decoration: none;
+    transition: all 0.12s;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .pg-btn:hover { background: rgba(255,255,255,0.06); color: var(--white); border-color: var(--dark-line); }
+  .pg-btn.active { background: var(--amber-glow); color: var(--amber); border-color: rgba(245,158,11,0.4); font-weight: 600; }
+  .pg-btn.disabled { opacity: 0.3; pointer-events: none; }
+  .pg-ellipsis { color: var(--text-muted); font-size: 13px; padding: 0 4px; }
+
+  /* ── Empty state in table ─────────────────────────────────────────────── */
+  .table-empty {
+    padding: 60px 20px;
+    text-align: center;
+    color: var(--text-muted);
+  }
+  .table-empty-icon  { font-size: 36px; opacity: 0.3; margin-bottom: 10px; }
+  .table-empty-title { font-size: 18px; color: var(--white); margin-bottom: 6px; font-weight: 600; }
+  .table-empty-sub   { font-size: 13px; margin-bottom: 16px; }
+</style>
+{% endblock %}
+
+{% block topbar_title %}
+  Users
+  <span>{{ total_count }} total</span>
+{% endblock %}
+
+{% block topbar_actions %}
+  <span class="btn btn-outline btn-sm" style="cursor:default; opacity:0.5;">↓ Export</span>
+{% endblock %}
 
 {% block main %}
 <div class="admin-content">
 
-  <div class="filter-bar">
-    <input type="text" class="filter-input" placeholder="Search name or email…" id="search-input" oninput="filterUsers()">
-    <select class="filter-select" id="role-filter" onchange="filterUsers()">
-      <option value="">All roles</option>
-      <option value="tenant" {% if role_filter == 'tenant' %}selected{% endif %}>Tenants</option>
-      <option value="landlord" {% if role_filter == 'landlord' %}selected{% endif %}>Landlords</option>
-    </select>
-    <select class="filter-select" id="status-filter" onchange="filterUsers()">
-      <option value="">All statuses</option>
-      <option value="active">Active</option>
-      <option value="inactive">Inactive</option>
-    </select>
-    <span style="font-size:12px; color:var(--text-muted);" id="filter-count"></span>
-  </div>
+  {# ── Filter bar ────────────────────────────────────────────────────────── #}
+  <form method="GET" action="{{ url_for('admin.users') }}" id="filter-form">
+    <div class="users-filter-bar">
 
-  {% if users %}
+      <div class="search-wrap">
+        <span class="search-icon">⌕</span>
+        <input
+          type="text"
+          name="search"
+          class="filter-input"
+          placeholder="Search name or email…"
+          value="{{ search }}"
+          id="search-input"
+          autocomplete="off"
+        >
+      </div>
+
+      <select name="role" class="filter-select" onchange="this.form.submit()">
+        <option value=""         {{ 'selected' if role_filter == '' }}>All Roles</option>
+        <option value="tenant"   {{ 'selected' if role_filter == 'tenant' }}>Tenant</option>
+        <option value="landlord" {{ 'selected' if role_filter == 'landlord' }}>Landlord</option>
+      </select>
+
+      <select name="status" class="filter-select" onchange="this.form.submit()">
+        <option value=""         {{ 'selected' if status_filter == '' }}>All Statuses</option>
+        <option value="active"   {{ 'selected' if status_filter == 'active' }}>Active</option>
+        <option value="inactive" {{ 'selected' if status_filter == 'inactive' }}>Inactive</option>
+        <option value="locked"   {{ 'selected' if status_filter == 'locked' }}>Locked</option>
+      </select>
+
+      {% if search or role_filter or status_filter %}
+      <a href="{{ url_for('admin.users') }}" class="btn btn-ghost btn-sm">✕ Clear</a>
+      {% endif %}
+
+      <div class="filter-meta">
+        {% if search or role_filter or status_filter %}
+          {{ total_count }} result{{ 's' if total_count != 1 }}
+        {% else %}
+          {{ total_count }} user{{ 's' if total_count != 1 }}
+        {% endif %}
+      </div>
+
+    </div>
+  </form>
+
+  {# ── Table ─────────────────────────────────────────────────────────────── #}
   <div class="card" style="padding:0; overflow:hidden;">
+    {% if users %}
     <table class="data-table" id="users-table">
       <thead>
         <tr>
           <th>User</th>
           <th>Role</th>
+          <th>Status</th>
           <th>Credits</th>
           <th>Consultations</th>
+          <th>Verified</th>
+          <th>Last Login</th>
           <th>Joined</th>
-          <th>Status</th>
-          <th>Add Credits</th>
           <th>Actions</th>
         </tr>
       </thead>
       <tbody>
         {% for u in users %}
-        <tr data-name="{{ u.full_name | lower }}" data-email="{{ u.email | lower }}" data-role="{{ u.role }}" data-status="{{ 'active' if u.is_active else 'inactive' }}">
+        {% set lockout_active = u.failed_login_lockout and u.failed_login_lockout > now %}
+        <tr onclick="window.location='{{ url_for('admin.user_detail', id=u.id) }}'">
+
+          {# User cell #}
           <td>
             <div class="user-cell">
               <div class="user-avatar">{{ u.full_name[0] | upper }}</div>
@@ -49,62 +194,157 @@
               </div>
             </div>
           </td>
+
+          {# Role #}
           <td><span class="badge badge-{{ u.role }}">{{ u.role }}</span></td>
-          <td><span class="credits-badge">{{ u.available_credits }}</span></td>
-          <td style="color:var(--text-muted);">{{ u.total_asked }}</td>
-          <td style="color:var(--text-muted); font-size:12px;">{{ u.created_at.strftime('%d %b %Y') }}</td>
-          <td><span class="badge badge-{{ 'active' if u.is_active else 'inactive' }}">{{ 'Active' if u.is_active else 'Inactive' }}</span></td>
+
+          {# Status: locked takes priority #}
           <td>
-            <form method="POST" action="{{ url_for('admin.add_credits', user_id=u.id) }}" class="adjust-form">
-              <input type="number" name="amount" class="adjust-input" placeholder="±0" min="-99" max="99">
-              <input type="hidden" name="note" value="Admin credit adjustment">
-              <button type="submit" class="btn btn-outline btn-sm">Apply</button>
-            </form>
+            {% if lockout_active %}
+              <span class="badge badge-locked">Locked</span>
+            {% elif u.is_active %}
+              <span class="badge badge-active">Active</span>
+            {% else %}
+              <span class="badge badge-inactive">Inactive</span>
+            {% endif %}
           </td>
+
+          {# Credits #}
+          <td><span class="credits-badge">{{ u.available_credits }}</span></td>
+
+          {# Consultations #}
+          <td style="color:var(--text-muted);">{{ u.total_asked }}</td>
+
+          {# Verified #}
           <td>
-            <form method="POST" action="{{ url_for('admin.toggle_user', id=u.id) }}">
-              <button type="submit" class="btn btn-sm {{ 'btn-danger' if u.is_active else 'btn-outline' }}">
-                {{ 'Disable' if u.is_active else 'Enable' }}
-              </button>
-            </form>
+            {% if u.is_verified %}
+              <span class="verified-yes" title="Email verified">✓</span>
+            {% else %}
+              <span class="verified-no" title="Not verified">-</span>
+            {% endif %}
+          </td>
+
+          {# Last Login #}
+          <td>
+            {% if u.last_login %}
+              <span class="time-ago" data-ts="{{ u.last_login.isoformat() }}"></span>
+            {% else %}
+              <span style="color:var(--text-muted); font-size:12px;">Never</span>
+            {% endif %}
+          </td>
+
+          {# Joined #}
+          <td style="color:var(--text-muted); font-size:12px; white-space:nowrap;">
+            {{ u.created_at.strftime('%d %b %Y') }}
+          </td>
+
+          {# Actions - stop row click propagating into the form #}
+          <td onclick="event.stopPropagation()">
+            <div class="table-actions">
+              <a href="{{ url_for('admin.user_detail', id=u.id) }}" class="btn btn-ghost btn-sm">View</a>
+              <form method="POST" action="{{ url_for('admin.toggle_user', id=u.id) }}" style="display:contents;">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <button type="submit" class="btn btn-sm {{ 'btn-danger' if u.is_active else 'btn-outline' }}">
+                  {{ 'Disable' if u.is_active else 'Enable' }}
+                </button>
+              </form>
+            </div>
           </td>
         </tr>
         {% endfor %}
       </tbody>
     </table>
+
+    {# ── Pagination ────────────────────────────────────────────────────── #}
+    {% if total_pages > 1 %}
+    <div class="pagination">
+      <div class="pagination-info">
+        Page {{ page }} of {{ total_pages }}
+      </div>
+      <div class="pagination-pages">
+
+        {# Previous #}
+        {% if page > 1 %}
+          <a href="{{ url_for('admin.users', page=page-1, search=search, role=role_filter, status=status_filter) }}" class="pg-btn">← Prev</a>
+        {% else %}
+          <span class="pg-btn disabled">← Prev</span>
+        {% endif %}
+
+        {# Page numbers with ellipsis logic #}
+        {% set show_pages = [] %}
+        {% for p in range(1, total_pages + 1) %}
+          {% if p == 1 or p == total_pages or (p >= page - 2 and p <= page + 2) %}
+            {% if show_pages.append(p) %}{% endif %}
+          {% endif %}
+        {% endfor %}
+
+        {% set ns = namespace(prev=0) %}
+        {% for p in show_pages %}
+          {% if ns.prev and p - ns.prev > 1 %}
+            <span class="pg-ellipsis">…</span>
+          {% endif %}
+          <a href="{{ url_for('admin.users', page=p, search=search, role=role_filter, status=status_filter) }}"
+             class="pg-btn {{ 'active' if p == page }}">{{ p }}</a>
+          {% set ns.prev = p %}
+        {% endfor %}
+
+        {# Next #}
+        {% if page < total_pages %}
+          <a href="{{ url_for('admin.users', page=page+1, search=search, role=role_filter, status=status_filter) }}" class="pg-btn">Next →</a>
+        {% else %}
+          <span class="pg-btn disabled">Next →</span>
+        {% endif %}
+
+      </div>
+    </div>
+    {% endif %}
+
+    {% else %}
+    {# ── Empty state ───────────────────────────────────────────────────── #}
+    <div class="table-empty">
+      <div class="table-empty-icon">○</div>
+      <div class="table-empty-title">No users found</div>
+      {% if search or role_filter or status_filter %}
+        <div class="table-empty-sub">No users match your current filters.</div>
+        <a href="{{ url_for('admin.users') }}" class="btn btn-outline">Clear filters</a>
+      {% else %}
+        <div class="table-empty-sub">Registered users will appear here.</div>
+      {% endif %}
+    </div>
+    {% endif %}
+
   </div>
-  {% else %}
-  <div class="empty-state">
-    <div class="empty-icon">○</div>
-    <div class="empty-title">No users yet</div>
-    <div class="empty-desc">Registered users will appear here.</div>
-  </div>
-  {% endif %}
 
 </div>
 {% endblock %}
 
 {% block scripts %}
 <script>
-function filterUsers() {
-  const search = document.getElementById('search-input').value.toLowerCase();
-  const role   = document.getElementById('role-filter').value;
-  const status = document.getElementById('status-filter').value;
-  const rows   = document.querySelectorAll('#users-table tbody tr');
-  let visible  = 0;
-
-  rows.forEach(row => {
-    const matchSearch = !search || row.dataset.name.includes(search) || row.dataset.email.includes(search);
-    const matchRole   = !role   || row.dataset.role   === role;
-    const matchStatus = !status || row.dataset.status === status;
-    const show = matchSearch && matchRole && matchStatus;
-    row.style.display = show ? '' : 'none';
-    if (show) visible++;
-  });
-
-  document.getElementById('filter-count').textContent = visible + ' user' + (visible !== 1 ? 's' : '');
+// ── Relative timestamps ──────────────────────────────────────────────────────
+function timeAgo(isoStr) {
+  if (!isoStr) return '';
+  const then = new Date(isoStr + (isoStr.endsWith('Z') ? '' : 'Z'));
+  const diff = Math.floor((Date.now() - then.getTime()) / 1000);
+  if (diff < 60)    return diff + 's ago';
+  if (diff < 3600)  return Math.floor(diff / 60) + 'm ago';
+  if (diff < 86400) return Math.floor(diff / 3600) + 'h ago';
+  if (diff < 86400 * 30) return Math.floor(diff / 86400) + 'd ago';
+  return Math.floor(diff / (86400 * 30)) + 'mo ago';
 }
+document.querySelectorAll('.time-ago[data-ts]').forEach(el => {
+  el.textContent = timeAgo(el.dataset.ts);
+});
 
-filterUsers();
+// ── Search debounce (400 ms) ─────────────────────────────────────────────────
+(function () {
+  const input = document.getElementById('search-input');
+  const form  = document.getElementById('filter-form');
+  if (!input || !form) return;
+  let timer;
+  input.addEventListener('input', () => {
+    clearTimeout(timer);
+    timer = setTimeout(() => form.submit(), 400);
+  });
+})();
 </script>
 {% endblock %}

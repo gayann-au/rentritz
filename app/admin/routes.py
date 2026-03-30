@@ -92,17 +92,115 @@ def logout():
 @admin_bp.route('/')
 @admin_required
 def dashboard():
-    stats = {
-        'users':     User.query.filter(User.role != 'admin').count(),
-        'scenarios': Scenario.query.count(),
-        'questions': Question.query.filter_by(status='answered').count(),
-        'revenue':   db.session.query(db.func.sum(Payment.amount_aed))\
-                         .filter_by(status='captured').scalar() or 0,
+    now        = datetime.utcnow()
+    today      = now.replace(hour=0, minute=0, second=0, microsecond=0)
+    seven_ago  = now - timedelta(days=7)
+    thirty_ago = now - timedelta(days=30)
+    lockout_window = now - timedelta(minutes=15)
+
+    # ── User stats
+    user_stats = {
+        'total_users':    User.query.filter(User.role != 'admin').count(),
+        'new_users_today': User.query.filter(User.role != 'admin', User.created_at >= today).count(),
+        'new_users_7d':   User.query.filter(User.role != 'admin', User.created_at >= seven_ago).count(),
+        'new_users_30d':  User.query.filter(User.role != 'admin', User.created_at >= thirty_ago).count(),
+        'active_users':   User.query.filter(User.role != 'admin', User.is_active == True).count(),
+        'locked_users':   User.query.filter(
+            User.failed_login_lockout != None,
+            User.failed_login_lockout > lockout_window,
+        ).count(),
+        'tenants':        User.query.filter_by(role='tenant').count(),
+        'landlords':      User.query.filter_by(role='landlord').count(),
     }
+
+    # ── Consultation stats
+    q_stats = {
+        'total_questions':    Question.query.count(),
+        'answered_questions': Question.query.filter_by(status='answered').count(),
+        'pending_questions':  Question.query.filter_by(status='pending').count(),
+        'questions_today':    Question.query.filter(Question.created_at >= today).count(),
+        'questions_7d':       Question.query.filter(Question.created_at >= seven_ago).count(),
+    }
+
+    # ── Content stats
+    all_scenarios = Scenario.query.all()
+    content_stats = {
+        'total_scenarios':      len(all_scenarios),
+        'active_scenarios':     sum(1 for s in all_scenarios if s.is_active),
+        'incomplete_scenarios': sum(1 for s in all_scenarios if not s.is_complete),
+        'total_categories':     Category.query.count(),
+        'categories_with_tree': Category.query.filter(Category.tree_json != None).count(),
+    }
+
+    # ── Revenue stats
+    def _rev(extra_filter=None):
+        q = db.session.query(db.func.sum(Payment.amount_aed)).filter_by(status='captured')
+        if extra_filter is not None:
+            q = q.filter(extra_filter)
+        return float(q.scalar() or 0)
+
+    rev_stats = {
+        'total_revenue':    _rev(),
+        'revenue_7d':       _rev(Payment.created_at >= seven_ago),
+        'revenue_30d':      _rev(Payment.created_at >= thirty_ago),
+        'pending_payments': Payment.query.filter_by(status='pending').count(),
+        'failed_payments':  Payment.query.filter_by(status='failed').count(),
+    }
+
+    # ── Recent activity
+    recent_users = User.query.filter(User.role != 'admin')\
+                       .order_by(User.created_at.desc()).limit(5).all()
+    recent_questions = Question.query.filter_by(status='answered')\
+                           .order_by(Question.answered_at.desc()).limit(8).all()
+    recent_payments = Payment.query.filter_by(status='captured')\
+                         .order_by(Payment.created_at.desc()).limit(5).all()
+
+    # ── Category breakdown
     categories = Category.query.order_by(Category.order).all()
-    recent_q   = Question.query.filter_by(status='answered')\
-                     .order_by(Question.answered_at.desc()).limit(10).all()
-    return render_template('admin/dashboard.html', stats=stats, categories=categories, recent_q=recent_q)
+    category_stats = []
+    for cat in categories:
+        total_q    = Question.query.filter_by(category_slug=cat.slug).count()
+        active_sc  = Scenario.query.filter_by(category_id=cat.id, is_active=True).count()
+        category_stats.append({
+            'category':        cat,
+            'total_questions': total_q,
+            'active_scenarios': active_sc,
+        })
+
+    hour = now.hour + 4  # GST offset
+    if hour < 12:
+        greeting = 'Good morning'
+    elif hour < 18:
+        greeting = 'Good afternoon'
+    else:
+        greeting = 'Good evening'
+
+    return render_template(
+        'admin/dashboard.html',
+        greeting       = greeting,
+        server_time    = (now + timedelta(hours=4)).strftime('%A, %d %B %Y | %H:%M GST'),
+        user_stats     = user_stats,
+        q_stats        = q_stats,
+        content_stats  = content_stats,
+        rev_stats      = rev_stats,
+        recent_users   = recent_users,
+        recent_questions = recent_questions,
+        recent_payments  = recent_payments,
+        category_stats   = category_stats,
+    )
+
+
+@admin_bp.route('/api/pending-count')
+@admin_required
+def api_pending_count():
+    now = datetime.utcnow()
+    lockout_window = now - timedelta(minutes=15)
+    pending = Question.query.filter_by(status='pending').count()
+    locked  = User.query.filter(
+        User.failed_login_lockout != None,
+        User.failed_login_lockout > lockout_window,
+    ).count()
+    return jsonify({'pending': pending, 'locked': locked})
 
 
 # ── CATEGORIES ────────────────────────────────────────────────────────────────
@@ -290,25 +388,29 @@ def new_scenario():
             flash('A scenario with this slug already exists.', 'error')
             return render_template('admin/scenario_form.html', scenario=None, categories=cats)
 
-        rights_tenant   = _parse_bullet_list(request.form.get('tenant_rights', ''))
-        rights_landlord = _parse_bullet_list(request.form.get('landlord_rights', ''))
-        what_to_do      = _parse_bullet_list(request.form.get('what_to_do', ''))
-        law_refs        = _parse_bullet_list(request.form.get('law_refs', ''))
+        rights_tenant        = _parse_bullet_list(request.form.get('tenant_rights', ''))
+        rights_landlord      = _parse_bullet_list(request.form.get('landlord_rights', ''))
+        what_to_do           = _parse_bullet_list(request.form.get('what_to_do', ''))
+        landlord_what_to_do  = _parse_bullet_list(request.form.get('landlord_what_to_do', ''))
+        law_refs             = _parse_bullet_list(request.form.get('law_refs', ''))
 
         s = Scenario(
-            category_id      = int(request.form.get('category_id')),
-            slug             = slug,
-            title            = request.form.get('title', '').strip(),
-            headline         = request.form.get('headline', '').strip(),
-            situation        = request.form.get('situation', '').strip(),
-            tenant_rights    = rights_tenant,
-            landlord_rights  = rights_landlord,
-            what_to_do       = what_to_do,
-            law_refs         = law_refs,
-            keywords         = request.form.get('keywords', '').strip(),
-            for_role         = request.form.get('for_role', 'both'),
-            show_rera_button = 'show_rera_button' in request.form,
-            is_active        = True,
+            category_id         = int(request.form.get('category_id')),
+            slug                = slug,
+            title               = request.form.get('title', '').strip(),
+            headline            = request.form.get('headline', '').strip(),
+            situation           = request.form.get('situation', '').strip(),
+            landlord_headline   = request.form.get('landlord_headline', '').strip() or None,
+            landlord_situation  = request.form.get('landlord_situation', '').strip() or None,
+            tenant_rights       = rights_tenant,
+            landlord_rights     = rights_landlord,
+            what_to_do          = what_to_do,
+            landlord_what_to_do = landlord_what_to_do or None,
+            law_refs            = law_refs,
+            keywords            = request.form.get('keywords', '').strip(),
+            for_role            = request.form.get('for_role', 'both'),
+            show_rera_button    = 'show_rera_button' in request.form,
+            is_active           = True,
         )
         db.session.add(s)
         db.session.commit()
@@ -331,19 +433,22 @@ def edit_scenario(id):
         if existing and existing.id != s.id:
             flash('A scenario with this slug already exists.', 'error')
             return render_template('admin/scenario_form.html', scenario=s, categories=cats)
-        s.slug             = new_slug
-        s.category_id      = int(request.form.get('category_id'))
-        s.title            = request.form.get('title', '').strip()
-        s.headline         = request.form.get('headline', '').strip()
-        s.situation        = request.form.get('situation', '').strip()
-        s.tenant_rights    = _parse_bullet_list(request.form.get('tenant_rights', ''))
-        s.landlord_rights  = _parse_bullet_list(request.form.get('landlord_rights', ''))
-        s.what_to_do       = _parse_bullet_list(request.form.get('what_to_do', ''))
-        s.law_refs         = _parse_bullet_list(request.form.get('law_refs', ''))
-        s.keywords         = request.form.get('keywords', '').strip()
-        s.for_role         = request.form.get('for_role', 'both')
-        s.show_rera_button = 'show_rera_button' in request.form
-        s.updated_at       = datetime.utcnow()
+        s.slug                = new_slug
+        s.category_id         = int(request.form.get('category_id'))
+        s.title               = request.form.get('title', '').strip()
+        s.headline            = request.form.get('headline', '').strip()
+        s.situation           = request.form.get('situation', '').strip()
+        s.landlord_headline   = request.form.get('landlord_headline', '').strip() or None
+        s.landlord_situation  = request.form.get('landlord_situation', '').strip() or None
+        s.tenant_rights       = _parse_bullet_list(request.form.get('tenant_rights', ''))
+        s.landlord_rights     = _parse_bullet_list(request.form.get('landlord_rights', ''))
+        s.what_to_do          = _parse_bullet_list(request.form.get('what_to_do', ''))
+        s.landlord_what_to_do = _parse_bullet_list(request.form.get('landlord_what_to_do', '')) or None
+        s.law_refs            = _parse_bullet_list(request.form.get('law_refs', ''))
+        s.keywords            = request.form.get('keywords', '').strip()
+        s.for_role            = request.form.get('for_role', 'both')
+        s.show_rera_button    = 'show_rera_button' in request.form
+        s.updated_at          = datetime.utcnow()
         db.session.commit()
         flash('Scenario updated successfully.', 'success')
         return redirect(url_for('admin.scenarios'))
@@ -531,7 +636,7 @@ def _parse_bulk_import(raw_text, category):
             draft[current_section] = '\n'.join(buffer).strip()
 
         if not draft['title']:
-            draft['title'] = f'{category.title} — Scenario {i + 1}'
+            draft['title'] = f'{category.title} - Scenario {i + 1}'
 
         drafts.append(draft)
 
@@ -540,17 +645,56 @@ def _parse_bulk_import(raw_text, category):
 
 # ── USERS ─────────────────────────────────────────────────────────────────────
 
+PER_PAGE = 20
+
 @admin_bp.route('/users')
 @admin_required
 def users():
-    role_filter = request.args.get('role', '')
-    query       = User.query.filter(User.role != 'admin')
+    search        = request.args.get('search', '').strip()
+    role_filter   = request.args.get('role', '')
+    status_filter = request.args.get('status', '')
+    page          = max(1, request.args.get('page', 1, type=int))
+    now           = datetime.utcnow()
+
+    query = User.query.filter(User.role != 'admin')
+
+    if search:
+        like = f'%{search}%'
+        query = query.filter(
+            db.or_(User.full_name.ilike(like), User.email.ilike(like))
+        )
 
     if role_filter in ('tenant', 'landlord'):
         query = query.filter_by(role=role_filter)
 
-    all_users = query.order_by(User.created_at.desc()).all()
-    return render_template('admin/users.html', users=all_users, role_filter=role_filter)
+    if status_filter == 'active':
+        query = query.filter_by(is_active=True)
+    elif status_filter == 'inactive':
+        query = query.filter_by(is_active=False)
+    elif status_filter == 'locked':
+        lockout_window = now - timedelta(minutes=15)
+        query = query.filter(
+            User.failed_login_lockout != None,
+            User.failed_login_lockout > lockout_window,
+        )
+
+    total_count  = query.count()
+    total_pages  = max(1, (total_count + PER_PAGE - 1) // PER_PAGE)
+    page         = min(page, total_pages)
+    offset       = (page - 1) * PER_PAGE
+    users_page   = query.order_by(User.created_at.desc()).offset(offset).limit(PER_PAGE).all()
+
+    return render_template(
+        'admin/users.html',
+        users         = users_page,
+        total_count   = total_count,
+        page          = page,
+        total_pages   = total_pages,
+        search        = search,
+        role_filter   = role_filter,
+        status_filter = status_filter,
+        now           = now,
+    )
 
 
 @admin_bp.route('/users/<int:id>/toggle', methods=['POST'])
@@ -560,7 +704,8 @@ def toggle_user(id):
     user.is_active = not user.is_active
     db.session.commit()
     logger.info(f'User {user.email} active={user.is_active} by admin')
-    return redirect(url_for('admin.users'))
+    # Preserve current filter/search/page when redirecting back
+    return redirect(request.referrer or url_for('admin.users'))
 
 
 @admin_bp.route('/users/<int:user_id>/credits', methods=['POST'])
@@ -569,19 +714,22 @@ def add_credits(user_id):
     user   = User.query.get_or_404(user_id)
     amount = int(request.form.get('amount') or 0)
 
-    if amount > 0:
-        user.credits += amount
+    if amount != 0:
+        user.credits = max(0, user.credits + amount)
+        action = 'admin_grant' if amount > 0 else 'admin_deduct'
+        note   = 'Credits added by admin' if amount > 0 else 'Credits deducted by admin'
         log = CreditLog(
             user_id = user.id,
-            action  = 'admin_grant',
+            action  = action,
             amount  = amount,
             balance = user.credits,
-            note    = 'Credits added by admin',
+            note    = note,
         )
         db.session.add(log)
         db.session.commit()
-        flash(f'Added {amount} credits to {user.email}.', 'success')
-    return redirect(url_for('admin.users'))
+        verb = f'Added {amount}' if amount > 0 else f'Deducted {abs(amount)}'
+        flash(f'{verb} credits for {user.email}.', 'success')
+    return redirect(request.referrer or url_for('admin.users'))
 
 
 @admin_bp.route('/users/<int:id>/detail')
@@ -597,21 +745,134 @@ def user_detail(id):
 
 # ── QUESTIONS ─────────────────────────────────────────────────────────────────
 
+Q_PER_PAGE = 25
+
 @admin_bp.route('/questions')
 @admin_required
 def questions():
-    items = Question.query.filter_by(status='answered')\
-                .order_by(Question.answered_at.desc()).limit(200).all()
-    return render_template('admin/questions.html', questions=items)
+    status_filter   = request.args.get('status', '')
+    category_filter = request.args.get('category', '')
+    role_filter     = request.args.get('role', '')
+    date_filter     = request.args.get('date', '')
+    page            = max(1, request.args.get('page', 1, type=int))
+    now             = datetime.utcnow()
+
+    query = Question.query.join(User, Question.user_id == User.id)
+
+    if status_filter in ('pending', 'answered'):
+        query = query.filter(Question.status == status_filter)
+
+    if category_filter:
+        query = query.filter(Question.category_slug == category_filter)
+
+    if role_filter in ('tenant', 'landlord'):
+        query = query.filter(User.role == role_filter)
+
+    if date_filter == 'today':
+        query = query.filter(Question.created_at >= now.replace(hour=0, minute=0, second=0, microsecond=0))
+    elif date_filter == '7d':
+        query = query.filter(Question.created_at >= now - timedelta(days=7))
+    elif date_filter == '30d':
+        query = query.filter(Question.created_at >= now - timedelta(days=30))
+
+    total_count   = query.count()
+    total_pages   = max(1, (total_count + Q_PER_PAGE - 1) // Q_PER_PAGE)
+    page          = min(page, total_pages)
+    items         = query.order_by(Question.created_at.desc())\
+                         .offset((page - 1) * Q_PER_PAGE).limit(Q_PER_PAGE).all()
+
+    pending_total = Question.query.filter_by(status='pending').count()
+    categories    = Category.query.order_by(Category.order).all()
+
+    return render_template(
+        'admin/questions.html',
+        questions       = items,
+        total_count     = total_count,
+        page            = page,
+        total_pages     = total_pages,
+        pending_total   = pending_total,
+        categories      = categories,
+        status_filter   = status_filter,
+        category_filter = category_filter,
+        role_filter     = role_filter,
+        date_filter     = date_filter,
+    )
 
 
 # ── PAYMENTS ──────────────────────────────────────────────────────────────────
 
+PAY_PER_PAGE = 25
+
 @admin_bp.route('/payments')
 @admin_required
 def payments():
-    items = Payment.query.order_by(Payment.id.desc()).limit(200).all()
-    return render_template('admin/payments.html', payments=items)
+    status_filter = request.args.get('status', '')
+    date_filter   = request.args.get('date', '')
+    search        = request.args.get('search', '').strip()
+    page          = max(1, request.args.get('page', 1, type=int))
+    now           = datetime.utcnow()
+
+    query = Payment.query.join(User, Payment.user_id == User.id)
+
+    if status_filter in ('pending', 'captured', 'failed'):
+        query = query.filter(Payment.status == status_filter)
+
+    if date_filter == 'today':
+        query = query.filter(Payment.created_at >= now.replace(hour=0, minute=0, second=0, microsecond=0))
+    elif date_filter == '7d':
+        query = query.filter(Payment.created_at >= now - timedelta(days=7))
+    elif date_filter == '30d':
+        query = query.filter(Payment.created_at >= now - timedelta(days=30))
+
+    if search:
+        like = f'%{search}%'
+        query = query.filter(
+            db.or_(User.full_name.ilike(like), User.email.ilike(like))
+        )
+
+    total_count = query.count()
+    total_pages = max(1, (total_count + PAY_PER_PAGE - 1) // PAY_PER_PAGE)
+    page        = min(page, total_pages)
+    items       = query.order_by(Payment.created_at.desc())\
+                       .offset((page - 1) * PAY_PER_PAGE).limit(PAY_PER_PAGE).all()
+
+    def _sum(q):
+        return float(
+            db.session.query(db.func.sum(Payment.amount_aed))
+            .filter(Payment.id.in_([p.id for p in q.with_entities(Payment.id)]))
+            .scalar() or 0
+        )
+
+    # Summary stats (unfiltered)
+    total_captured_aed = float(
+        db.session.query(db.func.sum(Payment.amount_aed))
+        .filter(Payment.status == 'captured').scalar() or 0
+    )
+    total_pending_count = Payment.query.filter_by(status='pending').count()
+    total_failed_count  = Payment.query.filter_by(status='failed').count()
+
+    # Filtered AED total (captured only within current filter)
+    filtered_q = query.filter(Payment.status == 'captured')
+    filtered_total_aed = float(
+        db.session.query(db.func.sum(Payment.amount_aed))
+        .filter(Payment.id.in_(filtered_q.with_entities(Payment.id)))
+        .scalar() or 0
+    )
+
+    return render_template(
+        'admin/payments.html',
+        payments            = items,
+        total_count         = total_count,
+        page                = page,
+        total_pages         = total_pages,
+        status_filter       = status_filter,
+        date_filter         = date_filter,
+        search              = search,
+        total_captured_aed  = total_captured_aed,
+        total_pending_count = total_pending_count,
+        total_failed_count  = total_failed_count,
+        filtered_total_aed  = filtered_total_aed,
+    )
 
 
 # ── HELPERS ───────────────────────────────────────────────────────────────────

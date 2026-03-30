@@ -1,7 +1,7 @@
 {
   "name": "Rentritz Dubai",
   "short_name": "Rentritz",
-  "description": "Dubai tenancy law consultations — written answers from a real property consultant.",
+  "description": "Dubai tenancy law consultations - written answers from a real property consultant.",
   "start_url": "/",
   "display": "standalone",
   "orientation": "portrait",

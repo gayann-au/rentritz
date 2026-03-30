@@ -2,64 +2,315 @@
 
 {% block title %}Payments{% endblock %}
 
-{% block topbar_title %}Payments{% endblock %}
+{% block head %}
+<style>
+  /* ── Summary strip ───────────────────────────────────────────────────────── */
+  .pay-summary {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+  .pay-stat {
+    background: var(--dark-card);
+    border: 1px solid var(--dark-line);
+    border-radius: 8px;
+    padding: 14px 18px;
+  }
+  .pay-stat.amber { border-color: var(--amber); background: var(--amber-glow); }
+  .pay-stat.red   { border-color: var(--danger); background: var(--danger-glow); }
+  .pay-stat-label {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text-muted);
+    font-weight: 500;
+    margin-bottom: 6px;
+  }
+  .pay-stat.amber .pay-stat-label { color: rgba(245,158,11,0.7); }
+  .pay-stat.red   .pay-stat-label { color: rgba(239,68,68,0.7); }
+  .pay-stat-value {
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--white);
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+  }
+  .pay-stat.amber .pay-stat-value { color: var(--amber); }
+  .pay-stat.red   .pay-stat-value { color: var(--danger); }
+  .pay-stat-sub {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 4px;
+  }
+
+  /* ── Row highlights ──────────────────────────────────────────────────────── */
+  .data-table tbody tr.row-failed  { border-left: 2px solid rgba(239,68,68,0.5); }
+  .data-table tbody tr.row-pending { border-left: 2px solid rgba(245,158,11,0.5); }
+  .data-table tbody tr.row-failed  td:first-child,
+  .data-table tbody tr.row-pending td:first-child { padding-left: 12px; }
+
+  /* ── Reference cell ──────────────────────────────────────────────────────── */
+  .ref-cell {
+    font-family: monospace;
+    font-size: 11px;
+    color: var(--text-muted);
+    max-width: 160px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    display: block;
+  }
+
+  /* ── Filter meta ─────────────────────────────────────────────────────────── */
+  .filter-meta { margin-left: auto; font-size: 12px; color: var(--text-muted); white-space: nowrap; }
+
+  /* ── Search wrap ─────────────────────────────────────────────────────────── */
+  .search-wrap { position: relative; flex: 1; min-width: 180px; max-width: 280px; }
+  .search-wrap .search-icon {
+    position: absolute; left: 10px; top: 50%; transform: translateY(-50%);
+    color: var(--text-muted); font-size: 13px; pointer-events: none;
+  }
+  .search-wrap .filter-input { padding-left: 30px; width: 100%; }
+
+  /* ── Pagination ──────────────────────────────────────────────────────────── */
+  .pagination {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 18px; border-top: 1px solid var(--dark-line);
+    gap: 12px; flex-wrap: wrap;
+  }
+  .pagination-info { font-size: 12px; color: var(--text-muted); }
+  .pagination-pages { display: flex; align-items: center; gap: 4px; }
+  .pg-btn {
+    display: inline-flex; align-items: center; justify-content: center;
+    min-width: 32px; height: 32px; padding: 0 8px; border-radius: 5px;
+    font-size: 13px; color: var(--text-muted); background: transparent;
+    border: 1px solid transparent; text-decoration: none;
+    transition: all 0.12s; white-space: nowrap;
+  }
+  .pg-btn:hover { background: rgba(255,255,255,0.06); color: var(--white); border-color: var(--dark-line); }
+  .pg-btn.active { background: var(--amber-glow); color: var(--amber); border-color: rgba(245,158,11,0.4); font-weight: 600; }
+  .pg-btn.disabled { opacity: 0.3; pointer-events: none; }
+  .pg-ellipsis { color: var(--text-muted); font-size: 13px; padding: 0 4px; }
+
+  /* ── Empty state ─────────────────────────────────────────────────────────── */
+  .table-empty { padding: 60px 20px; text-align: center; color: var(--text-muted); }
+  .table-empty-icon  { font-size: 36px; opacity: 0.3; margin-bottom: 10px; }
+  .table-empty-title { font-size: 18px; color: var(--white); margin-bottom: 6px; font-weight: 600; }
+  .table-empty-sub   { font-size: 13px; margin-bottom: 16px; }
+</style>
+{% endblock %}
+
+{% block topbar_title %}
+  Payments
+  <span>AED {{ '{:,.0f}'.format(total_captured_aed) }}</span>
+{% endblock %}
 
 {% block main %}
 <div class="admin-content">
 
-  {% if payments %}
+  {# ── Summary strip ─────────────────────────────────────────────────────── #}
+  <div class="pay-summary">
+    <div class="pay-stat amber">
+      <div class="pay-stat-label">Total Captured</div>
+      <div class="pay-stat-value">{{ '{:,.0f}'.format(total_captured_aed) }}</div>
+      <div class="pay-stat-sub">AED - all time</div>
+    </div>
+    <div class="pay-stat {% if total_pending_count > 0 %}amber{% endif %}">
+      <div class="pay-stat-label">Pending</div>
+      <div class="pay-stat-value">{{ total_pending_count }}</div>
+      <div class="pay-stat-sub">payment{{ 's' if total_pending_count != 1 }} awaiting capture</div>
+    </div>
+    <div class="pay-stat {% if total_failed_count > 0 %}red{% endif %}">
+      <div class="pay-stat-label">Failed</div>
+      <div class="pay-stat-value">{{ total_failed_count }}</div>
+      <div class="pay-stat-sub">payment{{ 's' if total_failed_count != 1 }} failed</div>
+    </div>
+  </div>
+
+  {# ── Filter bar ────────────────────────────────────────────────────────── #}
+  {% set any_filter = status_filter or date_filter or search %}
+  <form method="GET" action="{{ url_for('admin.payments') }}" id="filter-form">
+    <div class="filter-bar">
+
+      <div class="search-wrap">
+        <span class="search-icon">⌕</span>
+        <input type="text" name="search" class="filter-input"
+               placeholder="Search user name or email…"
+               value="{{ search }}" id="search-input" autocomplete="off">
+      </div>
+
+      <select name="status" class="filter-select" onchange="this.form.submit()">
+        <option value=""         {{ 'selected' if not status_filter }}>All Statuses</option>
+        <option value="pending"  {{ 'selected' if status_filter == 'pending' }}>Pending</option>
+        <option value="captured" {{ 'selected' if status_filter == 'captured' }}>Captured</option>
+        <option value="failed"   {{ 'selected' if status_filter == 'failed' }}>Failed</option>
+      </select>
+
+      <select name="date" class="filter-select" onchange="this.form.submit()">
+        <option value=""    {{ 'selected' if not date_filter }}>All Time</option>
+        <option value="today" {{ 'selected' if date_filter == 'today' }}>Today</option>
+        <option value="7d"    {{ 'selected' if date_filter == '7d' }}>Last 7 Days</option>
+        <option value="30d"   {{ 'selected' if date_filter == '30d' }}>Last 30 Days</option>
+      </select>
+
+      {% if any_filter %}
+      <a href="{{ url_for('admin.payments') }}" class="btn btn-ghost btn-sm">✕ Clear</a>
+      {% endif %}
+
+      <span class="filter-meta">
+        {{ total_count }} result{{ 's' if total_count != 1 }}
+        {% if filtered_total_aed > 0 and (status_filter == 'captured' or not status_filter) %}
+          &nbsp;·&nbsp; AED {{ '{:,.0f}'.format(filtered_total_aed) }}
+        {% endif %}
+      </span>
+
+    </div>
+  </form>
+
+  {# ── Table ─────────────────────────────────────────────────────────────── #}
   <div class="card" style="padding:0; overflow:hidden;">
+    {% if payments %}
     <table class="data-table">
       <thead>
         <tr>
           <th>User</th>
-          <th>Type</th>
           <th>Credits</th>
           <th>Amount</th>
           <th>Status</th>
-          <th>nGenius Ref</th>
+          <th>Reference</th>
           <th>Date</th>
         </tr>
       </thead>
       <tbody>
         {% for p in payments %}
-        <tr>
+        <tr class="{% if p.status == 'failed' %}row-failed{% elif p.status == 'pending' %}row-pending{% endif %}">
+
           <td>
             <div class="user-cell">
-              <div class="user-avatar">{{ p.user.full_name[0].upper() }}</div>
+              <div class="user-avatar">{{ p.user.full_name[0] | upper }}</div>
               <div>
                 <div class="user-name">{{ p.user.full_name }}</div>
                 <div class="user-email">{{ p.user.email }}</div>
               </div>
             </div>
           </td>
-          <td style="font-size:13px;">{{ p.payment_type | replace('_', ' ') | title }}</td>
+
+          <td><span class="credits-badge">{{ p.credits_purchased }}</span></td>
+
+          <td style="font-weight:600; color:var(--white); white-space:nowrap;">
+            AED {{ '%.2f' | format(p.amount_aed) }}
+          </td>
+
           <td>
-            <span class="credits-badge">{{ p.credits_purchased }}</span>
+            {% if p.status == 'captured' %}
+              <span class="badge badge-active">Captured</span>
+            {% elif p.status == 'pending' %}
+              <span class="badge badge-pending">Pending</span>
+            {% elif p.status == 'failed' %}
+              <span class="badge badge-incomplete">Failed</span>
+            {% else %}
+              <span class="badge badge-inactive">{{ p.status | title }}</span>
+            {% endif %}
           </td>
-          <td style="font-size:13px; color:var(--white);">AED {{ '%.2f' | format(p.amount_aed) }}</td>
+
           <td>
-            <span class="badge badge-{{ 'active' if p.status == 'captured' else 'inactive' if p.status == 'failed' else 'incomplete' }}">
-              {{ p.status | title }}
-            </span>
+            {% if p.ngenius_ref %}
+              <span class="ref-cell" title="{{ p.ngenius_ref }}">{{ p.ngenius_ref }}</span>
+            {% else %}
+              <span style="color:var(--text-muted); font-size:12px;">-</span>
+            {% endif %}
           </td>
-          <td style="font-size:12px; color:var(--text-muted); font-family:monospace;">
-            {{ p.ngenius_ref or 'N/A' }}
+
+          <td>
+            <span class="time-ago" data-ts="{{ p.created_at.isoformat() }}"></span>
           </td>
-          <td style="font-size:13px; color:var(--text-muted);">{{ p.created_at.strftime('%d %b %Y %H:%M') }}</td>
+
         </tr>
         {% endfor %}
       </tbody>
     </table>
+
+    {# ── Pagination ──────────────────────────────────────────────────────── #}
+    {% if total_pages > 1 %}
+    <div class="pagination">
+      <div class="pagination-info">Page {{ page }} of {{ total_pages }}</div>
+      <div class="pagination-pages">
+
+        {% if page > 1 %}
+          <a href="{{ url_for('admin.payments', page=page-1, status=status_filter, date=date_filter, search=search) }}" class="pg-btn">← Prev</a>
+        {% else %}
+          <span class="pg-btn disabled">← Prev</span>
+        {% endif %}
+
+        {% set show_pages = [] %}
+        {% for p in range(1, total_pages + 1) %}
+          {% if p == 1 or p == total_pages or (p >= page - 2 and p <= page + 2) %}
+            {% if show_pages.append(p) %}{% endif %}
+          {% endif %}
+        {% endfor %}
+
+        {% set ns = namespace(prev=0) %}
+        {% for p in show_pages %}
+          {% if ns.prev and p - ns.prev > 1 %}<span class="pg-ellipsis">…</span>{% endif %}
+          <a href="{{ url_for('admin.payments', page=p, status=status_filter, date=date_filter, search=search) }}"
+             class="pg-btn {{ 'active' if p == page }}">{{ p }}</a>
+          {% set ns.prev = p %}
+        {% endfor %}
+
+        {% if page < total_pages %}
+          <a href="{{ url_for('admin.payments', page=page+1, status=status_filter, date=date_filter, search=search) }}" class="pg-btn">Next →</a>
+        {% else %}
+          <span class="pg-btn disabled">Next →</span>
+        {% endif %}
+
+      </div>
+    </div>
+    {% endif %}
+
+    {% else %}
+    <div class="table-empty">
+      <div class="table-empty-icon">◉</div>
+      <div class="table-empty-title">No payments found</div>
+      {% if any_filter %}
+        <div class="table-empty-sub">No payments match your current filters.</div>
+        <a href="{{ url_for('admin.payments') }}" class="btn btn-outline">Clear filters</a>
+      {% else %}
+        <div class="table-empty-sub">Credit pack purchases will appear here.</div>
+      {% endif %}
+    </div>
+    {% endif %}
+
   </div>
-  {% else %}
-  <div class="empty-state">
-    <div class="empty-icon">◇</div>
-    <div class="empty-title">No payments yet</div>
-    <div class="empty-desc">Credit pack purchases will appear here.</div>
-  </div>
-  {% endif %}
 
 </div>
 {% endblock %}
 
+{% block scripts %}
+<script>
+function timeAgo(isoStr) {
+  if (!isoStr) return '';
+  const then = new Date(isoStr + (isoStr.endsWith('Z') ? '' : 'Z'));
+  const diff = Math.floor((Date.now() - then.getTime()) / 1000);
+  if (diff < 60)    return diff + 's ago';
+  if (diff < 3600)  return Math.floor(diff / 60) + 'm ago';
+  if (diff < 86400) return Math.floor(diff / 3600) + 'h ago';
+  if (diff < 86400 * 30) return Math.floor(diff / 86400) + 'd ago';
+  return Math.floor(diff / (86400 * 30)) + 'mo ago';
+}
+document.querySelectorAll('.time-ago[data-ts]').forEach(el => {
+  el.textContent = timeAgo(el.dataset.ts);
+});
+
+(function () {
+  const input = document.getElementById('search-input');
+  const form  = document.getElementById('filter-form');
+  if (!input || !form) return;
+  let timer;
+  input.addEventListener('input', () => {
+    clearTimeout(timer);
+    timer = setTimeout(() => form.submit(), 400);
+  });
+})();
+</script>
+{% endblock %}

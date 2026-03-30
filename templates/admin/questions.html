@@ -2,65 +2,343 @@
 
 {% block title %}Questions{% endblock %}
 
-{% block topbar_title %}Questions{% endblock %}
+{% block head %}
+<style>
+  /* ── Pending row highlight ──────────────────────────────────────────────── */
+  .data-table tbody tr.row-pending {
+    border-left: 2px solid rgba(245, 158, 11, 0.5);
+  }
+  .data-table tbody tr.row-pending td:first-child {
+    padding-left: 12px;
+  }
+
+  /* ── Clickable rows ─────────────────────────────────────────────────────── */
+  .data-table tbody tr { cursor: pointer; }
+
+  /* ── Category pill ──────────────────────────────────────────────────────── */
+  .cat-pill {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 500;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid var(--dark-line);
+    color: var(--text-light);
+    white-space: nowrap;
+  }
+
+  /* ── Icon indicators ────────────────────────────────────────────────────── */
+  .icon-yes  { color: var(--success); font-size: 14px; }
+  .icon-no   { color: var(--dark-line); font-size: 14px; }
+
+  /* ── Steps badge ────────────────────────────────────────────────────────── */
+  .steps-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 22px;
+    height: 22px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 600;
+    background: rgba(255,255,255,0.06);
+    color: var(--text-muted);
+    padding: 0 5px;
+  }
+
+  /* ── Pending banner ─────────────────────────────────────────────────────── */
+  .pending-banner {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 16px;
+    border-radius: 6px;
+    background: var(--amber-glow);
+    border: 1px solid rgba(245,158,11,0.35);
+    color: var(--amber);
+    font-size: 13px;
+    font-weight: 500;
+    margin-bottom: 16px;
+  }
+  .pending-banner-dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--amber);
+    flex-shrink: 0;
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.3} }
+
+  /* ── Filter meta ────────────────────────────────────────────────────────── */
+  .filter-meta {
+    margin-left: auto;
+    font-size: 12px;
+    color: var(--text-muted);
+    white-space: nowrap;
+  }
+
+  /* ── Pagination (reuse from users page) ─────────────────────────────────── */
+  .pagination {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 18px;
+    border-top: 1px solid var(--dark-line);
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .pagination-info { font-size: 12px; color: var(--text-muted); }
+  .pagination-pages { display: flex; align-items: center; gap: 4px; }
+  .pg-btn {
+    display: inline-flex; align-items: center; justify-content: center;
+    min-width: 32px; height: 32px; padding: 0 8px;
+    border-radius: 5px; font-size: 13px; color: var(--text-muted);
+    background: transparent; border: 1px solid transparent;
+    text-decoration: none; transition: all 0.12s; white-space: nowrap;
+  }
+  .pg-btn:hover { background: rgba(255,255,255,0.06); color: var(--white); border-color: var(--dark-line); }
+  .pg-btn.active { background: var(--amber-glow); color: var(--amber); border-color: rgba(245,158,11,0.4); font-weight: 600; }
+  .pg-btn.disabled { opacity: 0.3; pointer-events: none; }
+  .pg-ellipsis { color: var(--text-muted); font-size: 13px; padding: 0 4px; }
+
+  /* ── Empty state ────────────────────────────────────────────────────────── */
+  .table-empty { padding: 60px 20px; text-align: center; color: var(--text-muted); }
+  .table-empty-icon  { font-size: 36px; opacity: 0.3; margin-bottom: 10px; }
+  .table-empty-title { font-size: 18px; color: var(--white); margin-bottom: 6px; font-weight: 600; }
+  .table-empty-sub   { font-size: 13px; margin-bottom: 16px; }
+</style>
+{% endblock %}
+
+{% block topbar_title %}
+  Questions
+  <span>{{ total_count }} result{{ 's' if total_count != 1 }}</span>
+{% endblock %}
 
 {% block main %}
 <div class="admin-content">
 
-  {% if questions %}
+  {# ── Pending banner (shown when not filtered to answered-only) ────────── #}
+  {% if pending_total > 0 and status_filter != 'answered' %}
+  <div class="pending-banner">
+    <div class="pending-banner-dot"></div>
+    {{ pending_total }} consultation{{ 's' if pending_total != 1 }} waiting for answers
+    {% if status_filter != 'pending' %}
+    <a href="{{ url_for('admin.questions', status='pending') }}"
+       style="margin-left:auto; font-size:11px; opacity:.75; text-decoration:underline; color:inherit;">
+      View pending only →
+    </a>
+    {% endif %}
+  </div>
+  {% endif %}
+
+  {# ── Filter bar ───────────────────────────────────────────────────────── #}
+  {% set any_filter = status_filter or category_filter or role_filter or date_filter %}
+  <form method="GET" action="{{ url_for('admin.questions') }}" id="filter-form">
+    <div class="filter-bar">
+
+      <select name="status" class="filter-select" onchange="this.form.submit()">
+        <option value=""         {{ 'selected' if not status_filter }}>All Statuses</option>
+        <option value="pending"  {{ 'selected' if status_filter == 'pending' }}>Pending</option>
+        <option value="answered" {{ 'selected' if status_filter == 'answered' }}>Answered</option>
+      </select>
+
+      <select name="category" class="filter-select" onchange="this.form.submit()">
+        <option value="" {{ 'selected' if not category_filter }}>All Categories</option>
+        {% for cat in categories %}
+        <option value="{{ cat.slug }}" {{ 'selected' if category_filter == cat.slug }}>
+          {{ cat.title }}
+        </option>
+        {% endfor %}
+      </select>
+
+      <select name="role" class="filter-select" onchange="this.form.submit()">
+        <option value=""         {{ 'selected' if not role_filter }}>All Roles</option>
+        <option value="tenant"   {{ 'selected' if role_filter == 'tenant' }}>Tenant</option>
+        <option value="landlord" {{ 'selected' if role_filter == 'landlord' }}>Landlord</option>
+      </select>
+
+      <select name="date" class="filter-select" onchange="this.form.submit()">
+        <option value=""    {{ 'selected' if not date_filter }}>All Time</option>
+        <option value="today" {{ 'selected' if date_filter == 'today' }}>Today</option>
+        <option value="7d"    {{ 'selected' if date_filter == '7d' }}>Last 7 Days</option>
+        <option value="30d"   {{ 'selected' if date_filter == '30d' }}>Last 30 Days</option>
+      </select>
+
+      {% if any_filter %}
+      <a href="{{ url_for('admin.questions') }}" class="btn btn-ghost btn-sm">✕ Clear</a>
+      {% endif %}
+
+      <span class="filter-meta">
+        {{ total_count }} result{{ 's' if total_count != 1 }}
+      </span>
+
+    </div>
+  </form>
+
+  {# ── Table ────────────────────────────────────────────────────────────── #}
   <div class="card" style="padding:0; overflow:hidden;">
+    {% if questions %}
     <table class="data-table">
       <thead>
         <tr>
           <th>User</th>
           <th>Category</th>
           <th>Status</th>
-          <th>Credit Used</th>
+          <th>Steps</th>
+          <th>Credit</th>
+          <th>Viewed</th>
           <th>Asked</th>
           <th>Answered</th>
         </tr>
       </thead>
       <tbody>
         {% for q in questions %}
-        <tr>
+        <tr class="{{ 'row-pending' if q.status == 'pending' }}"
+            onclick="window.location='{{ url_for('admin.user_detail', id=q.user_id) }}'">
+
+          {# User #}
           <td>
             <div class="user-cell">
-              <div class="user-avatar">{{ q.user.full_name[0].upper() }}</div>
+              <div class="user-avatar">{{ q.user.full_name[0] | upper }}</div>
               <div>
                 <div class="user-name">{{ q.user.full_name }}</div>
                 <div class="user-email">{{ q.user.email }}</div>
               </div>
             </div>
           </td>
-          <td>{{ q.category_slug | replace('_', ' ') | title }}</td>
+
+          {# Category #}
           <td>
-            <span class="badge badge-{{ 'active' if q.status == 'answered' else 'inactive' }}">
-              {{ q.status | title }}
+            <span class="cat-pill">
+              {{ q.category_slug | replace('_', ' ') | title }}
             </span>
           </td>
+
+          {# Status #}
           <td>
-            {% if q.credit_used %}
-            <span class="badge badge-complete">Yes</span>
+            {% if q.status == 'pending' %}
+              <span class="badge badge-pending">Pending</span>
             {% else %}
-            <span class="badge badge-incomplete">No</span>
+              <span class="badge badge-answered">Answered</span>
             {% endif %}
           </td>
-          <td style="font-size:13px; color:var(--text-muted);">{{ q.created_at.strftime('%d %b %Y %H:%M') }}</td>
-          <td style="font-size:13px; color:var(--text-muted);">
-            {{ q.answered_at.strftime('%d %b %Y %H:%M') if q.answered_at else 'N/A' }}
+
+          {# Steps - wizard_path length #}
+          <td>
+            <span class="steps-badge">
+              {{ q.wizard_path | length if q.wizard_path else 0 }}
+            </span>
           </td>
+
+          {# Credit used #}
+          <td>
+            {% if q.credit_used %}
+              <span class="icon-yes">✓</span>
+            {% else %}
+              <span class="icon-no">-</span>
+            {% endif %}
+          </td>
+
+          {# Viewed #}
+          <td>
+            {% if q.has_been_viewed %}
+              <span class="icon-yes">✓</span>
+            {% else %}
+              <span class="icon-no">-</span>
+            {% endif %}
+          </td>
+
+          {# Asked #}
+          <td>
+            <span class="time-ago" data-ts="{{ q.created_at.isoformat() }}"></span>
+          </td>
+
+          {# Answered #}
+          <td>
+            {% if q.answered_at %}
+              <span class="time-ago" data-ts="{{ q.answered_at.isoformat() }}"></span>
+            {% else %}
+              <span style="color:var(--text-muted); font-size:12px;">-</span>
+            {% endif %}
+          </td>
+
         </tr>
         {% endfor %}
       </tbody>
     </table>
+
+    {# ── Pagination ──────────────────────────────────────────────────────── #}
+    {% if total_pages > 1 %}
+    <div class="pagination">
+      <div class="pagination-info">Page {{ page }} of {{ total_pages }}</div>
+      <div class="pagination-pages">
+
+        {% if page > 1 %}
+          <a href="{{ url_for('admin.questions', page=page-1, status=status_filter, category=category_filter, role=role_filter, date=date_filter) }}" class="pg-btn">← Prev</a>
+        {% else %}
+          <span class="pg-btn disabled">← Prev</span>
+        {% endif %}
+
+        {% set show_pages = [] %}
+        {% for p in range(1, total_pages + 1) %}
+          {% if p == 1 or p == total_pages or (p >= page - 2 and p <= page + 2) %}
+            {% if show_pages.append(p) %}{% endif %}
+          {% endif %}
+        {% endfor %}
+
+        {% set ns = namespace(prev=0) %}
+        {% for p in show_pages %}
+          {% if ns.prev and p - ns.prev > 1 %}<span class="pg-ellipsis">…</span>{% endif %}
+          <a href="{{ url_for('admin.questions', page=p, status=status_filter, category=category_filter, role=role_filter, date=date_filter) }}"
+             class="pg-btn {{ 'active' if p == page }}">{{ p }}</a>
+          {% set ns.prev = p %}
+        {% endfor %}
+
+        {% if page < total_pages %}
+          <a href="{{ url_for('admin.questions', page=page+1, status=status_filter, category=category_filter, role=role_filter, date=date_filter) }}" class="pg-btn">Next →</a>
+        {% else %}
+          <span class="pg-btn disabled">Next →</span>
+        {% endif %}
+
+      </div>
+    </div>
+    {% endif %}
+
+    {% else %}
+    {# ── Empty state ─────────────────────────────────────────────────────── #}
+    <div class="table-empty">
+      <div class="table-empty-icon">◎</div>
+      <div class="table-empty-title">No questions found</div>
+      {% if any_filter %}
+        <div class="table-empty-sub">No questions match your current filters.</div>
+        <a href="{{ url_for('admin.questions') }}" class="btn btn-outline">Clear filters</a>
+      {% else %}
+        <div class="table-empty-sub">Consultations will appear here once users start asking questions.</div>
+      {% endif %}
+    </div>
+    {% endif %}
+
   </div>
-  {% else %}
-  <div class="empty-state">
-    <div class="empty-icon">◇</div>
-    <div class="empty-title">No questions yet</div>
-    <div class="empty-desc">Answered consultations will appear here.</div>
-  </div>
-  {% endif %}
 
 </div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function timeAgo(isoStr) {
+  if (!isoStr) return '';
+  const then = new Date(isoStr + (isoStr.endsWith('Z') ? '' : 'Z'));
+  const diff = Math.floor((Date.now() - then.getTime()) / 1000);
+  if (diff < 60)    return diff + 's ago';
+  if (diff < 3600)  return Math.floor(diff / 60) + 'm ago';
+  if (diff < 86400) return Math.floor(diff / 3600) + 'h ago';
+  if (diff < 86400 * 30) return Math.floor(diff / 86400) + 'd ago';
+  return Math.floor(diff / (86400 * 30)) + 'mo ago';
+}
+document.querySelectorAll('.time-ago[data-ts]').forEach(el => {
+  el.textContent = timeAgo(el.dataset.ts);
+});
+</script>
 {% endblock %}

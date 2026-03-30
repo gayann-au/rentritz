@@ -68,7 +68,7 @@ def register():
             flash('Name contains invalid characters.', 'error')
             return render_template('auth/register.html')
 
-        # Role — exact match only
+        # Role - exact match only
         if role not in VALID_ROLES:
             flash('Please select a valid role: tenant or landlord.', 'error')
             return render_template('auth/register.html')
@@ -141,7 +141,7 @@ def login():
                 if now - user.failed_login_lockout < _LOCKOUT_DURATION:
                     flash('Incorrect email or password.', 'error')
                     return render_template('auth/login.html')
-                # Lockout expired — reset
+                # Lockout expired - reset
                 user.failed_login_count   = 0
                 user.failed_login_lockout = None
                 db.session.commit()
@@ -165,7 +165,7 @@ def login():
             flash('Your account has been deactivated. Please contact support.', 'error')
             return render_template('auth/login.html')
 
-        # Successful login — clear brute force state
+        # Successful login - clear brute force state
         user.failed_login_count   = 0
         user.failed_login_lockout = None
         user.last_login           = datetime.utcnow()

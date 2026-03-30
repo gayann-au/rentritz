@@ -2,14 +2,14 @@
 
 A Dubai tenancy law consultation portal that guides tenants and landlords through their legal rights and obligations under UAE rental law.
 
-Users register as either a **tenant** or a **landlord**, then navigate a role-aware decision tree to reach their specific legal scenario. Each scenario delivers tailored advice — the rights that apply, the exact steps to take, and the specific articles of Dubai law that govern the situation.
+Users register as either a tenant or a landlord, then navigate a role-aware decision tree to reach their specific legal scenario. Each scenario delivers tailored advice: the rights that apply, the exact steps to take, and the specific articles of Dubai law that govern the situation.
 
 ---
 
 ## What It Does
 
-- **Role-aware wizard** — tenants and landlords navigate separate branches of the same decision tree, reaching answers relevant to their position
-- **Dual-content scenarios** — every scenario holds distinct content for tenants and landlords: headline, situation summary, applicable rights, action steps, and law references
+- **Role-aware wizard** - tenants and landlords navigate separate branches of the same decision tree, reaching answers relevant to their position
+- **Dual-content scenarios** - every scenario holds distinct content for tenants and landlords: headline, situation summary, applicable rights, action steps, and law references
 - **Legal categories covered:**
   - Rent Increase
   - Eviction Notice
@@ -21,9 +21,9 @@ Users register as either a **tenant** or a **landlord**, then navigate a role-aw
   - Rent Payment Issues
   - Filing a Dispute (RDSC)
   - Landlord Rights
-- **Credit system** — users receive 2 free consultations on signup and can purchase credit packs (Starter / Standard / Pro) via nGenius payment gateway
-- **Admin panel** — manage categories, scenarios, decision trees, users, and payments at `/manage`
-- **PWA-ready** — includes service worker and web manifest for installability
+- **Credit system** - users receive 2 free consultations on signup and can purchase credit packs (Starter / Standard / Pro) via nGenius payment gateway
+- **Admin panel** - manage categories, scenarios, decision trees, users, and payments at `/manage`
+- **PWA-ready** - includes service worker and web manifest for installability
 
 ---
 
@@ -51,8 +51,8 @@ Users register as either a **tenant** or a **landlord**, then navigate a role-aw
 
 - Python 3.10+
 - PostgreSQL running locally
-- A SendGrid account (for email — optional in development)
-- An nGenius account (for payments — optional in development)
+- A SendGrid account (optional in development)
+- An nGenius account (optional in development)
 
 ### Steps
 
@@ -119,8 +119,8 @@ Copy `.env.example` to `.env` and set every value before running.
 
 | Variable | Required | Description |
 |---|---|---|
-| `DATABASE_URL` | Yes | PostgreSQL connection string — `postgresql://user:password@localhost:5432/rentright` |
-| `SECRET_KEY` | Yes | Flask session secret — minimum 32 characters. Generate with `secrets.token_hex(32)` |
+| `DATABASE_URL` | Yes | PostgreSQL connection string, e.g. `postgresql://user:password@localhost:5432/rentritz` |
+| `SECRET_KEY` | Yes | Flask session secret, minimum 32 characters. Generate with `secrets.token_hex(32)` |
 | `ADMIN_EMAIL` | Yes | Email address for the admin account created on first startup |
 | `ADMIN_PASSWORD` | Yes | Password for the admin account created on first startup |
 | `DEBUG` | No | Set to `true` in local development only. Defaults to `false` |
@@ -181,8 +181,8 @@ New users receive **2 free credits** on signup.
 
 All scenario content is based on:
 
-- **Law No. 26 of 2007** — Regulating the relationship between landlords and tenants in Dubai
-- **Law No. 33 of 2008** — Amending Law No. 26 of 2007
-- **Decree No. 26 of 2013** — Concerning the Rental Disputes Settlement Centre (RDSC)
+- **Law No. 26 of 2007** - Regulating the relationship between landlords and tenants in Dubai
+- **Law No. 33 of 2008** - Amending Law No. 26 of 2007
+- **Decree No. 26 of 2013** - Concerning the Rental Disputes Settlement Centre (RDSC)
 - **RERA rent increase guidelines** (Decree No. 43 of 2013)
 - **DTCM Holiday Home Regulations** (Executive Council Resolution No. 8 of 2012)

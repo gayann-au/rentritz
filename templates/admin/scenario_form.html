@@ -56,7 +56,14 @@
                 value="{{ scenario.headline if scenario else '' }}"
                 placeholder="Short headline shown at top of answer page">
             </div>
-          
+            <div class="form-group form-col-span" id="landlord-headline-group">
+              <label class="form-label">Landlord Headline</label>
+              <span class="form-hint" style="margin-bottom:4px; display:block;">Override headline shown to landlords only. Leave blank to use the main headline for both roles.</span>
+              <input type="text" name="landlord_headline" class="form-input"
+                value="{{ scenario.landlord_headline if scenario and scenario.landlord_headline else '' }}"
+                placeholder="Landlord-specific headline (optional)">
+            </div>
+
         </div>
 
         <div class="card">
@@ -66,6 +73,11 @@
               <label class="form-label">Situation</label>
               <span class="form-hint" style="margin-bottom:4px; display:block;">Plain text description of the situation</span>
               <textarea name="situation" class="form-textarea tall" placeholder="Describe the situation in plain language…">{{ scenario.situation if scenario and scenario.situation else '' }}</textarea>
+            </div>
+            <div class="form-group" id="landlord-situation-group">
+              <label class="form-label">Landlord Situation</label>
+              <span class="form-hint" style="margin-bottom:4px; display:block;">Override situation text shown to landlords only. Leave blank to use the main situation for both roles.</span>
+              <textarea name="landlord_situation" class="form-textarea tall" placeholder="Landlord-specific situation (optional)">{{ scenario.landlord_situation if scenario and scenario.landlord_situation else '' }}</textarea>
             </div>
             <div class="form-group" id="tenant-rights-group">
               <label class="form-label">Tenant Rights</label>
@@ -81,6 +93,11 @@
               <label class="form-label">What To Do</label>
               <span class="form-hint" style="margin-bottom:4px; display:block;">One action step per line</span>
               <textarea name="what_to_do" class="form-textarea tall" placeholder="Step 1: …&#10;Step 2: …&#10;Step 3: …">{{ (scenario.what_to_do | join('\n')) if scenario and scenario.what_to_do else '' }}</textarea>
+            </div>
+            <div class="form-group" id="landlord-what-to-do-group">
+              <label class="form-label">Landlord What To Do</label>
+              <span class="form-hint" style="margin-bottom:4px; display:block;">Override what to do steps for landlords. Leave blank to use the main what to do for both roles.</span>
+              <textarea name="landlord_what_to_do" class="form-textarea tall" placeholder="Step 1: …&#10;Step 2: …&#10;Step 3: …">{{ (scenario.landlord_what_to_do | join('\n')) if scenario and scenario.landlord_what_to_do else '' }}</textarea>
             </div>
           </div>
         </div>
@@ -152,16 +169,26 @@
 
 {% block scripts %}
 <script>
-const titleInput    = document.querySelector('input[name="title"]');
-const slugInput     = document.getElementById('slug-input');
-const roleSelect    = document.getElementById('for-role-select');
-const tenantGroup   = document.getElementById('tenant-rights-group');
-const landlordGroup = document.getElementById('landlord-rights-group');
+const titleInput          = document.querySelector('input[name="title"]');
+const slugInput           = document.getElementById('slug-input');
+const roleSelect          = document.getElementById('for-role-select');
+const tenantGroup         = document.getElementById('tenant-rights-group');
+const landlordGroup       = document.getElementById('landlord-rights-group');
+const landlordHeadlineGrp = document.getElementById('landlord-headline-group');
+const landlordSituationGrp= document.getElementById('landlord-situation-group');
+const landlordWhatGrp     = document.getElementById('landlord-what-to-do-group');
 
 function updateRightsVisibility() {
   const val = roleSelect.value;
-  tenantGroup.style.display   = (val === 'landlord') ? 'none' : '';
-  landlordGroup.style.display = (val === 'tenant')   ? 'none' : '';
+  // Tenant-only fields: hide when role is landlord-only
+  tenantGroup.style.display          = (val === 'landlord') ? 'none' : '';
+  // Landlord-only fields: hide when role is tenant-only
+  landlordGroup.style.display        = (val === 'tenant')   ? 'none' : '';
+  // Landlord override fields: only relevant when landlords can see the scenario
+  const showLandlordOverrides = (val === 'both' || val === 'landlord');
+  landlordHeadlineGrp.style.display  = showLandlordOverrides ? '' : 'none';
+  landlordSituationGrp.style.display = showLandlordOverrides ? '' : 'none';
+  landlordWhatGrp.style.display      = showLandlordOverrides ? '' : 'none';
 }
 
 roleSelect.addEventListener('change', updateRightsVisibility);

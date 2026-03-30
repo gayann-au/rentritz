@@ -197,7 +197,7 @@ def callback():
         flash('Payment record not found.', 'error')
         return redirect(url_for('core.credits'))
 
-    # Idempotency guard — already captured, do not credit again
+    # Idempotency guard - already captured, do not credit again
     if payment.status == 'captured':
         _log_payment('callback_duplicate', current_user.id, ip,
                      order_id=ref, status='captured', detail='already_credited_skipped')

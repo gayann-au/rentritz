@@ -143,6 +143,7 @@ def _migrate_schema():
         'ALTER TABLE users ADD COLUMN IF NOT EXISTS reset_token_expiry TIMESTAMP',
         'ALTER TABLE users ADD COLUMN IF NOT EXISTS failed_login_count INTEGER NOT NULL DEFAULT 0',
         'ALTER TABLE users ADD COLUMN IF NOT EXISTS failed_login_lockout TIMESTAMP',
+        'ALTER TABLE users ADD COLUMN IF NOT EXISTS has_seen_onboarding BOOLEAN NOT NULL DEFAULT FALSE',
     ]
     for stmt in stmts:
         try:
