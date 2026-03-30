@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Outfit:wght@300;400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -24,7 +24,7 @@
 
 html, body {
   height: 100%;
-  font-family: 'Outfit', sans-serif;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   background: var(--near-black);
   color: var(--white);
   font-size: 14px;
@@ -33,7 +33,7 @@ html, body {
 
 a { color: inherit; text-decoration: none; }
 button, input, select, textarea { font-family: inherit; font-size: inherit; }
-h1, h2, h3, h4 { font-family: 'Cormorant Garamond', serif; font-weight: 600; }
+h1, h2, h3, h4 { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-weight: 600; }
 
 .admin-shell { display:flex; height:100vh; overflow:hidden; }
 
@@ -49,7 +49,7 @@ h1, h2, h3, h4 { font-family: 'Cormorant Garamond', serif; font-weight: 600; }
 }
 
 .sidebar-brand { padding:24px 20px 20px; border-bottom:1px solid var(--dark-line); }
-.sidebar-brand .brand-name { font-family:'Cormorant Garamond',serif; font-size:20px; font-weight:700; color:var(--amber); letter-spacing:-0.02em; display:block; }
+.sidebar-brand .brand-name { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size:20px; font-weight:700; color:var(--amber); letter-spacing:-0.02em; display:block; }
 .sidebar-brand .brand-sub  { font-size:10px; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.1em; margin-top:2px; }
 
 .sidebar-nav { flex:1; padding:12px 0; }
@@ -109,16 +109,16 @@ h1, h2, h3, h4 { font-family: 'Cormorant Garamond', serif; font-weight: 600; }
 
 .stats-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(160px,1fr)); gap:14px; margin-bottom:24px; }
 .stat-card { background:var(--dark-card); border:1px solid var(--dark-line); border-radius:8px; padding:18px; }
-.stat-value { font-family:'Cormorant Garamond',serif; font-size:36px; font-weight:700; color:var(--white); line-height:1; }
+.stat-value { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size:36px; font-weight:700; color:var(--white); line-height:1; }
 .stat-label { font-size:11px; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.08em; margin-top:6px; }
 .stat-card.accent { border-color:var(--amber); background:var(--amber-glow); }
 .stat-card.accent .stat-value { color:var(--amber); }
 
 .section-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; }
-.section-title { font-family:'Cormorant Garamond',serif; font-size:22px; font-weight:600; }
+.section-title { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size:22px; font-weight:600; }
 
 .data-table { width:100%; border-collapse:collapse; }
-.data-table th { text-align:left; padding:10px 14px; font-size:11px; text-transform:uppercase; letter-spacing:0.08em; color:var(--text-muted); border-bottom:1px solid var(--dark-line); font-weight:500; white-space:nowrap; font-family:'Outfit',sans-serif; }
+.data-table th { text-align:left; padding:10px 14px; font-size:11px; text-transform:uppercase; letter-spacing:0.08em; color:var(--text-muted); border-bottom:1px solid var(--dark-line); font-weight:500; white-space:nowrap; font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
 .data-table td { padding:12px 14px; border-bottom:1px solid rgba(255,255,255,0.04); vertical-align:middle; }
 .data-table tr:hover td { background:rgba(255,255,255,0.025); }
 .data-table tr:last-child td { border-bottom:none; }
@@ -181,20 +181,20 @@ h1, h2, h3, h4 { font-family: 'Cormorant Garamond', serif; font-weight: 600; }
 
 .empty-state { text-align:center; padding:60px 20px; color:var(--text-muted); }
 .empty-icon  { font-size:40px; margin-bottom:12px; opacity:0.5; }
-.empty-title { font-family:'Cormorant Garamond',serif; font-size:22px; color:var(--white); margin-bottom:6px; }
+.empty-title { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size:22px; color:var(--white); margin-bottom:6px; }
 .empty-desc  { font-size:13px; margin-bottom:20px; }
 
 .tree-builder-layout { display:flex; height:calc(100vh - 56px); overflow:hidden; }
 .tree-nav-panel { width:300px; min-width:300px; border-right:1px solid var(--dark-line); display:flex; flex-direction:column; overflow:hidden; }
 .tree-nav-header { padding:14px 16px; border-bottom:1px solid var(--dark-line); display:flex; align-items:center; justify-content:space-between; flex-shrink:0; }
-.tree-nav-header h3 { font-size:11px; text-transform:uppercase; letter-spacing:0.1em; color:var(--text-muted); font-family:'Outfit',sans-serif; font-weight:500; }
+.tree-nav-header h3 { font-size:11px; text-transform:uppercase; letter-spacing:0.1em; color:var(--text-muted); font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-weight:500; }
 .tree-nav-scroll { flex:1; overflow-y:auto; padding:8px 0; }
 .tree-editor-panel { flex:1; display:flex; flex-direction:column; overflow:hidden; }
 .tree-editor-topbar { padding:12px 20px; border-bottom:1px solid var(--dark-line); display:flex; align-items:center; justify-content:space-between; flex-shrink:0; gap:12px; }
 .tree-editor-scroll { flex:1; overflow-y:auto; padding:20px; }
 .tree-empty-state { display:flex; flex-direction:column; align-items:center; justify-content:center; height:100%; color:var(--text-muted); text-align:center; gap:12px; padding:40px; }
 .tree-empty-icon  { font-size:40px; opacity:0.4; }
-.tree-empty-title { font-family:'Cormorant Garamond',serif; font-size:24px; color:var(--white); }
+.tree-empty-title { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size:24px; color:var(--white); }
 .tree-empty-desc  { font-size:13px; max-width:280px; line-height:1.6; }
 
 .nav-node { display:flex; align-items:center; gap:8px; padding:7px 16px; cursor:pointer; transition:background 0.1s; border-left:2px solid transparent; user-select:none; }
@@ -216,7 +216,7 @@ h1, h2, h3, h4 { font-family: 'Cormorant Garamond', serif; font-weight: 600; }
 .node-editor { max-width:680px; }
 .node-question-section { margin-bottom:28px; }
 .node-section-label { font-size:11px; text-transform:uppercase; letter-spacing:0.1em; color:var(--text-muted); margin-bottom:8px; font-weight:500; }
-.node-question-input { background:var(--near-black); border:1px solid var(--dark-line); border-radius:6px; color:var(--white); padding:12px 14px; font-size:16px; font-family:'Cormorant Garamond',serif; font-weight:500; outline:none; width:100%; transition:border-color 0.15s; resize:none; }
+.node-question-input { background:var(--near-black); border:1px solid var(--dark-line); border-radius:6px; color:var(--white); padding:12px 14px; font-size:16px; font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-weight:500; outline:none; width:100%; transition:border-color 0.15s; resize:none; }
 .node-question-input:focus { border-color:var(--amber); }
 .options-list { display:flex; flex-direction:column; gap:10px; margin-bottom:14px; }
 .option-card { background:var(--near-black); border:1px solid var(--dark-line); border-radius:8px; overflow:hidden; transition:border-color 0.15s; }
@@ -224,7 +224,7 @@ h1, h2, h3, h4 { font-family: 'Cormorant Garamond', serif; font-weight: 600; }
 .option-card-header { display:flex; align-items:center; gap:10px; padding:10px 12px; border-bottom:1px solid var(--dark-line); }
 .option-drag-handle { color:var(--text-muted); cursor:default; font-size:14px; opacity:0.5; flex-shrink:0; }
 .option-num { font-size:11px; color:var(--text-muted); background:var(--dark-line); width:20px; height:20px; border-radius:50%; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
-.option-label-input { flex:1; background:transparent; border:none; color:var(--white); font-size:14px; outline:none; font-family:'Outfit',sans-serif; min-width:0; }
+.option-label-input { flex:1; background:transparent; border:none; color:var(--white); font-size:14px; outline:none; font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; min-width:0; }
 .option-label-input::placeholder { color:var(--text-muted); }
 .option-order-btns { display:flex; gap:2px; flex-shrink:0; }
 .order-btn { background:none; border:none; color:var(--text-muted); cursor:pointer; padding:2px 5px; font-size:12px; border-radius:3px; transition:all 0.1s; }
@@ -240,7 +240,7 @@ h1, h2, h3, h4 { font-family: 'Cormorant Garamond', serif; font-weight: 600; }
 .dest-text.connected.answer { color:var(--success); }
 .dest-text.connected.branch { color:#38bdf8; }
 .dest-actions { display:flex; gap:6px; flex-shrink:0; }
-.dest-btn { background:none; border:1px solid var(--dark-line); border-radius:4px; color:var(--text-muted); cursor:pointer; padding:3px 10px; font-size:12px; font-family:'Outfit',sans-serif; transition:all 0.15s; white-space:nowrap; }
+.dest-btn { background:none; border:1px solid var(--dark-line); border-radius:4px; color:var(--text-muted); cursor:pointer; padding:3px 10px; font-size:12px; font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; transition:all 0.15s; white-space:nowrap; }
 .dest-btn:hover { color:var(--white); border-color:#444; }
 .dest-btn.primary { border-color:var(--amber); color:var(--amber); }
 .dest-btn.primary:hover { background:var(--amber); color:var(--black); }
@@ -262,11 +262,11 @@ h1, h2, h3, h4 { font-family: 'Cormorant Garamond', serif; font-weight: 600; }
 .modal-overlay.hidden { display:none; }
 .modal-box { background:var(--dark-card); border:1px solid var(--dark-line); border-radius:10px; width:100%; max-width:560px; max-height:80vh; display:flex; flex-direction:column; overflow:hidden; }
 .modal-header { padding:18px 20px; border-bottom:1px solid var(--dark-line); display:flex; align-items:center; justify-content:space-between; }
-.modal-title { font-family:'Cormorant Garamond',serif; font-size:20px; font-weight:600; }
+.modal-title { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size:20px; font-weight:600; }
 .modal-close { background:none; border:none; color:var(--text-muted); cursor:pointer; font-size:20px; padding:0; line-height:1; transition:color 0.15s; }
 .modal-close:hover { color:var(--white); }
 .modal-search { padding:12px 20px; border-bottom:1px solid var(--dark-line); }
-.modal-search-input { width:100%; background:var(--near-black); border:1px solid var(--dark-line); border-radius:5px; color:var(--white); padding:8px 12px; font-size:13px; font-family:'Outfit',sans-serif; outline:none; }
+.modal-search-input { width:100%; background:var(--near-black); border:1px solid var(--dark-line); border-radius:5px; color:var(--white); padding:8px 12px; font-size:13px; font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; outline:none; }
 .modal-search-input:focus { border-color:var(--amber); }
 .modal-list { flex:1; overflow-y:auto; padding:8px; }
 .modal-scenario-item { padding:12px; border-radius:6px; cursor:pointer; transition:background 0.1s; border:1px solid transparent; }
@@ -279,19 +279,19 @@ h1, h2, h3, h4 { font-family: 'Cormorant Garamond', serif; font-weight: 600; }
 .login-shell { min-height:100vh; display:flex; align-items:center; justify-content:center; background:var(--near-black); padding:20px; }
 .login-card { width:100%; max-width:380px; background:var(--dark-card); border:1px solid var(--dark-line); border-radius:12px; padding:36px 32px; }
 .login-brand { text-align:center; margin-bottom:28px; }
-.login-brand-name { font-family:'Cormorant Garamond',serif; font-size:28px; font-weight:700; color:var(--amber); }
+.login-brand-name { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size:28px; font-weight:700; color:var(--amber); }
 .login-brand-sub { font-size:11px; text-transform:uppercase; letter-spacing:0.12em; color:var(--text-muted); margin-top:2px; }
 .login-form { display:flex; flex-direction:column; gap:14px; }
 .login-form .form-label { color:var(--text-muted); font-size:11px; font-weight:500; text-transform:uppercase; letter-spacing:0.07em; display:block; margin-bottom:5px; }
 .login-form .form-input { width:100%; background:var(--near-black); border:1px solid var(--dark-line); border-radius:5px; color:var(--white); padding:10px 12px; font-size:14px; outline:none; transition:border-color 0.15s; }
 .login-form .form-input:focus { border-color:var(--amber); }
-.login-submit { width:100%; background:var(--amber); color:var(--black); border:none; border-radius:5px; padding:11px; font-size:14px; font-weight:600; font-family:'Outfit',sans-serif; cursor:pointer; transition:background 0.15s; margin-top:4px; }
+.login-submit { width:100%; background:var(--amber); color:var(--black); border:none; border-radius:5px; padding:11px; font-size:14px; font-weight:600; font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; cursor:pointer; transition:background 0.15s; margin-top:4px; }
 .login-submit:hover { background:var(--amber-dark); }
 .login-error { background:var(--danger-glow); border:1px solid var(--danger); color:var(--danger); padding:10px 12px; border-radius:5px; font-size:13px; }
 
 .error-page { min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; background:var(--near-black); color:var(--white); text-align:center; padding:40px 20px; }
-.error-code  { font-family:'Cormorant Garamond',serif; font-size:100px; font-weight:700; color:var(--amber); line-height:1; opacity:0.4; }
-.error-title { font-family:'Cormorant Garamond',serif; font-size:32px; margin-bottom:10px; }
+.error-code  { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size:100px; font-weight:700; color:var(--amber); line-height:1; opacity:0.4; }
+.error-title { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size:32px; margin-bottom:10px; }
 .error-desc  { color:var(--text-muted); font-size:15px; margin-bottom:28px; }
 
 ::-webkit-scrollbar { width:5px; height:5px; }
