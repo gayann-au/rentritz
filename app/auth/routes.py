@@ -105,6 +105,20 @@ def register():
         db.session.add(log)
         db.session.commit()
 
+        try:
+            login_url = url_for('auth.login', _external=True)
+            msg = Message(
+                subject='Welcome to Rentritz',
+                recipients=[user.email],
+                html=render_template('email/welcome.html',
+                                     user=user,
+                                     free_credits=free_credits,
+                                     login_url=login_url),
+            )
+            mail.send(msg)
+        except Exception as e:
+            current_app.logger.error(f'Failed to send welcome email to {user.email}: {e}')
+
         login_user(user)
         flash(f'Welcome, {user.full_name}. You have {free_credits} free consultations to get started.', 'success')
         return redirect(url_for('core.dashboard'))

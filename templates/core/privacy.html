@@ -1,0 +1,283 @@
+{% extends 'base.html' %}
+{% block title %}Privacy Policy | Rentritz Dubai{% endblock %}
+{% block body_class %}legal-page{% endblock %}
+
+{% block content %}
+<style>
+body {
+  background: #0a0a0a;
+  color: #e5e5e5;
+}
+.legal-wrap {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 64px 24px 96px;
+}
+.legal-brand {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #f59e0b;
+  margin-bottom: 32px;
+  display: block;
+}
+.legal-wrap h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: -0.03em;
+  margin-bottom: 8px;
+}
+.legal-meta {
+  font-size: 13px;
+  color: #555;
+  margin-bottom: 56px;
+  padding-bottom: 32px;
+  border-bottom: 1px solid #1e1e1e;
+}
+.legal-section {
+  margin-bottom: 48px;
+}
+.legal-section h2 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #ffffff;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 16px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #1e1e1e;
+}
+.legal-section p {
+  font-size: 15px;
+  line-height: 1.75;
+  color: #a3a3a3;
+  margin-bottom: 14px;
+}
+.legal-section p:last-child { margin-bottom: 0; }
+.legal-section ul {
+  margin: 0 0 14px 20px;
+  padding: 0;
+}
+.legal-section ul li {
+  font-size: 15px;
+  line-height: 1.75;
+  color: #a3a3a3;
+  margin-bottom: 6px;
+}
+.legal-footer {
+  margin-top: 64px;
+  padding-top: 32px;
+  border-top: 1px solid #1e1e1e;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.legal-footer p {
+  font-size: 13px;
+  color: #444;
+}
+.legal-footer a {
+  color: #f59e0b;
+  text-decoration: none;
+}
+.legal-footer a:hover { text-decoration: underline; }
+</style>
+
+<div class="legal-wrap">
+  <span class="legal-brand">Rentritz Dubai</span>
+  <h1>Privacy Policy</h1>
+  <p class="legal-meta">Last updated: March 2025</p>
+
+  <div class="legal-section">
+    <h2>1. Who We Are</h2>
+    <p>
+      Rentritz Dubai ("Rentritz", "we", "us", "our") operates the Rentritz platform
+      at rentritz.com. We are the data controller for the personal data described
+      in this policy.
+    </p>
+    <p>
+      This Privacy Policy explains what data we collect, why we collect it, how
+      we use and store it, and what rights you have over your data. By using the
+      platform you agree to the practices described in this policy.
+    </p>
+  </div>
+
+  <div class="legal-section">
+    <h2>2. Data We Collect</h2>
+    <p>We collect the following categories of personal data:</p>
+    <ul>
+      <li>
+        <strong style="color:#e5e5e5;">Account data</strong> - your full name,
+        email address, chosen role (tenant or landlord), and encrypted password
+        when you register
+      </li>
+      <li>
+        <strong style="color:#e5e5e5;">Consultation data</strong> - the category
+        you selected, the answers you gave in the decision tree, and the scenario
+        output delivered to you
+      </li>
+      <li>
+        <strong style="color:#e5e5e5;">Payment data</strong> - transaction
+        references, amounts, and statuses for credit purchases. We do not store
+        full card numbers or CVV codes; payment card data is handled entirely by
+        Network International (nGenius)
+      </li>
+      <li>
+        <strong style="color:#e5e5e5;">Usage data</strong> - login timestamps,
+        IP addresses associated with login events, and session activity used for
+        security and fraud prevention
+      </li>
+    </ul>
+  </div>
+
+  <div class="legal-section">
+    <h2>3. How We Use Your Data</h2>
+    <p>We use the data we collect for the following purposes:</p>
+    <ul>
+      <li>To create and manage your account</li>
+      <li>To deliver consultation outputs matched to your situation</li>
+      <li>To process credit purchases and maintain your credit balance</li>
+      <li>To send transactional emails such as password reset and account notifications</li>
+      <li>To protect the security and integrity of the platform, including detecting
+          and preventing abuse, brute-force attempts, and fraudulent transactions</li>
+      <li>To comply with applicable UAE law and regulatory obligations</li>
+    </ul>
+    <p>
+      We do not sell your personal data to third parties. We do not use your
+      consultation data to serve advertising.
+    </p>
+  </div>
+
+  <div class="legal-section">
+    <h2>4. Legal Basis for Processing</h2>
+    <p>
+      We process your personal data on the following legal bases under applicable
+      data protection law:
+    </p>
+    <ul>
+      <li>
+        <strong style="color:#e5e5e5;">Contract performance</strong> - processing
+        necessary to deliver the service you have registered for
+      </li>
+      <li>
+        <strong style="color:#e5e5e5;">Legitimate interests</strong> - security
+        monitoring, fraud prevention, and improving platform reliability
+      </li>
+      <li>
+        <strong style="color:#e5e5e5;">Legal obligation</strong> - where we are
+        required by UAE law to retain or disclose certain records
+      </li>
+    </ul>
+  </div>
+
+  <div class="legal-section">
+    <h2>5. Data Storage and Security</h2>
+    <p>
+      Your data is stored in a PostgreSQL database hosted on secure infrastructure.
+      Passwords are stored as salted hashes using industry-standard algorithms and
+      are never stored in plaintext.
+    </p>
+    <p>
+      We apply technical and organisational measures to protect your data against
+      unauthorised access, alteration, or disclosure. These include rate limiting,
+      brute-force detection, CSRF protection, and encrypted connections (HTTPS).
+    </p>
+    <p>
+      We retain your account and consultation data for as long as your account
+      is active. If you request deletion of your account, we will delete or
+      anonymise your personal data within 30 days, except where retention is
+      required by law.
+    </p>
+  </div>
+
+  <div class="legal-section">
+    <h2>6. Third-Party Services</h2>
+    <p>We use the following third-party service providers:</p>
+    <ul>
+      <li>
+        <strong style="color:#e5e5e5;">Network International (nGenius)</strong> -
+        payment processing. Their privacy policy governs how they handle your
+        payment card data
+      </li>
+      <li>
+        <strong style="color:#e5e5e5;">SendGrid</strong> - transactional email
+        delivery for password resets and account notifications
+      </li>
+    </ul>
+    <p>
+      These providers are engaged under data processing agreements and are
+      only permitted to use your data to provide their services to us.
+    </p>
+  </div>
+
+  <div class="legal-section">
+    <h2>7. Cookies</h2>
+    <p>
+      Rentritz uses a single session cookie to maintain your login state. This
+      cookie is essential for the platform to function and is set only after you
+      sign in. It is deleted when you sign out or when your session expires.
+    </p>
+    <p>
+      We do not use tracking cookies, advertising cookies, or any third-party
+      analytics cookies. We do not use Google Analytics or similar services.
+    </p>
+  </div>
+
+  <div class="legal-section">
+    <h2>8. Your Rights</h2>
+    <p>
+      Under applicable data protection law you have the right to:
+    </p>
+    <ul>
+      <li>Access the personal data we hold about you</li>
+      <li>Correct inaccurate or incomplete data</li>
+      <li>Request deletion of your personal data</li>
+      <li>Object to or restrict certain processing</li>
+      <li>Receive your data in a portable format</li>
+    </ul>
+    <p>
+      To exercise any of these rights, contact us using the details in section 9.
+      We will respond within 30 days. We may ask you to verify your identity before
+      processing your request.
+    </p>
+  </div>
+
+  <div class="legal-section">
+    <h2>9. Contact</h2>
+    <p>
+      For any questions about this Privacy Policy, to exercise your data rights,
+      or to report a data protection concern, please contact us at:
+    </p>
+    <p>
+      <strong style="color:#e5e5e5;">Email:</strong>
+      <a href="mailto:privacy@rentritz.com" style="color:#f59e0b;">privacy@rentritz.com</a>
+    </p>
+  </div>
+
+  <div class="legal-section">
+    <h2>10. Changes to This Policy</h2>
+    <p>
+      We may update this Privacy Policy from time to time. When we do, we will
+      revise the "Last updated" date at the top of this page. We will notify you
+      of material changes by email where we hold a current email address for you.
+    </p>
+    <p>
+      Continued use of the platform after changes are posted constitutes your
+      acceptance of the revised policy.
+    </p>
+  </div>
+
+  <div class="legal-footer">
+    <p>&copy; 2025 Rentritz Dubai. All rights reserved.</p>
+    <p>
+      <a href="{{ url_for('core.terms') }}">Terms of Service</a>
+      &nbsp;&middot;&nbsp;
+      <a href="{{ url_for('core.index') }}">Home</a>
+    </p>
+  </div>
+</div>
+{% endblock %}

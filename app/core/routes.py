@@ -2,6 +2,7 @@ from datetime import datetime
 from flask import Blueprint, render_template, redirect, url_for, flash, request, session, abort, current_app, make_response, jsonify
 from flask_login import login_required, current_user
 from sqlalchemy import text
+from app import limiter
 from app.models import db, Category, Scenario, Question, CreditLog
 
 core_bp = Blueprint('core', __name__)
@@ -61,6 +62,7 @@ def dashboard():
 
 @core_bp.route('/onboarding/complete', methods=['POST'])
 @login_required
+@limiter.limit("3 per hour")
 def onboarding_complete():
     current_user.has_seen_onboarding = True
     db.session.commit()
@@ -283,6 +285,16 @@ def history():
     resp.headers['Cache-Control'] = 'no-store, no-cache, must-revalidate, max-age=0'
     resp.headers['Pragma'] = 'no-cache'
     return resp
+
+
+@core_bp.route('/terms')
+def terms():
+    return render_template('core/terms.html')
+
+
+@core_bp.route('/privacy')
+def privacy():
+    return render_template('core/privacy.html')
 
 
 @core_bp.route('/credits')

@@ -711,8 +711,12 @@ def toggle_user(id):
 @admin_bp.route('/users/<int:user_id>/credits', methods=['POST'])
 @admin_required
 def add_credits(user_id):
-    user   = User.query.get_or_404(user_id)
-    amount = int(request.form.get('amount') or 0)
+    user = User.query.get_or_404(user_id)
+    try:
+        amount = int(request.form.get('amount') or 0)
+    except (ValueError, TypeError):
+        flash('Invalid credit amount.', 'error')
+        return redirect(request.referrer or url_for('admin.users'))
 
     if amount != 0:
         user.credits = max(0, user.credits + amount)
