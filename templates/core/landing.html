@@ -4,7 +4,9 @@
 
 {% block content %}
 <style>
-/* ── RESET BASE UI ──────────────────────────────────────────────────────────── */
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&display=swap');
+
+/* RESET BASE UI */
 .landing-page .nav,
 .landing-page > nav         { display: none !important; }
 body.landing-page .footer   { display: none !important; }
@@ -19,41 +21,55 @@ body.landing-page .footer   { display: none !important; }
 }
 *, *::before, *::after { box-sizing: border-box; }
 
-/* ── CSS VARIABLES ──────────────────────────────────────────────────────────── */
+/* CSS VARIABLES */
 :root {
-  --bg-primary:    #ffffff;
-  --bg-secondary:  #f5f5f5;
-  --bg-card:       #ffffff;
-  --text-primary:  #0a0a0a;
-  --text-secondary:#444444;
-  --text-muted:    #888888;
-  --border:        rgba(0,0,0,0.08);
-  --amber:         #d97706;
-  --amber-light:   #fef3c7;
-  --shadow:        0 2px 16px rgba(0,0,0,0.08);
-  --ease:          cubic-bezier(0.4, 0, 0.2, 1);
-  --ease-out:      cubic-bezier(0.22, 1, 0.36, 1);
-  --radius:        16px;
+  --bg:           #fafaf8;
+  --bg-alt:       #f2f0eb;
+  --bg-card:      #ffffff;
+  --text:         #1a1a1a;
+  --text-sub:     #555550;
+  --text-muted:   #999990;
+  --border:       #e8e4dc;
+  --amber:        #c8841a;
+  --amber-bg:     #fef6e4;
+  --amber-dark:   #a06010;
+  --shadow-sm:    0 1px 4px rgba(0,0,0,0.06);
+  --shadow-md:    0 4px 24px rgba(0,0,0,0.08);
+  --shadow-lg:    0 12px 48px rgba(0,0,0,0.12);
+  --radius:       14px;
+  --white:        #ffffff;
+  --verified:     #16a34a;
+  --amber-border: rgba(200,132,26,0.15);
+  --shadow-amber: 0 8px 28px rgba(200,132,26,0.35);
 }
+
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg-primary:    #0a0a0a;
-    --bg-secondary:  #111111;
-    --bg-card:       #1a1a1a;
-    --text-primary:  #f5f5f5;
-    --text-secondary:#aaaaaa;
-    --text-muted:    #666666;
-    --border:        rgba(255,255,255,0.08);
-    --amber:         #f59e0b;
-    --amber-light:   rgba(245,158,11,0.1);
-    --shadow:        0 2px 16px rgba(0,0,0,0.4);
+    --bg:           #0f0e0c;
+    --bg-alt:       #1a1916;
+    --bg-card:      #1f1e1b;
+    --text:         #f0ede6;
+    --text-sub:     #a09d94;
+    --text-muted:   #666660;
+    --border:       #2e2c28;
+    --amber:        #e8961e;
+    --amber-bg:     rgba(232,150,30,0.08);
+    --amber-dark:   #f0a830;
+    --shadow-sm:    0 1px 4px rgba(0,0,0,0.3);
+    --shadow-md:    0 4px 24px rgba(0,0,0,0.4);
+    --shadow-lg:    0 12px 48px rgba(0,0,0,0.5);
+    --white:        #ffffff;
+    --verified:     #22c55e;
+    --amber-border: rgba(232,150,30,0.15);
+    --shadow-amber: 0 8px 28px rgba(232,150,30,0.35);
   }
 }
 
-/* ── SCROLL REVEAL ──────────────────────────────────────────────────────────── */
+/* SCROLL REVEAL */
 .sr {
-  opacity: 0; transform: translateY(32px);
-  transition: opacity 0.7s var(--ease-out), transform 0.7s var(--ease-out);
+  opacity: 0; transform: translateY(28px);
+  transition: opacity 0.65s cubic-bezier(0.22, 1, 0.36, 1),
+              transform 0.65s cubic-bezier(0.22, 1, 0.36, 1);
 }
 .sr.in  { opacity: 1; transform: translateY(0); }
 .sr-d1  { transition-delay: 0.06s; }
@@ -62,79 +78,102 @@ body.landing-page .footer   { display: none !important; }
 .sr-d4  { transition-delay: 0.24s; }
 .sr-d5  { transition-delay: 0.30s; }
 
-/* ── SHARED ─────────────────────────────────────────────────────────────────── */
-.lp-wrap        { background: var(--bg-primary); }
-.lp-container   { width: 100%; max-width: 1160px; margin: 0 auto; padding: 0 40px; }
-.lp-section     { padding: 96px 0; }
-.lp-label {
-  display: inline-flex; align-items: center; gap: 10px;
-  font-size: 0.67rem; font-weight: 600;
-  letter-spacing: 0.2em; text-transform: uppercase;
-  color: var(--amber); margin-bottom: 18px;
+/* SHARED */
+.lp-wrap      { background: var(--bg); }
+.lp-container { width: 100%; max-width: 1160px; margin: 0 auto; padding: 0 40px; }
+.lp-section   { padding: 96px 0; }
+
+/* BUTTONS */
+.btn-primary {
+  display: inline-block;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.9375rem; font-weight: 600;
+  color: var(--white); background: var(--amber);
+  padding: 14px 28px; border-radius: 8px;
+  text-decoration: none; border: none;
+  transition: background 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
 }
-.lp-label::before {
-  content: ''; display: block; width: 22px; height: 1px;
-  background: var(--amber); flex-shrink: 0;
+.btn-primary:hover {
+  background: var(--amber-dark); color: var(--white);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-amber);
+}
+.btn-secondary {
+  display: inline-block;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.9375rem; font-weight: 600;
+  color: var(--text); background: var(--bg-card);
+  padding: 14px 28px; border-radius: 8px;
+  text-decoration: none;
+  border: 2px solid var(--border);
+  transition: border-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
+}
+.btn-secondary:hover {
+  border-color: var(--amber); color: var(--text);
+  transform: translateY(-1px);
 }
 
-/* ── NAVBAR ─────────────────────────────────────────────────────────────────── */
+/* NAVBAR */
 .lp-nav {
-  position: fixed; top: 0; left: 0; right: 0;
-  z-index: 1000; height: 68px; padding: 0 40px;
+  position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+  height: 68px; padding: 0 40px;
   display: flex; align-items: center;
-  background: var(--bg-primary);
-  border-bottom: 1px solid transparent;
-  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+  transition: box-shadow 0.3s ease;
 }
-.lp-nav.scrolled {
-  border-color: var(--border);
-  box-shadow: var(--shadow);
-}
+.lp-nav.scrolled { box-shadow: var(--shadow-md); }
 .lp-nav-inner {
   width: 100%; max-width: 1160px; margin: 0 auto;
   display: flex; align-items: center; justify-content: space-between;
 }
 .lp-logo {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  font-size: 1.45rem; font-weight: 600;
-  text-decoration: none; letter-spacing: -0.01em; white-space: nowrap;
+  display: flex; align-items: baseline; text-decoration: none;
 }
-.lp-logo .r { color: var(--amber); }
-.lp-logo .d { color: var(--text-primary); }
+.lp-logo-brand {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 1.5rem; font-weight: 700;
+  color: var(--amber); letter-spacing: -0.01em;
+}
+.lp-logo-city {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.9rem; font-weight: 400;
+  color: var(--text-muted); margin-left: 5px;
+}
 .lp-nav-links {
-  display: flex; align-items: center; gap: 32px;
+  display: flex; align-items: center; gap: 2rem;
 }
 .lp-nav-links a {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  font-size: 0.875rem; font-weight: 400;
-  color: var(--text-secondary); text-decoration: none;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.9rem; font-weight: 400;
+  color: var(--text-sub); text-decoration: none;
   transition: color 0.2s ease;
 }
 .lp-nav-links a:hover { color: var(--amber); }
-.lp-nav-actions { display: flex; align-items: center; gap: 12px; }
+.lp-nav-actions { display: flex; align-items: center; gap: 14px; }
 .lp-nav-signin {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  font-size: 0.875rem; font-weight: 500;
-  color: var(--text-secondary); text-decoration: none;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.9rem; font-weight: 500;
+  color: var(--text-sub); text-decoration: none;
   transition: color 0.2s ease;
 }
-.lp-nav-signin:hover { color: var(--text-primary); }
+.lp-nav-signin:hover { color: var(--text); }
 .lp-nav-btn {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  font-size: 0.84rem; font-weight: 600;
-  color: var(--bg-primary); background: var(--amber);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.875rem; font-weight: 600;
+  color: var(--white); background: var(--amber);
   padding: 9px 20px; border-radius: 8px;
   text-decoration: none;
-  transition: opacity 0.2s ease, transform 0.2s ease;
+  transition: background 0.2s ease, transform 0.2s ease;
 }
-.lp-nav-btn:hover { opacity: 0.9; transform: translateY(-1px); color: var(--bg-primary); }
+.lp-nav-btn:hover { background: var(--amber-dark); color: var(--white); transform: translateY(-1px); }
 .lp-hamburger {
   display: none; flex-direction: column; gap: 5px;
   cursor: pointer; background: none; border: none; padding: 4px;
 }
 .lp-hamburger span {
   display: block; width: 22px; height: 2px;
-  background: var(--text-primary); border-radius: 2px;
+  background: var(--text); border-radius: 2px;
   transition: transform 0.3s ease, opacity 0.3s ease;
 }
 .lp-hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
@@ -142,321 +181,315 @@ body.landing-page .footer   { display: none !important; }
 .lp-hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
 .lp-mobile-menu {
   position: fixed; top: 68px; left: 0; right: 0; z-index: 999;
-  background: var(--bg-primary); border-bottom: 1px solid var(--border);
+  background: var(--bg); border-bottom: 1px solid var(--border);
   overflow: hidden; max-height: 0;
-  transition: max-height 0.4s var(--ease);
+  transition: max-height 0.4s ease;
 }
-.lp-mobile-menu.open { max-height: 360px; }
+.lp-mobile-menu.open { max-height: 380px; }
 .lp-mobile-inner {
   padding: 28px 24px 36px;
   display: flex; flex-direction: column; gap: 20px;
 }
 .lp-mobile-inner a {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  font-size: 1rem; color: var(--text-secondary); text-decoration: none;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 1rem; color: var(--text-sub); text-decoration: none;
   transition: color 0.2s ease;
 }
 .lp-mobile-inner a:hover { color: var(--amber); }
 .lp-mobile-inner .lp-nav-btn { text-align: center; }
 
-/* ── HERO ───────────────────────────────────────────────────────────────────── */
+/* HERO */
 .lp-hero {
-  padding: 168px 0 120px;
+  padding: 160px 0 112px;
   text-align: center;
-  background: var(--bg-primary);
+  background: var(--bg);
   position: relative; overflow: hidden;
 }
 .lp-hero::before {
-  content: ''; position: absolute; top: -30%; left: 50%;
-  transform: translateX(-50%);
-  width: 900px; height: 600px;
-  background: radial-gradient(ellipse at center, rgba(217,119,6,0.07) 0%, transparent 65%);
+  content: ''; position: absolute;
+  top: 0; left: 50%; transform: translateX(-50%);
+  width: 800px; height: 400px;
+  background: radial-gradient(ellipse 800px 400px at 50% 40%, var(--amber-bg) 0%, transparent 70%);
   pointer-events: none;
 }
-@media (prefers-color-scheme: dark) {
-  .lp-hero::before {
-    background: radial-gradient(ellipse at center, rgba(245,158,11,0.09) 0%, transparent 65%);
-  }
-}
 .lp-hero-eyebrow {
-  display: inline-flex; align-items: center; gap: 12px;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  font-size: 0.67rem; font-weight: 600;
-  letter-spacing: 0.22em; text-transform: uppercase;
+  display: block;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.6875rem; font-weight: 600;
+  letter-spacing: 0.15em; text-transform: uppercase;
   color: var(--amber); margin-bottom: 22px;
 }
-.lp-hero-eyebrow::before,
-.lp-hero-eyebrow::after {
-  content: ''; display: block; width: 22px; height: 1px;
-  background: var(--amber); flex-shrink: 0;
-}
 .lp-hero h1 {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  font-size: clamp(2.8rem, 5.5vw, 5rem);
-  font-weight: 600; line-height: 1.05;
-  color: var(--text-primary);
-  letter-spacing: -0.025em;
-  margin: 0 0 22px;
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: clamp(2.625rem, 5.5vw, 4.5rem);
+  font-weight: 700; line-height: 1.1;
+  color: var(--text);
+  max-width: 700px; margin: 0 auto 22px;
 }
 .lp-hero-sub {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  font-size: clamp(0.95rem, 1.8vw, 1.1rem);
-  color: var(--text-secondary);
-  max-width: 520px; margin: 0 auto 36px;
-  line-height: 1.75;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 1.125rem; line-height: 1.6;
+  color: var(--text-sub);
+  max-width: 500px; margin: 0 auto 36px;
 }
 .lp-hero-btns {
   display: flex; align-items: center; justify-content: center;
-  gap: 14px; flex-wrap: wrap; margin-bottom: 22px;
-}
-.lp-btn-primary {
-  display: inline-block;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  font-size: 0.95rem; font-weight: 600;
-  color: var(--bg-primary); background: var(--amber);
-  padding: 14px 30px; border-radius: 9px; text-decoration: none;
-  transition: opacity 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
-}
-.lp-btn-primary:hover {
-  color: var(--bg-primary); opacity: 0.9; transform: translateY(-2px);
-  box-shadow: 0 8px 28px rgba(217,119,6,0.35);
-}
-@media (prefers-color-scheme: dark) {
-  .lp-btn-primary:hover { box-shadow: 0 8px 28px rgba(245,158,11,0.35); }
-}
-.lp-btn-secondary {
-  display: inline-block;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  font-size: 0.95rem; font-weight: 500;
-  color: var(--text-primary);
-  border: 1.5px solid var(--border);
-  padding: 13px 30px; border-radius: 9px; text-decoration: none;
-  transition: border-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
-}
-.lp-btn-secondary:hover {
-  border-color: var(--amber); color: var(--amber); transform: translateY(-2px);
+  gap: 16px; flex-wrap: wrap; margin-bottom: 28px;
 }
 .lp-hero-trust {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  font-size: 0.77rem; color: var(--text-muted);
   display: flex; align-items: center; justify-content: center;
-  gap: 0; flex-wrap: wrap;
+  gap: 8px; flex-wrap: wrap;
 }
-.lp-hero-trust span {
-  padding: 0 10px;
-  border-right: 1px solid var(--border);
+.lp-trust-chip {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.8125rem; color: var(--text-muted);
+  padding: 6px 16px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
 }
-.lp-hero-trust span:last-child { border-right: none; }
 
-/* ── TWO PATHS ──────────────────────────────────────────────────────────────── */
-.lp-paths { background: var(--bg-secondary); }
+/* TWO PATHS */
+.lp-paths { background: var(--bg-alt); }
 .lp-paths-header { text-align: center; margin-bottom: 52px; }
-.lp-paths-header h2 {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  font-size: clamp(1.9rem, 3.2vw, 2.8rem);
-  font-weight: 600; color: var(--text-primary);
-  letter-spacing: -0.015em; margin: 0;
+.lp-paths-eyebrow {
+  display: block;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.6875rem; font-weight: 600;
+  letter-spacing: 0.15em; text-transform: uppercase;
+  color: var(--amber); margin-bottom: 14px;
 }
-.lp-paths-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+.lp-paths-header h2 {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: clamp(1.75rem, 3vw, 2.625rem);
+  font-weight: 700; color: var(--text); margin: 0;
+}
+.lp-paths-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 24px; max-width: 960px; margin: 0 auto;
+}
 .lp-path-card {
   background: var(--bg-card);
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  padding: 36px 32px;
-  box-shadow: var(--shadow);
-  transition: border-color 0.25s ease, transform 0.25s ease, box-shadow 0.25s ease;
+  padding: 40px;
+  box-shadow: var(--shadow-md);
+  transition: border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
   display: flex; flex-direction: column;
 }
 .lp-path-card:hover {
-  border-color: var(--amber); transform: translateY(-4px);
-  box-shadow: 0 12px 40px rgba(0,0,0,0.1);
+  border-color: var(--amber);
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
 }
-@media (prefers-color-scheme: dark) {
-  .lp-path-card:hover { box-shadow: 0 12px 40px rgba(0,0,0,0.5); }
-}
-.lp-path-icon  { font-size: 2.4rem; margin-bottom: 20px; line-height: 1; }
+.lp-path-icon { font-size: 3rem; margin-bottom: 20px; line-height: 1; }
 .lp-path-title {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  font-size: 1.3rem; font-weight: 600;
-  color: var(--text-primary); margin: 0 0 12px;
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 1.625rem; font-weight: 700;
+  color: var(--text); margin: 0 0 14px;
 }
 .lp-path-body {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  font-size: 0.9rem; color: var(--text-secondary);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.9375rem; color: var(--text-sub);
   line-height: 1.7; margin: 0 0 22px; flex: 1;
 }
 .lp-path-bullets {
   list-style: none; padding: 0; margin: 0 0 28px;
-  display: flex; flex-direction: column; gap: 9px;
+  display: flex; flex-direction: column; gap: 10px;
 }
 .lp-path-bullets li {
   display: flex; align-items: flex-start; gap: 10px;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  font-size: 0.875rem; color: var(--text-secondary);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.9rem; color: var(--text-sub);
 }
 .lp-path-bullets li::before {
-  content: '✓'; color: var(--amber); font-weight: 700;
+  content: '\2713'; color: var(--amber); font-weight: 700;
   flex-shrink: 0; margin-top: 1px;
 }
 .lp-path-cta {
   display: inline-block; align-self: flex-start;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-family: 'DM Sans', sans-serif;
   font-size: 0.875rem; font-weight: 600;
   color: var(--amber); text-decoration: none;
   border-bottom: 1px solid transparent;
   transition: border-color 0.2s ease;
 }
-.lp-path-cta:hover { border-color: var(--amber); color: var(--amber); }
+.lp-path-cta:hover { border-color: var(--amber); }
 
-/* ── HOW IT WORKS ───────────────────────────────────────────────────────────── */
-.lp-hiw { background: var(--bg-primary); }
-.lp-hiw-header { text-align: center; margin-bottom: 60px; }
+/* HOW IT WORKS */
+.lp-hiw { background: var(--bg); }
+.lp-hiw-header { text-align: center; margin-bottom: 64px; }
+.lp-hiw-eyebrow {
+  display: block;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.6875rem; font-weight: 600;
+  letter-spacing: 0.15em; text-transform: uppercase;
+  color: var(--amber); margin-bottom: 14px;
+}
 .lp-hiw-header h2 {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  font-size: clamp(1.9rem, 3.2vw, 2.8rem);
-  font-weight: 600; color: var(--text-primary);
-  letter-spacing: -0.015em; margin: 0;
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: clamp(1.75rem, 3vw, 2.625rem);
+  font-weight: 700; color: var(--text); margin: 0;
 }
-.lp-hiw-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 56px; }
-.lp-hiw-divider {
-  width: 1px; background: var(--border);
-  position: absolute; top: 0; bottom: 0; left: 50%;
+.lp-hiw-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  max-width: 960px; margin: 0 auto;
 }
-.lp-hiw-col-title {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  font-size: 0.78rem; font-weight: 600; text-transform: uppercase;
-  letter-spacing: 0.14em; color: var(--amber);
-  margin-bottom: 28px;
+.lp-hiw-col { padding: 0 48px; }
+.lp-hiw-col:first-child {
+  border-right: 1px solid var(--border);
+  padding-left: 0;
 }
-.lp-hiw-steps { display: flex; flex-direction: column; gap: 28px; }
-.lp-hiw-step  { display: flex; gap: 20px; align-items: flex-start; }
+.lp-hiw-col:last-child { padding-right: 0; }
+.lp-hiw-col-label {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.6875rem; font-weight: 600;
+  text-transform: uppercase; letter-spacing: 0.14em;
+  color: var(--amber); margin-bottom: 32px;
+}
+.lp-hiw-steps { display: flex; flex-direction: column; gap: 32px; }
+.lp-hiw-step { display: flex; gap: 20px; align-items: flex-start; }
 .lp-hiw-num {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  font-size: 2rem; font-weight: 700; color: var(--amber);
-  line-height: 1; flex-shrink: 0; width: 36px;
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 3.5rem; font-weight: 700; color: var(--amber);
+  opacity: 0.3; line-height: 1; flex-shrink: 0; width: 44px;
 }
 .lp-hiw-step-text h4 {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  font-size: 0.95rem; font-weight: 600;
-  color: var(--text-primary); margin: 0 0 4px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 1rem; font-weight: 600;
+  color: var(--text); margin: 0 0 5px;
 }
 .lp-hiw-step-text p {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  font-size: 0.875rem; color: var(--text-secondary);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.875rem; color: var(--text-sub);
   line-height: 1.65; margin: 0;
 }
 
-/* ── LAWYER VALUE PROP ──────────────────────────────────────────────────────── */
+/* LAWYER VALUE PROP */
 .lp-lawyer {
-  background: var(--amber-light);
-  border-top: 1px solid rgba(217,119,6,0.2);
-  border-bottom: 1px solid rgba(217,119,6,0.2);
-}
-@media (prefers-color-scheme: dark) {
-  .lp-lawyer {
-    border-top-color: rgba(245,158,11,0.2);
-    border-bottom-color: rgba(245,158,11,0.2);
-  }
+  background: var(--amber-bg);
+  border-top: 2px solid var(--amber-border);
+  border-bottom: 2px solid var(--amber-border);
 }
 .lp-lawyer-inner {
-  display: grid; grid-template-columns: 3fr 2fr; gap: 64px;
-  align-items: center;
+  display: grid; grid-template-columns: 3fr 2fr;
+  gap: 64px; align-items: center;
 }
 .lp-lawyer-eyebrow {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  font-size: 0.67rem; font-weight: 600;
-  letter-spacing: 0.2em; text-transform: uppercase;
+  display: block;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.6875rem; font-weight: 600;
+  letter-spacing: 0.15em; text-transform: uppercase;
   color: var(--amber); margin-bottom: 14px;
 }
 .lp-lawyer h2 {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  font-size: clamp(1.8rem, 2.8vw, 2.4rem);
-  font-weight: 600; color: var(--text-primary);
-  letter-spacing: -0.015em; margin: 0 0 16px; line-height: 1.2;
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: clamp(1.75rem, 2.8vw, 2.625rem);
+  font-weight: 700; color: var(--text);
+  margin: 0 0 18px; line-height: 1.2;
 }
 .lp-lawyer-body {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  font-size: 0.95rem; color: var(--text-secondary);
-  line-height: 1.75; margin: 0 0 32px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 1rem; color: var(--text-sub);
+  line-height: 1.7; margin: 0 0 32px;
+  max-width: 480px;
 }
-.lp-lawyer-stats { display: flex; gap: 36px; flex-wrap: wrap; margin-bottom: 36px; }
-.lp-lawyer-stat-item { display: flex; flex-direction: column; gap: 3px; }
-.lp-lawyer-stat-val {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  font-size: 0.875rem; font-weight: 700; color: var(--text-primary);
+.lp-lawyer-stats {
+  display: flex; gap: 36px; flex-wrap: wrap; margin-bottom: 36px;
+}
+.lp-lawyer-stat-item { display: flex; flex-direction: column; gap: 4px; }
+.lp-lawyer-stat-label {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.8125rem; font-weight: 700;
+  color: var(--amber); text-transform: uppercase; letter-spacing: 0.05em;
 }
 .lp-lawyer-stat-desc {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  font-size: 0.75rem; color: var(--text-muted);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.875rem; color: var(--text-sub);
 }
-.lp-lawyer-cta-wrap { display: flex; flex-direction: column; gap: 8px; }
-.lp-lawyer-cta {
-  display: inline-block; align-self: flex-start;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  font-size: 0.9rem; font-weight: 600;
-  color: var(--bg-primary); background: var(--amber);
-  padding: 13px 26px; border-radius: 9px; text-decoration: none;
-  transition: opacity 0.2s ease, transform 0.2s ease;
+.lp-lawyer-cta-wrap {
+  display: flex; flex-direction: column; gap: 10px; align-items: flex-start;
+  margin-top: 32px;
 }
-.lp-lawyer-cta:hover { color: var(--bg-primary); opacity: 0.9; transform: translateY(-1px); }
 .lp-lawyer-cta-sub {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  font-size: 0.75rem; color: var(--text-muted);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.8125rem; color: var(--text-muted);
 }
+
+/* MOCK LAWYER CARD */
 .lp-mock-card {
   background: var(--bg-card);
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  padding: 28px 24px;
-  box-shadow: var(--shadow);
+  padding: 28px;
+  box-shadow: var(--shadow-lg);
+}
+.lp-mock-header {
+  display: flex; align-items: center; gap: 14px; margin-bottom: 14px;
 }
 .lp-mock-avatar {
-  width: 52px; height: 52px; border-radius: 50%;
-  background: var(--amber-light);
+  width: 48px; height: 48px; border-radius: 50%;
+  background: var(--amber-bg);
   display: flex; align-items: center; justify-content: center;
-  font-size: 1.4rem; margin-bottom: 14px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 1rem; font-weight: 700; color: var(--amber);
+  flex-shrink: 0;
 }
 .lp-mock-name {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  font-size: 1.05rem; font-weight: 600; color: var(--text-primary);
-  margin: 0 0 8px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 1rem; font-weight: 700; color: var(--text);
+  margin: 0 0 4px;
 }
-.lp-mock-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 14px; }
+.lp-mock-verified {
+  display: flex; align-items: center; gap: 5px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.75rem; color: var(--verified);
+}
+.lp-mock-verified::before {
+  content: ''; display: block; width: 7px; height: 7px;
+  border-radius: 50%; background: var(--verified); flex-shrink: 0;
+}
+.lp-mock-tags {
+  display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 14px;
+}
 .lp-mock-tag {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  font-size: 0.7rem; font-weight: 500;
-  color: var(--amber); background: var(--amber-light);
-  border-radius: 100px; padding: 3px 10px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.75rem; font-weight: 500;
+  color: var(--amber); background: var(--amber-bg);
+  border-radius: 999px; padding: 4px 10px;
 }
-.lp-mock-details {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  font-size: 0.8rem; color: var(--text-secondary);
-  line-height: 2; margin-bottom: 14px;
+.lp-mock-divider {
+  border: none; border-top: 1px solid var(--border); margin: 12px 0;
+}
+.lp-mock-detail {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.8125rem; color: var(--text-sub); margin-bottom: 5px;
 }
 .lp-mock-stars {
-  color: var(--amber); font-size: 0.9rem; letter-spacing: 1px;
-  margin-bottom: 16px;
+  color: var(--amber); font-size: 0.875rem; letter-spacing: 1px; margin-bottom: 2px;
+}
+.lp-mock-reviews {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.75rem; color: var(--text-muted); margin-bottom: 14px;
 }
 .lp-mock-btn {
   display: block; width: 100%; text-align: center;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  font-size: 0.82rem; font-weight: 600;
-  color: var(--bg-primary); background: var(--amber);
-  padding: 10px; border-radius: 8px; text-decoration: none; opacity: 0.8;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.875rem; font-weight: 600;
+  color: var(--white); background: var(--amber);
+  padding: 12px; border-radius: 8px; text-decoration: none;
   cursor: default;
 }
 
-/* ── TRUST / FINAL CTA ──────────────────────────────────────────────────────── */
-.lp-trust { background: var(--bg-secondary); text-align: center; }
+/* TRUST */
+.lp-trust { background: var(--bg-alt); text-align: center; }
 .lp-trust h2 {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  font-size: clamp(1.8rem, 3vw, 2.6rem);
-  font-weight: 600; color: var(--text-primary);
-  letter-spacing: -0.015em; margin: 0 0 12px;
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: clamp(1.625rem, 2.8vw, 2.25rem);
+  font-weight: 700; color: var(--text); margin: 0 0 16px;
 }
 .lp-trust-body {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  font-size: 0.9rem; color: var(--text-secondary);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 1rem; color: var(--text-sub);
   max-width: 520px; margin: 0 auto 36px; line-height: 1.7;
 }
 .lp-trust-badges {
@@ -464,51 +497,64 @@ body.landing-page .footer   { display: none !important; }
   gap: 12px; flex-wrap: wrap; margin-bottom: 56px;
 }
 .lp-trust-badge {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  font-size: 0.78rem; font-weight: 600;
-  color: var(--text-secondary);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.875rem; color: var(--text-sub);
   border: 1px solid var(--border);
   background: var(--bg-card);
-  border-radius: 100px; padding: 8px 20px;
+  border-radius: 999px; padding: 10px 24px;
+  box-shadow: var(--shadow-sm);
 }
 .lp-trust-cta-row {
   display: flex; align-items: center; justify-content: center;
   gap: 48px; flex-wrap: wrap;
 }
-.lp-trust-cta-block { display: flex; flex-direction: column; gap: 10px; align-items: center; }
+.lp-trust-cta-block {
+  display: flex; flex-direction: column; gap: 10px; align-items: center;
+}
 .lp-trust-cta-label {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  font-size: 0.82rem; color: var(--text-muted);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.875rem; color: var(--text-muted);
 }
 
-/* ── FOOTER ─────────────────────────────────────────────────────────────────── */
+/* FOOTER */
 .lp-footer {
-  background: var(--bg-primary);
+  background: var(--bg);
   border-top: 1px solid var(--border);
-  padding: 56px 0 36px;
+  padding: 48px 0 32px;
 }
 .lp-footer-grid {
-  display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 40px;
-  margin-bottom: 48px;
+  display: grid; grid-template-columns: 2fr 1fr 1fr 1fr;
+  gap: 40px; margin-bottom: 32px;
 }
-.lp-footer-brand .lp-logo { display: inline-block; margin-bottom: 10px; }
+.lp-footer-brand-logo {
+  display: flex; align-items: baseline; text-decoration: none; margin-bottom: 10px;
+}
+.lp-footer-brand-logo .brand {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 1.2rem; font-weight: 700; color: var(--amber);
+}
+.lp-footer-brand-logo .city {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.85rem; color: var(--text-muted); margin-left: 4px;
+}
 .lp-footer-brand p {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  font-size: 0.82rem; color: var(--text-muted); line-height: 1.6; margin: 0;
-  max-width: 240px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.8125rem; color: var(--text-muted);
+  line-height: 1.6; margin: 0; max-width: 240px;
 }
 .lp-footer-col h4 {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  font-size: 0.75rem; font-weight: 600; text-transform: uppercase;
-  letter-spacing: 0.12em; color: var(--text-muted); margin: 0 0 16px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.6875rem; font-weight: 600;
+  text-transform: uppercase; letter-spacing: 0.12em;
+  color: var(--text-muted); margin: 0 0 16px;
 }
 .lp-footer-col ul {
   list-style: none; padding: 0; margin: 0;
   display: flex; flex-direction: column; gap: 10px;
 }
 .lp-footer-col ul li a {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  font-size: 0.85rem; color: var(--text-secondary); text-decoration: none;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.875rem; color: var(--text-sub); text-decoration: none;
   transition: color 0.2s ease;
 }
 .lp-footer-col ul li a:hover { color: var(--amber); }
@@ -516,13 +562,16 @@ body.landing-page .footer   { display: none !important; }
   padding-top: 24px; border-top: 1px solid var(--border); text-align: center;
 }
 .lp-footer-bottom p {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  font-size: 0.78rem; color: var(--text-muted); margin: 0;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.8125rem; color: var(--text-muted); margin: 0;
 }
 
-/* ── RESPONSIVE ─────────────────────────────────────────────────────────────── */
+/* RESPONSIVE */
 @media (max-width: 1024px) {
   .lp-lawyer-inner { grid-template-columns: 1fr; gap: 40px; }
+  .lp-mock-card { display: none; }
+}
+@media (max-width: 900px) {
   .lp-mock-card { display: none; }
 }
 @media (max-width: 768px) {
@@ -531,28 +580,33 @@ body.landing-page .footer   { display: none !important; }
   .lp-nav { padding: 0 24px; }
   .lp-nav-links, .lp-nav-actions { display: none; }
   .lp-hamburger { display: flex; }
-  .lp-hero { padding: 132px 0 88px; }
+  .lp-hero { padding: 120px 0 80px; }
   .lp-paths-grid { grid-template-columns: 1fr; }
-  .lp-hiw-grid { grid-template-columns: 1fr; gap: 40px; }
+  .lp-hiw-grid { grid-template-columns: 1fr; }
+  .lp-hiw-col { padding: 0; }
+  .lp-hiw-col:first-child {
+    border-right: none;
+    padding-bottom: 40px;
+    border-bottom: 1px solid var(--border);
+  }
   .lp-footer-grid { grid-template-columns: 1fr 1fr; }
   .lp-trust-cta-row { flex-direction: column; gap: 24px; }
   .lp-lawyer-stats { gap: 20px; }
 }
 @media (max-width: 480px) {
-  .lp-hero h1 { font-size: 2.4rem; }
   .lp-footer-grid { grid-template-columns: 1fr; }
   .lp-hero-trust { flex-direction: column; gap: 6px; }
-  .lp-hero-trust span { border-right: none; padding: 0; }
 }
 </style>
 
 <div class="lp-wrap">
 
-  <!-- ── NAVBAR ─────────────────────────────────────────────────────────── -->
+  <!-- NAVBAR -->
   <nav class="lp-nav" id="lp-nav">
     <div class="lp-nav-inner">
       <a href="{{ url_for('core.index') }}" class="lp-logo">
-        <span class="r">Rentritz</span>&thinsp;<span class="d">Dubai</span>
+        <span class="lp-logo-brand">Rentritz</span>
+        <span class="lp-logo-city">Dubai</span>
       </a>
       <div class="lp-nav-links">
         <a href="#how-it-works">How it works</a>
@@ -575,7 +629,7 @@ body.landing-page .footer   { display: none !important; }
     </div>
   </nav>
 
-  <!-- mobile menu -->
+  <!-- MOBILE MENU -->
   <div class="lp-mobile-menu" id="lp-mobile-menu">
     <div class="lp-mobile-inner">
       <a href="#how-it-works">How it works</a>
@@ -590,42 +644,42 @@ body.landing-page .footer   { display: none !important; }
     </div>
   </div>
 
-  <!-- ── HERO ───────────────────────────────────────────────────────────── -->
+  <!-- HERO -->
   <section class="lp-hero">
     <div class="lp-container">
-      <div class="lp-hero-eyebrow sr sr-d1">Dubai Property Rights</div>
+      <span class="lp-hero-eyebrow sr sr-d1">Dubai Property Rights</span>
       <h1 class="sr sr-d2">Know exactly<br>where you stand.</h1>
       <p class="lp-hero-sub sr sr-d3">
-        Instant answers on UAE tenancy law &mdash; and direct access to verified
+        Instant answers on UAE tenancy law, and direct access to verified
         Dubai lawyers when you need one.
       </p>
       <div class="lp-hero-btns sr sr-d4">
-        <a href="{{ url_for('auth.register') }}" class="lp-btn-primary">Get free guidance &rarr;</a>
-        <a href="{{ url_for('lawyers.browse') }}" class="lp-btn-secondary">Find a Lawyer</a>
+        <a href="{{ url_for('auth.register') }}" class="btn-primary">Get free guidance &rarr;</a>
+        <a href="{{ url_for('lawyers.browse') }}" class="btn-secondary">Find a Lawyer</a>
       </div>
       <div class="lp-hero-trust sr sr-d5">
-        <span>2 free consultations included</span>
-        <span>No credit card required</span>
-        <span>UAE law verified</span>
+        <span class="lp-trust-chip">2 free consultations</span>
+        <span class="lp-trust-chip">No card required</span>
+        <span class="lp-trust-chip">UAE law verified</span>
       </div>
     </div>
   </section>
 
-  <!-- ── TWO PATHS ──────────────────────────────────────────────────────── -->
+  <!-- TWO PATHS -->
   <section class="lp-paths lp-section" id="who-is-this-for">
     <div class="lp-container">
       <div class="lp-paths-header sr">
-        <div class="lp-label">Who is Rentritz for?</div>
+        <span class="lp-paths-eyebrow">Who is Rentritz for?</span>
         <h2>Two sides. One platform.</h2>
       </div>
       <div class="lp-paths-grid">
 
         <div class="lp-path-card sr sr-d1">
-          <div class="lp-path-icon">🏠</div>
+          <div class="lp-path-icon">&#127968;</div>
           <h3 class="lp-path-title">I need legal guidance</h3>
           <p class="lp-path-body">
             Understand your rights on rent increases, evictions, deposits, and disputes.
-            Get instant answers based on UAE law &mdash; no appointment needed.
+            Get instant answers based on UAE law. No appointment needed.
           </p>
           <ul class="lp-path-bullets">
             <li>Instant answers, any time</li>
@@ -636,11 +690,11 @@ body.landing-page .footer   { display: none !important; }
         </div>
 
         <div class="lp-path-card sr sr-d2">
-          <div class="lp-path-icon">⚖</div>
+          <div class="lp-path-icon">&#9878;</div>
           <h3 class="lp-path-title">I want qualified clients</h3>
           <p class="lp-path-body">
             Every client who finds you on Rentritz already has a specific legal problem
-            and has read about it. These are warm leads &mdash; people ready to act, not just browsing.
+            and has read about it. These are warm leads - people ready to act.
           </p>
           <ul class="lp-path-bullets">
             <li>Clients come to you with context</li>
@@ -654,17 +708,17 @@ body.landing-page .footer   { display: none !important; }
     </div>
   </section>
 
-  <!-- ── HOW IT WORKS ───────────────────────────────────────────────────── -->
+  <!-- HOW IT WORKS -->
   <section class="lp-hiw lp-section" id="how-it-works">
     <div class="lp-container">
       <div class="lp-hiw-header sr">
-        <div class="lp-label">How it works</div>
+        <span class="lp-hiw-eyebrow">How it works</span>
         <h2>Simple steps. Real results.</h2>
       </div>
       <div class="lp-hiw-grid">
 
-        <div class="sr sr-d1">
-          <div class="lp-hiw-col-title">For Tenants &amp; Landlords</div>
+        <div class="lp-hiw-col sr sr-d1">
+          <div class="lp-hiw-col-label">For Tenants &amp; Landlords</div>
           <div class="lp-hiw-steps">
             <div class="lp-hiw-step">
               <div class="lp-hiw-num">1</div>
@@ -690,8 +744,8 @@ body.landing-page .footer   { display: none !important; }
           </div>
         </div>
 
-        <div class="sr sr-d2">
-          <div class="lp-hiw-col-title">For Lawyers</div>
+        <div class="lp-hiw-col sr sr-d2">
+          <div class="lp-hiw-col-label">For Lawyers</div>
           <div class="lp-hiw-steps">
             <div class="lp-hiw-step">
               <div class="lp-hiw-num">1</div>
@@ -704,7 +758,7 @@ body.landing-page .footer   { display: none !important; }
               <div class="lp-hiw-num">2</div>
               <div class="lp-hiw-step-text">
                 <h4>Get verified</h4>
-                <p>Our team reviews and verifies your credentials</p>
+                <p>Our team reviews and verifies your credentials within 48 hours</p>
               </div>
             </div>
             <div class="lp-hiw-step">
@@ -721,14 +775,14 @@ body.landing-page .footer   { display: none !important; }
     </div>
   </section>
 
-  <!-- ── LAWYER VALUE PROP ──────────────────────────────────────────────── -->
+  <!-- LAWYER VALUE PROP -->
   <section class="lp-lawyer lp-section" id="for-lawyers">
     <div class="lp-container">
       <div class="lp-lawyer-inner">
 
         <div class="sr sr-d1">
-          <div class="lp-lawyer-eyebrow">For Lawyers</div>
-          <h2>Connect with clients who are ready to act.</h2>
+          <span class="lp-lawyer-eyebrow">For Lawyers</span>
+          <h2>Connect with clients<br>who are ready to act.</h2>
           <p class="lp-lawyer-body">
             Rentritz users have already read about their legal situation before they reach out
             to you. No cold leads. No time wasted explaining basics. Just clients who know
@@ -736,21 +790,21 @@ body.landing-page .footer   { display: none !important; }
           </p>
           <div class="lp-lawyer-stats">
             <div class="lp-lawyer-stat-item">
-              <span class="lp-lawyer-stat-val">Warm leads</span>
+              <span class="lp-lawyer-stat-label">Warm leads</span>
               <span class="lp-lawyer-stat-desc">Clients arrive with context</span>
             </div>
             <div class="lp-lawyer-stat-item">
-              <span class="lp-lawyer-stat-val">Verified profile</span>
+              <span class="lp-lawyer-stat-label">Verified profile</span>
               <span class="lp-lawyer-stat-desc">Trusted by Dubai residents</span>
             </div>
             <div class="lp-lawyer-stat-item">
-              <span class="lp-lawyer-stat-val">AED 149/mo</span>
+              <span class="lp-lawyer-stat-label">AED 149/mo</span>
               <span class="lp-lawyer-stat-desc">Flat fee, no commissions</span>
             </div>
           </div>
           <div class="lp-lawyer-cta-wrap">
-            <a href="{{ url_for('auth.register', role='lawyer') }}" class="lp-lawyer-cta">
-              Join as a Lawyer &mdash; AED 149/month
+            <a href="{{ url_for('auth.register', role='lawyer') }}" class="btn-primary">
+              Join as a Lawyer - AED 149/month
             </a>
             <span class="lp-lawyer-cta-sub">Verified within 48 hours &middot; Cancel anytime</span>
           </div>
@@ -758,19 +812,24 @@ body.landing-page .footer   { display: none !important; }
 
         <div class="sr sr-d2">
           <div class="lp-mock-card">
-            <div class="lp-mock-avatar">&#x1F468;&#x200D;&#x2696;&#xFE0F;</div>
-            <p class="lp-mock-name">Ahmed Al Rashidi</p>
+            <div class="lp-mock-header">
+              <div class="lp-mock-avatar">AR</div>
+              <div>
+                <p class="lp-mock-name">Ahmed Al Rashidi</p>
+                <span class="lp-mock-verified">Verified</span>
+              </div>
+            </div>
             <div class="lp-mock-tags">
               <span class="lp-mock-tag">Tenancy</span>
               <span class="lp-mock-tag">Civil</span>
             </div>
-            <div class="lp-mock-details">
-              <strong>12 years</strong> experience<br>
-              Arabic, English<br>
-              Dubai Bar Association
-            </div>
+            <hr class="lp-mock-divider">
+            <p class="lp-mock-detail">12 years experience</p>
+            <p class="lp-mock-detail">Arabic, English</p>
             <div class="lp-mock-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
-            <span class="lp-mock-btn">Unlock Contact &mdash; 5 credits</span>
+            <p class="lp-mock-reviews">(24 reviews)</p>
+            <hr class="lp-mock-divider">
+            <span class="lp-mock-btn">Unlock Contact - 5 credits</span>
           </div>
         </div>
 
@@ -778,7 +837,7 @@ body.landing-page .footer   { display: none !important; }
     </div>
   </section>
 
-  <!-- ── TRUST / FINAL CTA ──────────────────────────────────────────────── -->
+  <!-- TRUST / FINAL CTA -->
   <section class="lp-trust lp-section">
     <div class="lp-container">
       <h2 class="sr sr-d1">Built for Dubai. Backed by UAE law.</h2>
@@ -794,26 +853,27 @@ body.landing-page .footer   { display: none !important; }
       <div class="lp-trust-cta-row sr sr-d4">
         <div class="lp-trust-cta-block">
           <span class="lp-trust-cta-label">Need legal guidance?</span>
-          <a href="{{ url_for('auth.register') }}" class="lp-btn-primary">Get started free</a>
+          <a href="{{ url_for('auth.register') }}" class="btn-primary">Get started free</a>
         </div>
         <div class="lp-trust-cta-block">
           <span class="lp-trust-cta-label">Are you a lawyer?</span>
-          <a href="{{ url_for('auth.register', role='lawyer') }}" class="lp-btn-secondary">Join our network</a>
+          <a href="{{ url_for('auth.register', role='lawyer') }}" class="btn-secondary">Join our network</a>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- ── FOOTER ─────────────────────────────────────────────────────────── -->
+  <!-- FOOTER -->
   <footer class="lp-footer">
     <div class="lp-container">
       <div class="lp-footer-grid">
 
         <div class="lp-footer-brand">
-          <a href="{{ url_for('core.index') }}" class="lp-logo">
-            <span class="r">Rentritz</span>&thinsp;<span class="d">Dubai</span>
+          <a href="{{ url_for('core.index') }}" class="lp-footer-brand-logo">
+            <span class="brand">Rentritz</span>
+            <span class="city">Dubai</span>
           </a>
-          <p>Dubai tenancy law guidance and a verified lawyer marketplace &mdash; in one platform.</p>
+          <p>Dubai tenancy law guidance and a verified lawyer marketplace, in one platform.</p>
         </div>
 
         <div class="lp-footer-col">
@@ -854,7 +914,6 @@ body.landing-page .footer   { display: none !important; }
 
 <script>
 (function () {
-  // Scroll reveal
   var io = new IntersectionObserver(function (entries) {
     entries.forEach(function (e) {
       if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
@@ -862,13 +921,11 @@ body.landing-page .footer   { display: none !important; }
   }, { threshold: 0.08 });
   document.querySelectorAll('.sr').forEach(function (el) { io.observe(el); });
 
-  // Nav border on scroll
   var nav = document.getElementById('lp-nav');
   window.addEventListener('scroll', function () {
     nav.classList.toggle('scrolled', window.scrollY > 12);
   }, { passive: true });
 
-  // Hamburger toggle
   var hamburger = document.getElementById('lp-hamburger');
   var mobileMenu = document.getElementById('lp-mobile-menu');
   hamburger.addEventListener('click', function () {
