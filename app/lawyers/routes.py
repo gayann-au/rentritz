@@ -453,3 +453,50 @@ def toggle_availability():
     db.session.commit()
 
     return jsonify({'is_available': profile.is_available})
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# ROUTE 8 — Mark booking as responded
+# ─────────────────────────────────────────────────────────────────────────────
+
+@lawyers_bp.route('/bookings/<int:booking_id>/respond', methods=['POST'])
+@login_required
+def booking_respond(booking_id):
+    booking = LawyerBooking.query.get_or_404(booking_id)
+
+    if booking.lawyer_profile.user_id != current_user.id:
+        abort(403)
+
+    if booking.status != 'contact_unlocked':
+        return jsonify({'error': 'invalid_status'}), 400
+
+    booking.lawyer_responded_at = datetime.utcnow()
+    db.session.commit()
+
+    return jsonify({
+        'success': True,
+        'responded_at': booking.lawyer_responded_at.isoformat(),
+    })
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# ROUTE 9 — Mark booking as completed
+# ─────────────────────────────────────────────────────────────────────────────
+
+@lawyers_bp.route('/bookings/<int:booking_id>/complete', methods=['POST'])
+@login_required
+def booking_complete(booking_id):
+    booking = LawyerBooking.query.get_or_404(booking_id)
+
+    if booking.lawyer_profile.user_id != current_user.id:
+        abort(403)
+
+    if booking.status not in ('contact_unlocked',):
+        return jsonify({'error': 'invalid_status'}), 400
+
+    booking.status       = 'completed'
+    booking.completed_at = datetime.utcnow()
+    booking.lawyer_profile.total_completed_bookings += 1
+    db.session.commit()
+
+    return jsonify({'success': True})
