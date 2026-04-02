@@ -390,6 +390,45 @@
 
   </div>
 
+  {# ── Lawyer Marketplace Stats ──────────────────────────────────────────── #}
+  <div class="section-label" style="margin-top:2rem;">Lawyer Marketplace</div>
+  <div class="primary-stats">
+
+    <div class="pstat {% if lawyer_stats.pending > 0 %}accent-amber{% endif %}">
+      <div class="pstat-label">Verified Lawyers</div>
+      <div class="pstat-value">{{ lawyer_stats.verified }}</div>
+      {% if lawyer_stats.pending > 0 %}
+      <div class="pstat-sub accent-amber">{{ lawyer_stats.pending }} pending review</div>
+      {% else %}
+      <div class="pstat-sub">{{ lawyer_stats.total_profiles }} total profiles</div>
+      {% endif %}
+    </div>
+
+    <div class="pstat">
+      <div class="pstat-label">Total Contact Unlocks</div>
+      <div class="pstat-value">{{ lawyer_stats.total_unlocks }}</div>
+      <div class="pstat-sub">all time</div>
+    </div>
+
+    <div class="pstat">
+      <div class="pstat-label">Completed Bookings</div>
+      <div class="pstat-value">{{ lawyer_stats.total_completed }}</div>
+    </div>
+
+    <div class="pstat">
+      <div class="pstat-label">Avg Lawyer Rating</div>
+      <div class="pstat-value">
+        {% if lawyer_stats.avg_rating > 0 %}
+          {{ lawyer_stats.avg_rating }}<span style="font-size:1rem;opacity:0.5;"> / 5</span>
+        {% else %}
+          —
+        {% endif %}
+      </div>
+      <div class="pstat-sub">{{ lawyer_stats.total_reviews }} review{{ 's' if lawyer_stats.total_reviews != 1 }}</div>
+    </div>
+
+  </div>
+
   {# ── SECTION 3: Alert bars ─────────────────────────────────────────────── #}
   {% set has_alerts = q_stats.pending_questions > 0 or user_stats.locked_users > 0 or content_stats.incomplete_scenarios > 0 or rev_stats.pending_payments > 0 %}
   {% if has_alerts %}
@@ -596,6 +635,12 @@
     </a>
     <a href="{{ url_for('admin.payments') }}" class="qa-btn">
       <span class="qa-icon">◉</span> View Payments
+    </a>
+    <a href="{{ url_for('admin.lawyers') }}" class="qa-btn">
+      <span class="qa-icon">⚖</span> Manage Lawyers
+      {% if lawyer_stats.pending > 0 %}
+      <span style="margin-left:auto; font-size:10px; font-weight:600; color:#f59e0b;">{{ lawyer_stats.pending }} pending</span>
+      {% endif %}
     </a>
   </div>
 

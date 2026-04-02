@@ -169,6 +169,28 @@ def dashboard():
             'active_scenarios': active_sc,
         })
 
+    # ── Lawyer marketplace stats
+    lawyer_stats = {
+        'total_profiles':  LawyerProfile.query.count(),
+        'verified':        LawyerProfile.query.filter_by(
+                               verification_status='verified').count(),
+        'pending':         LawyerProfile.query.filter(
+                               LawyerProfile.verification_status.in_(
+                                   ['pending_review', 'unverified']
+                               )).count(),
+        'total_unlocks':   db.session.query(
+                               db.func.sum(LawyerProfile.total_unlocks)
+                           ).scalar() or 0,
+        'total_completed': LawyerBooking.query.filter_by(
+                               status='completed').count(),
+        'total_reviews':   LawyerReview.query.count(),
+        'avg_rating':      round(float(
+                               db.session.query(
+                                   db.func.avg(LawyerReview.rating)
+                               ).scalar() or 0
+                           ), 1),
+    }
+
     hour = now.hour + 4  # GST offset
     if hour < 12:
         greeting = 'Good morning'
@@ -189,6 +211,7 @@ def dashboard():
         recent_questions = recent_questions,
         recent_payments  = recent_payments,
         category_stats   = category_stats,
+        lawyer_stats     = lawyer_stats,
     )
 
 
