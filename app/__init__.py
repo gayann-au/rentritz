@@ -119,7 +119,7 @@ def create_app(env=None):
     app.register_blueprint(admin_bp,    url_prefix='/manage')
 
     from app.lawyers.routes import lawyers_bp
-    app.register_blueprint(lawyers_bp)
+    app.register_blueprint(lawyers_bp, url_prefix='/lawyers')
 
     # Serve locally-uploaded files (lawyer photos, licence PDFs)
     import os as _os
