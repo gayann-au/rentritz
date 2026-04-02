@@ -1,0 +1,503 @@
+{% extends 'base.html' %}
+{% block title %}{{ lawyer.display_name or lawyer.user.full_name }} | Rentritz Dubai{% endblock %}
+{% block body_class %}lawyer-profile-page{% endblock %}
+
+{% block content %}
+<style>
+:root {
+  --black:#0a0a0a; --dark-card:#1a1a1a; --dark-card-hover:#222222;
+  --amber:#f59e0b; --amber-dark:#d97706; --white:#ffffff;
+  --text-muted:#888888; --text-dim:#555555;
+  --border:rgba(255,255,255,0.07); --border-hover:rgba(245,158,11,0.35);
+  --radius:14px; --ease:cubic-bezier(0.4,0,0.2,1); --ease-out:cubic-bezier(0.22,1,0.36,1);
+}
+.sr{opacity:0;transform:translateY(24px);transition:opacity 0.6s var(--ease-out),transform 0.6s var(--ease-out);}
+.sr.in{opacity:1;transform:translateY(0);}
+
+.lp-page{min-height:100vh;background:var(--black);padding:56px 0 100px;}
+.lp-container{width:100%;max-width:1100px;margin:0 auto;padding:0 32px;}
+
+.lp-back{
+  display:inline-flex;align-items:center;gap:8px;
+  font-size:0.8rem;color:var(--text-muted);text-decoration:none;margin-bottom:32px;
+  transition:color 0.2s var(--ease);
+}
+.lp-back:hover{color:var(--amber);}
+
+.lp-layout{display:grid;grid-template-columns:300px 1fr;gap:32px;align-items:start;}
+@media(max-width:900px){.lp-layout{grid-template-columns:1fr;}}
+
+/* ── Left column ── */
+.lp-sidebar{display:flex;flex-direction:column;gap:20px;}
+
+.lp-photo-card{
+  background:var(--dark-card);border:1px solid var(--border);border-radius:var(--radius);
+  padding:28px;display:flex;flex-direction:column;align-items:center;gap:16px;text-align:center;
+}
+.lp-photo{
+  width:100px;height:100px;border-radius:50%;overflow:hidden;
+  background:rgba(255,255,255,0.06);border:3px solid var(--border);
+}
+.lp-photo img{width:100%;height:100%;object-fit:cover;}
+.lp-photo-placeholder{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:2.5rem;color:var(--text-dim);}
+
+.lp-name{font-size:1.2rem;font-weight:600;color:var(--white);margin:0;}
+.lp-firm{font-size:0.85rem;color:var(--text-muted);margin:4px 0 0;}
+
+.lp-badge{
+  display:inline-flex;align-items:center;gap:6px;
+  font-size:0.72rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;
+  border-radius:8px;padding:5px 12px;
+}
+.lp-badge-verified{color:#4ade80;background:rgba(74,222,128,0.1);border:1px solid rgba(74,222,128,0.2);}
+.lp-badge-pending{color:var(--amber);background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.2);}
+.lp-badge-available{color:#60a5fa;background:rgba(96,165,250,0.1);border:1px solid rgba(96,165,250,0.2);}
+.lp-badge-unavailable{color:var(--text-dim);background:rgba(255,255,255,0.05);border:1px solid var(--border);}
+
+.lp-stats-card{
+  background:var(--dark-card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;
+}
+.lp-stat-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border);}
+.lp-stat-row:last-child{border-bottom:none;}
+.lp-stat-label{font-size:0.78rem;color:var(--text-muted);}
+.lp-stat-value{font-size:0.9rem;font-weight:600;color:var(--white);}
+.lp-stars{color:var(--amber);}
+
+.lp-pricing-card{
+  background:var(--dark-card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;
+}
+.lp-pricing-title{font-size:0.67rem;font-weight:600;letter-spacing:0.2em;text-transform:uppercase;color:var(--text-dim);margin:0 0 14px;}
+.lp-price-item{font-size:0.9rem;color:var(--white);padding:6px 0;}
+.lp-price-item span{color:var(--amber);font-weight:600;}
+.lp-price-note{font-size:0.8rem;color:var(--text-muted);margin-top:10px;line-height:1.6;}
+
+/* ── Contact section (inside sidebar) ── */
+.lp-contact-card{
+  background:var(--dark-card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;
+}
+.lp-contact-title{font-size:0.67rem;font-weight:600;letter-spacing:0.2em;text-transform:uppercase;color:var(--text-dim);margin:0 0 14px;}
+
+.lp-contact-detail{
+  display:flex;align-items:center;gap:10px;
+  padding:10px 0;border-bottom:1px solid var(--border);
+  font-size:0.9rem;color:var(--white);
+}
+.lp-contact-detail:last-child{border-bottom:none;}
+.lp-contact-icon{color:var(--amber);font-size:1rem;width:20px;text-align:center;}
+.lp-contact-detail a{color:var(--amber);text-decoration:none;}
+
+.lp-unlock-box{display:flex;flex-direction:column;gap:12px;}
+.lp-unlock-info{font-size:0.85rem;color:var(--text-muted);line-height:1.6;}
+.lp-unlock-cost{font-size:1rem;font-weight:600;color:var(--amber);}
+
+.lp-unlock-note{
+  background:rgba(255,255,255,0.04);border:1px solid var(--border);
+  border-radius:8px;padding:8px 12px;font-size:0.875rem;color:var(--white);
+  outline:none;resize:vertical;min-height:72px;transition:border-color 0.2s;
+  width:100%;box-sizing:border-box;
+}
+.lp-unlock-note:focus{border-color:rgba(245,158,11,0.4);}
+.lp-unlock-note::placeholder{color:var(--text-dim);}
+
+.lp-unlock-btn{
+  display:block;width:100%;background:var(--amber);color:#000;border:none;
+  border-radius:10px;padding:14px 20px;font-size:0.9rem;font-weight:600;
+  cursor:pointer;text-align:center;transition:background 0.2s var(--ease);
+}
+.lp-unlock-btn:hover{background:var(--amber-dark);}
+.lp-unlock-btn:disabled{opacity:0.5;cursor:not-allowed;}
+
+.lp-signin-note{
+  font-size:0.85rem;color:var(--text-muted);text-align:center;line-height:1.6;
+}
+.lp-signin-note a{color:var(--amber);}
+
+/* ── Right column ── */
+.lp-main{display:flex;flex-direction:column;gap:24px;}
+
+.lp-section{
+  background:var(--dark-card);border:1px solid var(--border);border-radius:var(--radius);padding:28px;
+}
+.lp-section-title{
+  font-size:0.67rem;font-weight:600;letter-spacing:0.2em;text-transform:uppercase;
+  color:var(--text-dim);margin:0 0 16px;
+}
+.lp-bio{font-size:0.95rem;color:var(--white);line-height:1.8;margin:0;white-space:pre-wrap;}
+.lp-tags{display:flex;flex-wrap:wrap;gap:8px;}
+.lp-tag{
+  font-size:0.78rem;color:var(--text-muted);
+  background:rgba(255,255,255,0.05);border:1px solid var(--border);
+  border-radius:8px;padding:5px 12px;
+}
+.lp-tag-amber{color:var(--amber);border-color:rgba(245,158,11,0.25);background:rgba(245,158,11,0.06);}
+
+.lp-detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+@media(max-width:600px){.lp-detail-grid{grid-template-columns:1fr;}}
+.lp-detail-item{}
+.lp-detail-label{font-size:0.72rem;color:var(--text-dim);letter-spacing:0.06em;text-transform:uppercase;margin:0 0 4px;}
+.lp-detail-value{font-size:0.9rem;color:var(--white);}
+
+/* Reviews */
+.lp-review-item{padding:20px 0;border-bottom:1px solid var(--border);}
+.lp-review-item:last-child{border-bottom:none;}
+.lp-review-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
+.lp-review-stars{color:var(--amber);letter-spacing:2px;}
+.lp-review-date{font-size:0.75rem;color:var(--text-dim);}
+.lp-review-comment{font-size:0.9rem;color:var(--white);line-height:1.7;margin:0 0 10px;}
+.lp-review-recommend{font-size:0.8rem;color:#4ade80;margin:0 0 10px;}
+.lp-review-reply{
+  margin-top:10px;padding:12px 16px;
+  background:rgba(245,158,11,0.06);border-left:2px solid var(--amber);border-radius:0 8px 8px 0;
+}
+.lp-review-reply-label{font-size:0.7rem;font-weight:600;color:var(--amber);letter-spacing:0.1em;text-transform:uppercase;margin:0 0 6px;}
+.lp-review-reply-text{font-size:0.875rem;color:var(--white);line-height:1.6;margin:0;}
+
+.lp-no-reviews{font-size:0.9rem;color:var(--text-muted);text-align:center;padding:24px 0;}
+</style>
+
+<div class="lp-page">
+  <div class="lp-container">
+
+    <a href="{{ url_for('lawyers.browse') }}" class="lp-back">&#8592; Back to lawyers</a>
+
+    <div class="lp-layout">
+
+      <!-- ── Left sidebar ── -->
+      <aside class="lp-sidebar">
+
+        <!-- Photo + name + badges -->
+        <div class="lp-photo-card sr">
+          <div class="lp-photo">
+            {% if lawyer.photo_url %}
+            <img src="{{ lawyer.photo_url }}" alt="{{ lawyer.display_name or lawyer.user.full_name }}">
+            {% else %}
+            <div class="lp-photo-placeholder">&#9876;</div>
+            {% endif %}
+          </div>
+          <div>
+            <div class="lp-name">{{ lawyer.display_name or lawyer.user.full_name }}</div>
+            {% if lawyer.firm_name %}<div class="lp-firm">{{ lawyer.firm_name }}</div>{% endif %}
+          </div>
+          {% if lawyer.verification_status == 'verified' %}
+          <span class="lp-badge lp-badge-verified">&#10003; Verified</span>
+          {% endif %}
+          {% if lawyer.is_available %}
+          <span class="lp-badge lp-badge-available">&#9679; Available</span>
+          {% else %}
+          <span class="lp-badge lp-badge-unavailable">Not taking new clients</span>
+          {% endif %}
+        </div>
+
+        <!-- Stats -->
+        <div class="lp-stats-card sr">
+          <div class="lp-stat-row">
+            <span class="lp-stat-label">Profile views</span>
+            <span class="lp-stat-value">{{ lawyer.profile_views }}</span>
+          </div>
+          <div class="lp-stat-row">
+            <span class="lp-stat-label">Clients unlocked</span>
+            <span class="lp-stat-value">{{ lawyer.total_unlocks }}</span>
+          </div>
+          {% if lawyer.average_rating %}
+          <div class="lp-stat-row">
+            <span class="lp-stat-label">Rating</span>
+            <span class="lp-stat-value">
+              <span class="lp-stars">&#9733;</span>
+              {{ "%.1f"|format(lawyer.average_rating) }} / 5
+              <span style="color:var(--text-dim);font-weight:400;">({{ lawyer.total_reviews }})</span>
+            </span>
+          </div>
+          {% endif %}
+          {% if lawyer.typical_response_hours %}
+          <div class="lp-stat-row">
+            <span class="lp-stat-label">Typical response</span>
+            <span class="lp-stat-value">Within {{ lawyer.typical_response_hours }}h</span>
+          </div>
+          {% endif %}
+        </div>
+
+        <!-- Pricing -->
+        <div class="lp-pricing-card sr">
+          <div class="lp-pricing-title">Pricing</div>
+          {% if lawyer.offers_free_first_consultation %}
+          <div class="lp-price-item">
+            <span>Free</span> first consultation
+            {% if lawyer.free_consultation_minutes %}({{ lawyer.free_consultation_minutes }} min){% endif %}
+          </div>
+          {% endif %}
+          {% if lawyer.initial_consultation_fee_aed %}
+          <div class="lp-price-item">Initial consult: <span>AED {{ "%.0f"|format(lawyer.initial_consultation_fee_aed) }}</span></div>
+          {% endif %}
+          {% if lawyer.hourly_rate_aed %}
+          <div class="lp-price-item">Hourly: <span>AED {{ "%.0f"|format(lawyer.hourly_rate_aed) }}</span> / hr</div>
+          {% endif %}
+          {% if lawyer.fee_on_case_basis %}
+          <div class="lp-price-item" style="color:var(--text-muted);">Fee discussed after reviewing case</div>
+          {% endif %}
+          {% if not lawyer.initial_consultation_fee_aed and not lawyer.hourly_rate_aed and not lawyer.fee_on_case_basis and not lawyer.offers_free_first_consultation %}
+          <div class="lp-price-item" style="color:var(--text-muted);">Contact for pricing</div>
+          {% endif %}
+          {% if lawyer.pricing_note %}
+          <div class="lp-price-note">{{ lawyer.pricing_note }}</div>
+          {% endif %}
+        </div>
+
+        <!-- Contact section -->
+        <div class="lp-contact-card sr">
+          <div class="lp-contact-title">Contact</div>
+
+          {% if contact_unlocked %}
+            {% if lawyer.phone %}
+            <div class="lp-contact-detail">
+              <span class="lp-contact-icon">&#9742;</span>
+              <a href="tel:{{ lawyer.phone }}">{{ lawyer.phone }}</a>
+            </div>
+            {% endif %}
+            {% if lawyer.whatsapp %}
+            <div class="lp-contact-detail">
+              <span class="lp-contact-icon">&#128172;</span>
+              <a href="https://wa.me/{{ lawyer.whatsapp | replace('+','') | replace(' ','') }}" target="_blank" rel="noopener">{{ lawyer.whatsapp }}</a>
+            </div>
+            {% endif %}
+            {% if lawyer.contact_email %}
+            <div class="lp-contact-detail">
+              <span class="lp-contact-icon">&#9993;</span>
+              <a href="mailto:{{ lawyer.contact_email }}">{{ lawyer.contact_email }}</a>
+            </div>
+            {% endif %}
+            {% if lawyer.office_address %}
+            <div class="lp-contact-detail" style="align-items:flex-start;">
+              <span class="lp-contact-icon" style="margin-top:2px;">&#128205;</span>
+              <span style="font-size:0.85rem;color:var(--text-muted);line-height:1.5;">{{ lawyer.office_address }}</span>
+            </div>
+            {% endif %}
+
+          {% elif current_user.is_authenticated %}
+            <div class="lp-unlock-box" id="unlock-box">
+              <div class="lp-unlock-info">
+                Unlock this lawyer's phone number, WhatsApp, and email address.
+              </div>
+              <div class="lp-unlock-cost">{{ lawyer.contact_unlock_credits }} credit{% if lawyer.contact_unlock_credits != 1 %}s{% endif %} to unlock</div>
+              {% if user_credits < lawyer.contact_unlock_credits %}
+              <div style="font-size:0.8rem;color:#f87171;">
+                You have {{ user_credits }} credit{% if user_credits != 1 %}s{% endif %}.
+                <a href="{{ url_for('core.credits') }}" style="color:var(--amber);">Buy more</a>
+              </div>
+              {% else %}
+              <textarea class="lp-unlock-note" id="unlock-note"
+                placeholder="Brief context (optional) — e.g. I received an eviction notice..."
+                rows="3"></textarea>
+              <button class="lp-unlock-btn" id="unlock-btn"
+                data-profile-id="{{ lawyer.id }}"
+                data-csrf="{{ csrf_token() }}">
+                Unlock Contact — {{ lawyer.contact_unlock_credits }} credit{% if lawyer.contact_unlock_credits != 1 %}s{% endif %}
+              </button>
+              {% endif %}
+            </div>
+
+          {% else %}
+            <div class="lp-signin-note">
+              <a href="{{ url_for('auth.login') }}">Sign in</a> or
+              <a href="{{ url_for('auth.register') }}">create an account</a>
+              to unlock this lawyer's contact details.
+            </div>
+          {% endif %}
+
+        </div>
+
+      </aside>
+
+      <!-- ── Right main ── -->
+      <div class="lp-main">
+
+        <!-- Bio -->
+        <div class="lp-section sr">
+          <div class="lp-section-title">About</div>
+          <p class="lp-bio">{{ lawyer.bio }}</p>
+        </div>
+
+        <!-- Practice areas & details -->
+        <div class="lp-section sr">
+          <div class="lp-section-title">Practice areas</div>
+          {% if lawyer.specialisations %}
+          <div class="lp-tags" style="margin-bottom:20px;">
+            {% for spec in lawyer.specialisations %}
+            <span class="lp-tag lp-tag-amber">{{ spec.name }}</span>
+            {% endfor %}
+          </div>
+          {% endif %}
+
+          <div class="lp-detail-grid">
+            {% if lawyer.years_experience %}
+            <div class="lp-detail-item">
+              <div class="lp-detail-label">Experience</div>
+              <div class="lp-detail-value">{{ lawyer.years_experience }} years</div>
+            </div>
+            {% endif %}
+            {% if lawyer.languages %}
+            <div class="lp-detail-item">
+              <div class="lp-detail-label">Languages</div>
+              <div class="lp-detail-value">{{ lawyer.languages | join(', ') }}</div>
+            </div>
+            {% endif %}
+            {% if lawyer.courts_practiced_in %}
+            <div class="lp-detail-item">
+              <div class="lp-detail-label">Courts</div>
+              <div class="lp-detail-value">{{ lawyer.courts_practiced_in | join(', ') }}</div>
+            </div>
+            {% endif %}
+            {% if lawyer.jurisdictions %}
+            <div class="lp-detail-item">
+              <div class="lp-detail-label">Jurisdictions</div>
+              <div class="lp-detail-value">{{ lawyer.jurisdictions | join(', ') }}</div>
+            </div>
+            {% endif %}
+            {% if lawyer.consultation_modes %}
+            <div class="lp-detail-item">
+              <div class="lp-detail-label">Consultation modes</div>
+              <div class="lp-detail-value">{{ lawyer.consultation_modes | join(', ') | replace('_', ' ') | title }}</div>
+            </div>
+            {% endif %}
+            {% if lawyer.office_city %}
+            <div class="lp-detail-item">
+              <div class="lp-detail-label">Location</div>
+              <div class="lp-detail-value">{{ lawyer.office_city }}{% if lawyer.office_country and lawyer.office_country != 'UAE' %}, {{ lawyer.office_country }}{% endif %}</div>
+            </div>
+            {% endif %}
+          </div>
+        </div>
+
+        <!-- Notable cases -->
+        {% if lawyer.notable_cases %}
+        <div class="lp-section sr">
+          <div class="lp-section-title">Notable work</div>
+          <p class="lp-bio">{{ lawyer.notable_cases }}</p>
+        </div>
+        {% endif %}
+
+        <!-- Links -->
+        {% if lawyer.linkedin_url or lawyer.website_url or lawyer.firm_website %}
+        <div class="lp-section sr">
+          <div class="lp-section-title">Links</div>
+          <div style="display:flex;flex-direction:column;gap:10px;">
+            {% if lawyer.linkedin_url %}
+            <a href="{{ lawyer.linkedin_url }}" target="_blank" rel="noopener"
+               style="color:var(--amber);font-size:0.9rem;text-decoration:none;">LinkedIn &#8599;</a>
+            {% endif %}
+            {% if lawyer.website_url %}
+            <a href="{{ lawyer.website_url }}" target="_blank" rel="noopener"
+               style="color:var(--amber);font-size:0.9rem;text-decoration:none;">Personal website &#8599;</a>
+            {% endif %}
+            {% if lawyer.firm_website %}
+            <a href="{{ lawyer.firm_website }}" target="_blank" rel="noopener"
+               style="color:var(--amber);font-size:0.9rem;text-decoration:none;">{{ lawyer.firm_name or 'Firm website' }} &#8599;</a>
+            {% endif %}
+          </div>
+        </div>
+        {% endif %}
+
+        <!-- Reviews -->
+        <div class="lp-section sr">
+          <div class="lp-section-title">Reviews ({{ lawyer.total_reviews }})</div>
+          {% if reviews %}
+            {% for review in reviews %}
+            <div class="lp-review-item">
+              <div class="lp-review-header">
+                <span class="lp-review-stars">
+                  {% for i in range(review.rating) %}&#9733;{% endfor %}{% for i in range(5 - review.rating) %}&#9734;{% endfor %}
+                </span>
+                <span class="lp-review-date">{{ review.created_at.strftime('%d %b %Y') }}</span>
+              </div>
+              {% if review.would_recommend %}
+              <p class="lp-review-recommend">&#10003; Recommends this lawyer</p>
+              {% endif %}
+              {% if review.comment %}
+              <p class="lp-review-comment">{{ review.comment }}</p>
+              {% endif %}
+              {% if review.lawyer_reply %}
+              <div class="lp-review-reply">
+                <p class="lp-review-reply-label">Lawyer's reply</p>
+                <p class="lp-review-reply-text">{{ review.lawyer_reply }}</p>
+              </div>
+              {% endif %}
+            </div>
+            {% endfor %}
+          {% else %}
+          <p class="lp-no-reviews">No reviews yet.</p>
+          {% endif %}
+        </div>
+
+      </div><!-- /lp-main -->
+    </div><!-- /lp-layout -->
+
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{% if current_user.is_authenticated and not contact_unlocked %}
+<script>
+(function(){
+  var btn  = document.getElementById('unlock-btn');
+  var box  = document.getElementById('unlock-box');
+  if (!btn) return;
+
+  btn.addEventListener('click', function(){
+    btn.disabled = true;
+    btn.textContent = 'Unlocking…';
+
+    var note = (document.getElementById('unlock-note') || {}).value || '';
+    var fd   = new FormData();
+    fd.append('client_note', note);
+    fd.append('contact_method', 'whatsapp');
+
+    fetch('{{ url_for("lawyers.unlock_contact", lawyer_profile_id=lawyer.id) }}', {
+      method: 'POST',
+      headers: { 'X-CSRFToken': btn.dataset.csrf },
+      credentials: 'same-origin',
+      body: fd,
+    })
+    .then(function(r){ return r.json(); })
+    .then(function(data){
+      if (data.success || data.already_unlocked) {
+        box.innerHTML = _buildContactHtml(data);
+      } else if (data.error === 'insufficient_credits') {
+        btn.disabled = false;
+        btn.textContent = 'Unlock Contact';
+        box.insertAdjacentHTML('afterbegin',
+          '<div style="font-size:0.8rem;color:#f87171;margin-bottom:10px;">Not enough credits. <a href="{{ url_for("core.credits") }}" style="color:var(--amber)">Buy more</a></div>'
+        );
+      } else {
+        btn.disabled = false;
+        btn.textContent = 'Unlock Contact';
+      }
+    })
+    .catch(function(){
+      btn.disabled = false;
+      btn.textContent = 'Unlock Contact';
+    });
+  });
+
+  function _buildContactHtml(data){
+    var html = '<div style="display:flex;flex-direction:column;gap:10px;">';
+    if (data.phone)   html += '<div class="lp-contact-detail"><span class="lp-contact-icon">&#9742;</span><a href="tel:' + data.phone + '" style="color:var(--amber);">' + data.phone + '</a></div>';
+    if (data.whatsapp) html += '<div class="lp-contact-detail"><span class="lp-contact-icon">&#128172;</span><a href="https://wa.me/' + data.whatsapp.replace(/[+ ]/g,'') + '" target="_blank" rel="noopener" style="color:var(--amber);">' + data.whatsapp + '</a></div>';
+    if (data.email)   html += '<div class="lp-contact-detail"><span class="lp-contact-icon">&#9993;</span><a href="mailto:' + data.email + '" style="color:var(--amber);">' + data.email + '</a></div>';
+    html += '</div>';
+    if (data.credits_remaining !== undefined)
+      html += '<div style="font-size:0.78rem;color:var(--text-dim);margin-top:10px;">' + data.credits_remaining + ' credits remaining</div>';
+    return html;
+  }
+})();
+</script>
+{% endif %}
+<script>
+(function(){
+  var els=document.querySelectorAll('.sr');
+  var io=new IntersectionObserver(function(entries){
+    entries.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});
+  },{threshold:0.05});
+  els.forEach(function(el){io.observe(el);});
+})();
+</script>
+{% endblock %}

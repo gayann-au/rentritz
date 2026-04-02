@@ -49,17 +49,34 @@
                 <a href="{{ url_for('auth.forgot_password') }}" class="forgot-link">Forgot password?</a>
             </div>
 
+            {% if hcaptcha_site_key %}
+            <div class="h-captcha" data-sitekey="{{ hcaptcha_site_key }}" style="margin-bottom:16px"></div>
+            {% endif %}
             <button type="submit" class="btn btn-primary btn-full">Sign in</button>
         </form>
 
         <div class="auth-footer">
             Don't have an account? <a href="{{ url_for('auth.register') }}">Create one free</a>
         </div>
+
+        {% if unverified_email %}
+        <div class="auth-footer" style="margin-top:12px; border-top:1px solid rgba(255,255,255,0.06); padding-top:16px;">
+            Didn't receive a verification email?
+            <form method="POST" action="{{ url_for('auth.resend_verification') }}" style="display:inline" novalidate>
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() if csrf_token is defined else '' }}">
+                <input type="hidden" name="email" value="{{ unverified_email }}">
+                <button type="submit" class="forgot-link" style="background:none;border:none;cursor:pointer;padding:0;font-size:inherit;">Resend verification email</button>
+            </form>
+        </div>
+        {% endif %}
     </div>
 </div>
 {% endblock %}
 
 {% block scripts %}
+{% if hcaptcha_site_key %}
+<script src="https://js.hcaptcha.com/1/api.js" async defer></script>
+{% endif %}
 <script>
 document.querySelectorAll('.pw-toggle').forEach(function(btn) {
     btn.addEventListener('click', function() {

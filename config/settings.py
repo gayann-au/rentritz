@@ -60,6 +60,8 @@ class Config:
 
     FREE_CREDITS_ON_SIGNUP = 2
 
+    UPLOAD_FOLDER = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'uploads')
+
     CREDIT_PACKS = [
         {
             'id':          'starter',

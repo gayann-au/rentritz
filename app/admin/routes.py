@@ -5,8 +5,10 @@ from functools import wraps
 from datetime import datetime, timedelta
 from flask import Blueprint, render_template, redirect, url_for, request, flash, session, jsonify, g
 from flask_login import current_user, login_user, logout_user
-from app import limiter
-from app.models import db, User, Category, Scenario, Question, Payment, CreditLog
+from flask_mail import Message
+from app import limiter, mail
+from app.models import db, User, Category, Scenario, Question, Payment, CreditLog, \
+    LawyerProfile, LawyerBooking, LawyerReview
 
 admin_bp = Blueprint('admin', __name__)
 logger   = logging.getLogger(__name__)
@@ -191,6 +193,7 @@ def dashboard():
 
 
 @admin_bp.route('/api/pending-count')
+@limiter.exempt
 @admin_required
 def api_pending_count():
     now = datetime.utcnow()
@@ -200,7 +203,10 @@ def api_pending_count():
         User.failed_login_lockout != None,
         User.failed_login_lockout > lockout_window,
     ).count()
-    return jsonify({'pending': pending, 'locked': locked})
+    lawyer_pending = LawyerProfile.query.filter(
+        LawyerProfile.verification_status.in_(['pending_review', 'unverified'])
+    ).count()
+    return jsonify({'pending': pending, 'locked': locked, 'lawyer_pending': lawyer_pending})
 
 
 # ── CATEGORIES ────────────────────────────────────────────────────────────────
@@ -890,3 +896,184 @@ def _parse_bullet_list(text):
         if line.strip()
     ]
     return [l for l in lines if l]
+
+
+# ── LAWYERS ───────────────────────────────────────────────────────────────────
+
+LAW_PER_PAGE = 20
+
+@admin_bp.route('/lawyers/')
+@admin_required
+def lawyers():
+    from sqlalchemy import case as sa_case
+    status_filter = request.args.get('status', '')
+    search        = request.args.get('search', '').strip()
+    page          = max(1, request.args.get('page', 1, type=int))
+
+    query = LawyerProfile.query.join(User, LawyerProfile.user_id == User.id)
+
+    if status_filter in ('unverified', 'pending_review', 'verified', 'rejected'):
+        query = query.filter(LawyerProfile.verification_status == status_filter)
+
+    if search:
+        like = f'%{search}%'
+        query = query.filter(
+            db.or_(
+                LawyerProfile.display_name.ilike(like),
+                LawyerProfile.bar_number.ilike(like),
+                User.full_name.ilike(like),
+                User.email.ilike(like),
+            )
+        )
+
+    status_order = sa_case(
+        (LawyerProfile.verification_status == 'pending_review', 0),
+        (LawyerProfile.verification_status == 'unverified', 1),
+        (LawyerProfile.verification_status == 'verified', 2),
+        (LawyerProfile.verification_status == 'rejected', 3),
+        else_=4,
+    )
+    query = query.order_by(status_order, LawyerProfile.created_at.desc())
+
+    total_count = query.count()
+    total_pages = max(1, (total_count + LAW_PER_PAGE - 1) // LAW_PER_PAGE)
+    page        = min(page, total_pages)
+    profiles    = query.offset((page - 1) * LAW_PER_PAGE).limit(LAW_PER_PAGE).all()
+
+    pending_count    = LawyerProfile.query.filter_by(verification_status='pending_review').count()
+    unverified_count = LawyerProfile.query.filter_by(verification_status='unverified').count()
+    verified_count   = LawyerProfile.query.filter_by(verification_status='verified').count()
+    rejected_count   = LawyerProfile.query.filter_by(verification_status='rejected').count()
+
+    return render_template(
+        'admin/lawyers_list.html',
+        profiles              = profiles,
+        total_count           = total_count,
+        page                  = page,
+        total_pages           = total_pages,
+        search                = search,
+        current_status_filter = status_filter,
+        pending_count         = pending_count,
+        unverified_count      = unverified_count,
+        verified_count        = verified_count,
+        rejected_count        = rejected_count,
+    )
+
+
+@admin_bp.route('/lawyers/<int:profile_id>')
+@admin_required
+def lawyer_detail(profile_id):
+    profile = LawyerProfile.query.get_or_404(profile_id)
+
+    booking_count   = LawyerBooking.query.filter_by(lawyer_profile_id=profile_id).count()
+    recent_bookings = LawyerBooking.query.filter_by(lawyer_profile_id=profile_id)\
+                          .order_by(LawyerBooking.created_at.desc()).limit(5).all()
+
+    reviews      = LawyerReview.query.filter_by(lawyer_profile_id=profile_id)\
+                       .order_by(LawyerReview.created_at.desc()).limit(5).all()
+    review_count = LawyerReview.query.filter_by(lawyer_profile_id=profile_id).count()
+
+    avg_rating = None
+    if review_count:
+        result = db.session.query(db.func.avg(LawyerReview.rating))\
+                     .filter(LawyerReview.lawyer_profile_id == profile_id).scalar()
+        if result:
+            avg_rating = round(float(result), 1)
+
+    return render_template(
+        'admin/lawyer_detail.html',
+        profile         = profile,
+        booking_count   = booking_count,
+        recent_bookings = recent_bookings,
+        reviews         = reviews,
+        review_count    = review_count,
+        avg_rating      = avg_rating,
+    )
+
+
+@admin_bp.route('/lawyers/<int:profile_id>/verify', methods=['POST'])
+@admin_required
+def verify_lawyer(profile_id):
+    profile = LawyerProfile.query.get_or_404(profile_id)
+
+    profile.verification_status  = 'verified'
+    profile.verified_at          = datetime.utcnow()
+    profile.verified_by_admin_id = current_user.id
+    profile.rejection_reason     = None
+    profile.admin_notes          = request.form.get('admin_notes', '').strip() or None
+    db.session.commit()
+
+    name = profile.display_name or profile.user.full_name
+    flash(f'{name} verified successfully.', 'success')
+    logger.info(f'Lawyer profile {profile_id} verified by admin {current_user.email}')
+
+    try:
+        msg = Message(
+            subject    = 'Your Rentritz Lawyer Profile Has Been Verified',
+            recipients = [profile.user.email],
+            html       = render_template(
+                'email/lawyer_verified.html',
+                profile   = profile,
+                login_url = url_for('lawyers.dashboard', _external=True),
+            ),
+        )
+        mail.send(msg)
+    except Exception as e:
+        logger.error(f'Failed to send verification email to {profile.user.email}: {e}')
+
+    return redirect(url_for('admin.lawyer_detail', profile_id=profile_id))
+
+
+@admin_bp.route('/lawyers/<int:profile_id>/reject', methods=['POST'])
+@admin_required
+def reject_lawyer(profile_id):
+    profile = LawyerProfile.query.get_or_404(profile_id)
+
+    reason = request.form.get('reason', '').strip()
+    if not reason:
+        flash('A rejection reason is required.', 'error')
+        return redirect(url_for('admin.lawyer_detail', profile_id=profile_id))
+
+    profile.verification_status = 'rejected'
+    profile.rejection_reason    = reason
+    profile.admin_notes         = request.form.get('admin_notes', '').strip() or None
+    db.session.commit()
+
+    flash('Profile rejected.', 'warning')
+    logger.info(f'Lawyer profile {profile_id} rejected by admin {current_user.email}')
+
+    try:
+        msg = Message(
+            subject    = 'Action Required: Your Rentritz Lawyer Profile',
+            recipients = [profile.user.email],
+            html       = render_template(
+                'email/lawyer_rejected.html',
+                profile  = profile,
+                reason   = reason,
+                edit_url = url_for('lawyers.edit_profile', _external=True),
+            ),
+        )
+        mail.send(msg)
+    except Exception as e:
+        logger.error(f'Failed to send rejection email to {profile.user.email}: {e}')
+
+    return redirect(url_for('admin.lawyer_detail', profile_id=profile_id))
+
+
+@admin_bp.route('/lawyers/<int:profile_id>/toggle-active', methods=['POST'])
+@admin_required
+def toggle_lawyer_active(profile_id):
+    profile           = LawyerProfile.query.get_or_404(profile_id)
+    profile.is_active = not profile.is_active
+    db.session.commit()
+    logger.info(f'Lawyer profile {profile_id} is_active={profile.is_active} by admin {current_user.email}')
+    return jsonify({'is_active': profile.is_active})
+
+
+@admin_bp.route('/lawyers/<int:profile_id>/notes', methods=['POST'])
+@admin_required
+def update_lawyer_notes(profile_id):
+    profile             = LawyerProfile.query.get_or_404(profile_id)
+    profile.admin_notes = request.form.get('notes', '').strip() or None
+    db.session.commit()
+    return jsonify({'saved': True})

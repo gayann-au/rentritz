@@ -640,7 +640,7 @@ function renderTimestamps() {
 renderTimestamps();
 setInterval(renderTimestamps, 30000);
 
-// ── Live pending count (polls every 60s) ─────────────────────────────────────
+// ── Live pending count (polls every 300s) ────────────────────────────────────
 (function () {
   const pendingVal   = document.getElementById('live-pending-val');
   const lockedVal    = document.getElementById('live-locked-val');
@@ -673,7 +673,7 @@ setInterval(renderTimestamps, 30000);
     pendingBadge.style.display = initial > 0 ? 'inline-flex' : 'none';
   }
 
-  setInterval(refresh, 60000);
+  setInterval(refresh, 300000);
 })();
 </script>
 {% endblock %}

@@ -23,11 +23,30 @@ logger        = logging.getLogger(__name__)
 
 def create_app(env=None):
     env = env or os.environ.get('FLASK_ENV', 'production')
+
+    # ── Sentry error monitoring ───────────────────────────────────────────────
+    sentry_dsn = os.environ.get('SENTRY_DSN', '').strip()
+    if sentry_dsn:
+        try:
+            import sentry_sdk
+            from sentry_sdk.integrations.flask import FlaskIntegration
+            sentry_sdk.init(
+                dsn=sentry_dsn,
+                integrations=[FlaskIntegration()],
+                traces_sample_rate=0.1,
+            )
+            logger.info('Sentry initialised')
+        except Exception as e:
+            logger.warning('Sentry initialisation failed: %s', e)
+
     app = Flask(__name__,
         template_folder = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'templates'),
         static_folder   = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'static'))
     app.config.from_object(config.get(env, config['production']))
     app.config['TEMPLATES_AUTO_RELOAD'] = (env == 'development')
+
+    # ── hCaptcha ─────────────────────────────────────────────────────────────
+    app.config['HCAPTCHA_SECRET_KEY'] = os.environ.get('HCAPTCHA_SECRET_KEY', '').strip()
 
     db.init_app(app)
     login_manager.init_app(app)
@@ -55,11 +74,15 @@ def create_app(env=None):
         response.headers['Permissions-Policy']      = 'geolocation=(), microphone=(), camera=()'
         response.headers['Content-Security-Policy'] = (
             "default-src 'self'; "
-            "script-src 'self' 'unsafe-inline' fonts.googleapis.com; "
-            "style-src 'self' 'unsafe-inline' fonts.googleapis.com fonts.gstatic.com; "
+            "script-src 'self' 'unsafe-inline' fonts.googleapis.com "
+                "https://js.hcaptcha.com https://*.hcaptcha.com "
+                "https://cdn.jsdelivr.net; "
+            "style-src 'self' 'unsafe-inline' fonts.googleapis.com fonts.gstatic.com "
+                "https://hcaptcha.com https://*.hcaptcha.com; "
             "font-src fonts.gstatic.com; "
-            "img-src 'self' images.unsplash.com data:; "
-            "connect-src 'self'"
+            "img-src 'self' images.unsplash.com data: https://hcaptcha.com https://*.hcaptcha.com; "
+            "connect-src 'self' https://hcaptcha.com https://*.hcaptcha.com; "
+            "frame-src https://hcaptcha.com https://*.hcaptcha.com"
         )
         if not app.config.get('DEBUG'):
             response.headers['Strict-Transport-Security'] = 'max-age=31536000; includeSubDomains'
@@ -94,6 +117,29 @@ def create_app(env=None):
     app.register_blueprint(payments_bp, url_prefix='/pay')
     app.register_blueprint(api_bp,      url_prefix='/api/v1')
     app.register_blueprint(admin_bp,    url_prefix='/manage')
+
+    from app.lawyers.routes import lawyers_bp
+    app.register_blueprint(lawyers_bp)
+
+    # Serve locally-uploaded files (lawyer photos, licence PDFs)
+    import os as _os
+    from flask import send_from_directory as _send_from_directory
+
+    @app.route('/uploads/<path:filename>')
+    def serve_upload(filename):
+        upload_folder = app.config.get(
+            'UPLOAD_FOLDER',
+            _os.path.join(app.root_path, '..', 'uploads'),
+        )
+        return _send_from_directory(upload_folder, filename)
+
+    # Expose hCaptcha site key to every template
+    hcaptcha_site_key = os.environ.get('HCAPTCHA_SITE_KEY', '').strip()
+    app.jinja_env.globals['hcaptcha_site_key'] = hcaptcha_site_key
+
+    @app.context_processor
+    def inject_hcaptcha():
+        return dict(hcaptcha_site_key=os.environ.get('HCAPTCHA_SITE_KEY', '').strip())
 
     @app.errorhandler(400)
     def bad_request(e):
@@ -137,7 +183,6 @@ def _migrate_schema():
     """Add any new columns to existing tables that db.create_all() won't add."""
     from sqlalchemy import text
     stmts = [
-        'ALTER TABLE questions ADD COLUMN IF NOT EXISTS answer_viewed BOOLEAN NOT NULL DEFAULT FALSE',
         'ALTER TABLE questions ADD COLUMN IF NOT EXISTS has_been_viewed BOOLEAN NOT NULL DEFAULT FALSE',
         'ALTER TABLE users ADD COLUMN IF NOT EXISTS reset_token VARCHAR(100)',
         'ALTER TABLE users ADD COLUMN IF NOT EXISTS reset_token_expiry TIMESTAMP',
@@ -154,7 +199,7 @@ def _migrate_schema():
 
 
 def _seed_initial_data():
-    from app.models import Category, User
+    from app.models import Category, User, LawyerSpecialisation
 
     admin_email    = os.environ.get('ADMIN_EMAIL', '')
     admin_password = os.environ.get('ADMIN_PASSWORD', '')
@@ -186,5 +231,18 @@ def _seed_initial_data():
         ]
         db.session.add_all(cats)
         logger.info('Categories seeded')
+
+    if LawyerSpecialisation.query.count() == 0:
+        specs = [
+            LawyerSpecialisation(name='Tenancy',     slug='tenancy',     icon='home',      order=1),
+            LawyerSpecialisation(name='Employment',  slug='employment',  icon='briefcase', order=2),
+            LawyerSpecialisation(name='Corporate',   slug='corporate',   icon='building',  order=3),
+            LawyerSpecialisation(name='Family',      slug='family',      icon='users',     order=4),
+            LawyerSpecialisation(name='Criminal',    slug='criminal',    icon='shield',    order=5),
+            LawyerSpecialisation(name='Civil',       slug='civil',       icon='scale',     order=6),
+            LawyerSpecialisation(name='Immigration', slug='immigration', icon='globe',     order=7),
+        ]
+        db.session.add_all(specs)
+        logger.info('Lawyer specialisations seeded')
 
     db.session.commit()

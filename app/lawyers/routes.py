@@ -1,0 +1,455 @@
+from datetime import datetime
+from flask import (
+    Blueprint, abort, flash, jsonify, redirect, render_template,
+    request, url_for,
+)
+from flask_login import current_user, login_required
+from sqlalchemy import text
+
+from app.models import (
+    CreditLog, LawyerBooking, LawyerProfile, LawyerReview,
+    LawyerSpecialisation, db,
+)
+from app.lawyers.forms import LawyerProfileForm
+from app import storage as _storage
+
+lawyers_bp = Blueprint('lawyers', __name__, url_prefix='/lawyers')
+
+
+def _split_csv(value):
+    """Split a comma-separated string into a cleaned list, or return None."""
+    if not value or not value.strip():
+        return None
+    parts = [p.strip() for p in value.split(',') if p.strip()]
+    return parts if parts else None
+
+
+def _csv_from_array(arr):
+    """Convert a DB array back to a comma-separated string for form pre-fill."""
+    if not arr:
+        return ''
+    return ', '.join(arr)
+
+
+def _populate_specialisation_choices(form):
+    """Populate specialisation_ids choices from the DB."""
+    specs = LawyerSpecialisation.query.filter_by(is_active=True).order_by(
+        LawyerSpecialisation.order
+    ).all()
+    form.specialisation_ids.choices = [(s.id, s.name) for s in specs]
+    return specs
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# ROUTE 1 — Browse
+# ─────────────────────────────────────────────────────────────────────────────
+
+@lawyers_bp.route('/')
+def browse():
+    spec_slug = request.args.get('specialisation', '').strip()
+    language  = request.args.get('language', '').strip()
+    search    = request.args.get('search', '').strip()
+    page      = request.args.get('page', 1, type=int)
+
+    query = LawyerProfile.query.filter(
+        LawyerProfile.is_active == True,
+        LawyerProfile.is_available == True,
+        LawyerProfile.verification_status == 'verified',
+        LawyerProfile.bio.isnot(None),
+        db.or_(
+            LawyerProfile.phone.isnot(None),
+            LawyerProfile.whatsapp.isnot(None),
+            LawyerProfile.contact_email.isnot(None),
+        ),
+    )
+
+    if spec_slug:
+        query = query.join(LawyerProfile.specialisations).filter(
+            LawyerSpecialisation.slug == spec_slug
+        )
+
+    if language:
+        query = query.filter(
+            LawyerProfile.languages.contains([language])
+        )
+
+    if search:
+        like = f'%{search}%'
+        query = query.filter(
+            db.or_(
+                LawyerProfile.display_name.ilike(like),
+                LawyerProfile.firm_name.ilike(like),
+            )
+        )
+
+    query = query.order_by(
+        LawyerProfile.is_featured.desc(),
+        LawyerProfile.total_unlocks.desc(),
+    )
+
+    lawyers = query.paginate(page=page, per_page=12, error_out=False)
+    specialisations = LawyerSpecialisation.query.filter_by(is_active=True).order_by(
+        LawyerSpecialisation.order
+    ).all()
+
+    return render_template(
+        'lawyers/browse.html',
+        lawyers=lawyers,
+        specialisations=specialisations,
+        current_spec=spec_slug,
+        current_language=language,
+        current_search=search,
+    )
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# ROUTE 2 — Profile page
+# ─────────────────────────────────────────────────────────────────────────────
+
+@lawyers_bp.route('/<int:lawyer_profile_id>')
+def profile(lawyer_profile_id):
+    lawyer = LawyerProfile.query.filter_by(
+        id=lawyer_profile_id, is_active=True
+    ).first_or_404()
+
+    # Atomic increment — no ORM object load required
+    db.session.execute(
+        text('UPDATE lawyer_profiles SET profile_views = profile_views + 1 WHERE id = :id'),
+        {'id': lawyer_profile_id},
+    )
+    db.session.commit()
+
+    contact_unlocked = False
+    if current_user.is_authenticated:
+        contact_unlocked = LawyerBooking.query.filter_by(
+            client_id=current_user.id,
+            lawyer_profile_id=lawyer.id,
+        ).filter(
+            LawyerBooking.status.in_(['contact_unlocked', 'completed'])
+        ).first() is not None
+
+    reviews = LawyerReview.query.filter_by(
+        lawyer_profile_id=lawyer.id,
+        is_visible=True,
+    ).order_by(LawyerReview.created_at.desc()).limit(10).all()
+
+    user_credits = current_user.available_credits if current_user.is_authenticated else 0
+
+    return render_template(
+        'lawyers/profile.html',
+        lawyer=lawyer,
+        reviews=reviews,
+        contact_unlocked=contact_unlocked,
+        user_credits=user_credits,
+    )
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# ROUTE 3 — Unlock contact
+# ─────────────────────────────────────────────────────────────────────────────
+
+@lawyers_bp.route('/<int:lawyer_profile_id>/unlock', methods=['POST'])
+@login_required
+def unlock_contact(lawyer_profile_id):
+    lawyer = LawyerProfile.query.filter_by(
+        id=lawyer_profile_id,
+        is_active=True,
+        verification_status='verified',
+    ).first_or_404()
+
+    if current_user.id == lawyer.user_id:
+        abort(403)
+
+    existing = LawyerBooking.query.filter_by(
+        client_id=current_user.id,
+        lawyer_profile_id=lawyer.id,
+    ).filter(
+        LawyerBooking.status.in_(['contact_unlocked', 'completed'])
+    ).first()
+
+    if existing:
+        return jsonify({'already_unlocked': True, 'message': 'Already unlocked'}), 200
+
+    cost = lawyer.contact_unlock_credits
+    if current_user.available_credits < cost:
+        return jsonify({
+            'error': 'insufficient_credits',
+            'needed': cost,
+            'have': current_user.available_credits,
+        }), 402
+
+    current_user.credits -= cost
+
+    log = CreditLog(
+        user_id=current_user.id,
+        action='lawyer_unlock',
+        amount=-cost,
+        balance=current_user.credits,
+        ref_id=f'lawyer_{lawyer.id}',
+        note=f'Contact unlock: {lawyer.display_name or lawyer.user.full_name}',
+    )
+    db.session.add(log)
+
+    source_question_id = request.form.get('source_question_id') or None
+    if source_question_id:
+        try:
+            source_question_id = int(source_question_id)
+        except (ValueError, TypeError):
+            source_question_id = None
+
+    booking = LawyerBooking(
+        client_id=current_user.id,
+        lawyer_profile_id=lawyer.id,
+        status='contact_unlocked',
+        credits_charged=cost,
+        contact_unlocked_at=datetime.utcnow(),
+        source_category_slug=request.form.get('source_category') or None,
+        source_question_id=source_question_id,
+        client_note=request.form.get('client_note', '').strip() or None,
+        contact_method_chosen=request.form.get('contact_method', 'whatsapp'),
+    )
+    db.session.add(booking)
+
+    db.session.execute(
+        text('UPDATE lawyer_profiles SET total_unlocks = total_unlocks + 1 WHERE id = :id'),
+        {'id': lawyer.id},
+    )
+
+    db.session.commit()
+
+    response_data = {'success': True, 'credits_remaining': current_user.credits}
+    if lawyer.phone:
+        response_data['phone'] = lawyer.phone
+    if lawyer.whatsapp:
+        response_data['whatsapp'] = lawyer.whatsapp
+    if lawyer.contact_email:
+        response_data['email'] = lawyer.contact_email
+
+    return jsonify(response_data)
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# ROUTE 4 — Register as lawyer
+# ─────────────────────────────────────────────────────────────────────────────
+
+@lawyers_bp.route('/register', methods=['GET', 'POST'])
+@login_required
+def register():
+    if current_user.role == 'lawyer' or current_user.lawyer_profile:
+        return redirect(url_for('lawyers.dashboard'))
+
+    form = LawyerProfileForm()
+    _populate_specialisation_choices(form)
+
+    if form.validate_on_submit():
+        photo_path   = None
+        licence_path = None
+
+        photo_file = request.files.get('photo')
+        if photo_file and photo_file.filename:
+            try:
+                photo_path = _storage.save_lawyer_photo(photo_file, current_user.id)
+            except ValueError as e:
+                flash(str(e), 'error')
+                return render_template('lawyers/register.html', form=form)
+
+        licence_file = request.files.get('licence_pdf')
+        if licence_file and licence_file.filename:
+            try:
+                licence_path = _storage.save_lawyer_licence(licence_file, current_user.id)
+            except ValueError as e:
+                flash(str(e), 'error')
+                return render_template('lawyers/register.html', form=form)
+
+        current_user.role = 'lawyer'
+
+        profile = LawyerProfile(
+            user_id=current_user.id,
+            display_name=form.display_name.data or None,
+            bar_number=form.bar_number.data or None,
+            bar_issuing_authority=form.bar_issuing_authority.data or None,
+            photo_path=photo_path,
+            licence_pdf_path=licence_path,
+            bio=form.bio.data,
+            years_experience=form.years_experience.data,
+            firm_name=form.firm_name.data or None,
+            firm_website=form.firm_website.data or None,
+            languages=_split_csv(form.languages.data),
+            courts_practiced_in=_split_csv(form.courts_practiced_in.data),
+            jurisdictions=_split_csv(form.jurisdictions.data),
+            consultation_modes=form.consultation_modes.data or None,
+            typical_response_hours=form.typical_response_hours.data,
+            offers_free_first_consultation=form.offers_free_first_consultation.data,
+            free_consultation_minutes=form.free_consultation_minutes.data,
+            hourly_rate_aed=form.hourly_rate_aed.data,
+            initial_consultation_fee_aed=form.initial_consultation_fee_aed.data,
+            fee_on_case_basis=form.fee_on_case_basis.data,
+            pricing_note=form.pricing_note.data or None,
+            phone=form.phone.data or None,
+            whatsapp=form.whatsapp.data or None,
+            contact_email=form.contact_email.data or None,
+            office_address=form.office_address.data or None,
+            office_city=form.office_city.data or 'Dubai',
+            office_country=form.office_country.data or 'UAE',
+            notable_cases=form.notable_cases.data or None,
+            linkedin_url=form.linkedin_url.data or None,
+            website_url=form.website_url.data or None,
+            verification_status='unverified',
+        )
+        db.session.add(profile)
+        db.session.flush()
+
+        if form.specialisation_ids.data:
+            specs = LawyerSpecialisation.query.filter(
+                LawyerSpecialisation.id.in_(form.specialisation_ids.data)
+            ).all()
+            profile.specialisations = specs
+
+        db.session.commit()
+        flash('Profile submitted. Our team will review and verify it shortly.', 'success')
+        return redirect(url_for('lawyers.dashboard'))
+
+    return render_template('lawyers/register.html', form=form)
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# ROUTE 5 — Lawyer dashboard
+# ─────────────────────────────────────────────────────────────────────────────
+
+@lawyers_bp.route('/dashboard')
+@login_required
+def dashboard():
+    if current_user.role != 'lawyer' or not current_user.lawyer_profile:
+        return redirect(url_for('lawyers.register'))
+
+    profile = current_user.lawyer_profile
+
+    bookings = LawyerBooking.query.filter_by(
+        lawyer_profile_id=profile.id
+    ).order_by(LawyerBooking.created_at.desc()).limit(20).all()
+
+    recent_reviews = LawyerReview.query.filter_by(
+        lawyer_profile_id=profile.id,
+        is_visible=True,
+    ).order_by(LawyerReview.created_at.desc()).limit(5).all()
+
+    return render_template(
+        'lawyers/dashboard.html',
+        profile=profile,
+        bookings=bookings,
+        recent_reviews=recent_reviews,
+    )
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# ROUTE 6 — Edit profile
+# ─────────────────────────────────────────────────────────────────────────────
+
+@lawyers_bp.route('/edit-profile', methods=['GET', 'POST'])
+@login_required
+def edit_profile():
+    if current_user.role != 'lawyer' or not current_user.lawyer_profile:
+        return redirect(url_for('lawyers.register'))
+
+    profile = current_user.lawyer_profile
+    form    = LawyerProfileForm(obj=profile)
+    _populate_specialisation_choices(form)
+
+    if request.method == 'GET':
+        # Pre-fill array fields as comma-separated strings
+        form.languages.data           = _csv_from_array(profile.languages)
+        form.courts_practiced_in.data = _csv_from_array(profile.courts_practiced_in)
+        form.jurisdictions.data       = _csv_from_array(profile.jurisdictions)
+        form.consultation_modes.data  = profile.consultation_modes or []
+        form.specialisation_ids.data  = [s.id for s in profile.specialisations]
+
+    if form.validate_on_submit():
+        old_bar_number = profile.bar_number
+
+        # Handle photo upload
+        photo_file = request.files.get('photo')
+        if photo_file and photo_file.filename:
+            try:
+                new_path = _storage.save_lawyer_photo(photo_file, current_user.id)
+                _storage.delete_file(profile.photo_path)
+                profile.photo_path = new_path
+            except ValueError as e:
+                flash(str(e), 'error')
+                return render_template('lawyers/edit_profile.html', form=form, profile=profile)
+
+        # Handle licence upload
+        licence_file = request.files.get('licence_pdf')
+        if licence_file and licence_file.filename:
+            try:
+                new_path = _storage.save_lawyer_licence(licence_file, current_user.id)
+                _storage.delete_file(profile.licence_pdf_path)
+                profile.licence_pdf_path = new_path
+            except ValueError as e:
+                flash(str(e), 'error')
+                return render_template('lawyers/edit_profile.html', form=form, profile=profile)
+
+        profile.display_name          = form.display_name.data or None
+        profile.bar_number            = form.bar_number.data or None
+        profile.bar_issuing_authority = form.bar_issuing_authority.data or None
+        profile.bio                   = form.bio.data
+        profile.years_experience      = form.years_experience.data
+        profile.firm_name             = form.firm_name.data or None
+        profile.firm_website          = form.firm_website.data or None
+        profile.languages             = _split_csv(form.languages.data)
+        profile.courts_practiced_in   = _split_csv(form.courts_practiced_in.data)
+        profile.jurisdictions         = _split_csv(form.jurisdictions.data)
+        profile.consultation_modes    = form.consultation_modes.data or None
+        profile.typical_response_hours = form.typical_response_hours.data
+        profile.offers_free_first_consultation = form.offers_free_first_consultation.data
+        profile.free_consultation_minutes = form.free_consultation_minutes.data
+        profile.hourly_rate_aed       = form.hourly_rate_aed.data
+        profile.initial_consultation_fee_aed = form.initial_consultation_fee_aed.data
+        profile.fee_on_case_basis     = form.fee_on_case_basis.data
+        profile.pricing_note          = form.pricing_note.data or None
+        profile.phone                 = form.phone.data or None
+        profile.whatsapp              = form.whatsapp.data or None
+        profile.contact_email         = form.contact_email.data or None
+        profile.office_address        = form.office_address.data or None
+        profile.office_city           = form.office_city.data or 'Dubai'
+        profile.office_country        = form.office_country.data or 'UAE'
+        profile.notable_cases         = form.notable_cases.data or None
+        profile.linkedin_url          = form.linkedin_url.data or None
+        profile.website_url           = form.website_url.data or None
+        profile.updated_at            = datetime.utcnow()
+
+        # Bar number change resets to pending review (must be re-verified)
+        new_bar_number = profile.bar_number
+        if new_bar_number and new_bar_number != old_bar_number:
+            if profile.verification_status == 'verified':
+                profile.verification_status = 'pending_review'
+
+        if form.specialisation_ids.data:
+            specs = LawyerSpecialisation.query.filter(
+                LawyerSpecialisation.id.in_(form.specialisation_ids.data)
+            ).all()
+            profile.specialisations = specs
+        else:
+            profile.specialisations = []
+
+        db.session.commit()
+        flash('Profile updated.', 'success')
+        return redirect(url_for('lawyers.dashboard'))
+
+    return render_template('lawyers/edit_profile.html', form=form, profile=profile)
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# ROUTE 7 — Toggle availability
+# ─────────────────────────────────────────────────────────────────────────────
+
+@lawyers_bp.route('/toggle-availability', methods=['POST'])
+@login_required
+def toggle_availability():
+    if current_user.role != 'lawyer' or not current_user.lawyer_profile:
+        abort(403)
+
+    profile = current_user.lawyer_profile
+    profile.is_available = not profile.is_available
+    db.session.commit()
+
+    return jsonify({'is_available': profile.is_available})

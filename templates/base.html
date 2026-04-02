@@ -57,6 +57,17 @@
   {% block content %}{% endblock %}
 </main>
 
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-logo">Rentritz <span>Dubai</span></div>
+    <div class="footer-links">
+      <a href="{{ url_for('core.terms') }}">Terms of Service</a>
+      <a href="{{ url_for('core.privacy') }}">Privacy Policy</a>
+    </div>
+    <div class="footer-legal">&copy; 2026 Rentritz Dubai. All rights reserved.</div>
+  </div>
+</footer>
+
 <script src="{{ url_for('static', filename='js/main.js') }}"></script>
 {% block scripts %}{% endblock %}
 <script>

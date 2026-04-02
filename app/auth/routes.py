@@ -1,5 +1,6 @@
 import re
 import secrets
+import requests as _http
 from datetime import datetime, timedelta
 from urllib.parse import urlparse
 from flask import Blueprint, render_template, redirect, url_for, flash, request, current_app
@@ -19,9 +20,39 @@ MAX_EMAIL    = 254
 MAX_PASSWORD = 128
 MAX_NAME     = 100
 
+# ── Progressive login lockout thresholds ─────────────────────────────────────
+# failed_login_lockout stores the "locked UNTIL" timestamp (not "locked AT").
+# failed_login_count is cumulative and never reset by an expiring lockout,
+# so penalties escalate across repeated attack sessions.
+_COOLDOWN_THRESHOLD = 3          # ≥3 wrong: 30-second cooldown
+_LOCKOUT_THRESHOLD  = 5          # ≥5 wrong: 15-minute lockout
+_EXTENDED_THRESHOLD = 10         # ≥10 wrong: 1-hour lockout
+_COOLDOWN_DURATION  = timedelta(seconds=30)
+_LOCKOUT_DURATION   = timedelta(minutes=15)
+_EXTENDED_DURATION  = timedelta(hours=1)
+
 
 def _valid_email(email):
     return bool(email) and len(email) <= MAX_EMAIL and _EMAIL_RE.match(email)
+
+
+def _verify_hcaptcha():
+    """Return True if hCaptcha passes, or if hCaptcha is not configured (dev)."""
+    secret = current_app.config.get('HCAPTCHA_SECRET_KEY', '')
+    if not secret:
+        return True  # gracefully skip in local development
+    token = request.form.get('h-captcha-response', '')
+    if not token:
+        return False
+    try:
+        resp = _http.post(
+            'https://hcaptcha.com/siteverify',
+            data={'secret': secret, 'response': token},
+            timeout=5,
+        )
+        return resp.json().get('success', False)
+    except Exception:
+        return False
 
 
 @auth_bp.route('/register', methods=['GET', 'POST'])
@@ -31,6 +62,10 @@ def register():
         return redirect(url_for('core.dashboard'))
 
     if request.method == 'POST':
+        if not _verify_hcaptcha():
+            flash('Security check failed. Please try again.', 'error')
+            return render_template('auth/register.html')
+
         full_name = request.form.get('full_name', '').strip()
         email     = request.form.get('email', '').strip().lower()
         password  = request.form.get('password', '')
@@ -126,10 +161,6 @@ def register():
     return render_template('auth/register.html')
 
 
-_LOCKOUT_DURATION = timedelta(minutes=15)
-_MAX_FAILED       = 5
-
-
 @auth_bp.route('/login', methods=['GET', 'POST'])
 @limiter.limit("5 per minute; 20 per hour", methods=["POST"])
 def login():
@@ -146,27 +177,31 @@ def login():
             flash('Incorrect email or password.', 'error')
             return render_template('auth/login.html')
 
+        if not _verify_hcaptcha():
+            flash('Security check failed. Please try again.', 'error')
+            return render_template('auth/login.html')
+
         user = User.query.filter_by(email=email).first()
 
-        # Check lockout (do this even if user not found to avoid timing leaks)
+        # Check lockout — failed_login_lockout is the "locked until" timestamp
         if user and user.role != 'admin':
             now = datetime.utcnow()
-            if user.failed_login_lockout:
-                if now - user.failed_login_lockout < _LOCKOUT_DURATION:
-                    flash('Incorrect email or password.', 'error')
-                    return render_template('auth/login.html')
-                # Lockout expired - reset
-                user.failed_login_count   = 0
-                user.failed_login_lockout = None
-                db.session.commit()
+            if user.failed_login_lockout and now < user.failed_login_lockout:
+                flash('Incorrect email or password.', 'error')
+                return render_template('auth/login.html')
 
         if not user or not user.check_password(password):
-            # Increment failure counter only for real (non-admin) accounts
+            # Increment cumulative failure counter (never auto-reset on expiry)
             if user and user.role != 'admin':
                 user.failed_login_count += 1
-                if user.failed_login_count >= _MAX_FAILED:
-                    user.failed_login_lockout = datetime.utcnow()
-                    user.failed_login_count   = 0
+                count = user.failed_login_count
+                now   = datetime.utcnow()
+                if count >= _EXTENDED_THRESHOLD:
+                    user.failed_login_lockout = now + _EXTENDED_DURATION
+                elif count >= _LOCKOUT_THRESHOLD:
+                    user.failed_login_lockout = now + _LOCKOUT_DURATION
+                elif count >= _COOLDOWN_THRESHOLD:
+                    user.failed_login_lockout = now + _COOLDOWN_DURATION
                 db.session.commit()
             flash('Incorrect email or password.', 'error')
             return render_template('auth/login.html')
@@ -178,6 +213,10 @@ def login():
         if not user.is_active:
             flash('Your account has been deactivated. Please contact support.', 'error')
             return render_template('auth/login.html')
+
+        if not user.is_verified:
+            flash('Please verify your email before logging in. Check your inbox for the verification link.', 'error')
+            return render_template('auth/login.html', unverified_email=email)
 
         # Successful login - clear brute force state
         user.failed_login_count   = 0
@@ -282,3 +321,53 @@ def reset_password(token):
         return redirect(url_for('core.dashboard'))
 
     return render_template('auth/reset_password.html', token=token)
+
+
+@auth_bp.route('/resend-verification', methods=['POST'])
+@limiter.limit("3 per hour")
+def resend_verification():
+    email = request.form.get('email', '').strip().lower()
+
+    if _valid_email(email):
+        user = User.query.filter_by(email=email).first()
+        if user and not user.is_verified and user.role != 'admin':
+            token = secrets.token_urlsafe(32)
+            user.reset_token        = token
+            user.reset_token_expiry = datetime.utcnow() + timedelta(hours=24)
+            db.session.commit()
+
+            verify_url = url_for('auth.verify_email', token=token, _external=True)
+            msg = Message(
+                subject='Verify your Rentritz email address',
+                recipients=[user.email],
+                html=render_template('email/verify_email.html',
+                                     user=user, verify_url=verify_url),
+            )
+            try:
+                mail.send(msg)
+            except Exception as e:
+                current_app.logger.error(f'Failed to send verification email to {email}: {e}')
+
+    flash('If that email is registered and unverified, you will receive a verification link shortly.', 'success')
+    return redirect(url_for('auth.login'))
+
+
+@auth_bp.route('/verify-email/<token>')
+def verify_email(token):
+    if current_user.is_authenticated:
+        return redirect(url_for('core.dashboard'))
+
+    user = User.query.filter_by(reset_token=token).first()
+
+    if not user or not user.reset_token_expiry or user.reset_token_expiry < datetime.utcnow():
+        flash('This verification link is invalid or has expired. Request a new one below.', 'error')
+        return redirect(url_for('auth.login'))
+
+    user.is_verified        = True
+    user.reset_token        = None
+    user.reset_token_expiry = None
+    db.session.commit()
+
+    login_user(user)
+    flash(f'Your email has been verified. Welcome to Rentritz, {user.full_name}!', 'success')
+    return redirect(url_for('core.dashboard'))

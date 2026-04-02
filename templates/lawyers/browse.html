@@ -1,0 +1,323 @@
+{% extends 'base.html' %}
+{% block title %}Find a Lawyer | Rentritz Dubai{% endblock %}
+{% block body_class %}lawyers-browse-page{% endblock %}
+
+{% block content %}
+<style>
+:root {
+  --black:      #0a0a0a;
+  --dark-card:  #1a1a1a;
+  --dark-card-hover: #222222;
+  --amber:      #f59e0b;
+  --amber-dark: #d97706;
+  --white:      #ffffff;
+  --text-muted: #888888;
+  --text-dim:   #555555;
+  --border:     rgba(255,255,255,0.07);
+  --border-hover: rgba(245,158,11,0.35);
+  --radius:     14px;
+  --ease:       cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-out:   cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.sr { opacity:0; transform:translateY(24px); transition:opacity 0.6s var(--ease-out),transform 0.6s var(--ease-out); }
+.sr.in { opacity:1; transform:translateY(0); }
+
+.lw-page { min-height:100vh; background:var(--black); padding:56px 0 100px; }
+.lw-container { width:100%; max-width:1200px; margin:0 auto; padding:0 32px; }
+
+/* Header */
+.lw-header { margin-bottom:48px; }
+.lw-eyebrow {
+  font-size:0.67rem; font-weight:600; letter-spacing:0.2em; text-transform:uppercase;
+  color:var(--amber); display:flex; align-items:center; gap:10px; margin-bottom:14px;
+}
+.lw-eyebrow::before { content:''; width:22px; height:1px; background:var(--amber); }
+.lw-header h1 {
+  font-size:clamp(2rem,4vw,3rem); font-weight:400; color:var(--white);
+  letter-spacing:-0.02em; margin:0 0 10px;
+}
+.lw-header p { font-size:1rem; color:var(--text-muted); margin:0; }
+
+/* Filter bar */
+.lw-filters {
+  background:var(--dark-card); border:1px solid var(--border); border-radius:var(--radius);
+  padding:20px 24px; margin-bottom:40px;
+  display:flex; flex-wrap:wrap; align-items:center; gap:12px;
+}
+
+.lw-filter-label {
+  font-size:0.7rem; font-weight:600; letter-spacing:0.15em; text-transform:uppercase;
+  color:var(--text-dim); margin-right:4px;
+}
+
+.lw-spec-btn {
+  display:inline-flex; align-items:center; gap:6px;
+  font-size:0.8rem; font-weight:500; color:var(--text-muted);
+  background:transparent; border:1px solid var(--border);
+  border-radius:8px; padding:7px 14px;
+  text-decoration:none; transition:all 0.2s var(--ease); cursor:pointer;
+}
+.lw-spec-btn:hover, .lw-spec-btn.active {
+  color:var(--amber); border-color:rgba(245,158,11,0.4);
+  background:rgba(245,158,11,0.06);
+}
+
+.lw-filter-sep { width:1px; height:28px; background:var(--border); margin:0 4px; }
+
+.lw-search {
+  flex:1; min-width:200px;
+  background:rgba(255,255,255,0.04); border:1px solid var(--border);
+  border-radius:8px; padding:8px 14px; font-size:0.875rem;
+  color:var(--white); outline:none; transition:border-color 0.2s var(--ease);
+}
+.lw-search:focus { border-color:rgba(245,158,11,0.4); }
+.lw-search::placeholder { color:var(--text-dim); }
+
+.lw-filter-btn {
+  background:var(--amber); color:#000; border:none; border-radius:8px;
+  padding:8px 18px; font-size:0.8rem; font-weight:600; cursor:pointer;
+  transition:background 0.2s var(--ease);
+}
+.lw-filter-btn:hover { background:var(--amber-dark); }
+
+.lw-clear { font-size:0.8rem; color:var(--text-dim); text-decoration:none; }
+.lw-clear:hover { color:var(--amber); }
+
+/* Grid */
+.lw-grid {
+  display:grid; grid-template-columns:repeat(3,1fr); gap:20px; margin-bottom:48px;
+}
+@media(max-width:900px){ .lw-grid { grid-template-columns:repeat(2,1fr); } }
+@media(max-width:560px){ .lw-grid { grid-template-columns:1fr; } }
+
+.lw-card {
+  display:flex; flex-direction:column;
+  background:var(--dark-card); border:1px solid var(--border);
+  border-radius:var(--radius); padding:24px; text-decoration:none;
+  transition:background 0.25s var(--ease),border-color 0.25s var(--ease),transform 0.25s var(--ease-out);
+  position:relative; overflow:hidden;
+}
+.lw-card:hover {
+  background:var(--dark-card-hover); border-color:var(--border-hover);
+  transform:translateY(-3px);
+}
+
+.lw-featured-badge {
+  position:absolute; top:16px; right:16px;
+  font-size:0.65rem; font-weight:700; letter-spacing:0.1em; text-transform:uppercase;
+  color:var(--amber); background:rgba(245,158,11,0.12);
+  border:1px solid rgba(245,158,11,0.3); border-radius:6px; padding:3px 8px;
+}
+
+.lw-card-photo {
+  width:60px; height:60px; border-radius:50%; overflow:hidden;
+  background:rgba(255,255,255,0.06); border:2px solid var(--border);
+  flex-shrink:0; margin-bottom:16px;
+}
+.lw-card-photo img { width:100%; height:100%; object-fit:cover; }
+.lw-card-photo-placeholder {
+  width:100%; height:100%; display:flex; align-items:center; justify-content:center;
+  font-size:1.4rem; color:var(--text-dim);
+}
+
+.lw-card-name {
+  font-size:1rem; font-weight:600; color:var(--white); margin:0 0 4px;
+}
+.lw-card-firm { font-size:0.8rem; color:var(--text-muted); margin:0 0 12px; }
+
+.lw-tags { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:14px; }
+.lw-tag {
+  font-size:0.7rem; font-weight:500; color:var(--text-muted);
+  background:rgba(255,255,255,0.05); border:1px solid var(--border);
+  border-radius:6px; padding:3px 8px;
+}
+
+.lw-card-meta { display:flex; align-items:center; gap:14px; margin-bottom:16px; }
+.lw-meta-item { font-size:0.78rem; color:var(--text-muted); display:flex; align-items:center; gap:4px; }
+.lw-stars { color:var(--amber); letter-spacing:1px; font-size:0.75rem; }
+
+.lw-card-footer {
+  margin-top:auto; padding-top:16px; border-top:1px solid var(--border);
+  display:flex; align-items:center; justify-content:space-between;
+}
+.lw-unlock-cost { font-size:0.8rem; font-weight:500; color:var(--amber); }
+.lw-card-arrow { font-size:1rem; color:var(--amber); opacity:0; transform:translateX(-6px); transition:opacity 0.2s,transform 0.2s; }
+.lw-card:hover .lw-card-arrow { opacity:1; transform:translateX(0); }
+
+/* Empty state */
+.lw-empty {
+  grid-column:1/-1; text-align:center; padding:80px 20px;
+  background:var(--dark-card); border:1px dashed var(--border); border-radius:var(--radius);
+}
+.lw-empty p { color:var(--text-muted); font-size:0.95rem; margin:0 0 8px; }
+
+/* Pagination */
+.lw-pagination { display:flex; justify-content:center; align-items:center; gap:8px; }
+.lw-page-btn {
+  font-size:0.85rem; font-weight:500;
+  padding:8px 16px; border-radius:8px;
+  text-decoration:none; color:var(--text-muted); border:1px solid var(--border);
+  background:transparent; transition:all 0.2s var(--ease);
+}
+.lw-page-btn:hover, .lw-page-btn.current {
+  color:var(--amber); border-color:rgba(245,158,11,0.4);
+  background:rgba(245,158,11,0.06);
+}
+.lw-page-btn[disabled] { opacity:0.3; pointer-events:none; }
+
+/* Filters mobile */
+@media(max-width:768px){
+  .lw-container { padding:0 20px; }
+  .lw-page { padding:40px 0 80px; }
+  .lw-filters { flex-direction:column; align-items:flex-start; gap:10px; }
+  .lw-search { width:100%; min-width:unset; }
+  .lw-filter-sep { display:none; }
+}
+</style>
+
+<div class="lw-page">
+  <div class="lw-container">
+
+    <div class="lw-header sr">
+      <div class="lw-eyebrow">Lawyer Marketplace</div>
+      <h1>Find a UAE lawyer</h1>
+      <p>Verified lawyers specialising in Dubai tenancy and property law.</p>
+    </div>
+
+    <!-- Filter bar -->
+    <form method="get" action="{{ url_for('lawyers.browse') }}" class="lw-filters sr">
+      <span class="lw-filter-label">Filter:</span>
+
+      <a href="{{ url_for('lawyers.browse') }}"
+         class="lw-spec-btn {% if not current_spec %}active{% endif %}">All areas</a>
+
+      {% for spec in specialisations %}
+      <a href="{{ url_for('lawyers.browse', specialisation=spec.slug,
+                  language=current_language, search=current_search) }}"
+         class="lw-spec-btn {% if current_spec == spec.slug %}active{% endif %}">
+        {{ spec.name }}
+      </a>
+      {% endfor %}
+
+      <div class="lw-filter-sep"></div>
+
+      <input class="lw-search" type="text" name="search"
+             placeholder="Search by name or firm…"
+             value="{{ current_search }}">
+
+      {% if current_language %}
+        <input type="hidden" name="language" value="{{ current_language }}">
+      {% endif %}
+      {% if current_spec %}
+        <input type="hidden" name="specialisation" value="{{ current_spec }}">
+      {% endif %}
+
+      <button type="submit" class="lw-filter-btn">Search</button>
+
+      {% if current_search or current_spec or current_language %}
+      <a href="{{ url_for('lawyers.browse') }}" class="lw-clear">Clear filters</a>
+      {% endif %}
+    </form>
+
+    <!-- Results grid -->
+    <div class="lw-grid">
+      {% for lawyer in lawyers.items %}
+      <a href="{{ url_for('lawyers.profile', lawyer_profile_id=lawyer.id) }}" class="lw-card sr">
+
+        {% if lawyer.is_featured %}
+        <div class="lw-featured-badge">Featured</div>
+        {% endif %}
+
+        <div class="lw-card-photo">
+          {% if lawyer.photo_url %}
+          <img src="{{ lawyer.photo_url }}" alt="{{ lawyer.display_name or lawyer.user.full_name }}">
+          {% else %}
+          <div class="lw-card-photo-placeholder">&#9876;</div>
+          {% endif %}
+        </div>
+
+        <div class="lw-card-name">{{ lawyer.display_name or lawyer.user.full_name }}</div>
+        {% if lawyer.firm_name %}
+        <div class="lw-card-firm">{{ lawyer.firm_name }}</div>
+        {% endif %}
+
+        {% if lawyer.specialisations %}
+        <div class="lw-tags">
+          {% for spec in lawyer.specialisations[:3] %}
+          <span class="lw-tag">{{ spec.name }}</span>
+          {% endfor %}
+        </div>
+        {% endif %}
+
+        <div class="lw-card-meta">
+          {% if lawyer.years_experience %}
+          <span class="lw-meta-item">{{ lawyer.years_experience }} yrs exp</span>
+          {% endif %}
+          {% if lawyer.average_rating %}
+          <span class="lw-meta-item">
+            <span class="lw-stars">&#9733;</span>
+            {{ "%.1f"|format(lawyer.average_rating) }}
+            ({{ lawyer.total_reviews }})
+          </span>
+          {% endif %}
+          {% if lawyer.languages %}
+          <span class="lw-meta-item">{{ lawyer.languages | join(', ') }}</span>
+          {% endif %}
+        </div>
+
+        <div class="lw-card-footer">
+          <span class="lw-unlock-cost">{{ lawyer.contact_unlock_credits }} credit{% if lawyer.contact_unlock_credits != 1 %}s{% endif %} to unlock</span>
+          <span class="lw-card-arrow">&#8594;</span>
+        </div>
+
+      </a>
+      {% else %}
+      <div class="lw-empty">
+        <p>No lawyers found matching your filters.</p>
+        <p><a href="{{ url_for('lawyers.browse') }}" style="color:var(--amber)">Clear all filters</a></p>
+      </div>
+      {% endfor %}
+    </div>
+
+    <!-- Pagination -->
+    {% if lawyers.pages > 1 %}
+    <div class="lw-pagination">
+      {% if lawyers.has_prev %}
+      <a href="{{ url_for('lawyers.browse', page=lawyers.prev_num,
+                  specialisation=current_spec, language=current_language,
+                  search=current_search) }}" class="lw-page-btn">&#8592; Prev</a>
+      {% endif %}
+
+      {% for p in lawyers.iter_pages(left_edge=1, right_edge=1, left_current=2, right_current=2) %}
+        {% if p %}
+        <a href="{{ url_for('lawyers.browse', page=p,
+                    specialisation=current_spec, language=current_language,
+                    search=current_search) }}"
+           class="lw-page-btn {% if p == lawyers.page %}current{% endif %}">{{ p }}</a>
+        {% else %}
+        <span style="color:var(--text-dim)">…</span>
+        {% endif %}
+      {% endfor %}
+
+      {% if lawyers.has_next %}
+      <a href="{{ url_for('lawyers.browse', page=lawyers.next_num,
+                  specialisation=current_spec, language=current_language,
+                  search=current_search) }}" class="lw-page-btn">Next &#8594;</a>
+      {% endif %}
+    </div>
+    {% endif %}
+
+  </div>
+</div>
+
+<script>
+(function(){
+  var els = document.querySelectorAll('.sr');
+  var io  = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } });
+  }, {threshold:0.05});
+  els.forEach(function(el){ io.observe(el); });
+})();
+</script>
+{% endblock %}

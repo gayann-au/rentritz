@@ -62,6 +62,9 @@ Desktop.ini
 .project
 .settings/
 
+# ── Database backups ───────────────────────────────────────────────────────────
+backups/
+
 # ── Backup & temp files ────────────────────────────────────────────────────────
 *.bak
 *.orig

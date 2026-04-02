@@ -1,0 +1,593 @@
+{% extends "admin/base_admin.html" %}
+
+{% block title %}{{ profile.display_name or profile.user.full_name }}{% endblock %}
+
+{% block topbar_title %}Lawyer Detail <span>{{ profile.display_name or profile.user.full_name }}</span>{% endblock %}
+
+{% block topbar_actions %}
+  <a href="{{ url_for('admin.lawyers') }}" class="btn btn-outline btn-sm">← Back to Lawyers</a>
+{% endblock %}
+
+{% block head %}
+<style>
+  /* ── Status badges ──────────────────────────────────────────────────────── */
+  .badge-pending_review { background: var(--amber-glow); color: var(--amber); border: 1px solid rgba(245,158,11,0.3); }
+  .badge-unverified     { background: rgba(99,102,241,0.12); color: #818cf8; border: 1px solid rgba(99,102,241,0.3); }
+  .badge-verified       { background: var(--success-glow); color: var(--success); border: 1px solid rgba(34,197,94,0.3); }
+  .badge-rejected       { background: var(--danger-glow); color: var(--danger); border: 1px solid rgba(239,68,68,0.3); }
+  .badge-inactive       { background: rgba(239,68,68,0.08); color: var(--danger); border: 1px solid rgba(239,68,68,0.2); }
+
+  /* ── Layout ─────────────────────────────────────────────────────────────── */
+  .detail-grid {
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    gap: 24px;
+    align-items: start;
+  }
+  @media (max-width: 1100px) { .detail-grid { grid-template-columns: 1fr; } }
+
+  /* ── Profile photo ──────────────────────────────────────────────────────── */
+  .lawyer-photo {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin: 0 auto 12px;
+    display: block;
+    border: 2px solid var(--dark-line);
+  }
+  .lawyer-avatar-lg {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: var(--dark-line);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--text-muted);
+    margin: 0 auto 12px;
+  }
+
+  /* ── Info rows ──────────────────────────────────────────────────────────── */
+  .info-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+    padding: 6px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    gap: 12px;
+  }
+  .info-row:last-child { border-bottom: none; }
+  .info-label { color: var(--text-muted); flex-shrink: 0; }
+  .info-value { text-align: right; word-break: break-all; }
+
+  /* ── Section header ─────────────────────────────────────────────────────── */
+  .section-title {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 12px;
+  }
+
+  /* ── Admin action buttons ───────────────────────────────────────────────── */
+  .action-btn-row {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 12px;
+  }
+
+  /* ── Modal overlay ──────────────────────────────────────────────────────── */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.7);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal-box {
+    background: var(--dark-card);
+    border: 1px solid var(--dark-line);
+    border-radius: 12px;
+    padding: 28px 32px;
+    width: 100%;
+    max-width: 480px;
+    box-shadow: 0 24px 64px rgba(0,0,0,0.6);
+  }
+  .modal-title { font-size: 16px; font-weight: 600; color: var(--white); margin-bottom: 16px; }
+  .modal-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 20px; }
+
+  /* ── Review stars ───────────────────────────────────────────────────────── */
+  .stars { color: var(--amber); letter-spacing: 1px; }
+
+  /* ── Notes autosave indicator ───────────────────────────────────────────── */
+  #notes-saved-indicator {
+    font-size: 11px;
+    color: var(--success);
+    opacity: 0;
+    transition: opacity 0.3s;
+    margin-left: 8px;
+  }
+</style>
+{% endblock %}
+
+{% block main %}
+<div class="admin-content">
+<div class="detail-grid">
+
+  {# ── LEFT COLUMN ─────────────────────────────────────────────────────────── #}
+  <div style="display:flex; flex-direction:column; gap:20px;">
+
+    {# Profile card #}
+    <div class="card" style="text-align:center; padding-bottom:20px;">
+      {% if profile.photo_path %}
+        <img src="{{ profile.photo_url }}" alt="" class="lawyer-photo">
+      {% else %}
+        <div class="lawyer-avatar-lg">{{ (profile.display_name or profile.user.full_name)[0] | upper }}</div>
+      {% endif %}
+
+      <div style="font-weight:600; font-size:16px;">{{ profile.display_name or profile.user.full_name }}</div>
+      {% if profile.display_name and profile.display_name != profile.user.full_name %}
+        <div style="font-size:12px; color:var(--text-muted); margin-top:2px;">{{ profile.user.full_name }}</div>
+      {% endif %}
+      <div style="font-size:13px; color:var(--text-muted); margin-top:4px;">{{ profile.user.email }}</div>
+
+      <div style="margin-top:10px; display:flex; gap:6px; justify-content:center; flex-wrap:wrap;">
+        <span class="badge badge-{{ profile.verification_status }}">
+          {{ profile.verification_status | replace('_', ' ') | title }}
+        </span>
+        {% if not profile.is_active %}
+          <span class="badge badge-inactive">Inactive</span>
+        {% endif %}
+      </div>
+
+      <div style="border-top:1px solid var(--dark-line); margin-top:16px; padding-top:16px;">
+        <div class="info-row">
+          <span class="info-label">Submitted</span>
+          <span class="info-value">{{ profile.created_at.strftime('%d %b %Y') }}</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Profile views</span>
+          <span class="info-value">{{ profile.profile_views }}</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Total unlocks</span>
+          <span class="info-value">{{ profile.total_unlocks }}</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Bookings</span>
+          <span class="info-value">{{ booking_count }}</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Reviews</span>
+          <span class="info-value">
+            {% if avg_rating %}{{ avg_rating }} / 5 ({{ review_count }}){% else %}{{ review_count }}{% endif %}
+          </span>
+        </div>
+        {% if profile.verified_at %}
+        <div class="info-row">
+          <span class="info-label">Verified</span>
+          <span class="info-value">{{ profile.verified_at.strftime('%d %b %Y') }}</span>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+
+    {# ── Admin-only control panel ──────────────────────────────────────────── #}
+    <div class="card">
+      <div class="section-title">Admin Controls</div>
+
+      {# Admin notes #}
+      <div style="margin-bottom:16px;">
+        <label style="font-size:12px; color:var(--text-muted); display:block; margin-bottom:6px;">
+          Admin Notes <span id="notes-saved-indicator">Saved</span>
+        </label>
+        <textarea
+          id="admin-notes-input"
+          class="form-input"
+          rows="3"
+          placeholder="Internal notes (never shown to lawyer)…"
+          style="width:100%; resize:vertical; font-size:13px;"
+        >{{ profile.admin_notes or '' }}</textarea>
+      </div>
+
+      {# Action buttons #}
+      <div class="action-btn-row">
+        {% if profile.verification_status != 'verified' %}
+        <button type="button" class="btn btn-outline btn-sm" style="color:var(--success); border-color:rgba(34,197,94,0.4);"
+                onclick="openVerifyModal()">
+          ✓ Verify
+        </button>
+        {% endif %}
+        {% if profile.verification_status != 'rejected' %}
+        <button type="button" class="btn btn-sm btn-danger"
+                onclick="openRejectModal()">
+          ✕ Reject
+        </button>
+        {% endif %}
+        <button type="button"
+                class="btn btn-sm {{ 'btn-danger' if profile.is_active else 'btn-outline' }}"
+                id="toggle-active-btn"
+                onclick="toggleActive()">
+          {{ 'Deactivate' if profile.is_active else 'Activate' }}
+        </button>
+      </div>
+
+      {% if profile.rejection_reason %}
+      <div style="margin-top:12px; padding:10px 12px; background:var(--danger-glow); border:1px solid rgba(239,68,68,0.2); border-radius:6px; font-size:12px;">
+        <div style="color:var(--danger); font-weight:600; margin-bottom:4px;">Rejection reason</div>
+        <div style="color:var(--text-muted);">{{ profile.rejection_reason }}</div>
+      </div>
+      {% endif %}
+    </div>
+
+  </div>
+
+  {# ── RIGHT COLUMN ────────────────────────────────────────────────────────── #}
+  <div style="display:flex; flex-direction:column; gap:20px;">
+
+    {# Professional info #}
+    <div class="card">
+      <div class="section-title">Profile Information</div>
+
+      <div class="info-row">
+        <span class="info-label">Bar Number</span>
+        <span class="info-value">{{ profile.bar_number or '—' }}</span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">Issuing Authority</span>
+        <span class="info-value">{{ profile.bar_issuing_authority or '—' }}</span>
+      </div>
+      {% if profile.licence_pdf_path %}
+      <div class="info-row">
+        <span class="info-label">Licence PDF</span>
+        <span class="info-value">
+          <a href="{{ profile.licence_url }}" target="_blank" class="btn btn-ghost btn-sm" style="padding:2px 8px; font-size:12px;">View PDF</a>
+        </span>
+      </div>
+      {% endif %}
+      <div class="info-row">
+        <span class="info-label">Years Experience</span>
+        <span class="info-value">{{ profile.years_experience or '—' }}</span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">Firm</span>
+        <span class="info-value">{{ profile.firm_name or '—' }}</span>
+      </div>
+      {% if profile.firm_website %}
+      <div class="info-row">
+        <span class="info-label">Firm Website</span>
+        <span class="info-value"><a href="{{ profile.firm_website }}" target="_blank" style="color:var(--amber);">{{ profile.firm_website }}</a></span>
+      </div>
+      {% endif %}
+      <div class="info-row">
+        <span class="info-label">Specialisations</span>
+        <span class="info-value">
+          {% if profile.specialisations %}
+            {{ profile.specialisations | map(attribute='name') | join(', ') }}
+          {% else %}—{% endif %}
+        </span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">Languages</span>
+        <span class="info-value">{{ (profile.languages | join(', ')) if profile.languages else '—' }}</span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">Courts</span>
+        <span class="info-value">{{ (profile.courts_practiced_in | join(', ')) if profile.courts_practiced_in else '—' }}</span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">Jurisdictions</span>
+        <span class="info-value">{{ (profile.jurisdictions | join(', ')) if profile.jurisdictions else '—' }}</span>
+      </div>
+    </div>
+
+    {# Bio #}
+    {% if profile.bio %}
+    <div class="card">
+      <div class="section-title">Bio</div>
+      <p style="font-size:13px; color:var(--text-muted); line-height:1.6; margin:0; white-space:pre-wrap;">{{ profile.bio }}</p>
+    </div>
+    {% endif %}
+
+    {# Pricing & Consultation #}
+    <div class="card">
+      <div class="section-title">Pricing & Availability</div>
+      <div class="info-row">
+        <span class="info-label">Consultation Modes</span>
+        <span class="info-value">{{ (profile.consultation_modes | join(', ')) if profile.consultation_modes else '—' }}</span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">Typical Response</span>
+        <span class="info-value">{{ (profile.typical_response_hours | string + 'h') if profile.typical_response_hours else '—' }}</span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">Free First Consult</span>
+        <span class="info-value">
+          {% if profile.offers_free_first_consultation %}
+            Yes{% if profile.free_consultation_minutes %} ({{ profile.free_consultation_minutes }} min){% endif %}
+          {% else %}No{% endif %}
+        </span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">Hourly Rate</span>
+        <span class="info-value">{{ ('AED ' + profile.hourly_rate_aed | string) if profile.hourly_rate_aed else '—' }}</span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">Initial Consult Fee</span>
+        <span class="info-value">{{ ('AED ' + profile.initial_consultation_fee_aed | string) if profile.initial_consultation_fee_aed else '—' }}</span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">Fee on Case Basis</span>
+        <span class="info-value">{{ 'Yes' if profile.fee_on_case_basis else 'No' }}</span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">Unlock Credits Cost</span>
+        <span class="info-value">{{ profile.contact_unlock_credits }}</span>
+      </div>
+      {% if profile.pricing_note %}
+      <div class="info-row">
+        <span class="info-label">Pricing Note</span>
+        <span class="info-value" style="text-align:left; max-width:360px;">{{ profile.pricing_note }}</span>
+      </div>
+      {% endif %}
+    </div>
+
+    {# Contact details — always shown to admin #}
+    <div class="card">
+      <div class="section-title">Contact Details (Admin Only)</div>
+      <div class="info-row">
+        <span class="info-label">Phone</span>
+        <span class="info-value">{{ profile.phone or '—' }}</span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">WhatsApp</span>
+        <span class="info-value">{{ profile.whatsapp or '—' }}</span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">Contact Email</span>
+        <span class="info-value">{{ profile.contact_email or '—' }}</span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">Office Address</span>
+        <span class="info-value">{{ profile.office_address or '—' }}</span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">City / Country</span>
+        <span class="info-value">{{ profile.office_city or '' }}{% if profile.office_city and profile.office_country %}, {% endif %}{{ profile.office_country or '' }}</span>
+      </div>
+      {% if profile.linkedin_url %}
+      <div class="info-row">
+        <span class="info-label">LinkedIn</span>
+        <span class="info-value"><a href="{{ profile.linkedin_url }}" target="_blank" style="color:var(--amber);">View</a></span>
+      </div>
+      {% endif %}
+      {% if profile.website_url %}
+      <div class="info-row">
+        <span class="info-label">Website</span>
+        <span class="info-value"><a href="{{ profile.website_url }}" target="_blank" style="color:var(--amber);">{{ profile.website_url }}</a></span>
+      </div>
+      {% endif %}
+    </div>
+
+    {# Education & Certifications #}
+    {% if profile.education or profile.certifications or profile.notable_cases %}
+    <div class="card">
+      <div class="section-title">Background</div>
+      {% if profile.education %}
+      <div style="margin-bottom:12px;">
+        <div style="font-size:12px; color:var(--text-muted); margin-bottom:4px;">Education</div>
+        {% for e in profile.education %}
+        <div style="font-size:13px; margin-bottom:2px;">
+          {{ e.degree or '' }}{% if e.degree and e.institution %} — {% endif %}{{ e.institution or '' }}{% if e.year %} ({{ e.year }}){% endif %}
+        </div>
+        {% endfor %}
+      </div>
+      {% endif %}
+      {% if profile.certifications %}
+      <div style="margin-bottom:12px;">
+        <div style="font-size:12px; color:var(--text-muted); margin-bottom:4px;">Certifications</div>
+        {% for c in profile.certifications %}
+        <div style="font-size:13px; margin-bottom:2px;">
+          {{ c.name or '' }}{% if c.issuer %} — {{ c.issuer }}{% endif %}{% if c.year %} ({{ c.year }}){% endif %}
+        </div>
+        {% endfor %}
+      </div>
+      {% endif %}
+      {% if profile.notable_cases %}
+      <div>
+        <div style="font-size:12px; color:var(--text-muted); margin-bottom:4px;">Notable Cases</div>
+        <p style="font-size:13px; color:var(--text-muted); line-height:1.6; margin:0; white-space:pre-wrap;">{{ profile.notable_cases }}</p>
+      </div>
+      {% endif %}
+    </div>
+    {% endif %}
+
+    {# Recent bookings #}
+    <div class="card" style="padding:0; overflow:hidden;">
+      <div class="card-header">
+        <div class="card-title">Bookings ({{ booking_count }} total)</div>
+      </div>
+      {% if recent_bookings %}
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Client</th>
+            <th>Status</th>
+            <th>Credits</th>
+            <th>Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for b in recent_bookings %}
+          <tr>
+            <td>
+              <div class="user-name">{{ b.client.full_name }}</div>
+              <div class="user-email">{{ b.client.email }}</div>
+            </td>
+            <td><span class="badge badge-{{ b.status }}">{{ b.status | replace('_', ' ') | title }}</span></td>
+            <td style="color:var(--text-muted);">{{ b.credits_charged }}</td>
+            <td style="color:var(--text-muted); font-size:12px; white-space:nowrap;">{{ b.created_at.strftime('%d %b %Y') }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+      <div style="padding:24px; text-align:center; color:var(--text-muted); font-size:13px;">No bookings yet.</div>
+      {% endif %}
+    </div>
+
+    {# Recent reviews #}
+    <div class="card" style="padding:0; overflow:hidden;">
+      <div class="card-header">
+        <div class="card-title">
+          Reviews ({{ review_count }} total{% if avg_rating %} · avg {{ avg_rating }}/5{% endif %})
+        </div>
+      </div>
+      {% if reviews %}
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Client</th>
+            <th>Rating</th>
+            <th>Comment</th>
+            <th>Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for r in reviews %}
+          <tr>
+            <td>
+              <div class="user-name">{{ r.client.full_name }}</div>
+            </td>
+            <td>
+              <span class="stars">{% for i in range(r.rating) %}★{% endfor %}{% for i in range(5 - r.rating) %}<span style="opacity:0.2;">★</span>{% endfor %}</span>
+            </td>
+            <td style="font-size:12px; color:var(--text-muted); max-width:240px;">
+              {% if r.comment %}{{ r.comment | truncate(80) }}{% else %}<span style="opacity:0.4;">—</span>{% endif %}
+            </td>
+            <td style="color:var(--text-muted); font-size:12px; white-space:nowrap;">{{ r.created_at.strftime('%d %b %Y') }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+      <div style="padding:24px; text-align:center; color:var(--text-muted); font-size:13px;">No reviews yet.</div>
+      {% endif %}
+    </div>
+
+  </div>
+</div>
+</div>
+
+{# ── VERIFY MODAL ──────────────────────────────────────────────────────────── #}
+<div class="modal-overlay" id="verify-modal">
+  <div class="modal-box">
+    <div class="modal-title">Verify Profile</div>
+    <p style="font-size:13px; color:var(--text-muted); margin:0 0 16px;">
+      This will mark the profile as verified and make it visible to clients.
+      An email will be sent to the lawyer.
+    </p>
+    <form method="POST" action="{{ url_for('admin.verify_lawyer', profile_id=profile.id) }}">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <label style="font-size:12px; color:var(--text-muted); display:block; margin-bottom:6px;">Admin Notes (optional)</label>
+      <textarea name="admin_notes" class="form-input" rows="3" style="width:100%; resize:vertical; font-size:13px;" placeholder="Internal notes…">{{ profile.admin_notes or '' }}</textarea>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-ghost btn-sm" onclick="closeVerifyModal()">Cancel</button>
+        <button type="submit" class="btn btn-sm" style="background:rgba(34,197,94,0.15); color:var(--success); border:1px solid rgba(34,197,94,0.4);">
+          ✓ Confirm Verify
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+{# ── REJECT MODAL ──────────────────────────────────────────────────────────── #}
+<div class="modal-overlay" id="reject-modal">
+  <div class="modal-box">
+    <div class="modal-title">Reject Profile</div>
+    <p style="font-size:13px; color:var(--text-muted); margin:0 0 16px;">
+      Provide a clear reason. This will be sent to the lawyer by email.
+    </p>
+    <form method="POST" action="{{ url_for('admin.reject_lawyer', profile_id=profile.id) }}">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <label style="font-size:12px; color:var(--text-muted); display:block; margin-bottom:6px;">Reason <span style="color:var(--danger);">*</span></label>
+      <textarea name="reason" class="form-input" rows="3" required style="width:100%; resize:vertical; font-size:13px; margin-bottom:12px;" placeholder="e.g. Bar number could not be verified — please provide a copy of your licence certificate."></textarea>
+      <label style="font-size:12px; color:var(--text-muted); display:block; margin-bottom:6px;">Admin Notes (optional, internal only)</label>
+      <textarea name="admin_notes" class="form-input" rows="2" style="width:100%; resize:vertical; font-size:13px;" placeholder="Internal notes…">{{ profile.admin_notes or '' }}</textarea>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-ghost btn-sm" onclick="closeRejectModal()">Cancel</button>
+        <button type="submit" class="btn btn-sm btn-danger">✕ Confirm Reject</button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// ── Modal helpers ────────────────────────────────────────────────────────────
+function openVerifyModal()  { document.getElementById('verify-modal').classList.add('open'); }
+function closeVerifyModal() { document.getElementById('verify-modal').classList.remove('open'); }
+function openRejectModal()  { document.getElementById('reject-modal').classList.add('open'); }
+function closeRejectModal() { document.getElementById('reject-modal').classList.remove('open'); }
+
+document.querySelectorAll('.modal-overlay').forEach(el => {
+  el.addEventListener('click', e => { if (e.target === el) el.classList.remove('open'); });
+});
+
+// ── Toggle active (AJAX) ─────────────────────────────────────────────────────
+function toggleActive() {
+  const btn = document.getElementById('toggle-active-btn');
+  fetch('{{ url_for("admin.toggle_lawyer_active", profile_id=profile.id) }}', {
+    method: 'POST',
+    headers: {'X-CSRFToken': '{{ csrf_token() }}', 'Content-Type': 'application/x-www-form-urlencoded'},
+    body: 'csrf_token={{ csrf_token() }}',
+  })
+  .then(r => r.json())
+  .then(data => {
+    if (data.is_active) {
+      btn.textContent = 'Deactivate';
+      btn.className   = 'btn btn-sm btn-danger';
+    } else {
+      btn.textContent = 'Activate';
+      btn.className   = 'btn btn-sm btn-outline';
+    }
+  });
+}
+
+// ── Admin notes autosave (debounced 800ms) ───────────────────────────────────
+(function () {
+  const textarea = document.getElementById('admin-notes-input');
+  const indicator = document.getElementById('notes-saved-indicator');
+  if (!textarea) return;
+  let timer;
+
+  textarea.addEventListener('input', () => {
+    clearTimeout(timer);
+    timer = setTimeout(() => {
+      const body = new URLSearchParams({ notes: textarea.value, csrf_token: '{{ csrf_token() }}' });
+      fetch('{{ url_for("admin.update_lawyer_notes", profile_id=profile.id) }}', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+        body: body.toString(),
+      })
+      .then(r => r.json())
+      .then(data => {
+        if (data.saved) {
+          indicator.style.opacity = '1';
+          setTimeout(() => { indicator.style.opacity = '0'; }, 2000);
+        }
+      });
+    }, 800);
+  });
+})();
+</script>
+{% endblock %}

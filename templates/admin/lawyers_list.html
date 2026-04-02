@@ -1,0 +1,341 @@
+{% extends "admin/base_admin.html" %}
+
+{% block title %}Lawyers{% endblock %}
+
+{% block head %}
+<style>
+  /* ── Tab bar ────────────────────────────────────────────────────────────── */
+  .tab-bar {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+  }
+  .tab-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 14px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-muted);
+    background: transparent;
+    border: 1px solid transparent;
+    text-decoration: none;
+    transition: all 0.12s;
+    cursor: pointer;
+  }
+  .tab-btn:hover { background: rgba(255,255,255,0.05); color: var(--white); }
+  .tab-btn.active { background: var(--amber-glow); color: var(--amber); border-color: rgba(245,158,11,0.35); font-weight: 600; }
+  .tab-count {
+    font-size: 11px;
+    font-weight: 600;
+    background: rgba(255,255,255,0.08);
+    border-radius: 999px;
+    padding: 1px 7px;
+    min-width: 20px;
+    text-align: center;
+  }
+  .tab-btn.active .tab-count { background: rgba(245,158,11,0.2); }
+
+  /* ── Search bar ─────────────────────────────────────────────────────────── */
+  .filter-bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+  }
+  .search-wrap {
+    position: relative;
+    flex: 1;
+    min-width: 200px;
+    max-width: 340px;
+  }
+  .search-wrap .search-icon {
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-muted);
+    font-size: 13px;
+    pointer-events: none;
+  }
+  .search-wrap .filter-input { padding-left: 30px; width: 100%; }
+  .filter-meta {
+    margin-left: auto;
+    font-size: 12px;
+    color: var(--text-muted);
+    white-space: nowrap;
+  }
+
+  /* ── Row highlights ─────────────────────────────────────────────────────── */
+  tr.row-pending    { background: rgba(245,158,11,0.04); }
+  tr.row-unverified { background: rgba(99,102,241,0.04); }
+
+  /* ── Status badges ──────────────────────────────────────────────────────── */
+  .badge-pending_review { background: var(--amber-glow); color: var(--amber); border: 1px solid rgba(245,158,11,0.3); }
+  .badge-unverified     { background: rgba(99,102,241,0.12); color: #818cf8; border: 1px solid rgba(99,102,241,0.3); }
+  .badge-verified       { background: var(--success-glow); color: var(--success); border: 1px solid rgba(34,197,94,0.3); }
+  .badge-rejected       { background: var(--danger-glow); color: var(--danger); border: 1px solid rgba(239,68,68,0.3); }
+
+  /* ── Photo thumb ────────────────────────────────────────────────────────── */
+  .lawyer-photo-thumb {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    object-fit: cover;
+    background: var(--dark-line);
+    flex-shrink: 0;
+  }
+  .lawyer-avatar-fallback {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: var(--dark-line);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-muted);
+    flex-shrink: 0;
+  }
+
+  /* ── Spec tags ──────────────────────────────────────────────────────────── */
+  .spec-tag {
+    display: inline-block;
+    font-size: 10px;
+    padding: 2px 6px;
+    border-radius: 4px;
+    background: rgba(255,255,255,0.06);
+    color: var(--text-muted);
+    margin: 1px;
+  }
+
+  /* ── Pagination ─────────────────────────────────────────────────────────── */
+  .pagination { display: flex; align-items: center; justify-content: space-between; padding: 14px 18px; border-top: 1px solid var(--dark-line); gap: 12px; flex-wrap: wrap; }
+  .pagination-info { font-size: 12px; color: var(--text-muted); }
+  .pagination-pages { display: flex; align-items: center; gap: 4px; }
+  .pg-btn { display: inline-flex; align-items: center; justify-content: center; min-width: 32px; height: 32px; padding: 0 8px; border-radius: 5px; font-size: 13px; color: var(--text-muted); background: transparent; border: 1px solid transparent; text-decoration: none; transition: all 0.12s; cursor: pointer; white-space: nowrap; }
+  .pg-btn:hover { background: rgba(255,255,255,0.06); color: var(--white); border-color: var(--dark-line); }
+  .pg-btn.active { background: var(--amber-glow); color: var(--amber); border-color: rgba(245,158,11,0.4); font-weight: 600; }
+  .pg-btn.disabled { opacity: 0.3; pointer-events: none; }
+  .pg-ellipsis { color: var(--text-muted); font-size: 13px; padding: 0 4px; }
+
+  /* ── Empty state ────────────────────────────────────────────────────────── */
+  .table-empty { padding: 60px 20px; text-align: center; color: var(--text-muted); }
+  .table-empty-icon  { font-size: 36px; opacity: 0.3; margin-bottom: 10px; }
+  .table-empty-title { font-size: 18px; color: var(--white); margin-bottom: 6px; font-weight: 600; }
+  .table-empty-sub   { font-size: 13px; margin-bottom: 16px; }
+</style>
+{% endblock %}
+
+{% block topbar_title %}
+  Lawyers
+  <span>{{ total_count }} total</span>
+{% endblock %}
+
+{% block main %}
+<div class="admin-content">
+
+  {# ── Tab bar ───────────────────────────────────────────────────────────── #}
+  <div class="tab-bar">
+    <a href="{{ url_for('admin.lawyers', search=search) }}"
+       class="tab-btn {{ 'active' if current_status_filter == '' }}">
+      All <span class="tab-count">{{ pending_count + unverified_count + verified_count + rejected_count }}</span>
+    </a>
+    <a href="{{ url_for('admin.lawyers', status='pending_review', search=search) }}"
+       class="tab-btn {{ 'active' if current_status_filter == 'pending_review' }}">
+      Pending Review <span class="tab-count">{{ pending_count }}</span>
+    </a>
+    <a href="{{ url_for('admin.lawyers', status='unverified', search=search) }}"
+       class="tab-btn {{ 'active' if current_status_filter == 'unverified' }}">
+      Unverified <span class="tab-count">{{ unverified_count }}</span>
+    </a>
+    <a href="{{ url_for('admin.lawyers', status='verified', search=search) }}"
+       class="tab-btn {{ 'active' if current_status_filter == 'verified' }}">
+      Verified <span class="tab-count">{{ verified_count }}</span>
+    </a>
+    <a href="{{ url_for('admin.lawyers', status='rejected', search=search) }}"
+       class="tab-btn {{ 'active' if current_status_filter == 'rejected' }}">
+      Rejected <span class="tab-count">{{ rejected_count }}</span>
+    </a>
+  </div>
+
+  {# ── Search bar ────────────────────────────────────────────────────────── #}
+  <form method="GET" action="{{ url_for('admin.lawyers') }}" id="filter-form">
+    {% if current_status_filter %}
+      <input type="hidden" name="status" value="{{ current_status_filter }}">
+    {% endif %}
+    <div class="filter-bar">
+      <div class="search-wrap">
+        <span class="search-icon">⌕</span>
+        <input
+          type="text"
+          name="search"
+          class="filter-input"
+          placeholder="Search name, email, bar number…"
+          value="{{ search }}"
+          id="search-input"
+          autocomplete="off"
+        >
+      </div>
+      {% if search %}
+        <a href="{{ url_for('admin.lawyers', status=current_status_filter) }}" class="btn btn-ghost btn-sm">✕ Clear</a>
+      {% endif %}
+      <div class="filter-meta">
+        {% if search %}{{ total_count }} result{{ 's' if total_count != 1 }}
+        {% else %}{{ total_count }} lawyer{{ 's' if total_count != 1 }}{% endif %}
+      </div>
+    </div>
+  </form>
+
+  {# ── Table ─────────────────────────────────────────────────────────────── #}
+  <div class="card" style="padding:0; overflow:hidden;">
+    {% if profiles %}
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th style="width:44px;"></th>
+          <th>Name / Email</th>
+          <th>Bar Number</th>
+          <th>Specialisations</th>
+          <th>Submitted</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for p in profiles %}
+        {% set row_class = 'row-pending' if p.verification_status == 'pending_review' else ('row-unverified' if p.verification_status == 'unverified' else '') %}
+        <tr class="{{ row_class }}" onclick="window.location='{{ url_for('admin.lawyer_detail', profile_id=p.id) }}'">
+
+          {# Photo #}
+          <td onclick="event.stopPropagation()">
+            {% if p.photo_path %}
+              <img src="{{ p.photo_url }}" alt="" class="lawyer-photo-thumb">
+            {% else %}
+              <div class="lawyer-avatar-fallback">{{ (p.display_name or p.user.full_name)[0] | upper }}</div>
+            {% endif %}
+          </td>
+
+          {# Name + email #}
+          <td>
+            <div class="user-cell">
+              <div>
+                <div class="user-name">{{ p.display_name or p.user.full_name }}</div>
+                <div class="user-email">{{ p.user.email }}</div>
+              </div>
+            </div>
+          </td>
+
+          {# Bar number #}
+          <td style="color:var(--text-muted); font-size:12px;">
+            {{ p.bar_number or '—' }}
+          </td>
+
+          {# Specialisations #}
+          <td>
+            {% for s in p.specialisations[:3] %}
+              <span class="spec-tag">{{ s.name }}</span>
+            {% endfor %}
+            {% if p.specialisations | length > 3 %}
+              <span class="spec-tag">+{{ p.specialisations | length - 3 }}</span>
+            {% endif %}
+          </td>
+
+          {# Submitted #}
+          <td style="color:var(--text-muted); font-size:12px; white-space:nowrap;">
+            {{ p.created_at.strftime('%d %b %Y') }}
+          </td>
+
+          {# Status badge #}
+          <td>
+            <span class="badge badge-{{ p.verification_status }}">
+              {{ p.verification_status | replace('_', ' ') | title }}
+            </span>
+          </td>
+
+          {# Actions #}
+          <td onclick="event.stopPropagation()">
+            <div class="table-actions">
+              <a href="{{ url_for('admin.lawyer_detail', profile_id=p.id) }}" class="btn btn-ghost btn-sm">View</a>
+            </div>
+          </td>
+
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    {# ── Pagination ────────────────────────────────────────────────────── #}
+    {% if total_pages > 1 %}
+    <div class="pagination">
+      <div class="pagination-info">Page {{ page }} of {{ total_pages }}</div>
+      <div class="pagination-pages">
+
+        {% if page > 1 %}
+          <a href="{{ url_for('admin.lawyers', page=page-1, status=current_status_filter, search=search) }}" class="pg-btn">← Prev</a>
+        {% else %}
+          <span class="pg-btn disabled">← Prev</span>
+        {% endif %}
+
+        {% set show_pages = [] %}
+        {% for p in range(1, total_pages + 1) %}
+          {% if p == 1 or p == total_pages or (p >= page - 2 and p <= page + 2) %}
+            {% if show_pages.append(p) %}{% endif %}
+          {% endif %}
+        {% endfor %}
+        {% set ns = namespace(prev=0) %}
+        {% for p in show_pages %}
+          {% if ns.prev and p - ns.prev > 1 %}<span class="pg-ellipsis">…</span>{% endif %}
+          <a href="{{ url_for('admin.lawyers', page=p, status=current_status_filter, search=search) }}"
+             class="pg-btn {{ 'active' if p == page }}">{{ p }}</a>
+          {% set ns.prev = p %}
+        {% endfor %}
+
+        {% if page < total_pages %}
+          <a href="{{ url_for('admin.lawyers', page=page+1, status=current_status_filter, search=search) }}" class="pg-btn">Next →</a>
+        {% else %}
+          <span class="pg-btn disabled">Next →</span>
+        {% endif %}
+
+      </div>
+    </div>
+    {% endif %}
+
+    {% else %}
+    <div class="table-empty">
+      <div class="table-empty-icon">⚖</div>
+      <div class="table-empty-title">No lawyers found</div>
+      {% if search or current_status_filter %}
+        <div class="table-empty-sub">No profiles match your current filters.</div>
+        <a href="{{ url_for('admin.lawyers') }}" class="btn btn-outline">Clear filters</a>
+      {% else %}
+        <div class="table-empty-sub">Lawyer profiles will appear here once submitted.</div>
+      {% endif %}
+    </div>
+    {% endif %}
+
+  </div>
+
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+(function () {
+  const input = document.getElementById('search-input');
+  const form  = document.getElementById('filter-form');
+  if (!input || !form) return;
+  let timer;
+  input.addEventListener('input', () => {
+    clearTimeout(timer);
+    timer = setTimeout(() => form.submit(), 400);
+  });
+})();
+</script>
+{% endblock %}

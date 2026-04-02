@@ -1,0 +1,332 @@
+{% extends 'base.html' %}
+{% block title %}Edit Profile | Rentritz Dubai{% endblock %}
+{% block body_class %}lawyer-edit-page{% endblock %}
+
+{% block content %}
+<style>
+:root{
+  --black:#0a0a0a;--dark-card:#1a1a1a;--amber:#f59e0b;--amber-dark:#d97706;
+  --white:#ffffff;--text-muted:#888888;--text-dim:#555555;
+  --border:rgba(255,255,255,0.07);--radius:14px;
+  --ease:cubic-bezier(0.4,0,0.2,1);--ease-out:cubic-bezier(0.22,1,0.36,1);
+}
+.sr{opacity:0;transform:translateY(24px);transition:opacity 0.6s var(--ease-out),transform 0.6s var(--ease-out);}
+.sr.in{opacity:1;transform:translateY(0);}
+
+/* Reuse register page styles — identical form */
+.lr-page{min-height:100vh;background:var(--black);padding:56px 0 100px;}
+.lr-container{width:100%;max-width:800px;margin:0 auto;padding:0 32px;}
+.lr-header{margin-bottom:40px;}
+.lr-eyebrow{font-size:0.67rem;font-weight:600;letter-spacing:0.2em;text-transform:uppercase;color:var(--amber);display:flex;align-items:center;gap:10px;margin-bottom:14px;}
+.lr-eyebrow::before{content:'';width:22px;height:1px;background:var(--amber);}
+.lr-header h1{font-size:clamp(1.8rem,4vw,2.8rem);font-weight:400;color:var(--white);letter-spacing:-0.02em;margin:0 0 10px;}
+.lr-header p{font-size:0.95rem;color:var(--text-muted);margin:0;line-height:1.6;}
+.lr-section{background:var(--dark-card);border:1px solid var(--border);border-radius:var(--radius);padding:28px;margin-bottom:20px;}
+.lr-section-title{font-size:0.67rem;font-weight:600;letter-spacing:0.2em;text-transform:uppercase;color:var(--text-dim);margin:0 0 20px;padding-bottom:12px;border-bottom:1px solid var(--border);}
+.lr-field{margin-bottom:20px;}
+.lr-field:last-child{margin-bottom:0;}
+.lr-label{display:block;font-size:0.8rem;font-weight:500;color:var(--white);margin-bottom:6px;}
+.lr-label-opt{font-size:0.72rem;color:var(--text-dim);font-weight:400;margin-left:6px;}
+.lr-hint{font-size:0.75rem;color:var(--text-dim);margin-top:5px;line-height:1.5;}
+.lr-error{font-size:0.75rem;color:#f87171;margin-top:5px;}
+.lr-input,.lr-textarea,.lr-select{display:block;width:100%;box-sizing:border-box;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:8px;padding:10px 14px;font-size:0.875rem;color:var(--white);outline:none;transition:border-color 0.2s var(--ease);font-family:inherit;}
+.lr-input:focus,.lr-textarea:focus{border-color:rgba(245,158,11,0.4);}
+.lr-input::placeholder,.lr-textarea::placeholder{color:var(--text-dim);}
+.lr-textarea{resize:vertical;min-height:100px;}
+.lr-grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+@media(max-width:600px){.lr-grid2{grid-template-columns:1fr;}}
+.lr-check-group{display:flex;flex-wrap:wrap;gap:10px;}
+.lr-check-item{display:flex;align-items:center;gap:8px;cursor:pointer;}
+.lr-check-item input[type="checkbox"]{width:16px;height:16px;accent-color:var(--amber);cursor:pointer;flex-shrink:0;}
+.lr-check-item span{font-size:0.875rem;color:var(--white);}
+.lr-file-label{display:inline-flex;align-items:center;gap:8px;padding:9px 16px;background:rgba(255,255,255,0.05);border:1px solid var(--border);border-radius:8px;cursor:pointer;font-size:0.85rem;color:var(--text-muted);transition:border-color 0.2s,color 0.2s;}
+.lr-file-label:hover{border-color:rgba(245,158,11,0.4);color:var(--amber);}
+input[type="file"]{display:none;}
+.lr-file-name{font-size:0.8rem;color:var(--text-dim);margin-top:6px;}
+.lr-submit-row{display:flex;justify-content:space-between;align-items:center;margin-top:32px;}
+.lr-submit-btn{background:var(--amber);color:#000;border:none;border-radius:10px;padding:14px 32px;font-size:0.95rem;font-weight:600;cursor:pointer;transition:background 0.2s var(--ease),transform 0.15s;}
+.lr-submit-btn:hover{background:var(--amber-dark);transform:translateY(-1px);}
+.lr-cancel-link{font-size:0.85rem;color:var(--text-muted);text-decoration:none;}
+.lr-cancel-link:hover{color:var(--amber);}
+
+/* Current file indicator */
+.lr-current-file{
+  display:inline-flex;align-items:center;gap:6px;
+  font-size:0.78rem;color:var(--text-muted);margin-top:6px;
+}
+.lr-current-file a{color:var(--amber);text-decoration:none;}
+
+/* Bar number change warning */
+.lr-bar-warn{font-size:0.75rem;color:var(--amber);margin-top:5px;display:none;}
+</style>
+
+<div class="lr-page">
+  <div class="lr-container">
+
+    <div class="lr-header sr">
+      <div class="lr-eyebrow">Lawyer Dashboard</div>
+      <h1>Edit profile</h1>
+      <p>Changes are saved immediately. Changing your bar number will reset your verification to "pending review".</p>
+    </div>
+
+    <form method="POST" enctype="multipart/form-data">
+      {{ form.hidden_tag() }}
+
+      <!-- IDENTITY -->
+      <div class="lr-section sr">
+        <div class="lr-section-title">Identity &amp; credentials</div>
+
+        <div class="lr-grid2">
+          <div class="lr-field">
+            <label class="lr-label" for="{{ form.display_name.id }}">Display Name <span class="lr-label-opt">optional</span></label>
+            {{ form.display_name(class='lr-input') }}
+            {% if form.display_name.errors %}<div class="lr-error">{{ form.display_name.errors[0] }}</div>{% endif %}
+          </div>
+          <div class="lr-field">
+            <label class="lr-label" for="{{ form.bar_number.id }}">Bar / Licence No. <span class="lr-label-opt">optional</span></label>
+            {{ form.bar_number(class='lr-input', id='bar-number-input') }}
+            <div class="lr-bar-warn" id="bar-warn">&#9888; Changing your bar number will require re-verification.</div>
+            {% if form.bar_number.errors %}<div class="lr-error">{{ form.bar_number.errors[0] }}</div>{% endif %}
+          </div>
+        </div>
+
+        <div class="lr-field">
+          <label class="lr-label" for="{{ form.bar_issuing_authority.id }}">Issuing Authority <span class="lr-label-opt">optional</span></label>
+          {{ form.bar_issuing_authority(class='lr-input') }}
+        </div>
+
+        <div class="lr-grid2">
+          <div class="lr-field">
+            <label class="lr-label" for="{{ form.firm_name.id }}">Firm Name <span class="lr-label-opt">optional</span></label>
+            {{ form.firm_name(class='lr-input') }}
+          </div>
+          <div class="lr-field">
+            <label class="lr-label" for="{{ form.years_experience.id }}">Years of Experience <span class="lr-label-opt">optional</span></label>
+            {{ form.years_experience(class='lr-input') }}
+            {% if form.years_experience.errors %}<div class="lr-error">{{ form.years_experience.errors[0] }}</div>{% endif %}
+          </div>
+        </div>
+      </div>
+
+      <!-- PRACTICE -->
+      <div class="lr-section sr">
+        <div class="lr-section-title">Practice details</div>
+
+        <div class="lr-field">
+          <label class="lr-label">Practice Areas</label>
+          <div class="lr-check-group">
+            {% for subfield in form.specialisation_ids %}
+            <label class="lr-check-item">{{ subfield() }}<span>{{ subfield.label.text }}</span></label>
+            {% endfor %}
+          </div>
+        </div>
+
+        <div class="lr-field">
+          <label class="lr-label">Consultation Modes</label>
+          <div class="lr-check-group">
+            {% for subfield in form.consultation_modes %}
+            <label class="lr-check-item">{{ subfield() }}<span>{{ subfield.label.text }}</span></label>
+            {% endfor %}
+          </div>
+        </div>
+
+        <div class="lr-grid2">
+          <div class="lr-field">
+            <label class="lr-label" for="{{ form.languages.id }}">Languages <span class="lr-label-opt">optional</span></label>
+            {{ form.languages(class='lr-input') }}
+            <div class="lr-hint">Comma-separated</div>
+          </div>
+          <div class="lr-field">
+            <label class="lr-label" for="{{ form.typical_response_hours.id }}">Typical Response (hours) <span class="lr-label-opt">optional</span></label>
+            {{ form.typical_response_hours(class='lr-input') }}
+            {% if form.typical_response_hours.errors %}<div class="lr-error">{{ form.typical_response_hours.errors[0] }}</div>{% endif %}
+          </div>
+        </div>
+
+        <div class="lr-field">
+          <label class="lr-label" for="{{ form.courts_practiced_in.id }}">Courts Practiced In <span class="lr-label-opt">optional</span></label>
+          {{ form.courts_practiced_in(class='lr-input') }}
+          <div class="lr-hint">Comma-separated</div>
+        </div>
+
+        <div class="lr-field">
+          <label class="lr-label" for="{{ form.jurisdictions.id }}">Jurisdictions <span class="lr-label-opt">optional</span></label>
+          {{ form.jurisdictions(class='lr-input') }}
+          <div class="lr-hint">Comma-separated</div>
+        </div>
+      </div>
+
+      <!-- PRICING -->
+      <div class="lr-section sr">
+        <div class="lr-section-title">Pricing</div>
+
+        <div class="lr-field">
+          <label class="lr-check-item" style="display:inline-flex;">
+            {{ form.offers_free_first_consultation() }}
+            <span style="margin-left:8px;">Offer a free first consultation</span>
+          </label>
+        </div>
+        <div class="lr-field">
+          <label class="lr-label" for="{{ form.free_consultation_minutes.id }}">Free consultation duration (minutes) <span class="lr-label-opt">optional</span></label>
+          {{ form.free_consultation_minutes(class='lr-input') }}
+          {% if form.free_consultation_minutes.errors %}<div class="lr-error">{{ form.free_consultation_minutes.errors[0] }}</div>{% endif %}
+        </div>
+
+        <div class="lr-grid2">
+          <div class="lr-field">
+            <label class="lr-label" for="{{ form.initial_consultation_fee_aed.id }}">Initial consultation fee (AED) <span class="lr-label-opt">optional</span></label>
+            {{ form.initial_consultation_fee_aed(class='lr-input') }}
+            {% if form.initial_consultation_fee_aed.errors %}<div class="lr-error">{{ form.initial_consultation_fee_aed.errors[0] }}</div>{% endif %}
+          </div>
+          <div class="lr-field">
+            <label class="lr-label" for="{{ form.hourly_rate_aed.id }}">Hourly rate (AED) <span class="lr-label-opt">optional</span></label>
+            {{ form.hourly_rate_aed(class='lr-input') }}
+            {% if form.hourly_rate_aed.errors %}<div class="lr-error">{{ form.hourly_rate_aed.errors[0] }}</div>{% endif %}
+          </div>
+        </div>
+
+        <div class="lr-field">
+          <label class="lr-check-item" style="display:inline-flex;">
+            {{ form.fee_on_case_basis() }}
+            <span style="margin-left:8px;">Fee discussed after reviewing case</span>
+          </label>
+        </div>
+
+        <div class="lr-field">
+          <label class="lr-label" for="{{ form.pricing_note.id }}">Pricing note <span class="lr-label-opt">optional</span></label>
+          {{ form.pricing_note(class='lr-textarea', rows=3) }}
+          {% if form.pricing_note.errors %}<div class="lr-error">{{ form.pricing_note.errors[0] }}</div>{% endif %}
+        </div>
+      </div>
+
+      <!-- BIO -->
+      <div class="lr-section sr">
+        <div class="lr-section-title">Bio &amp; presentation</div>
+
+        <div class="lr-field">
+          <label class="lr-label" for="{{ form.bio.id }}">Professional Bio <span style="color:#f87171;">*</span></label>
+          {{ form.bio(class='lr-textarea', rows=6) }}
+          {% if form.bio.errors %}<div class="lr-error">{{ form.bio.errors[0] }}</div>{% endif %}
+        </div>
+
+        <div class="lr-field">
+          <label class="lr-label" for="{{ form.notable_cases.id }}">Notable work <span class="lr-label-opt">optional</span></label>
+          {{ form.notable_cases(class='lr-textarea', rows=4) }}
+          {% if form.notable_cases.errors %}<div class="lr-error">{{ form.notable_cases.errors[0] }}</div>{% endif %}
+        </div>
+
+        <div class="lr-grid2">
+          <div class="lr-field">
+            <label class="lr-label" for="{{ form.linkedin_url.id }}">LinkedIn URL <span class="lr-label-opt">optional</span></label>
+            {{ form.linkedin_url(class='lr-input') }}
+            {% if form.linkedin_url.errors %}<div class="lr-error">{{ form.linkedin_url.errors[0] }}</div>{% endif %}
+          </div>
+          <div class="lr-field">
+            <label class="lr-label" for="{{ form.website_url.id }}">Personal website <span class="lr-label-opt">optional</span></label>
+            {{ form.website_url(class='lr-input') }}
+            {% if form.website_url.errors %}<div class="lr-error">{{ form.website_url.errors[0] }}</div>{% endif %}
+          </div>
+        </div>
+      </div>
+
+      <!-- CONTACT -->
+      <div class="lr-section sr">
+        <div class="lr-section-title">Contact information <span style="font-size:0.72rem;font-weight:400;color:var(--amber);text-transform:none;letter-spacing:0;">— private</span></div>
+
+        <div class="lr-grid2">
+          <div class="lr-field">
+            <label class="lr-label" for="{{ form.phone.id }}">Phone <span class="lr-label-opt">optional</span></label>
+            {{ form.phone(class='lr-input') }}
+          </div>
+          <div class="lr-field">
+            <label class="lr-label" for="{{ form.whatsapp.id }}">WhatsApp <span class="lr-label-opt">optional</span></label>
+            {{ form.whatsapp(class='lr-input') }}
+          </div>
+        </div>
+
+        <div class="lr-field">
+          <label class="lr-label" for="{{ form.contact_email.id }}">Contact email <span class="lr-label-opt">optional</span></label>
+          {{ form.contact_email(class='lr-input') }}
+          {% if form.contact_email.errors %}<div class="lr-error">{{ form.contact_email.errors[0] }}</div>{% endif %}
+        </div>
+
+        <div class="lr-field">
+          <label class="lr-label" for="{{ form.office_address.id }}">Office address <span class="lr-label-opt">optional</span></label>
+          {{ form.office_address(class='lr-textarea', rows=2) }}
+        </div>
+
+        <div class="lr-grid2">
+          <div class="lr-field">
+            <label class="lr-label" for="{{ form.office_city.id }}">City</label>
+            {{ form.office_city(class='lr-input') }}
+          </div>
+          <div class="lr-field">
+            <label class="lr-label" for="{{ form.office_country.id }}">Country</label>
+            {{ form.office_country(class='lr-input') }}
+          </div>
+        </div>
+      </div>
+
+      <!-- FILES -->
+      <div class="lr-section sr">
+        <div class="lr-section-title">Files</div>
+
+        <div class="lr-grid2">
+          <div class="lr-field">
+            <label class="lr-label">Profile photo</label>
+            {% if profile.photo_url %}
+            <div class="lr-current-file">
+              Current: <a href="{{ profile.photo_url }}" target="_blank">view photo</a>
+            </div>
+            {% endif %}
+            <label class="lr-file-label" for="{{ form.photo.id }}" style="margin-top:8px;">
+              &#128247; Replace photo
+            </label>
+            {{ form.photo(id=form.photo.id, onchange="document.getElementById('photo-name').textContent=this.files[0]?this.files[0].name:'No file chosen'") }}
+            <div class="lr-file-name" id="photo-name">No file chosen</div>
+            <div class="lr-hint">JPG, PNG or WebP — max 5 MB. Replaces current photo.</div>
+          </div>
+          <div class="lr-field">
+            <label class="lr-label">Licence / Bar certificate</label>
+            {% if profile.licence_url %}
+            <div class="lr-current-file">
+              Current: <a href="{{ profile.licence_url }}" target="_blank">view PDF</a>
+            </div>
+            {% endif %}
+            <label class="lr-file-label" for="{{ form.licence_pdf.id }}" style="margin-top:8px;">
+              &#128196; Replace PDF
+            </label>
+            {{ form.licence_pdf(id=form.licence_pdf.id, onchange="document.getElementById('licence-name').textContent=this.files[0]?this.files[0].name:'No file chosen'") }}
+            <div class="lr-file-name" id="licence-name">No file chosen</div>
+            <div class="lr-hint">PDF — max 10 MB. Replaces current file.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="lr-submit-row sr">
+        <a href="{{ url_for('lawyers.dashboard') }}" class="lr-cancel-link">&#8592; Back to dashboard</a>
+        <button type="submit" class="lr-submit-btn">Save changes</button>
+      </div>
+
+    </form>
+  </div>
+</div>
+
+<script>
+(function(){
+  var input   = document.getElementById('bar-number-input');
+  var warn    = document.getElementById('bar-warn');
+  var original = input ? input.value : '';
+  if (input && warn) {
+    input.addEventListener('input', function(){
+      warn.style.display = (input.value !== original && original) ? 'block' : 'none';
+    });
+  }
+  var els=document.querySelectorAll('.sr');
+  var io=new IntersectionObserver(function(entries){
+    entries.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});
+  },{threshold:0.05});
+  els.forEach(function(el){io.observe(el);});
+})();
+</script>
+{% endblock %}

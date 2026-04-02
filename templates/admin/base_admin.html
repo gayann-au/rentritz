@@ -46,6 +46,10 @@
       <a href="{{ url_for('admin.users') }}" class="nav-link {% if request.endpoint == 'admin.users' %}active{% endif %}">
         <span class="nav-icon">○</span> Users
       </a>
+      <a href="{{ url_for('admin.lawyers') }}" class="nav-link {% if 'lawyer' in request.endpoint %}active{% endif %}" style="display:flex;align-items:center;justify-content:space-between;">
+        <span><span class="nav-icon">⚖</span> Lawyers</span>
+        <span id="nav-lawyer-badge" style="display:none; background:rgba(245,158,11,0.15); color:#f59e0b; border:1px solid rgba(245,158,11,0.4); font-size:10px; font-weight:600; padding:1px 6px; border-radius:999px; min-width:18px; text-align:center;"></span>
+      </a>
       <div class="nav-section-label">Activity</div>
       <a href="{{ url_for('admin.questions') }}" class="nav-link {% if request.endpoint == 'admin.questions' %}active{% endif %}">
         <span class="nav-icon">◎</span> Questions
@@ -75,6 +79,26 @@ setTimeout(() => {
   const c = document.getElementById('flash-container');
   if (c) c.remove();
 }, 5000);
+
+// ── Lawyer pending badge (polls every 300s, same as dashboard) ───────────────
+(function () {
+  const badge = document.getElementById('nav-lawyer-badge');
+  if (!badge) return;
+
+  function refresh() {
+    fetch('{{ url_for("admin.api_pending_count") }}')
+      .then(r => r.json())
+      .then(data => {
+        const n = data.lawyer_pending || 0;
+        badge.textContent    = n;
+        badge.style.display  = n > 0 ? 'inline-block' : 'none';
+      })
+      .catch(() => {});
+  }
+
+  refresh();
+  setInterval(refresh, 300000);
+})();
 </script>
 {% block scripts %}{% endblock %}
 </body>

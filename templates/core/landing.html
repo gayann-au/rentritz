@@ -47,7 +47,7 @@
 }
 
 /* ============================================================
-   SCROLL REVEAL
+   SCROLL REVEAL — per-element
    ============================================================ */
 .sr {
   opacity: 0;
@@ -55,12 +55,26 @@
   transition: opacity 0.78s var(--ease-out), transform 0.78s var(--ease-out);
 }
 .sr.in      { opacity: 1; transform: translateY(0); }
-.sr-d1      { transition-delay: 0.08s; }
-.sr-d2      { transition-delay: 0.16s; }
-.sr-d3      { transition-delay: 0.24s; }
-.sr-d4      { transition-delay: 0.32s; }
-.sr-d5      { transition-delay: 0.40s; }
-.sr-d6      { transition-delay: 0.48s; }
+.sr-d1      { transition-delay: 0.10s; }
+.sr-d2      { transition-delay: 0.20s; }
+.sr-d3      { transition-delay: 0.30s; }
+.sr-d4      { transition-delay: 0.40s; }
+.sr-d5      { transition-delay: 0.50s; }
+.sr-d6      { transition-delay: 0.60s; }
+
+/* ============================================================
+   SCROLL REVEAL — section-level wrapper
+   Sections slide up as a unit; children cascade inside them.
+   ============================================================ */
+.sr-wrap {
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity 0.55s var(--ease-out), transform 0.55s var(--ease-out);
+}
+.sr-wrap.in {
+  opacity: 1;
+  transform: translateY(0);
+}
 
 /* ============================================================
    SHARED LAYOUT
@@ -238,12 +252,18 @@
 .lp-hero {
   position: relative;
   width: 100%;
-  height: 100vh;
-  min-height: 640px;
+  min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
   overflow: hidden;
+}
+/* tsParticles canvas — above overlay, below content */
+#tsparticles {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
 }
 .lp-hero-bg {
   position: absolute;
@@ -276,9 +296,9 @@
 }
 .lp-hero-content {
   position: relative;
-  z-index: 3;
+  z-index: 4;
   text-align: center;
-  padding: 0 24px;
+  padding: 100px 24px 60px;
   max-width: 880px;
 }
 .lp-hero-pill {
@@ -292,16 +312,16 @@
   border: 1px solid rgba(245,158,11,0.5);
   border-radius: 100px;
   padding: 8px 20px;
-  margin-bottom: 36px;
+  margin-bottom: 24px;
   opacity: 0;
   animation: lpFadeDown 0.6s 0.1s forwards;
 }
 .lp-hero-headline {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  font-size: clamp(3.5rem, 8vw, 7rem);
+  font-size: clamp(2.6rem, 5.5vw, 4.5rem);
   font-weight: 500;
   line-height: 1.04;
-  margin: 0 0 28px;
+  margin: 0 0 20px;
   letter-spacing: -0.01em;
 }
 .lp-hero-headline .word {
@@ -320,7 +340,7 @@
   line-height: 1.8;
   color: rgba(255,255,255,0.88);
   max-width: 580px;
-  margin: 0 auto 40px;
+  margin: 0 auto 28px;
   opacity: 0;
   animation: lpFadeUp 0.8s 0.9s forwards;
 }
@@ -380,15 +400,12 @@
   animation: lpFadeUp 0.8s 1.35s forwards;
 }
 .lp-hero-trust-row {
-  position: absolute;
-  bottom: 36px;
-  left: 0; right: 0;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 14px;
   flex-wrap: wrap;
-  z-index: 3;
+  margin-top: 28px;
   opacity: 0;
   animation: lpFadeUp 0.8s 1.6s forwards;
 }
@@ -856,7 +873,7 @@
   .lp-trust-body { padding: 52px 28px; }
   .lp-who-cards  { grid-template-columns: 1fr; gap: 14px; }
   .lp-cover-grid { grid-template-columns: 1fr; }
-  .lp-hero-trust-row { bottom: 20px; gap: 8px; padding: 0 16px; }
+  .lp-hero-trust-row { gap: 8px; margin-top: 20px; }
   .lp-footer-grid { grid-template-columns: 1fr; gap: 32px; padding-bottom: 48px; }
   .lp-footer-disclaimer { max-width: 100%; }
 }
@@ -864,6 +881,206 @@
 @media (max-width: 420px) {
   .lp-hero-btns { flex-direction: column; align-items: center; }
   .lp-btn-primary, .lp-btn-ghost { width: 100%; text-align: center; }
+  .lp-hstat-sep { display: none; }
+  .lp-hero-stats { flex-direction: column; gap: 14px; }
+  .lp-hstat { padding: 0; }
+}
+
+/* ============================================================
+   SCROLL PROGRESS BAR
+   ============================================================ */
+#lpProgress {
+  position: absolute;
+  bottom: 0; left: 0;
+  height: 2px;
+  width: 0%;
+  background: linear-gradient(90deg, var(--amber), #fbbf24);
+  pointer-events: none;
+  transition: width 0.08s linear;
+  border-radius: 0 2px 2px 0;
+}
+
+/* Active nav link */
+.lp-nav-links a.lp-nav-active { color: var(--amber); }
+
+/* ============================================================
+   HERO STAT COUNTERS
+   ============================================================ */
+.lp-hero-stats {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 20px 0 22px;
+  opacity: 0;
+  animation: lpFadeUp 0.7s 1.45s forwards;
+}
+.lp-hstat {
+  text-align: center;
+  padding: 0 22px;
+}
+.lp-hstat b {
+  display: block;
+  font-family: 'Inter', sans-serif;
+  font-size: clamp(1.35rem, 2.5vw, 1.75rem);
+  font-weight: 700;
+  color: var(--amber);
+  line-height: 1;
+  margin-bottom: 5px;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+}
+.lp-hstat span {
+  display: block;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.63rem;
+  color: rgba(255,255,255,0.42);
+  letter-spacing: 0.04em;
+  line-height: 1.45;
+  max-width: 108px;
+  margin: 0 auto;
+}
+.lp-hstat-sep {
+  width: 1px;
+  height: 34px;
+  background: rgba(255,255,255,0.11);
+  flex-shrink: 0;
+}
+
+/* ============================================================
+   TESTIMONIALS
+   ============================================================ */
+.lp-testimonials {
+  background: var(--near-black);
+  padding: 96px 0;
+}
+.lp-testi-header {
+  text-align: center;
+  margin-bottom: 52px;
+}
+.lp-testi-track-wrap {
+  overflow: hidden;
+  position: relative;
+  cursor: grab;
+  touch-action: pan-y;
+  -webkit-user-select: none;
+  user-select: none;
+}
+.lp-testi-track-wrap:active { cursor: grabbing; }
+.lp-testi-track {
+  display: flex;
+  will-change: transform;
+  transition: transform 0.52s cubic-bezier(0.34, 1.46, 0.64, 1);
+}
+.lp-testi-slide {
+  min-width: 100%;
+  padding: 4px 16px 8px;
+  box-sizing: border-box;
+}
+.lp-testi-card {
+  background: var(--dark-card);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 18px;
+  padding: 38px 44px 36px;
+  max-width: 700px;
+  margin: 0 auto;
+  position: relative;
+}
+.lp-testi-card::before {
+  content: '\201C';
+  position: absolute;
+  top: 18px; left: 36px;
+  font-size: 6rem;
+  line-height: 1;
+  color: var(--amber);
+  opacity: 0.12;
+  font-family: Georgia, serif;
+  pointer-events: none;
+}
+.lp-testi-stars {
+  color: var(--amber);
+  font-size: 0.82rem;
+  letter-spacing: 3px;
+  margin-bottom: 14px;
+}
+.lp-testi-text {
+  font-family: 'Inter', sans-serif;
+  font-size: 1rem;
+  line-height: 1.82;
+  color: rgba(255,255,255,0.82);
+  margin: 0 0 26px;
+  position: relative;
+}
+.lp-testi-author {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.lp-testi-avatar {
+  width: 42px; height: 42px;
+  border-radius: 50%;
+  background: rgba(245,158,11,0.12);
+  border: 1px solid rgba(245,158,11,0.28);
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  font-size: 0.82rem;
+  color: var(--amber);
+  flex-shrink: 0;
+  letter-spacing: 0.03em;
+}
+.lp-testi-name {
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  font-size: 0.88rem;
+  color: var(--white);
+  margin-bottom: 2px;
+}
+.lp-testi-role {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+.lp-testi-nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  margin-top: 38px;
+}
+.lp-testi-btn {
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(255,255,255,0.18);
+  background: none;
+  color: rgba(255,255,255,0.7);
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: border-color 0.22s, background 0.22s, color 0.22s;
+  flex-shrink: 0;
+}
+.lp-testi-btn:hover {
+  border-color: var(--amber);
+  color: var(--amber);
+  background: rgba(245,158,11,0.08);
+}
+.lp-testi-dots { display: flex; gap: 8px; align-items: center; }
+.lp-testi-dot {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.22);
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  transition: background 0.25s, transform 0.25s;
+}
+.lp-testi-dot.active {
+  background: var(--amber);
+  transform: scale(1.5);
+}
+
+@media (max-width: 600px) {
+  .lp-testi-card { padding: 28px 24px 26px; }
+  .lp-testi-card::before { font-size: 4rem; top: 14px; left: 20px; }
 }
 </style>
 
@@ -871,6 +1088,7 @@
      NAVBAR
      ============================================================ -->
 <nav class="lp-nav" id="lpNav">
+  <div id="lpProgress" role="progressbar" aria-label="Reading progress" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
   <div class="lp-nav-inner">
     <a href="/" class="lp-logo">Rentritz</a>
     <div class="lp-nav-links">
@@ -900,6 +1118,7 @@
 <section class="lp-hero">
   <div class="lp-hero-bg" id="heroParallax"></div>
   <div class="lp-hero-overlay"></div>
+  <div id="tsparticles"></div>
   <div class="lp-hero-glow"></div>
 
   <div class="lp-hero-content">
@@ -919,25 +1138,42 @@
       Tenants, landlords, and property professionals get precise answers based on UAE rental law.
     </p>
 
+    <div class="lp-hero-stats" aria-hidden="true">
+      <div class="lp-hstat">
+        <b data-hcount="73" data-hsuffix="%">0%</b>
+        <span>of tenants unaware of their rights</span>
+      </div>
+      <div class="lp-hstat-sep"></div>
+      <div class="lp-hstat">
+        <b data-hcount="3200" data-hprefix="AED " data-hformat="comma">AED 0</b>
+        <span>avg. legal consultation cost</span>
+      </div>
+      <div class="lp-hstat-sep"></div>
+      <div class="lp-hstat">
+        <b data-hcount="68" data-hsuffix="%">0%</b>
+        <span>resolved without a lawyer</span>
+      </div>
+    </div>
+
     <div class="lp-hero-btns">
       <a href="{{ url_for('auth.register') }}" class="lp-btn-primary">Start Free, No Card Needed</a>
       <a href="#how-it-works" class="lp-btn-ghost">See How It Works</a>
     </div>
 
     <p class="lp-hero-note">2 free consultations on signup. No credit card required.</p>
-  </div>
 
-  <div class="lp-hero-trust-row">
-    <span class="lp-trust-chip">UAE Law Verified</span>
-    <span class="lp-trust-chip">Consultant Written</span>
-    <span class="lp-trust-chip">RERA Compliant</span>
+    <div class="lp-hero-trust-row">
+      <span class="lp-trust-chip">UAE Law Verified</span>
+      <span class="lp-trust-chip">Consultant Written</span>
+      <span class="lp-trust-chip">RERA Compliant</span>
+    </div>
   </div>
 </section>
 
 <!-- ============================================================
      STATS BAR
      ============================================================ -->
-<section class="lp-stats">
+<section class="lp-stats sr-wrap">
   <div class="lp-container">
     <div class="lp-stats-grid">
 
@@ -968,7 +1204,7 @@
 <!-- ============================================================
      HOW IT WORKS
      ============================================================ -->
-<section class="lp-how" id="how-it-works">
+<section class="lp-how sr-wrap" id="how-it-works">
   <div class="lp-container">
 
     <div class="lp-how-header">
@@ -1008,7 +1244,7 @@
 <!-- ============================================================
      WHO WE SERVE
      ============================================================ -->
-<section class="lp-who">
+<section class="lp-who sr-wrap">
   <div class="lp-container">
     <div class="lp-who-layout">
 
@@ -1073,7 +1309,7 @@
 <!-- ============================================================
      WHAT WE COVER
      ============================================================ -->
-<section class="lp-cover" id="what-we-cover">
+<section class="lp-cover sr-wrap" id="what-we-cover">
   <div class="lp-container">
 
     <div class="lp-cover-header">
@@ -1149,7 +1385,7 @@
 <!-- ============================================================
      TRUST
      ============================================================ -->
-<section class="lp-trust">
+<section class="lp-trust sr-wrap">
 
   <div class="lp-trust-img">
     <img
@@ -1192,9 +1428,100 @@
 </section>
 
 <!-- ============================================================
+     TESTIMONIALS
+     ============================================================ -->
+<section class="lp-testimonials sr-wrap">
+  <div class="lp-container">
+
+    <div class="lp-testi-header">
+      <div class="lp-label sr">Trusted by Dubai Residents</div>
+      <h2 class="lp-section-title-white sr sr-d1">What our users say.</h2>
+    </div>
+
+    <div class="lp-testi-track-wrap" id="testiWrap">
+      <div class="lp-testi-track" id="testiTrack">
+
+        <div class="lp-testi-slide">
+          <div class="lp-testi-card">
+            <div class="lp-testi-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+            <p class="lp-testi-text">I received a 30% rent increase notice and had no idea if it was legal. Rentritz showed me exactly where I stood under the RERA index — my landlord was only entitled to 10%. I used the guidance in my reply and he backed down within a week.</p>
+            <div class="lp-testi-author">
+              <div class="lp-testi-avatar">SM</div>
+              <div>
+                <div class="lp-testi-name">Sarah M.</div>
+                <div class="lp-testi-role">Tenant &mdash; Marina, Dubai</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="lp-testi-slide">
+          <div class="lp-testi-card">
+            <div class="lp-testi-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+            <p class="lp-testi-text">I needed to reclaim my property for personal use and was unsure of the correct legal procedure. The guidance on required notice periods and RDSC registration saved me from a costly mistake. Everything went smoothly.</p>
+            <div class="lp-testi-author">
+              <div class="lp-testi-avatar">AK</div>
+              <div>
+                <div class="lp-testi-name">Ahmed K.</div>
+                <div class="lp-testi-role">Landlord &mdash; Jumeirah, Dubai</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="lp-testi-slide">
+          <div class="lp-testi-card">
+            <div class="lp-testi-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+            <p class="lp-testi-text">I use Rentritz before every difficult client conversation. The depth of guidance on UAE tenancy law gives me confidence when advising on complex disputes. My clients notice the difference and it has become an indispensable part of my process.</p>
+            <div class="lp-testi-author">
+              <div class="lp-testi-avatar">RT</div>
+              <div>
+                <div class="lp-testi-name">Rachel T.</div>
+                <div class="lp-testi-role">Property Agent &mdash; Business Bay</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="lp-testi-slide">
+          <div class="lp-testi-card">
+            <div class="lp-testi-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+            <p class="lp-testi-text">Moving from Australia I had no idea how tenancy law worked in Dubai. Rentritz walked me through my rights before I signed my first lease. The clarity it gave me was invaluable — I negotiated three clauses out of the contract as a direct result.</p>
+            <div class="lp-testi-author">
+              <div class="lp-testi-avatar">JL</div>
+              <div>
+                <div class="lp-testi-name">James L.</div>
+                <div class="lp-testi-role">New Resident &mdash; Downtown Dubai</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="lp-testi-nav">
+      <button class="lp-testi-btn" id="testiPrev" aria-label="Previous testimonial">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg>
+      </button>
+      <div class="lp-testi-dots" role="tablist" id="testiDots">
+        <button class="lp-testi-dot active" data-idx="0" role="tab" aria-label="Testimonial 1" aria-selected="true"></button>
+        <button class="lp-testi-dot" data-idx="1" role="tab" aria-label="Testimonial 2" aria-selected="false"></button>
+        <button class="lp-testi-dot" data-idx="2" role="tab" aria-label="Testimonial 3" aria-selected="false"></button>
+        <button class="lp-testi-dot" data-idx="3" role="tab" aria-label="Testimonial 4" aria-selected="false"></button>
+      </div>
+      <button class="lp-testi-btn" id="testiNext" aria-label="Next testimonial">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
+      </button>
+    </div>
+
+  </div>
+</section>
+
+<!-- ============================================================
      FINAL CTA
      ============================================================ -->
-<section class="lp-cta">
+<section class="lp-cta sr-wrap">
   <div class="sr">
     <h2>Your answer is waiting.</h2>
     <p>Join thousands of Dubai residents who got clarity on their tenancy situation.</p>
@@ -1249,6 +1576,7 @@
 <!-- ============================================================
      JAVASCRIPT
      ============================================================ -->
+<script src="https://cdn.jsdelivr.net/npm/tsparticles-slim@2/tsparticles.slim.bundle.min.js"></script>
 <script>
 (function () {
   'use strict';
@@ -1371,6 +1699,182 @@
   document.querySelectorAll('[data-target]').forEach(function (el) {
     statObserver.observe(el);
   });
+
+  /* -------- SECTION-LEVEL staggered reveal -------- */
+  var wrapObserver = new IntersectionObserver(function (entries) {
+    entries.forEach(function (entry) {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('in');
+        wrapObserver.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.04 });
+
+  document.querySelectorAll('.sr-wrap').forEach(function (el) {
+    wrapObserver.observe(el);
+  });
+
+  /* -------- tsParticles hero background -------- */
+  if (typeof tsParticles !== 'undefined') {
+    tsParticles.load('tsparticles', {
+      fpsLimit: 60,
+      detectRetina: true,
+      background: { color: { value: 'transparent' } },
+      particles: {
+        number: { value: 55, density: { enable: true, area: 900 } },
+        color: { value: ['#ffffff', '#f59e0b'] },
+        opacity: {
+          value: { min: 0.04, max: 0.22 },
+          animation: { enable: true, speed: 0.4, sync: false }
+        },
+        size: { value: { min: 0.6, max: 2.2 } },
+        move: {
+          enable: true,
+          speed: 0.38,
+          direction: 'none',
+          random: true,
+          straight: false,
+          outModes: { default: 'out' }
+        },
+        links: { enable: false }
+      },
+      interactivity: {
+        events: {
+          onHover: { enable: false },
+          onClick: { enable: false }
+        }
+      }
+    });
+  }
+
+  /* -------- SCROLL PROGRESS BAR -------- */
+  var progressBar = document.getElementById('lpProgress');
+  function updateProgress() {
+    var docH = document.documentElement.scrollHeight - window.innerHeight;
+    var pct  = docH > 0 ? Math.min(window.scrollY / docH * 100, 100) : 0;
+    progressBar.style.width = pct + '%';
+    progressBar.setAttribute('aria-valuenow', Math.round(pct));
+  }
+  window.addEventListener('scroll', updateProgress, { passive: true });
+  updateProgress();
+
+  /* -------- ACTIVE NAV SECTION HIGHLIGHTING -------- */
+  var lpNavLinks = document.querySelectorAll('.lp-nav-links a[href^="#"]');
+  var activeSecObserver = new IntersectionObserver(function (entries) {
+    entries.forEach(function (entry) {
+      if (entry.isIntersecting) {
+        var href = '#' + entry.target.id;
+        lpNavLinks.forEach(function (a) {
+          a.classList.toggle('lp-nav-active', a.getAttribute('href') === href);
+        });
+      }
+    });
+  }, { rootMargin: '-30% 0px -60% 0px' });
+  ['how-it-works', 'what-we-cover'].forEach(function (id) {
+    var el = document.getElementById(id);
+    if (el) activeSecObserver.observe(el);
+  });
+
+  /* -------- HERO ANIMATED COUNTERS -------- */
+  function heroCountUp(el) {
+    var target   = parseInt(el.dataset.hcount, 10);
+    var prefix   = el.dataset.hprefix || '';
+    var suffix   = el.dataset.hsuffix || '';
+    var fmt      = el.dataset.hformat || '';
+    var duration = 1600;
+    var start    = null;
+    function step(ts) {
+      if (!start) start = ts;
+      var p    = Math.min((ts - start) / duration, 1);
+      var val  = Math.round((1 - Math.pow(1 - p, 4)) * target);
+      var disp = fmt === 'comma' ? val.toLocaleString('en-US') : String(val);
+      el.textContent = prefix + disp + suffix;
+      if (p < 1) requestAnimationFrame(step);
+      else el.textContent = prefix + (fmt === 'comma' ? target.toLocaleString('en-US') : target) + suffix;
+    }
+    requestAnimationFrame(step);
+  }
+  /* Fire after headline word-animation completes (~1.4 s) */
+  setTimeout(function () {
+    document.querySelectorAll('[data-hcount]').forEach(heroCountUp);
+  }, 1450);
+
+  /* -------- TESTIMONIALS CAROUSEL -------- */
+  (function () {
+    var wrap    = document.getElementById('testiWrap');
+    var track   = document.getElementById('testiTrack');
+    var dots    = document.querySelectorAll('#testiDots .lp-testi-dot');
+    var prevBtn = document.getElementById('testiPrev');
+    var nextBtn = document.getElementById('testiNext');
+    if (!track) return;
+
+    var total   = track.children.length;
+    var current = 0;
+    var timer   = null;
+
+    function gotoSlide(n) {
+      current = ((n % total) + total) % total;
+      track.style.transform = 'translateX(-' + (current * 100) + '%)';
+      dots.forEach(function (d, i) {
+        var on = i === current;
+        d.classList.toggle('active', on);
+        d.setAttribute('aria-selected', on ? 'true' : 'false');
+      });
+    }
+
+    function startAuto() {
+      clearInterval(timer);
+      timer = setInterval(function () { gotoSlide(current + 1); }, 5200);
+    }
+    function stopAuto() { clearInterval(timer); }
+
+    prevBtn.addEventListener('click', function () { gotoSlide(current - 1); startAuto(); });
+    nextBtn.addEventListener('click', function () { gotoSlide(current + 1); startAuto(); });
+    dots.forEach(function (d) {
+      d.addEventListener('click', function () {
+        gotoSlide(parseInt(d.dataset.idx, 10));
+        startAuto();
+      });
+    });
+
+    wrap.addEventListener('mouseenter', stopAuto);
+    wrap.addEventListener('mouseleave', startAuto);
+
+    /* Pointer drag / touch swipe */
+    var dragging = false, startX = 0, deltaX = 0;
+
+    wrap.addEventListener('pointerdown', function (e) {
+      dragging = true; startX = e.clientX; deltaX = 0;
+      track.style.transition = 'none';
+      wrap.setPointerCapture(e.pointerId);
+      stopAuto();
+    });
+    wrap.addEventListener('pointermove', function (e) {
+      if (!dragging) return;
+      deltaX = e.clientX - startX;
+      track.style.transform = 'translateX(calc(-' + (current * 100) + '% + ' + deltaX + 'px))';
+    });
+    function endDrag() {
+      if (!dragging) return;
+      dragging = false;
+      track.style.transition = '';
+      if      (deltaX < -60) gotoSlide(current + 1);
+      else if (deltaX >  60) gotoSlide(current - 1);
+      else                   gotoSlide(current);
+      startAuto();
+    }
+    wrap.addEventListener('pointerup',     endDrag);
+    wrap.addEventListener('pointercancel', endDrag);
+
+    /* Keyboard navigation */
+    wrap.setAttribute('tabindex', '0');
+    wrap.addEventListener('keydown', function (e) {
+      if (e.key === 'ArrowLeft')  { gotoSlide(current - 1); startAuto(); }
+      if (e.key === 'ArrowRight') { gotoSlide(current + 1); startAuto(); }
+    });
+
+    startAuto();
+  }());
 
 })();
 </script>
