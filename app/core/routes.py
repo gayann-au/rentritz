@@ -7,6 +7,15 @@ from app.models import db, Category, Scenario, Question, CreditLog
 
 core_bp = Blueprint('core', __name__)
 
+CATEGORY_TO_SPECIALISATION = {
+    'rent_increase':   'tenancy',
+    'eviction':        'tenancy',
+    'maintenance':     'tenancy',
+    'deposit':         'tenancy',
+    'dispute':         'tenancy',
+    'landlord_rights': 'tenancy',
+}
+
 
 def _get_node_at_path(tree, selections):
     node = tree
@@ -270,7 +279,27 @@ def answer(question_id):
 
     scenario = q.scenario
     category = Category.query.filter_by(slug=q.category_slug).first()
-    resp = make_response(render_template('core/answer.html', question=q, scenario=scenario, category=category))
+
+    from app.models import LawyerProfile
+
+    lawyer_count = LawyerProfile.query.filter_by(
+        is_active=True,
+        is_available=True,
+        verification_status='verified'
+    ).count()
+
+    specialisation_hint = CATEGORY_TO_SPECIALISATION.get(
+        q.category_slug, ''
+    )
+
+    resp = make_response(render_template(
+        'core/answer.html',
+        question=q,
+        scenario=scenario,
+        category=category,
+        lawyer_count=lawyer_count,
+        specialisation_hint=specialisation_hint,
+    ))
     resp.headers['Cache-Control'] = 'no-store, no-cache, must-revalidate, max-age=0'
     resp.headers['Pragma'] = 'no-cache'
     return resp
