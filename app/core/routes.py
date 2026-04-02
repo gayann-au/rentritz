@@ -310,7 +310,25 @@ def answer(question_id):
 def history():
     questions = Question.query.filter_by(user_id=current_user.id)\
                     .order_by(Question.created_at.desc()).all()
-    resp = make_response(render_template('core/history.html', questions=questions))
+
+    from app.models import LawyerBooking, LawyerReview
+
+    completed = LawyerBooking.query.filter_by(
+        client_id=current_user.id,
+        status='completed'
+    ).all()
+    reviewed_ids = {
+        r.booking_id for r in LawyerReview.query.filter_by(
+            client_id=current_user.id
+        ).all()
+    }
+    reviewable_bookings = [b for b in completed if b.id not in reviewed_ids]
+
+    resp = make_response(render_template(
+        'core/history.html',
+        questions=questions,
+        reviewable_bookings=reviewable_bookings,
+    ))
     resp.headers['Cache-Control'] = 'no-store, no-cache, must-revalidate, max-age=0'
     resp.headers['Pragma'] = 'no-cache'
     return resp

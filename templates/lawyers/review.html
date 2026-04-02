@@ -1,0 +1,331 @@
+{% extends 'base.html' %}
+{% block title %}Leave a Review | Rentritz Dubai{% endblock %}
+{% block body_class %}review-page{% endblock %}
+
+{% block content %}
+<style>
+:root {
+  --black:      #0a0a0a;
+  --dark-card:  #1a1a1a;
+  --amber:      #f59e0b;
+  --amber-dark: #d97706;
+  --white:      #ffffff;
+  --text-muted: #888888;
+  --text-dim:   #555555;
+  --border:     rgba(255,255,255,0.07);
+  --radius:     14px;
+  --ease-out:   cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.rv-page {
+  min-height: 100vh;
+  background: var(--black);
+  padding: 64px 0 100px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+}
+.rv-card {
+  width: 100%;
+  max-width: 560px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+.rv-eyebrow {
+  font-size: 0.67rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--amber);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+.rv-eyebrow::before { content:''; width:22px; height:1px; background:var(--amber); }
+
+.rv-heading {
+  font-size: clamp(1.8rem, 4vw, 2.6rem);
+  font-weight: 400;
+  color: var(--white);
+  letter-spacing: -0.02em;
+  margin: 0 0 8px;
+}
+
+.rv-lawyer-meta {
+  font-size: 0.88rem;
+  color: var(--text-muted);
+  margin: 0 0 36px;
+}
+.rv-lawyer-name {
+  color: var(--white);
+  font-weight: 500;
+}
+.rv-spec-tag {
+  display: inline-block;
+  font-size: 0.72rem;
+  padding: 2px 7px;
+  border-radius: 4px;
+  background: rgba(245,158,11,0.1);
+  border: 1px solid rgba(245,158,11,0.2);
+  color: var(--amber);
+  margin-left: 6px;
+  vertical-align: middle;
+}
+
+.rv-form {
+  background: var(--dark-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.rv-field-label {
+  display: block;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin-bottom: 14px;
+}
+
+/* ── Star rating ─────────────────────────────────────────────── */
+.rv-stars {
+  display: flex;
+  gap: 8px;
+}
+.rv-star {
+  font-size: 2rem;
+  cursor: pointer;
+  color: rgba(255,255,255,0.15);
+  transition: color 0.12s, transform 0.1s;
+  user-select: none;
+  line-height: 1;
+}
+.rv-star:hover,
+.rv-star.hovered,
+.rv-star.selected { color: var(--amber); }
+.rv-star:active   { transform: scale(0.9); }
+
+/* ── Textarea ────────────────────────────────────────────────── */
+.rv-textarea {
+  width: 100%;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--white);
+  font-size: 0.9rem;
+  font-family: inherit;
+  padding: 12px 14px;
+  resize: vertical;
+  min-height: 110px;
+  transition: border-color 0.15s;
+  box-sizing: border-box;
+}
+.rv-textarea::placeholder { color: var(--text-dim); }
+.rv-textarea:focus {
+  outline: none;
+  border-color: rgba(245,158,11,0.4);
+}
+.rv-char-count {
+  font-size: 0.72rem;
+  color: var(--text-dim);
+  text-align: right;
+  margin-top: 4px;
+}
+
+/* ── Radio buttons ───────────────────────────────────────────── */
+.rv-radio-group {
+  display: flex;
+  gap: 12px;
+}
+.rv-radio-label {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 16px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.88rem;
+  color: var(--text-muted);
+  transition: all 0.15s;
+}
+.rv-radio-label:hover { border-color: rgba(245,158,11,0.3); color: var(--white); }
+.rv-radio-label input[type="radio"] { accent-color: var(--amber); }
+.rv-radio-label:has(input:checked) {
+  border-color: rgba(245,158,11,0.4);
+  background: rgba(245,158,11,0.05);
+  color: var(--white);
+}
+
+/* ── Actions ─────────────────────────────────────────────────── */
+.rv-actions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding-top: 4px;
+}
+.rv-btn-submit {
+  flex: 1;
+  background: var(--amber);
+  color: #000;
+  border: none;
+  border-radius: 9px;
+  padding: 12px 24px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.rv-btn-submit:hover { background: var(--amber-dark); }
+.rv-btn-cancel {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  text-decoration: none;
+  padding: 12px 16px;
+  transition: color 0.15s;
+}
+.rv-btn-cancel:hover { color: var(--white); }
+
+@media (max-width: 600px) {
+  .rv-form { padding: 24px 20px; }
+}
+</style>
+
+<div class="rv-page">
+  <div class="rv-card">
+
+    <div class="rv-eyebrow">Review</div>
+    <h1 class="rv-heading">Leave a Review</h1>
+    <p class="rv-lawyer-meta">
+      Reviewing
+      <span class="rv-lawyer-name">{{ lawyer.display_name or lawyer.user.full_name }}</span>
+      {% for s in lawyer.specialisations[:2] %}
+        <span class="rv-spec-tag">{{ s.name }}</span>
+      {% endfor %}
+    </p>
+
+    <form class="rv-form" method="POST"
+          action="{{ url_for('lawyers.submit_review', booking_id=booking.id) }}">
+
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+      <input type="hidden" name="rating" id="rating-input" value="">
+
+      {# ── Star rating ───────────────────────────────────────── #}
+      <div>
+        <span class="rv-field-label">Your rating <span style="color:#ef4444;">*</span></span>
+        <div class="rv-stars" id="star-row" role="group" aria-label="Rating">
+          {% for i in range(1, 6) %}
+          <span class="rv-star" data-value="{{ i }}" role="button" tabindex="0"
+                aria-label="{{ i }} star{{ 's' if i != 1 }}">&#9733;</span>
+          {% endfor %}
+        </div>
+      </div>
+
+      {# ── Comment ───────────────────────────────────────────── #}
+      <div>
+        <span class="rv-field-label">Your experience <span style="color:var(--text-dim);">(optional)</span></span>
+        <textarea
+          name="comment"
+          class="rv-textarea"
+          placeholder="Describe your experience..."
+          maxlength="1000"
+          id="comment-input"
+        ></textarea>
+        <div class="rv-char-count"><span id="char-count">0</span> / 1000</div>
+      </div>
+
+      {# ── Would recommend ───────────────────────────────────── #}
+      <div>
+        <span class="rv-field-label">Would you recommend this lawyer?</span>
+        <div class="rv-radio-group">
+          <label class="rv-radio-label">
+            <input type="radio" name="would_recommend" value="yes"> Yes, I would
+          </label>
+          <label class="rv-radio-label">
+            <input type="radio" name="would_recommend" value="no"> No
+          </label>
+        </div>
+      </div>
+
+      {# ── Actions ───────────────────────────────────────────── #}
+      <div class="rv-actions">
+        <button type="submit" class="rv-btn-submit">Submit Review</button>
+        <a href="{{ url_for('lawyers.profile', lawyer_profile_id=lawyer.id) }}"
+           class="rv-btn-cancel">Cancel</a>
+      </div>
+
+    </form>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+(function () {
+  var stars      = document.querySelectorAll('.rv-star');
+  var ratingInput = document.getElementById('rating-input');
+  var selected   = 0;
+
+  stars.forEach(function (star, idx) {
+    // Hover
+    star.addEventListener('mouseenter', function () {
+      stars.forEach(function (s, i) {
+        s.classList.toggle('hovered', i <= idx);
+      });
+    });
+    star.addEventListener('mouseleave', function () {
+      stars.forEach(function (s) { s.classList.remove('hovered'); });
+    });
+
+    // Click
+    star.addEventListener('click', function () {
+      selected = idx + 1;
+      ratingInput.value = selected;
+      stars.forEach(function (s, i) {
+        s.classList.toggle('selected', i < selected);
+      });
+    });
+
+    // Keyboard
+    star.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        star.click();
+      }
+    });
+  });
+
+  // Character counter
+  var textarea  = document.getElementById('comment-input');
+  var charCount = document.getElementById('char-count');
+  if (textarea && charCount) {
+    textarea.addEventListener('input', function () {
+      charCount.textContent = textarea.value.length;
+    });
+  }
+
+  // Guard: require rating before submit
+  var form = document.querySelector('.rv-form');
+  if (form) {
+    form.addEventListener('submit', function (e) {
+      if (!ratingInput.value) {
+        e.preventDefault();
+        document.getElementById('star-row').style.outline = '2px solid #ef4444';
+        document.getElementById('star-row').style.borderRadius = '4px';
+        setTimeout(function () {
+          document.getElementById('star-row').style.outline = '';
+        }, 2000);
+      }
+    });
+  }
+})();
+</script>
+{% endblock %}

@@ -306,6 +306,30 @@
       <p>Every consultation you have completed, in one place.</p>
     </div>
 
+    {% if reviewable_bookings %}
+    <div style="margin-bottom:1.5rem; padding:1rem 1.25rem;
+         border:1px solid rgba(74,222,128,0.2); border-radius:10px;
+         background:rgba(74,222,128,0.03);">
+      <p style="margin:0 0 0.75rem; font-size:0.9rem; font-weight:600;">
+        Leave a review
+      </p>
+      {% for b in reviewable_bookings %}
+      <div style="display:flex; align-items:center; justify-content:space-between;
+           padding:0.5rem 0; border-top:1px solid rgba(255,255,255,0.05);">
+        <span style="font-size:0.85rem;">
+          {{ b.lawyer_profile.display_name or b.lawyer_profile.user.full_name }}
+        </span>
+        <a href="{{ url_for('lawyers.review_form', booking_id=b.id) }}"
+           style="font-size:0.8rem; padding:4px 12px;
+                  border:1px solid rgba(74,222,128,0.3); border-radius:6px;
+                  color:#4ade80; text-decoration:none;">
+          Write a review →
+        </a>
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+
     {% if questions %}
     <!-- History List -->
     <div class="hist-list">

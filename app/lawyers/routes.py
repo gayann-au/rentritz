@@ -500,3 +500,81 @@ def booking_complete(booking_id):
     db.session.commit()
 
     return jsonify({'success': True})
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# ROUTE 10 — Review form (GET) + Submit review (POST)
+# ─────────────────────────────────────────────────────────────────────────────
+
+@lawyers_bp.route('/bookings/<int:booking_id>/review', methods=['GET'])
+@login_required
+def review_form(booking_id):
+    booking = LawyerBooking.query.get_or_404(booking_id)
+
+    if booking.client_id != current_user.id:
+        abort(403)
+
+    if booking.status != 'completed':
+        flash('You can only review a completed booking.', 'error')
+        return redirect(url_for('lawyers.browse'))
+
+    existing = LawyerReview.query.filter_by(booking_id=booking_id).first()
+    if existing:
+        flash('You have already reviewed this booking.', 'info')
+        return redirect(url_for('lawyers.profile',
+                                lawyer_profile_id=booking.lawyer_profile_id))
+
+    return render_template('lawyers/review.html',
+                           booking=booking,
+                           lawyer=booking.lawyer_profile)
+
+
+@lawyers_bp.route('/bookings/<int:booking_id>/review', methods=['POST'])
+@login_required
+def submit_review(booking_id):
+    booking = LawyerBooking.query.get_or_404(booking_id)
+
+    if booking.client_id != current_user.id:
+        abort(403)
+
+    if booking.status != 'completed':
+        return jsonify({'error': 'invalid_status'}), 400
+
+    existing = LawyerReview.query.filter_by(booking_id=booking_id).first()
+    if existing:
+        return jsonify({'error': 'already_reviewed'}), 400
+
+    rating = request.form.get('rating', type=int)
+    comment = request.form.get('comment', '').strip() or None
+    would_recommend = request.form.get('would_recommend') == 'yes'
+
+    if not rating or rating not in range(1, 6):
+        flash('Please select a rating.', 'error')
+        return redirect(url_for('lawyers.review_form', booking_id=booking_id))
+
+    review = LawyerReview(
+        booking_id=booking_id,
+        lawyer_profile_id=booking.lawyer_profile_id,
+        client_id=current_user.id,
+        rating=rating,
+        comment=comment,
+        would_recommend=would_recommend,
+    )
+    db.session.add(review)
+
+    profile = booking.lawyer_profile
+    all_ratings = db.session.query(
+        db.func.avg(LawyerReview.rating),
+        db.func.count(LawyerReview.id),
+    ).filter(
+        LawyerReview.lawyer_profile_id == profile.id,
+        LawyerReview.is_visible == True,
+    ).one()
+    profile.average_rating = round(float(all_ratings[0]), 2) if all_ratings[0] else None
+    profile.total_reviews  = all_ratings[1]
+
+    db.session.commit()
+
+    flash('Thank you for your review.', 'success')
+    return redirect(url_for('lawyers.profile',
+                            lawyer_profile_id=booking.lawyer_profile_id))
