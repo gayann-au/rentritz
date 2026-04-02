@@ -71,6 +71,15 @@
                             <div class="role-desc">I own property in Dubai</div>
                         </div>
                     </label>
+                    <label class="role-option {% if request.form.get('role') == 'lawyer' %}selected{% endif %}">
+                        <input type="radio" name="role" value="lawyer"
+                               {% if request.form.get('role') == 'lawyer' %}checked{% endif %} required>
+                        <div class="role-card">
+                            <div class="role-icon">⚖</div>
+                            <div class="role-label">Lawyer</div>
+                            <div class="role-desc">I offer legal services in Dubai</div>
+                        </div>
+                    </label>
                 </div>
                 <p class="text-muted text-sm" style="margin-top:8px">
                     Your role cannot be changed after registration.

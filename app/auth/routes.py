@@ -105,7 +105,7 @@ def register():
 
         # Role - exact match only
         if role not in VALID_ROLES:
-            flash('Please select a valid role: tenant or landlord.', 'error')
+            flash('Please select a valid role.', 'error')
             return render_template('auth/register.html')
 
         # Password length
@@ -156,6 +156,8 @@ def register():
 
         login_user(user)
         flash(f'Welcome, {user.full_name}. You have {free_credits} free consultations to get started.', 'success')
+        if user.role == 'lawyer':
+            return redirect(url_for('lawyers.register'))
         return redirect(url_for('core.dashboard'))
 
     return render_template('auth/register.html')

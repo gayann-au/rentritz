@@ -6,7 +6,7 @@ from sqlalchemy.dialects.postgresql import ARRAY, JSONB
 
 db = SQLAlchemy()
 
-VALID_ROLES = ('tenant', 'landlord')
+VALID_ROLES = ('tenant', 'landlord', 'lawyer')
 
 
 class User(UserMixin, db.Model):
