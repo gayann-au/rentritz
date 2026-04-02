@@ -4,1879 +4,877 @@
 
 {% block content %}
 <style>
-/* ============================================================
-   LANDING PAGE RESET
-   ============================================================ */
+/* ── RESET BASE UI ──────────────────────────────────────────────────────────── */
 .landing-page .nav,
-.landing-page > nav { display: none !important; }
-
+.landing-page > nav         { display: none !important; }
+body.landing-page .footer   { display: none !important; }
 .landing-page .main-content {
-  padding: 0 !important;
-  margin: 0 !important;
-  max-width: none !important;
-  width: 100% !important;
+  padding: 0 !important; margin: 0 !important;
+  max-width: none !important; width: 100% !important;
 }
-
 .landing-page .flash-wrap {
-  position: fixed;
-  top: 80px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 2000;
-  width: 90%;
-  max-width: 480px;
+  position: fixed; top: 80px; left: 50%;
+  transform: translateX(-50%); z-index: 2000;
+  width: 90%; max-width: 480px;
 }
-
 *, *::before, *::after { box-sizing: border-box; }
 
-/* ============================================================
-   CSS VARIABLES
-   ============================================================ */
+/* ── CSS VARIABLES ──────────────────────────────────────────────────────────── */
 :root {
-  --black:      #0a0a0a;
-  --near-black: #111111;
-  --dark-card:  #1a1a1a;
-  --amber:      #f59e0b;
-  --amber-dark: #d97706;
-  --white:      #ffffff;
-  --off-white:  #f8f7f4;
-  --text-muted: #888888;
-  --radius:     12px;
-  --ease:       cubic-bezier(0.4, 0, 0.2, 1);
-  --ease-out:   cubic-bezier(0.22, 1, 0.36, 1);
+  --bg-primary:    #ffffff;
+  --bg-secondary:  #f5f5f5;
+  --bg-card:       #ffffff;
+  --text-primary:  #0a0a0a;
+  --text-secondary:#444444;
+  --text-muted:    #888888;
+  --border:        rgba(0,0,0,0.08);
+  --amber:         #d97706;
+  --amber-light:   #fef3c7;
+  --shadow:        0 2px 16px rgba(0,0,0,0.08);
+  --ease:          cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-out:      cubic-bezier(0.22, 1, 0.36, 1);
+  --radius:        16px;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg-primary:    #0a0a0a;
+    --bg-secondary:  #111111;
+    --bg-card:       #1a1a1a;
+    --text-primary:  #f5f5f5;
+    --text-secondary:#aaaaaa;
+    --text-muted:    #666666;
+    --border:        rgba(255,255,255,0.08);
+    --amber:         #f59e0b;
+    --amber-light:   rgba(245,158,11,0.1);
+    --shadow:        0 2px 16px rgba(0,0,0,0.4);
+  }
 }
 
-/* ============================================================
-   SCROLL REVEAL — per-element
-   ============================================================ */
+/* ── SCROLL REVEAL ──────────────────────────────────────────────────────────── */
 .sr {
-  opacity: 0;
-  transform: translateY(48px);
-  transition: opacity 0.78s var(--ease-out), transform 0.78s var(--ease-out);
+  opacity: 0; transform: translateY(32px);
+  transition: opacity 0.7s var(--ease-out), transform 0.7s var(--ease-out);
 }
-.sr.in      { opacity: 1; transform: translateY(0); }
-.sr-d1      { transition-delay: 0.10s; }
-.sr-d2      { transition-delay: 0.20s; }
-.sr-d3      { transition-delay: 0.30s; }
-.sr-d4      { transition-delay: 0.40s; }
-.sr-d5      { transition-delay: 0.50s; }
-.sr-d6      { transition-delay: 0.60s; }
+.sr.in  { opacity: 1; transform: translateY(0); }
+.sr-d1  { transition-delay: 0.06s; }
+.sr-d2  { transition-delay: 0.12s; }
+.sr-d3  { transition-delay: 0.18s; }
+.sr-d4  { transition-delay: 0.24s; }
+.sr-d5  { transition-delay: 0.30s; }
 
-/* ============================================================
-   SCROLL REVEAL — section-level wrapper
-   Sections slide up as a unit; children cascade inside them.
-   ============================================================ */
-.sr-wrap {
-  opacity: 0;
-  transform: translateY(28px);
-  transition: opacity 0.55s var(--ease-out), transform 0.55s var(--ease-out);
-}
-.sr-wrap.in {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-/* ============================================================
-   SHARED LAYOUT
-   ============================================================ */
-.lp-container {
-  width: 100%;
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 48px;
-}
-
+/* ── SHARED ─────────────────────────────────────────────────────────────────── */
+.lp-wrap        { background: var(--bg-primary); }
+.lp-container   { width: 100%; max-width: 1160px; margin: 0 auto; padding: 0 40px; }
+.lp-section     { padding: 96px 0; }
 .lp-label {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  font-size: 0.67rem;
-  font-weight: 600;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: var(--amber);
-  margin-bottom: 18px;
+  display: inline-flex; align-items: center; gap: 10px;
+  font-size: 0.67rem; font-weight: 600;
+  letter-spacing: 0.2em; text-transform: uppercase;
+  color: var(--amber); margin-bottom: 18px;
 }
 .lp-label::before {
-  content: '';
-  display: block;
-  width: 22px;
-  height: 1px;
-  background: var(--amber);
-  flex-shrink: 0;
+  content: ''; display: block; width: 22px; height: 1px;
+  background: var(--amber); flex-shrink: 0;
 }
 
-.lp-section-title {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  font-size: clamp(2.2rem, 3.8vw, 3.2rem);
-  font-weight: 500;
-  color: var(--black);
-  line-height: 1.12;
-  margin: 0;
-}
-.lp-section-title-white {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  font-size: clamp(2.2rem, 3.8vw, 3.2rem);
-  font-weight: 500;
-  color: var(--white);
-  line-height: 1.12;
-  margin: 0;
-}
-
-/* ============================================================
-   NAVBAR
-   ============================================================ */
+/* ── NAVBAR ─────────────────────────────────────────────────────────────────── */
 .lp-nav {
-  position: fixed;
-  top: 0; left: 0; right: 0;
-  z-index: 1000;
-  height: 72px;
-  padding: 0 48px;
-  display: flex;
-  align-items: center;
-  background: transparent;
+  position: fixed; top: 0; left: 0; right: 0;
+  z-index: 1000; height: 68px; padding: 0 40px;
+  display: flex; align-items: center;
+  background: var(--bg-primary);
   border-bottom: 1px solid transparent;
-  transition: background 0.38s ease, border-color 0.38s ease, box-shadow 0.38s ease;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
-.lp-nav.solid {
-  background: var(--black);
-  border-color: rgba(255,255,255,0.07);
-  box-shadow: 0 4px 32px rgba(0,0,0,0.5);
+.lp-nav.scrolled {
+  border-color: var(--border);
+  box-shadow: var(--shadow);
 }
 .lp-nav-inner {
-  width: 100%;
-  max-width: 1200px;
-  margin: 0 auto;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+  width: 100%; max-width: 1160px; margin: 0 auto;
+  display: flex; align-items: center; justify-content: space-between;
 }
 .lp-logo {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  font-size: 1.6rem;
-  font-weight: 500;
-  color: var(--amber);
-  text-decoration: none;
-  letter-spacing: 0.01em;
-  line-height: 1;
+  font-size: 1.45rem; font-weight: 600;
+  text-decoration: none; letter-spacing: -0.01em; white-space: nowrap;
 }
+.lp-logo .r { color: var(--amber); }
+.lp-logo .d { color: var(--text-primary); }
 .lp-nav-links {
-  display: flex;
-  align-items: center;
-  gap: 36px;
+  display: flex; align-items: center; gap: 32px;
 }
 .lp-nav-links a {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  font-size: 0.9rem;
-  font-weight: 400;
-  color: rgba(255,255,255,0.9);
-  text-decoration: none;
+  font-size: 0.875rem; font-weight: 400;
+  color: var(--text-secondary); text-decoration: none;
   transition: color 0.2s ease;
 }
 .lp-nav-links a:hover { color: var(--amber); }
-.lp-nav-cta {
+.lp-nav-actions { display: flex; align-items: center; gap: 12px; }
+.lp-nav-signin {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  font-size: 0.88rem;
-  font-weight: 600;
-  color: var(--black) !important;
-  background: var(--amber);
-  padding: 10px 22px;
-  border-radius: 6px;
+  font-size: 0.875rem; font-weight: 500;
+  color: var(--text-secondary); text-decoration: none;
+  transition: color 0.2s ease;
+}
+.lp-nav-signin:hover { color: var(--text-primary); }
+.lp-nav-btn {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-size: 0.84rem; font-weight: 600;
+  color: var(--bg-primary); background: var(--amber);
+  padding: 9px 20px; border-radius: 8px;
   text-decoration: none;
-  transition: background 0.2s ease, transform 0.2s ease;
-  white-space: nowrap;
+  transition: opacity 0.2s ease, transform 0.2s ease;
 }
-.lp-nav-cta:hover {
-  background: var(--amber-dark) !important;
-  color: var(--black) !important;
-  transform: translateY(-1px);
-}
-
-/* Hamburger */
+.lp-nav-btn:hover { opacity: 0.9; transform: translateY(-1px); color: var(--bg-primary); }
 .lp-hamburger {
-  display: none;
-  flex-direction: column;
-  justify-content: center;
-  gap: 5px;
-  cursor: pointer;
-  background: none;
-  border: none;
-  padding: 4px;
-  outline: none;
+  display: none; flex-direction: column; gap: 5px;
+  cursor: pointer; background: none; border: none; padding: 4px;
 }
 .lp-hamburger span {
-  display: block;
-  width: 24px;
-  height: 2px;
-  background: var(--white);
-  border-radius: 2px;
+  display: block; width: 22px; height: 2px;
+  background: var(--text-primary); border-radius: 2px;
   transition: transform 0.3s ease, opacity 0.3s ease;
 }
 .lp-hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
 .lp-hamburger.open span:nth-child(2) { opacity: 0; }
 .lp-hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
-
-/* Mobile slide-down menu */
 .lp-mobile-menu {
-  position: fixed;
-  top: 72px; left: 0; right: 0;
-  z-index: 999;
-  background: var(--black);
-  border-bottom: 1px solid rgba(255,255,255,0.07);
-  overflow: hidden;
-  max-height: 0;
+  position: fixed; top: 68px; left: 0; right: 0; z-index: 999;
+  background: var(--bg-primary); border-bottom: 1px solid var(--border);
+  overflow: hidden; max-height: 0;
   transition: max-height 0.4s var(--ease);
 }
-.lp-mobile-menu.open { max-height: 300px; }
+.lp-mobile-menu.open { max-height: 360px; }
 .lp-mobile-inner {
   padding: 28px 24px 36px;
-  display: flex;
-  flex-direction: column;
-  gap: 22px;
+  display: flex; flex-direction: column; gap: 20px;
 }
 .lp-mobile-inner a {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  font-size: 1rem;
-  font-weight: 400;
-  color: rgba(255,255,255,0.85);
-  text-decoration: none;
+  font-size: 1rem; color: var(--text-secondary); text-decoration: none;
   transition: color 0.2s ease;
 }
 .lp-mobile-inner a:hover { color: var(--amber); }
-.lp-mobile-inner .lp-nav-cta { text-align: center; margin-top: 4px; }
+.lp-mobile-inner .lp-nav-btn { text-align: center; }
 
-/* ============================================================
-   HERO
-   ============================================================ */
+/* ── HERO ───────────────────────────────────────────────────────────────────── */
 .lp-hero {
-  position: relative;
-  width: 100%;
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-}
-/* tsParticles canvas — above overlay, below content */
-#tsparticles {
-  position: absolute;
-  inset: 0;
-  z-index: 2;
-  pointer-events: none;
-}
-.lp-hero-bg {
-  position: absolute;
-  top: -20%;
-  left: 0;
-  right: 0;
-  bottom: -20%;
-  background-image: url('https://images.unsplash.com/photo-1512453979798-5ea266f8880c?w=1920&q=80');
-  background-size: cover;
-  background-position: center;
-  z-index: 0;
-  will-change: transform;
-}
-.lp-hero-overlay {
-  position: absolute;
-  inset: 0;
-  background: rgba(0,0,0,0.75);
-  z-index: 1;
-}
-.lp-hero-glow {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -52%);
-  width: 700px;
-  height: 480px;
-  background: radial-gradient(ellipse at center, rgba(245,158,11,0.10) 0%, transparent 68%);
-  z-index: 2;
-  pointer-events: none;
-}
-.lp-hero-content {
-  position: relative;
-  z-index: 4;
+  padding: 168px 0 120px;
   text-align: center;
-  padding: 100px 24px 60px;
-  max-width: 880px;
+  background: var(--bg-primary);
+  position: relative; overflow: hidden;
 }
-.lp-hero-pill {
-  display: inline-block;
+.lp-hero::before {
+  content: ''; position: absolute; top: -30%; left: 50%;
+  transform: translateX(-50%);
+  width: 900px; height: 600px;
+  background: radial-gradient(ellipse at center, rgba(217,119,6,0.07) 0%, transparent 65%);
+  pointer-events: none;
+}
+@media (prefers-color-scheme: dark) {
+  .lp-hero::before {
+    background: radial-gradient(ellipse at center, rgba(245,158,11,0.09) 0%, transparent 65%);
+  }
+}
+.lp-hero-eyebrow {
+  display: inline-flex; align-items: center; gap: 12px;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  font-size: 0.73rem;
-  font-weight: 500;
-  letter-spacing: 0.13em;
-  text-transform: uppercase;
-  color: var(--amber);
-  border: 1px solid rgba(245,158,11,0.5);
-  border-radius: 100px;
-  padding: 8px 20px;
-  margin-bottom: 24px;
-  opacity: 0;
-  animation: lpFadeDown 0.6s 0.1s forwards;
+  font-size: 0.67rem; font-weight: 600;
+  letter-spacing: 0.22em; text-transform: uppercase;
+  color: var(--amber); margin-bottom: 22px;
 }
-.lp-hero-headline {
+.lp-hero-eyebrow::before,
+.lp-hero-eyebrow::after {
+  content: ''; display: block; width: 22px; height: 1px;
+  background: var(--amber); flex-shrink: 0;
+}
+.lp-hero h1 {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  font-size: clamp(2.6rem, 5.5vw, 4.5rem);
-  font-weight: 500;
-  line-height: 1.04;
-  margin: 0 0 20px;
-  letter-spacing: -0.01em;
+  font-size: clamp(2.8rem, 5.5vw, 5rem);
+  font-weight: 600; line-height: 1.05;
+  color: var(--text-primary);
+  letter-spacing: -0.025em;
+  margin: 0 0 22px;
 }
-.lp-hero-headline .word {
-  display: inline-block;
-  opacity: 0;
-  transform: translateY(60px);
-  transition: opacity 0.65s var(--ease-out), transform 0.65s var(--ease-out);
-}
-.lp-hero-headline .word.vis { opacity: 1; transform: translateY(0); }
-.lp-line-white { color: var(--white); }
-.lp-line-amber { color: var(--amber); display: block; }
 .lp-hero-sub {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  font-size: clamp(0.95rem, 2vw, 1.1rem);
-  font-weight: 300;
-  line-height: 1.8;
-  color: rgba(255,255,255,0.88);
-  max-width: 580px;
-  margin: 0 auto 28px;
-  opacity: 0;
-  animation: lpFadeUp 0.8s 0.9s forwards;
+  font-size: clamp(0.95rem, 1.8vw, 1.1rem);
+  color: var(--text-secondary);
+  max-width: 520px; margin: 0 auto 36px;
+  line-height: 1.75;
 }
 .lp-hero-btns {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 16px;
-  flex-wrap: wrap;
-  opacity: 0;
-  animation: lpFadeUp 0.8s 1.1s forwards;
+  display: flex; align-items: center; justify-content: center;
+  gap: 14px; flex-wrap: wrap; margin-bottom: 22px;
 }
 .lp-btn-primary {
   display: inline-block;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  font-size: 0.95rem;
-  font-weight: 600;
-  color: var(--black);
-  background: var(--amber);
-  padding: 15px 32px;
-  border-radius: 8px;
-  text-decoration: none;
-  animation: lpBreathe 3s ease-in-out 2.2s infinite;
-  transition: background 0.25s ease, transform 0.25s ease, box-shadow 0.25s ease;
+  font-size: 0.95rem; font-weight: 600;
+  color: var(--bg-primary); background: var(--amber);
+  padding: 14px 30px; border-radius: 9px; text-decoration: none;
+  transition: opacity 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
 }
 .lp-btn-primary:hover {
-  background: var(--amber-dark);
-  color: var(--black);
-  transform: translateY(-2px);
-  animation: none;
-  box-shadow: 0 10px 32px rgba(245,158,11,0.45);
+  color: var(--bg-primary); opacity: 0.9; transform: translateY(-2px);
+  box-shadow: 0 8px 28px rgba(217,119,6,0.35);
 }
-.lp-btn-ghost {
+@media (prefers-color-scheme: dark) {
+  .lp-btn-primary:hover { box-shadow: 0 8px 28px rgba(245,158,11,0.35); }
+}
+.lp-btn-secondary {
   display: inline-block;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  font-size: 0.95rem;
-  font-weight: 500;
-  color: var(--white);
-  border: 1.5px solid rgba(255,255,255,0.45);
-  padding: 14px 32px;
-  border-radius: 8px;
-  text-decoration: none;
-  transition: border-color 0.25s ease, transform 0.25s ease;
+  font-size: 0.95rem; font-weight: 500;
+  color: var(--text-primary);
+  border: 1.5px solid var(--border);
+  padding: 13px 30px; border-radius: 9px; text-decoration: none;
+  transition: border-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
 }
-.lp-btn-ghost:hover {
-  border-color: var(--white);
-  color: var(--white);
-  transform: translateY(-2px);
+.lp-btn-secondary:hover {
+  border-color: var(--amber); color: var(--amber); transform: translateY(-2px);
 }
-.lp-hero-note {
+.lp-hero-trust {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  font-size: 0.77rem;
-  font-weight: 400;
-  color: rgba(255,255,255,0.4);
-  margin-top: 18px;
-  opacity: 0;
-  animation: lpFadeUp 0.8s 1.35s forwards;
+  font-size: 0.77rem; color: var(--text-muted);
+  display: flex; align-items: center; justify-content: center;
+  gap: 0; flex-wrap: wrap;
 }
-.lp-hero-trust-row {
-  display: flex;
+.lp-hero-trust span {
+  padding: 0 10px;
+  border-right: 1px solid var(--border);
+}
+.lp-hero-trust span:last-child { border-right: none; }
+
+/* ── TWO PATHS ──────────────────────────────────────────────────────────────── */
+.lp-paths { background: var(--bg-secondary); }
+.lp-paths-header { text-align: center; margin-bottom: 52px; }
+.lp-paths-header h2 {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-size: clamp(1.9rem, 3.2vw, 2.8rem);
+  font-weight: 600; color: var(--text-primary);
+  letter-spacing: -0.015em; margin: 0;
+}
+.lp-paths-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+.lp-path-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 36px 32px;
+  box-shadow: var(--shadow);
+  transition: border-color 0.25s ease, transform 0.25s ease, box-shadow 0.25s ease;
+  display: flex; flex-direction: column;
+}
+.lp-path-card:hover {
+  border-color: var(--amber); transform: translateY(-4px);
+  box-shadow: 0 12px 40px rgba(0,0,0,0.1);
+}
+@media (prefers-color-scheme: dark) {
+  .lp-path-card:hover { box-shadow: 0 12px 40px rgba(0,0,0,0.5); }
+}
+.lp-path-icon  { font-size: 2.4rem; margin-bottom: 20px; line-height: 1; }
+.lp-path-title {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-size: 1.3rem; font-weight: 600;
+  color: var(--text-primary); margin: 0 0 12px;
+}
+.lp-path-body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-size: 0.9rem; color: var(--text-secondary);
+  line-height: 1.7; margin: 0 0 22px; flex: 1;
+}
+.lp-path-bullets {
+  list-style: none; padding: 0; margin: 0 0 28px;
+  display: flex; flex-direction: column; gap: 9px;
+}
+.lp-path-bullets li {
+  display: flex; align-items: flex-start; gap: 10px;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-size: 0.875rem; color: var(--text-secondary);
+}
+.lp-path-bullets li::before {
+  content: '✓'; color: var(--amber); font-weight: 700;
+  flex-shrink: 0; margin-top: 1px;
+}
+.lp-path-cta {
+  display: inline-block; align-self: flex-start;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-size: 0.875rem; font-weight: 600;
+  color: var(--amber); text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.2s ease;
+}
+.lp-path-cta:hover { border-color: var(--amber); color: var(--amber); }
+
+/* ── HOW IT WORKS ───────────────────────────────────────────────────────────── */
+.lp-hiw { background: var(--bg-primary); }
+.lp-hiw-header { text-align: center; margin-bottom: 60px; }
+.lp-hiw-header h2 {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-size: clamp(1.9rem, 3.2vw, 2.8rem);
+  font-weight: 600; color: var(--text-primary);
+  letter-spacing: -0.015em; margin: 0;
+}
+.lp-hiw-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 56px; }
+.lp-hiw-divider {
+  width: 1px; background: var(--border);
+  position: absolute; top: 0; bottom: 0; left: 50%;
+}
+.lp-hiw-col-title {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-size: 0.78rem; font-weight: 600; text-transform: uppercase;
+  letter-spacing: 0.14em; color: var(--amber);
+  margin-bottom: 28px;
+}
+.lp-hiw-steps { display: flex; flex-direction: column; gap: 28px; }
+.lp-hiw-step  { display: flex; gap: 20px; align-items: flex-start; }
+.lp-hiw-num {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-size: 2rem; font-weight: 700; color: var(--amber);
+  line-height: 1; flex-shrink: 0; width: 36px;
+}
+.lp-hiw-step-text h4 {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-size: 0.95rem; font-weight: 600;
+  color: var(--text-primary); margin: 0 0 4px;
+}
+.lp-hiw-step-text p {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-size: 0.875rem; color: var(--text-secondary);
+  line-height: 1.65; margin: 0;
+}
+
+/* ── LAWYER VALUE PROP ──────────────────────────────────────────────────────── */
+.lp-lawyer {
+  background: var(--amber-light);
+  border-top: 1px solid rgba(217,119,6,0.2);
+  border-bottom: 1px solid rgba(217,119,6,0.2);
+}
+@media (prefers-color-scheme: dark) {
+  .lp-lawyer {
+    border-top-color: rgba(245,158,11,0.2);
+    border-bottom-color: rgba(245,158,11,0.2);
+  }
+}
+.lp-lawyer-inner {
+  display: grid; grid-template-columns: 3fr 2fr; gap: 64px;
   align-items: center;
-  justify-content: center;
-  gap: 14px;
-  flex-wrap: wrap;
-  margin-top: 28px;
-  opacity: 0;
-  animation: lpFadeUp 0.8s 1.6s forwards;
 }
-.lp-trust-chip {
+.lp-lawyer-eyebrow {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  font-size: 0.7rem;
-  font-weight: 500;
-  letter-spacing: 0.05em;
-  color: rgba(255,255,255,0.55);
-  border: 1px solid rgba(255,255,255,0.14);
-  border-radius: 100px;
-  padding: 6px 16px;
-  white-space: nowrap;
+  font-size: 0.67rem; font-weight: 600;
+  letter-spacing: 0.2em; text-transform: uppercase;
+  color: var(--amber); margin-bottom: 14px;
 }
-
-/* ============================================================
-   STATS BAR
-   ============================================================ */
-.lp-stats {
-  background: var(--near-black);
-  padding: 80px 0;
-  border-top: 1px solid rgba(255,255,255,0.04);
-  border-bottom: 1px solid rgba(255,255,255,0.04);
-}
-.lp-stats-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-}
-.lp-stat-item {
-  padding: 24px 40px;
-  border-right: 1px solid rgba(255,255,255,0.06);
-  text-align: center;
-}
-.lp-stat-item:last-child { border-right: none; }
-.lp-stat-num {
-  display: block;
+.lp-lawyer h2 {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  font-size: clamp(2.6rem, 3.8vw, 3.8rem);
-  font-weight: 600;
-  color: var(--amber);
-  line-height: 1;
-  margin-bottom: 14px;
-  letter-spacing: -0.02em;
+  font-size: clamp(1.8rem, 2.8vw, 2.4rem);
+  font-weight: 600; color: var(--text-primary);
+  letter-spacing: -0.015em; margin: 0 0 16px; line-height: 1.2;
 }
-.lp-stat-text {
+.lp-lawyer-body {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  font-size: 0.83rem;
-  font-weight: 400;
-  color: var(--text-muted);
-  line-height: 1.6;
-  max-width: 196px;
-  margin: 0 auto;
+  font-size: 0.95rem; color: var(--text-secondary);
+  line-height: 1.75; margin: 0 0 32px;
 }
-
-/* ============================================================
-   HOW IT WORKS
-   ============================================================ */
-.lp-how {
-  background: var(--off-white);
-  padding: 108px 0;
-}
-.lp-how-header {
-  text-align: center;
-  margin-bottom: 72px;
-}
-.lp-how-steps {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 52px;
-  margin-bottom: 72px;
-}
-.lp-step-num {
+.lp-lawyer-stats { display: flex; gap: 36px; flex-wrap: wrap; margin-bottom: 36px; }
+.lp-lawyer-stat-item { display: flex; flex-direction: column; gap: 3px; }
+.lp-lawyer-stat-val {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  font-size: 5.5rem;
-  font-weight: 300;
-  color: rgba(245,158,11,0.16);
-  line-height: 1;
-  margin-bottom: 16px;
-  letter-spacing: -0.02em;
+  font-size: 0.875rem; font-weight: 700; color: var(--text-primary);
 }
-.lp-step h3 {
+.lp-lawyer-stat-desc {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  font-size: 1.02rem;
-  font-weight: 600;
-  color: var(--black);
-  margin: 0 0 10px;
+  font-size: 0.75rem; color: var(--text-muted);
 }
-.lp-step p {
+.lp-lawyer-cta-wrap { display: flex; flex-direction: column; gap: 8px; }
+.lp-lawyer-cta {
+  display: inline-block; align-self: flex-start;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  font-size: 0.9rem;
-  font-weight: 400;
-  color: #595959;
-  line-height: 1.75;
-  margin: 0;
+  font-size: 0.9rem; font-weight: 600;
+  color: var(--bg-primary); background: var(--amber);
+  padding: 13px 26px; border-radius: 9px; text-decoration: none;
+  transition: opacity 0.2s ease, transform 0.2s ease;
 }
-.lp-how-visual {
-  width: 100%;
-  border-radius: 14px;
-  overflow: hidden;
-  border: 1px solid rgba(245,158,11,0.18);
-  box-shadow: 0 20px 60px rgba(0,0,0,0.09);
+.lp-lawyer-cta:hover { color: var(--bg-primary); opacity: 0.9; transform: translateY(-1px); }
+.lp-lawyer-cta-sub {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-size: 0.75rem; color: var(--text-muted);
 }
-.lp-how-visual img {
-  width: 100%;
-  height: 380px;
-  object-fit: cover;
-  display: block;
-}
-
-/* ============================================================
-   WHO WE SERVE
-   ============================================================ */
-.lp-who {
-  background: var(--black);
-  padding: 108px 0;
-}
-.lp-who-layout {
-  display: grid;
-  grid-template-columns: 1fr 360px;
-  gap: 80px;
-  align-items: start;
-}
-.lp-who-cards {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 18px;
-  margin-top: 48px;
-}
-.lp-card {
-  background: var(--dark-card);
+.lp-mock-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
   border-radius: var(--radius);
-  padding: 28px 26px;
-  border: 1px solid rgba(255,255,255,0.04);
-  border-top: 2px solid transparent;
-  transition: transform 0.3s var(--ease), border-top-color 0.3s ease, box-shadow 0.3s ease;
-  cursor: default;
+  padding: 28px 24px;
+  box-shadow: var(--shadow);
 }
-.lp-card:hover {
-  transform: translateY(-6px);
-  border-top-color: var(--amber);
-  box-shadow: 0 14px 44px rgba(245,158,11,0.11);
+.lp-mock-avatar {
+  width: 52px; height: 52px; border-radius: 50%;
+  background: var(--amber-light);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.4rem; margin-bottom: 14px;
 }
-.lp-card-icon {
-  width: 42px;
-  height: 42px;
-  color: var(--amber);
+.lp-mock-name {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-size: 1.05rem; font-weight: 600; color: var(--text-primary);
+  margin: 0 0 8px;
+}
+.lp-mock-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 14px; }
+.lp-mock-tag {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-size: 0.7rem; font-weight: 500;
+  color: var(--amber); background: var(--amber-light);
+  border-radius: 100px; padding: 3px 10px;
+}
+.lp-mock-details {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-size: 0.8rem; color: var(--text-secondary);
+  line-height: 2; margin-bottom: 14px;
+}
+.lp-mock-stars {
+  color: var(--amber); font-size: 0.9rem; letter-spacing: 1px;
   margin-bottom: 16px;
 }
-.lp-card h3 {
+.lp-mock-btn {
+  display: block; width: 100%; text-align: center;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  font-size: 0.98rem;
-  font-weight: 600;
-  color: var(--white);
-  margin: 0 0 9px;
-}
-.lp-card p {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  font-size: 0.84rem;
-  font-weight: 400;
-  color: var(--text-muted);
-  line-height: 1.68;
-  margin: 0;
-}
-.lp-who-image {
-  position: sticky;
-  top: 100px;
-  border-radius: 14px;
-  overflow: hidden;
-  border: 2px solid rgba(245,158,11,0.22);
-  box-shadow: 0 24px 72px rgba(0,0,0,0.45);
-}
-.lp-who-image img {
-  width: 100%;
-  height: 520px;
-  object-fit: cover;
-  display: block;
-}
-
-/* ============================================================
-   WHAT WE COVER
-   ============================================================ */
-.lp-cover {
-  background: var(--off-white);
-  padding: 108px 0;
-}
-.lp-cover-header {
-  text-align: center;
-  margin-bottom: 60px;
-}
-.lp-cover-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 22px;
-}
-.lp-cover-card {
-  background: var(--white);
-  border-radius: var(--radius);
-  padding: 32px 28px;
-  border: 1px solid rgba(0,0,0,0.06);
-  border-top: 2px solid transparent;
-  transition: transform 0.3s var(--ease), border-top-color 0.3s ease, box-shadow 0.3s ease;
+  font-size: 0.82rem; font-weight: 600;
+  color: var(--bg-primary); background: var(--amber);
+  padding: 10px; border-radius: 8px; text-decoration: none; opacity: 0.8;
   cursor: default;
 }
-.lp-cover-card:hover {
-  transform: translateY(-6px);
-  border-top-color: var(--amber);
-  box-shadow: 0 14px 44px rgba(0,0,0,0.08);
-}
-.lp-cover-card .lp-card-icon { color: var(--amber); }
-.lp-cover-card h3 {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  font-size: 0.98rem;
-  font-weight: 600;
-  color: var(--black);
-  margin: 0 0 9px;
-}
-.lp-cover-card p {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  font-size: 0.84rem;
-  font-weight: 400;
-  color: #606060;
-  line-height: 1.7;
-  margin: 0;
-}
 
-/* ============================================================
-   TRUST SECTION
-   ============================================================ */
-.lp-trust {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  min-height: 620px;
-}
-.lp-trust-img {
-  overflow: hidden;
-}
-.lp-trust-img img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
+/* ── TRUST / FINAL CTA ──────────────────────────────────────────────────────── */
+.lp-trust { background: var(--bg-secondary); text-align: center; }
+.lp-trust h2 {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-size: clamp(1.8rem, 3vw, 2.6rem);
+  font-weight: 600; color: var(--text-primary);
+  letter-spacing: -0.015em; margin: 0 0 12px;
 }
 .lp-trust-body {
-  background: var(--near-black);
-  padding: 88px 72px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-}
-.lp-trust-body .lp-section-title-white {
-  margin-bottom: 24px;
-}
-.lp-trust-para {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  font-size: 0.93rem;
-  font-weight: 400;
-  color: rgba(255,255,255,0.60);
-  line-height: 1.82;
-  margin: 0 0 40px;
+  font-size: 0.9rem; color: var(--text-secondary);
+  max-width: 520px; margin: 0 auto 36px; line-height: 1.7;
 }
-.lp-trust-checks {
-  display: flex;
-  flex-direction: column;
-  gap: 18px;
+.lp-trust-badges {
+  display: flex; align-items: center; justify-content: center;
+  gap: 12px; flex-wrap: wrap; margin-bottom: 56px;
 }
-.lp-check-row {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-}
-.lp-check-row svg {
-  width: 20px;
-  height: 20px;
-  color: var(--amber);
-  flex-shrink: 0;
-}
-.lp-check-row span {
+.lp-trust-badge {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  font-size: 0.92rem;
-  font-weight: 500;
-  color: var(--white);
+  font-size: 0.78rem; font-weight: 600;
+  color: var(--text-secondary);
+  border: 1px solid var(--border);
+  background: var(--bg-card);
+  border-radius: 100px; padding: 8px 20px;
+}
+.lp-trust-cta-row {
+  display: flex; align-items: center; justify-content: center;
+  gap: 48px; flex-wrap: wrap;
+}
+.lp-trust-cta-block { display: flex; flex-direction: column; gap: 10px; align-items: center; }
+.lp-trust-cta-label {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-size: 0.82rem; color: var(--text-muted);
 }
 
-/* ============================================================
-   FINAL CTA
-   ============================================================ */
-.lp-cta {
-  background: var(--amber);
-  padding: 108px 48px;
-  text-align: center;
-}
-.lp-cta h2 {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  font-size: clamp(2.8rem, 5.5vw, 4.8rem);
-  font-weight: 500;
-  color: var(--black);
-  line-height: 1.08;
-  margin: 0 0 20px;
-}
-.lp-cta p {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  font-size: 1rem;
-  font-weight: 400;
-  color: rgba(10,10,10,0.7);
-  margin: 0 0 40px;
-}
-.lp-btn-dark {
-  display: inline-block;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  font-size: 1rem;
-  font-weight: 600;
-  color: var(--white);
-  background: var(--black);
-  padding: 17px 44px;
-  border-radius: 8px;
-  text-decoration: none;
-  transition: background 0.25s ease, transform 0.25s ease;
-}
-.lp-btn-dark:hover {
-  background: #222;
-  color: var(--white);
-  transform: translateY(-2px);
-}
-.lp-cta-note {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  font-size: 0.77rem;
-  font-weight: 400;
-  color: rgba(10,10,10,0.5);
-  margin-top: 18px;
-}
-
-/* ============================================================
-   FOOTER
-   ============================================================ */
+/* ── FOOTER ─────────────────────────────────────────────────────────────────── */
 .lp-footer {
-  background: var(--black);
-  padding: 80px 0 0;
+  background: var(--bg-primary);
+  border-top: 1px solid var(--border);
+  padding: 56px 0 36px;
 }
 .lp-footer-grid {
-  display: grid;
-  grid-template-columns: 1.5fr 1fr 1.8fr;
-  gap: 64px;
-  padding-bottom: 64px;
+  display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 40px;
+  margin-bottom: 48px;
 }
-.lp-footer-logo {
+.lp-footer-brand .lp-logo { display: inline-block; margin-bottom: 10px; }
+.lp-footer-brand p {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  font-size: 1.5rem;
-  font-weight: 500;
-  color: var(--amber);
-  text-decoration: none;
-  display: block;
-  margin-bottom: 10px;
+  font-size: 0.82rem; color: var(--text-muted); line-height: 1.6; margin: 0;
+  max-width: 240px;
 }
-.lp-footer-tagline {
+.lp-footer-col h4 {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  font-size: 0.83rem;
-  font-weight: 400;
-  color: var(--text-muted);
+  font-size: 0.75rem; font-weight: 600; text-transform: uppercase;
+  letter-spacing: 0.12em; color: var(--text-muted); margin: 0 0 16px;
 }
-.lp-footer h4 {
+.lp-footer-col ul {
+  list-style: none; padding: 0; margin: 0;
+  display: flex; flex-direction: column; gap: 10px;
+}
+.lp-footer-col ul li a {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  font-size: 0.68rem;
-  font-weight: 600;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: var(--text-muted);
-  margin: 0 0 20px;
-}
-.lp-footer-links {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 13px;
-}
-.lp-footer-links a {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  font-size: 0.88rem;
-  font-weight: 400;
-  color: rgba(255,255,255,0.48);
-  text-decoration: none;
+  font-size: 0.85rem; color: var(--text-secondary); text-decoration: none;
   transition: color 0.2s ease;
 }
-.lp-footer-links a:hover { color: var(--amber); }
-.lp-footer-disclaimer {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  font-size: 0.82rem;
-  font-weight: 400;
-  color: var(--text-muted);
-  line-height: 1.78;
+.lp-footer-col ul li a:hover { color: var(--amber); }
+.lp-footer-bottom {
+  padding-top: 24px; border-top: 1px solid var(--border); text-align: center;
 }
-.lp-footer-bar {
-  border-top: 1px solid rgba(255,255,255,0.06);
-  padding: 22px 0;
-}
-.lp-footer-bar p {
+.lp-footer-bottom p {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  font-size: 0.76rem;
-  font-weight: 400;
-  color: rgba(255,255,255,0.22);
-  margin: 0;
-  text-align: center;
+  font-size: 0.78rem; color: var(--text-muted); margin: 0;
 }
 
-/* ============================================================
-   KEYFRAMES
-   ============================================================ */
-@keyframes lpFadeDown {
-  from { opacity: 0; transform: translateY(-14px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-@keyframes lpFadeUp {
-  from { opacity: 0; transform: translateY(18px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-@keyframes lpBreathe {
-  0%,  100% { box-shadow: 0 0  0  0   rgba(245,158,11,0);    }
-  50%        { box-shadow: 0 0 28px 6px rgba(245,158,11,0.38); }
-}
-
-/* ============================================================
-   RESPONSIVE
-   ============================================================ */
+/* ── RESPONSIVE ─────────────────────────────────────────────────────────────── */
 @media (max-width: 1024px) {
-  .lp-who-layout {
-    grid-template-columns: 1fr;
-    gap: 48px;
-  }
-  .lp-who-image { display: none; }
-  .lp-trust {
-    grid-template-columns: 1fr;
-  }
-  .lp-trust-img { height: 320px; }
-  .lp-trust-body { padding: 64px 48px; }
+  .lp-lawyer-inner { grid-template-columns: 1fr; gap: 40px; }
+  .lp-mock-card { display: none; }
 }
-
-@media (max-width: 860px) {
-  .lp-container { padding: 0 28px; }
-  .lp-cover-grid { grid-template-columns: repeat(2, 1fr); }
-  .lp-how-steps  { grid-template-columns: 1fr; gap: 36px; }
-  .lp-stats-grid { grid-template-columns: repeat(2, 1fr); }
-  .lp-stat-item {
-    border-right: none;
-    border-bottom: 1px solid rgba(255,255,255,0.06);
-    padding: 28px 24px;
-  }
-  .lp-stat-item:nth-child(odd)  { border-right: 1px solid rgba(255,255,255,0.06); }
-  .lp-stat-item:nth-last-child(-n+2) { border-bottom: none; }
-  .lp-footer-grid { grid-template-columns: 1fr 1fr; gap: 40px; }
-}
-
 @media (max-width: 768px) {
-  .lp-nav        { padding: 0 20px; }
-  .lp-nav-links  { display: none; }
-  .lp-hamburger  { display: flex; }
-  .lp-mobile-inner { padding: 28px 20px 36px; }
-  .lp-container  { padding: 0 20px; }
-  .lp-how        { padding: 80px 0; }
-  .lp-who        { padding: 80px 0; }
-  .lp-cover      { padding: 80px 0; }
-  .lp-cta        { padding: 80px 24px; }
-  .lp-stats      { padding: 64px 0; }
-  .lp-footer     { padding: 64px 0 0; }
-  .lp-trust-body { padding: 52px 28px; }
-  .lp-who-cards  { grid-template-columns: 1fr; gap: 14px; }
-  .lp-cover-grid { grid-template-columns: 1fr; }
-  .lp-hero-trust-row { gap: 8px; margin-top: 20px; }
-  .lp-footer-grid { grid-template-columns: 1fr; gap: 32px; padding-bottom: 48px; }
-  .lp-footer-disclaimer { max-width: 100%; }
+  .lp-container { padding: 0 24px; }
+  .lp-section { padding: 72px 0; }
+  .lp-nav { padding: 0 24px; }
+  .lp-nav-links, .lp-nav-actions { display: none; }
+  .lp-hamburger { display: flex; }
+  .lp-hero { padding: 132px 0 88px; }
+  .lp-paths-grid { grid-template-columns: 1fr; }
+  .lp-hiw-grid { grid-template-columns: 1fr; gap: 40px; }
+  .lp-footer-grid { grid-template-columns: 1fr 1fr; }
+  .lp-trust-cta-row { flex-direction: column; gap: 24px; }
+  .lp-lawyer-stats { gap: 20px; }
 }
-
-@media (max-width: 420px) {
-  .lp-hero-btns { flex-direction: column; align-items: center; }
-  .lp-btn-primary, .lp-btn-ghost { width: 100%; text-align: center; }
-  .lp-hstat-sep { display: none; }
-  .lp-hero-stats { flex-direction: column; gap: 14px; }
-  .lp-hstat { padding: 0; }
-}
-
-/* ============================================================
-   SCROLL PROGRESS BAR
-   ============================================================ */
-#lpProgress {
-  position: absolute;
-  bottom: 0; left: 0;
-  height: 2px;
-  width: 0%;
-  background: linear-gradient(90deg, var(--amber), #fbbf24);
-  pointer-events: none;
-  transition: width 0.08s linear;
-  border-radius: 0 2px 2px 0;
-}
-
-/* Active nav link */
-.lp-nav-links a.lp-nav-active { color: var(--amber); }
-
-/* ============================================================
-   HERO STAT COUNTERS
-   ============================================================ */
-.lp-hero-stats {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: 20px 0 22px;
-  opacity: 0;
-  animation: lpFadeUp 0.7s 1.45s forwards;
-}
-.lp-hstat {
-  text-align: center;
-  padding: 0 22px;
-}
-.lp-hstat b {
-  display: block;
-  font-family: 'Inter', sans-serif;
-  font-size: clamp(1.35rem, 2.5vw, 1.75rem);
-  font-weight: 700;
-  color: var(--amber);
-  line-height: 1;
-  margin-bottom: 5px;
-  font-variant-numeric: tabular-nums;
-  letter-spacing: -0.01em;
-}
-.lp-hstat span {
-  display: block;
-  font-family: 'Inter', sans-serif;
-  font-size: 0.63rem;
-  color: rgba(255,255,255,0.42);
-  letter-spacing: 0.04em;
-  line-height: 1.45;
-  max-width: 108px;
-  margin: 0 auto;
-}
-.lp-hstat-sep {
-  width: 1px;
-  height: 34px;
-  background: rgba(255,255,255,0.11);
-  flex-shrink: 0;
-}
-
-/* ============================================================
-   TESTIMONIALS
-   ============================================================ */
-.lp-testimonials {
-  background: var(--near-black);
-  padding: 96px 0;
-}
-.lp-testi-header {
-  text-align: center;
-  margin-bottom: 52px;
-}
-.lp-testi-track-wrap {
-  overflow: hidden;
-  position: relative;
-  cursor: grab;
-  touch-action: pan-y;
-  -webkit-user-select: none;
-  user-select: none;
-}
-.lp-testi-track-wrap:active { cursor: grabbing; }
-.lp-testi-track {
-  display: flex;
-  will-change: transform;
-  transition: transform 0.52s cubic-bezier(0.34, 1.46, 0.64, 1);
-}
-.lp-testi-slide {
-  min-width: 100%;
-  padding: 4px 16px 8px;
-  box-sizing: border-box;
-}
-.lp-testi-card {
-  background: var(--dark-card);
-  border: 1px solid rgba(255,255,255,0.07);
-  border-radius: 18px;
-  padding: 38px 44px 36px;
-  max-width: 700px;
-  margin: 0 auto;
-  position: relative;
-}
-.lp-testi-card::before {
-  content: '\201C';
-  position: absolute;
-  top: 18px; left: 36px;
-  font-size: 6rem;
-  line-height: 1;
-  color: var(--amber);
-  opacity: 0.12;
-  font-family: Georgia, serif;
-  pointer-events: none;
-}
-.lp-testi-stars {
-  color: var(--amber);
-  font-size: 0.82rem;
-  letter-spacing: 3px;
-  margin-bottom: 14px;
-}
-.lp-testi-text {
-  font-family: 'Inter', sans-serif;
-  font-size: 1rem;
-  line-height: 1.82;
-  color: rgba(255,255,255,0.82);
-  margin: 0 0 26px;
-  position: relative;
-}
-.lp-testi-author {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-}
-.lp-testi-avatar {
-  width: 42px; height: 42px;
-  border-radius: 50%;
-  background: rgba(245,158,11,0.12);
-  border: 1px solid rgba(245,158,11,0.28);
-  display: flex; align-items: center; justify-content: center;
-  font-family: 'Inter', sans-serif;
-  font-weight: 600;
-  font-size: 0.82rem;
-  color: var(--amber);
-  flex-shrink: 0;
-  letter-spacing: 0.03em;
-}
-.lp-testi-name {
-  font-family: 'Inter', sans-serif;
-  font-weight: 600;
-  font-size: 0.88rem;
-  color: var(--white);
-  margin-bottom: 2px;
-}
-.lp-testi-role {
-  font-family: 'Inter', sans-serif;
-  font-size: 0.78rem;
-  color: var(--text-muted);
-}
-.lp-testi-nav {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 18px;
-  margin-top: 38px;
-}
-.lp-testi-btn {
-  width: 40px; height: 40px;
-  border-radius: 50%;
-  border: 1.5px solid rgba(255,255,255,0.18);
-  background: none;
-  color: rgba(255,255,255,0.7);
-  cursor: pointer;
-  display: flex; align-items: center; justify-content: center;
-  transition: border-color 0.22s, background 0.22s, color 0.22s;
-  flex-shrink: 0;
-}
-.lp-testi-btn:hover {
-  border-color: var(--amber);
-  color: var(--amber);
-  background: rgba(245,158,11,0.08);
-}
-.lp-testi-dots { display: flex; gap: 8px; align-items: center; }
-.lp-testi-dot {
-  width: 7px; height: 7px;
-  border-radius: 50%;
-  background: rgba(255,255,255,0.22);
-  border: none;
-  cursor: pointer;
-  padding: 0;
-  transition: background 0.25s, transform 0.25s;
-}
-.lp-testi-dot.active {
-  background: var(--amber);
-  transform: scale(1.5);
-}
-
-@media (max-width: 600px) {
-  .lp-testi-card { padding: 28px 24px 26px; }
-  .lp-testi-card::before { font-size: 4rem; top: 14px; left: 20px; }
+@media (max-width: 480px) {
+  .lp-hero h1 { font-size: 2.4rem; }
+  .lp-footer-grid { grid-template-columns: 1fr; }
+  .lp-hero-trust { flex-direction: column; gap: 6px; }
+  .lp-hero-trust span { border-right: none; padding: 0; }
 }
 </style>
 
-<!-- ============================================================
-     NAVBAR
-     ============================================================ -->
-<nav class="lp-nav" id="lpNav">
-  <div id="lpProgress" role="progressbar" aria-label="Reading progress" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
-  <div class="lp-nav-inner">
-    <a href="/" class="lp-logo">Rentritz</a>
-    <div class="lp-nav-links">
-      <a href="#how-it-works">How It Works</a>
-      <a href="#what-we-cover">What We Cover</a>
-      <a href="{{ url_for('auth.register') }}" class="lp-nav-cta">Get Started Free</a>
-    </div>
-    <button class="lp-hamburger" id="lpHamburger" aria-label="Toggle navigation">
-      <span></span><span></span><span></span>
-    </button>
-  </div>
-</nav>
+<div class="lp-wrap">
 
-<!-- Mobile slide-down menu -->
-<div class="lp-mobile-menu" id="lpMobileMenu">
-  <div class="lp-mobile-inner">
-    <a href="#how-it-works">How It Works</a>
-    <a href="#what-we-cover">What We Cover</a>
-    <a href="{{ url_for('auth.login') }}">Sign In</a>
-    <a href="{{ url_for('auth.register') }}" class="lp-nav-cta">Get Started Free</a>
+  <!-- ── NAVBAR ─────────────────────────────────────────────────────────── -->
+  <nav class="lp-nav" id="lp-nav">
+    <div class="lp-nav-inner">
+      <a href="{{ url_for('core.index') }}" class="lp-logo">
+        <span class="r">Rentritz</span>&thinsp;<span class="d">Dubai</span>
+      </a>
+      <div class="lp-nav-links">
+        <a href="#how-it-works">How it works</a>
+        <a href="{{ url_for('lawyers.browse') }}">Find a Lawyer</a>
+        <a href="#for-lawyers">For Lawyers</a>
+      </div>
+      {% if current_user.is_authenticated %}
+      <div class="lp-nav-actions">
+        <a href="{{ url_for('core.dashboard') }}" class="lp-nav-btn">Dashboard</a>
+      </div>
+      {% else %}
+      <div class="lp-nav-actions">
+        <a href="{{ url_for('auth.login') }}" class="lp-nav-signin">Sign in</a>
+        <a href="{{ url_for('auth.register') }}" class="lp-nav-btn">Get started</a>
+      </div>
+      {% endif %}
+      <button class="lp-hamburger" id="lp-hamburger" aria-label="Toggle navigation">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- mobile menu -->
+  <div class="lp-mobile-menu" id="lp-mobile-menu">
+    <div class="lp-mobile-inner">
+      <a href="#how-it-works">How it works</a>
+      <a href="{{ url_for('lawyers.browse') }}">Find a Lawyer</a>
+      <a href="#for-lawyers">For Lawyers</a>
+      {% if current_user.is_authenticated %}
+      <a href="{{ url_for('core.dashboard') }}" class="lp-nav-btn">Dashboard</a>
+      {% else %}
+      <a href="{{ url_for('auth.login') }}" class="lp-nav-signin">Sign in</a>
+      <a href="{{ url_for('auth.register') }}" class="lp-nav-btn">Get started</a>
+      {% endif %}
+    </div>
   </div>
+
+  <!-- ── HERO ───────────────────────────────────────────────────────────── -->
+  <section class="lp-hero">
+    <div class="lp-container">
+      <div class="lp-hero-eyebrow sr sr-d1">Dubai Property Rights</div>
+      <h1 class="sr sr-d2">Know exactly<br>where you stand.</h1>
+      <p class="lp-hero-sub sr sr-d3">
+        Instant answers on UAE tenancy law &mdash; and direct access to verified
+        Dubai lawyers when you need one.
+      </p>
+      <div class="lp-hero-btns sr sr-d4">
+        <a href="{{ url_for('auth.register') }}" class="lp-btn-primary">Get free guidance &rarr;</a>
+        <a href="{{ url_for('lawyers.browse') }}" class="lp-btn-secondary">Find a Lawyer</a>
+      </div>
+      <div class="lp-hero-trust sr sr-d5">
+        <span>2 free consultations included</span>
+        <span>No credit card required</span>
+        <span>UAE law verified</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── TWO PATHS ──────────────────────────────────────────────────────── -->
+  <section class="lp-paths lp-section" id="who-is-this-for">
+    <div class="lp-container">
+      <div class="lp-paths-header sr">
+        <div class="lp-label">Who is Rentritz for?</div>
+        <h2>Two sides. One platform.</h2>
+      </div>
+      <div class="lp-paths-grid">
+
+        <div class="lp-path-card sr sr-d1">
+          <div class="lp-path-icon">🏠</div>
+          <h3 class="lp-path-title">I need legal guidance</h3>
+          <p class="lp-path-body">
+            Understand your rights on rent increases, evictions, deposits, and disputes.
+            Get instant answers based on UAE law &mdash; no appointment needed.
+          </p>
+          <ul class="lp-path-bullets">
+            <li>Instant answers, any time</li>
+            <li>Based on Dubai tenancy law</li>
+            <li>Escalate to a real lawyer if needed</li>
+          </ul>
+          <a href="{{ url_for('auth.register') }}" class="lp-path-cta">Start free &rarr;</a>
+        </div>
+
+        <div class="lp-path-card sr sr-d2">
+          <div class="lp-path-icon">⚖</div>
+          <h3 class="lp-path-title">I want qualified clients</h3>
+          <p class="lp-path-body">
+            Every client who finds you on Rentritz already has a specific legal problem
+            and has read about it. These are warm leads &mdash; people ready to act, not just browsing.
+          </p>
+          <ul class="lp-path-bullets">
+            <li>Clients come to you with context</li>
+            <li>Verified profile, trusted platform</li>
+            <li>AED 149/month flat listing fee</li>
+          </ul>
+          <a href="{{ url_for('auth.register', role='lawyer') }}" class="lp-path-cta">Join as a Lawyer &rarr;</a>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ── HOW IT WORKS ───────────────────────────────────────────────────── -->
+  <section class="lp-hiw lp-section" id="how-it-works">
+    <div class="lp-container">
+      <div class="lp-hiw-header sr">
+        <div class="lp-label">How it works</div>
+        <h2>Simple steps. Real results.</h2>
+      </div>
+      <div class="lp-hiw-grid">
+
+        <div class="sr sr-d1">
+          <div class="lp-hiw-col-title">For Tenants &amp; Landlords</div>
+          <div class="lp-hiw-steps">
+            <div class="lp-hiw-step">
+              <div class="lp-hiw-num">1</div>
+              <div class="lp-hiw-step-text">
+                <h4>Describe your situation</h4>
+                <p>Choose your issue from our guided categories</p>
+              </div>
+            </div>
+            <div class="lp-hiw-step">
+              <div class="lp-hiw-num">2</div>
+              <div class="lp-hiw-step-text">
+                <h4>Get your answer</h4>
+                <p>Receive instant guidance based on UAE tenancy law</p>
+              </div>
+            </div>
+            <div class="lp-hiw-step">
+              <div class="lp-hiw-num">3</div>
+              <div class="lp-hiw-step-text">
+                <h4>Connect if needed</h4>
+                <p>Find and contact a verified lawyer directly</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="sr sr-d2">
+          <div class="lp-hiw-col-title">For Lawyers</div>
+          <div class="lp-hiw-steps">
+            <div class="lp-hiw-step">
+              <div class="lp-hiw-num">1</div>
+              <div class="lp-hiw-step-text">
+                <h4>Create your profile</h4>
+                <p>List your specialisations, experience, and contact details</p>
+              </div>
+            </div>
+            <div class="lp-hiw-step">
+              <div class="lp-hiw-num">2</div>
+              <div class="lp-hiw-step-text">
+                <h4>Get verified</h4>
+                <p>Our team reviews and verifies your credentials</p>
+              </div>
+            </div>
+            <div class="lp-hiw-step">
+              <div class="lp-hiw-num">3</div>
+              <div class="lp-hiw-step-text">
+                <h4>Receive warm leads</h4>
+                <p>Clients with real problems contact you directly</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ── LAWYER VALUE PROP ──────────────────────────────────────────────── -->
+  <section class="lp-lawyer lp-section" id="for-lawyers">
+    <div class="lp-container">
+      <div class="lp-lawyer-inner">
+
+        <div class="sr sr-d1">
+          <div class="lp-lawyer-eyebrow">For Lawyers</div>
+          <h2>Connect with clients who are ready to act.</h2>
+          <p class="lp-lawyer-body">
+            Rentritz users have already read about their legal situation before they reach out
+            to you. No cold leads. No time wasted explaining basics. Just clients who know
+            their problem and need your help.
+          </p>
+          <div class="lp-lawyer-stats">
+            <div class="lp-lawyer-stat-item">
+              <span class="lp-lawyer-stat-val">Warm leads</span>
+              <span class="lp-lawyer-stat-desc">Clients arrive with context</span>
+            </div>
+            <div class="lp-lawyer-stat-item">
+              <span class="lp-lawyer-stat-val">Verified profile</span>
+              <span class="lp-lawyer-stat-desc">Trusted by Dubai residents</span>
+            </div>
+            <div class="lp-lawyer-stat-item">
+              <span class="lp-lawyer-stat-val">AED 149/mo</span>
+              <span class="lp-lawyer-stat-desc">Flat fee, no commissions</span>
+            </div>
+          </div>
+          <div class="lp-lawyer-cta-wrap">
+            <a href="{{ url_for('auth.register', role='lawyer') }}" class="lp-lawyer-cta">
+              Join as a Lawyer &mdash; AED 149/month
+            </a>
+            <span class="lp-lawyer-cta-sub">Verified within 48 hours &middot; Cancel anytime</span>
+          </div>
+        </div>
+
+        <div class="sr sr-d2">
+          <div class="lp-mock-card">
+            <div class="lp-mock-avatar">&#x1F468;&#x200D;&#x2696;&#xFE0F;</div>
+            <p class="lp-mock-name">Ahmed Al Rashidi</p>
+            <div class="lp-mock-tags">
+              <span class="lp-mock-tag">Tenancy</span>
+              <span class="lp-mock-tag">Civil</span>
+            </div>
+            <div class="lp-mock-details">
+              <strong>12 years</strong> experience<br>
+              Arabic, English<br>
+              Dubai Bar Association
+            </div>
+            <div class="lp-mock-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+            <span class="lp-mock-btn">Unlock Contact &mdash; 5 credits</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ── TRUST / FINAL CTA ──────────────────────────────────────────────── -->
+  <section class="lp-trust lp-section">
+    <div class="lp-container">
+      <h2 class="sr sr-d1">Built for Dubai. Backed by UAE law.</h2>
+      <p class="lp-trust-body sr sr-d2">
+        Every answer is based on current UAE tenancy legislation, RERA regulations,
+        and Dubai Court precedents.
+      </p>
+      <div class="lp-trust-badges sr sr-d3">
+        <span class="lp-trust-badge">UAE Law Verified</span>
+        <span class="lp-trust-badge">RERA Compliant</span>
+        <span class="lp-trust-badge">Consultant Written</span>
+      </div>
+      <div class="lp-trust-cta-row sr sr-d4">
+        <div class="lp-trust-cta-block">
+          <span class="lp-trust-cta-label">Need legal guidance?</span>
+          <a href="{{ url_for('auth.register') }}" class="lp-btn-primary">Get started free</a>
+        </div>
+        <div class="lp-trust-cta-block">
+          <span class="lp-trust-cta-label">Are you a lawyer?</span>
+          <a href="{{ url_for('auth.register', role='lawyer') }}" class="lp-btn-secondary">Join our network</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── FOOTER ─────────────────────────────────────────────────────────── -->
+  <footer class="lp-footer">
+    <div class="lp-container">
+      <div class="lp-footer-grid">
+
+        <div class="lp-footer-brand">
+          <a href="{{ url_for('core.index') }}" class="lp-logo">
+            <span class="r">Rentritz</span>&thinsp;<span class="d">Dubai</span>
+          </a>
+          <p>Dubai tenancy law guidance and a verified lawyer marketplace &mdash; in one platform.</p>
+        </div>
+
+        <div class="lp-footer-col">
+          <h4>For Users</h4>
+          <ul>
+            <li><a href="{{ url_for('core.dashboard') }}">Dashboard</a></li>
+            <li><a href="{{ url_for('core.history') }}">History</a></li>
+            <li><a href="{{ url_for('core.credits') }}">Credits</a></li>
+            <li><a href="{{ url_for('lawyers.browse') }}">Find a Lawyer</a></li>
+          </ul>
+        </div>
+
+        <div class="lp-footer-col">
+          <h4>For Lawyers</h4>
+          <ul>
+            <li><a href="{{ url_for('auth.register', role='lawyer') }}">Join as a Lawyer</a></li>
+            <li><a href="{{ url_for('lawyers.dashboard') }}">Lawyer Dashboard</a></li>
+            <li><a href="#how-it-works">How it works</a></li>
+          </ul>
+        </div>
+
+        <div class="lp-footer-col">
+          <h4>Legal</h4>
+          <ul>
+            <li><a href="{{ url_for('core.terms') }}">Terms of Service</a></li>
+            <li><a href="{{ url_for('core.privacy') }}">Privacy Policy</a></li>
+          </ul>
+        </div>
+
+      </div>
+      <div class="lp-footer-bottom">
+        <p>&copy; 2026 Rentritz Dubai. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+
 </div>
 
-<!-- ============================================================
-     HERO
-     ============================================================ -->
-<section class="lp-hero">
-  <div class="lp-hero-bg" id="heroParallax"></div>
-  <div class="lp-hero-overlay"></div>
-  <div id="tsparticles"></div>
-  <div class="lp-hero-glow"></div>
-
-  <div class="lp-hero-content">
-    <div class="lp-hero-pill">Dubai Tenancy Law, Simplified</div>
-
-    <h1 class="lp-hero-headline" id="lpHeadline">
-      <span class="lp-line-white">
-        <span class="word">Know</span>&nbsp;<span class="word">exactly</span>
-      </span>
-      <span class="lp-line-amber">
-        <span class="word">where</span>&nbsp;<span class="word">you</span>&nbsp;<span class="word">stand.</span>
-      </span>
-    </h1>
-
-    <p class="lp-hero-sub">
-      Rentritz delivers consultant-written legal guidance matched to your exact situation in Dubai.
-      Tenants, landlords, and property professionals get precise answers based on UAE rental law.
-    </p>
-
-    <div class="lp-hero-stats" aria-hidden="true">
-      <div class="lp-hstat">
-        <b data-hcount="73" data-hsuffix="%">0%</b>
-        <span>of tenants unaware of their rights</span>
-      </div>
-      <div class="lp-hstat-sep"></div>
-      <div class="lp-hstat">
-        <b data-hcount="3200" data-hprefix="AED " data-hformat="comma">AED 0</b>
-        <span>avg. legal consultation cost</span>
-      </div>
-      <div class="lp-hstat-sep"></div>
-      <div class="lp-hstat">
-        <b data-hcount="68" data-hsuffix="%">0%</b>
-        <span>resolved without a lawyer</span>
-      </div>
-    </div>
-
-    <div class="lp-hero-btns">
-      <a href="{{ url_for('auth.register') }}" class="lp-btn-primary">Start Free, No Card Needed</a>
-      <a href="#how-it-works" class="lp-btn-ghost">See How It Works</a>
-    </div>
-
-    <p class="lp-hero-note">2 free consultations on signup. No credit card required.</p>
-
-    <div class="lp-hero-trust-row">
-      <span class="lp-trust-chip">UAE Law Verified</span>
-      <span class="lp-trust-chip">Consultant Written</span>
-      <span class="lp-trust-chip">RERA Compliant</span>
-    </div>
-  </div>
-</section>
-
-<!-- ============================================================
-     STATS BAR
-     ============================================================ -->
-<section class="lp-stats sr-wrap">
-  <div class="lp-container">
-    <div class="lp-stats-grid">
-
-      <div class="lp-stat-item sr">
-        <span class="lp-stat-num" data-target="73" data-suffix="%" data-counted="false">0%</span>
-        <p class="lp-stat-text">of tenants do not know their rights when facing eviction</p>
-      </div>
-
-      <div class="lp-stat-item sr sr-d1">
-        <span class="lp-stat-num" data-target="3200" data-prefix="AED " data-format="comma" data-counted="false">AED 0</span>
-        <p class="lp-stat-text">average cost of a single legal consultation in Dubai</p>
-      </div>
-
-      <div class="lp-stat-item sr sr-d2">
-        <span class="lp-stat-num" data-target="68" data-suffix="%" data-counted="false">0%</span>
-        <p class="lp-stat-text">of disputes can be resolved without a lawyer with proper guidance</p>
-      </div>
-
-      <div class="lp-stat-item sr sr-d3">
-        <span class="lp-stat-num" data-target="6" data-counted="false">0</span>
-        <p class="lp-stat-text">legal categories fully covered under UAE tenancy law</p>
-      </div>
-
-    </div>
-  </div>
-</section>
-
-<!-- ============================================================
-     HOW IT WORKS
-     ============================================================ -->
-<section class="lp-how sr-wrap" id="how-it-works">
-  <div class="lp-container">
-
-    <div class="lp-how-header">
-      <div class="lp-label sr">Simple by Design</div>
-      <h2 class="lp-section-title sr sr-d1">Three steps to a real answer.</h2>
-    </div>
-
-    <div class="lp-how-steps">
-      <div class="lp-step sr">
-        <div class="lp-step-num">01</div>
-        <h3>Tell us your situation</h3>
-        <p>Select your role and the area of your tenancy that needs clarity.</p>
-      </div>
-      <div class="lp-step sr sr-d2">
-        <div class="lp-step-num">02</div>
-        <h3>Navigate the questions</h3>
-        <p>Answer a short set of questions. We map your exact legal scenario under UAE law.</p>
-      </div>
-      <div class="lp-step sr sr-d4">
-        <div class="lp-step-num">03</div>
-        <h3>Receive your answer</h3>
-        <p>Get a detailed written response citing the exact articles of Dubai law that apply.</p>
-      </div>
-    </div>
-
-    <div class="lp-how-visual sr sr-d1">
-      <img
-        src="https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=900&q=80"
-        alt="Person reviewing a contract"
-        loading="lazy"
-      >
-    </div>
-
-  </div>
-</section>
-
-<!-- ============================================================
-     WHO WE SERVE
-     ============================================================ -->
-<section class="lp-who sr-wrap">
-  <div class="lp-container">
-    <div class="lp-who-layout">
-
-      <div>
-        <div class="lp-label sr">Who We Serve</div>
-        <h2 class="lp-section-title-white sr sr-d1">Built for everyone in the<br>Dubai property market.</h2>
-
-        <div class="lp-who-cards">
-
-          <div class="lp-card sr sr-d1">
-            <svg class="lp-card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
-              <polyline points="9 22 9 12 15 12 15 22"/>
-            </svg>
-            <h3>Tenants</h3>
-            <p>Understand your rights before a dispute escalates or a deadline passes</p>
-          </div>
-
-          <div class="lp-card sr sr-d2">
-            <svg class="lp-card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <circle cx="11" cy="11" r="4"/>
-              <line x1="21" y1="21" x2="16.65" y2="16.65"/>
-              <path d="M11 7v1m0 6v1m-4-4h1m6 0h1"/>
-            </svg>
-            <h3>Landlords</h3>
-            <p>Know your legal obligations and how to protect your property investment</p>
-          </div>
-
-          <div class="lp-card sr sr-d3">
-            <svg class="lp-card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <rect x="2" y="7" width="20" height="14" rx="2" ry="2"/>
-              <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>
-            </svg>
-            <h3>Property Agents</h3>
-            <p>Advise clients with confidence backed by actual UAE legislation</p>
-          </div>
-
-          <div class="lp-card sr sr-d4">
-            <svg class="lp-card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
-              <circle cx="12" cy="10" r="3"/>
-            </svg>
-            <h3>New Residents</h3>
-            <p>Navigate your first Dubai tenancy with complete clarity</p>
-          </div>
-
-        </div>
-      </div>
-
-      <div class="lp-who-image sr">
-        <img
-          src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=900&q=80"
-          alt="Dubai building exterior"
-          loading="lazy"
-        >
-      </div>
-
-    </div>
-  </div>
-</section>
-
-<!-- ============================================================
-     WHAT WE COVER
-     ============================================================ -->
-<section class="lp-cover sr-wrap" id="what-we-cover">
-  <div class="lp-container">
-
-    <div class="lp-cover-header">
-      <div class="lp-label sr">Coverage</div>
-      <h2 class="lp-section-title sr sr-d1">Every major rental situation in Dubai.</h2>
-    </div>
-
-    <div class="lp-cover-grid">
-
-      <div class="lp-cover-card sr">
-        <svg class="lp-card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/>
-          <polyline points="17 6 23 6 23 12"/>
-        </svg>
-        <h3>Rent Increase</h3>
-        <p>Understand RERA index rules and how to dispute unlawful increases</p>
-      </div>
-
-      <div class="lp-cover-card sr sr-d1">
-        <svg class="lp-card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <circle cx="12" cy="12" r="10"/>
-          <line x1="12" y1="8" x2="12" y2="12"/>
-          <line x1="12" y1="16" x2="12.01" y2="16"/>
-        </svg>
-        <h3>Eviction Notice</h3>
-        <p>Know required notice periods and valid grounds under UAE law</p>
-      </div>
-
-      <div class="lp-cover-card sr sr-d2">
-        <svg class="lp-card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
-        </svg>
-        <h3>Maintenance and Repairs</h3>
-        <p>Clarify landlord obligations and your available remedies</p>
-      </div>
-
-      <div class="lp-cover-card sr sr-d1">
-        <svg class="lp-card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-        </svg>
-        <h3>Security Deposit</h3>
-        <p>Know when and how your deposit must be returned by law</p>
-      </div>
-
-      <div class="lp-cover-card sr sr-d2">
-        <svg class="lp-card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <line x1="12" y1="2" x2="12" y2="6"/>
-          <line x1="12" y1="18" x2="12" y2="22"/>
-          <path d="M4.93 4.93l2.83 2.83"/>
-          <path d="M16.24 16.24l2.83 2.83"/>
-          <line x1="2" y1="12" x2="22" y2="12"/>
-          <path d="M4.93 19.07l2.83-2.83"/>
-          <path d="M16.24 7.76l2.83-2.83"/>
-        </svg>
-        <h3>Filing a Dispute</h3>
-        <p>Understand the RDC process and how to prepare your case</p>
-      </div>
-
-      <div class="lp-cover-card sr sr-d3">
-        <svg class="lp-card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/>
-          <line x1="8" y1="21" x2="16" y2="21"/>
-          <line x1="12" y1="17" x2="12" y2="21"/>
-        </svg>
-        <h3>Landlord Rights</h3>
-        <p>Know your rights and obligations as a property owner in Dubai</p>
-      </div>
-
-    </div>
-  </div>
-</section>
-
-<!-- ============================================================
-     TRUST
-     ============================================================ -->
-<section class="lp-trust sr-wrap">
-
-  <div class="lp-trust-img">
-    <img
-      src="https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=900&q=80"
-      alt="Legal documents on a desk"
-      loading="lazy"
-    >
-  </div>
-
-  <div class="lp-trust-body">
-    <div class="lp-label sr">Our Foundation</div>
-    <h2 class="lp-section-title-white sr sr-d1">Grounded entirely<br>in UAE law.</h2>
-    <p class="lp-trust-para sr sr-d2">
-      Every answer on Rentritz is written by property law consultants.
-      We base our guidance on Law No. 26 of 2007, Law No. 33 of 2008, and current RERA regulations.
-      You receive the same quality of guidance a qualified property consultant provides.
-    </p>
-    <div class="lp-trust-checks sr sr-d3">
-      <div class="lp-check-row">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <polyline points="20 6 9 17 4 12"/>
-        </svg>
-        <span>UAE Law Verified</span>
-      </div>
-      <div class="lp-check-row">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <polyline points="20 6 9 17 4 12"/>
-        </svg>
-        <span>Consultant Written Content</span>
-      </div>
-      <div class="lp-check-row">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <polyline points="20 6 9 17 4 12"/>
-        </svg>
-        <span>Based on RERA Regulations</span>
-      </div>
-    </div>
-  </div>
-
-</section>
-
-<!-- ============================================================
-     TESTIMONIALS
-     ============================================================ -->
-<section class="lp-testimonials sr-wrap">
-  <div class="lp-container">
-
-    <div class="lp-testi-header">
-      <div class="lp-label sr">Trusted by Dubai Residents</div>
-      <h2 class="lp-section-title-white sr sr-d1">What our users say.</h2>
-    </div>
-
-    <div class="lp-testi-track-wrap" id="testiWrap">
-      <div class="lp-testi-track" id="testiTrack">
-
-        <div class="lp-testi-slide">
-          <div class="lp-testi-card">
-            <div class="lp-testi-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
-            <p class="lp-testi-text">I received a 30% rent increase notice and had no idea if it was legal. Rentritz showed me exactly where I stood under the RERA index — my landlord was only entitled to 10%. I used the guidance in my reply and he backed down within a week.</p>
-            <div class="lp-testi-author">
-              <div class="lp-testi-avatar">SM</div>
-              <div>
-                <div class="lp-testi-name">Sarah M.</div>
-                <div class="lp-testi-role">Tenant &mdash; Marina, Dubai</div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="lp-testi-slide">
-          <div class="lp-testi-card">
-            <div class="lp-testi-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
-            <p class="lp-testi-text">I needed to reclaim my property for personal use and was unsure of the correct legal procedure. The guidance on required notice periods and RDSC registration saved me from a costly mistake. Everything went smoothly.</p>
-            <div class="lp-testi-author">
-              <div class="lp-testi-avatar">AK</div>
-              <div>
-                <div class="lp-testi-name">Ahmed K.</div>
-                <div class="lp-testi-role">Landlord &mdash; Jumeirah, Dubai</div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="lp-testi-slide">
-          <div class="lp-testi-card">
-            <div class="lp-testi-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
-            <p class="lp-testi-text">I use Rentritz before every difficult client conversation. The depth of guidance on UAE tenancy law gives me confidence when advising on complex disputes. My clients notice the difference and it has become an indispensable part of my process.</p>
-            <div class="lp-testi-author">
-              <div class="lp-testi-avatar">RT</div>
-              <div>
-                <div class="lp-testi-name">Rachel T.</div>
-                <div class="lp-testi-role">Property Agent &mdash; Business Bay</div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="lp-testi-slide">
-          <div class="lp-testi-card">
-            <div class="lp-testi-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
-            <p class="lp-testi-text">Moving from Australia I had no idea how tenancy law worked in Dubai. Rentritz walked me through my rights before I signed my first lease. The clarity it gave me was invaluable — I negotiated three clauses out of the contract as a direct result.</p>
-            <div class="lp-testi-author">
-              <div class="lp-testi-avatar">JL</div>
-              <div>
-                <div class="lp-testi-name">James L.</div>
-                <div class="lp-testi-role">New Resident &mdash; Downtown Dubai</div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-      </div>
-    </div>
-
-    <div class="lp-testi-nav">
-      <button class="lp-testi-btn" id="testiPrev" aria-label="Previous testimonial">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg>
-      </button>
-      <div class="lp-testi-dots" role="tablist" id="testiDots">
-        <button class="lp-testi-dot active" data-idx="0" role="tab" aria-label="Testimonial 1" aria-selected="true"></button>
-        <button class="lp-testi-dot" data-idx="1" role="tab" aria-label="Testimonial 2" aria-selected="false"></button>
-        <button class="lp-testi-dot" data-idx="2" role="tab" aria-label="Testimonial 3" aria-selected="false"></button>
-        <button class="lp-testi-dot" data-idx="3" role="tab" aria-label="Testimonial 4" aria-selected="false"></button>
-      </div>
-      <button class="lp-testi-btn" id="testiNext" aria-label="Next testimonial">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
-      </button>
-    </div>
-
-  </div>
-</section>
-
-<!-- ============================================================
-     FINAL CTA
-     ============================================================ -->
-<section class="lp-cta sr-wrap">
-  <div class="sr">
-    <h2>Your answer is waiting.</h2>
-    <p>Join thousands of Dubai residents who got clarity on their tenancy situation.</p>
-    <a href="{{ url_for('auth.register') }}" class="lp-btn-dark">Get Started Free</a>
-    <p class="lp-cta-note">2 free consultations included. No credit card required.</p>
-  </div>
-</section>
-
-<!-- ============================================================
-     FOOTER
-     ============================================================ -->
-<footer class="lp-footer">
-  <div class="lp-container">
-    <div class="lp-footer-grid">
-
-      <div>
-        <a href="/" class="lp-footer-logo">Rentritz</a>
-        <p class="lp-footer-tagline">Dubai tenancy law, simplified.</p>
-      </div>
-
-      <div>
-        <h4>Navigation</h4>
-        <ul class="lp-footer-links">
-          <li><a href="#how-it-works">How It Works</a></li>
-          <li><a href="#what-we-cover">What We Cover</a></li>
-          <li><a href="{{ url_for('auth.register') }}">Get Started</a></li>
-          <li><a href="{{ url_for('auth.login') }}">Sign In</a></li>
-        </ul>
-      </div>
-
-      <div>
-        <h4>Legal</h4>
-        <ul class="lp-footer-links">
-          <li><a href="{{ url_for('core.terms') }}">Terms of Service</a></li>
-          <li><a href="{{ url_for('core.privacy') }}">Privacy Policy</a></li>
-        </ul>
-        <p class="lp-footer-disclaimer" style="margin-top:16px;">
-          Rentritz provides legal information, not legal advice. For complex matters,
-          always consult a qualified UAE legal professional.
-        </p>
-      </div>
-
-    </div>
-  </div>
-  <div class="lp-footer-bar">
-    <div class="lp-container">
-      <p>2025 Rentritz. All rights reserved.</p>
-    </div>
-  </div>
-</footer>
-
-<!-- ============================================================
-     JAVASCRIPT
-     ============================================================ -->
-<script src="https://cdn.jsdelivr.net/npm/tsparticles-slim@2/tsparticles.slim.bundle.min.js"></script>
 <script>
 (function () {
-  'use strict';
+  // Scroll reveal
+  var io = new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) {
+      if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
+    });
+  }, { threshold: 0.08 });
+  document.querySelectorAll('.sr').forEach(function (el) { io.observe(el); });
 
-  /* -------- NAVBAR scroll solid -------- */
-  var nav = document.getElementById('lpNav');
-  function handleScroll() {
-    if (window.scrollY > 80) {
-      nav.classList.add('solid');
-    } else {
-      nav.classList.remove('solid');
-    }
-  }
-  window.addEventListener('scroll', handleScroll, { passive: true });
+  // Nav border on scroll
+  var nav = document.getElementById('lp-nav');
+  window.addEventListener('scroll', function () {
+    nav.classList.toggle('scrolled', window.scrollY > 12);
+  }, { passive: true });
 
-  /* -------- HAMBURGER mobile menu -------- */
-  var hamburger   = document.getElementById('lpHamburger');
-  var mobileMenu  = document.getElementById('lpMobileMenu');
+  // Hamburger toggle
+  var hamburger = document.getElementById('lp-hamburger');
+  var mobileMenu = document.getElementById('lp-mobile-menu');
   hamburger.addEventListener('click', function () {
-    var isOpen = mobileMenu.classList.toggle('open');
-    hamburger.classList.toggle('open', isOpen);
-    hamburger.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+    hamburger.classList.toggle('open');
+    mobileMenu.classList.toggle('open');
   });
-  /* Close mobile menu when a link is clicked */
-  mobileMenu.querySelectorAll('a').forEach(function (a) {
-    a.addEventListener('click', function () {
-      mobileMenu.classList.remove('open');
-      hamburger.classList.remove('open');
-    });
-  });
-
-  /* -------- HERO headline word-by-word animation -------- */
-  var words = document.querySelectorAll('#lpHeadline .word');
-  words.forEach(function (word, i) {
-    setTimeout(function () {
-      word.classList.add('vis');
-    }, 300 + i * 140);
-  });
-
-  /* -------- HERO parallax -------- */
-  var heroBg = document.getElementById('heroParallax');
-  function onScrollParallax() {
-    var scrollY = window.scrollY;
-    heroBg.style.transform = 'translateY(' + (scrollY * 0.4) + 'px)';
-  }
-  window.addEventListener('scroll', onScrollParallax, { passive: true });
-
-  /* -------- SMOOTH SCROLL for anchor links -------- */
-  document.querySelectorAll('a[href^="#"]').forEach(function (anchor) {
-    anchor.addEventListener('click', function (e) {
-      var targetId = this.getAttribute('href').slice(1);
-      if (!targetId) return;
-      var target = document.getElementById(targetId);
-      if (target) {
-        e.preventDefault();
-        var offset = 72;
-        var top = target.getBoundingClientRect().top + window.scrollY - offset;
-        window.scrollTo({ top: top, behavior: 'smooth' });
-      }
-    });
-  });
-
-  /* -------- SCROLL REVEAL IntersectionObserver -------- */
-  var srObserver = new IntersectionObserver(function (entries) {
-    entries.forEach(function (entry) {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('in');
-        srObserver.unobserve(entry.target);
-      }
-    });
-  }, { threshold: 0.12 });
-
-  document.querySelectorAll('.sr').forEach(function (el) {
-    srObserver.observe(el);
-  });
-
-  /* -------- STATS COUNTER -------- */
-  function formatNum(n, fmt) {
-    if (fmt === 'comma') {
-      return n.toLocaleString('en-US');
-    }
-    return String(n);
-  }
-
-  function countUp(el) {
-    if (el.dataset.counted === 'true') return;
-    el.dataset.counted = 'true';
-
-    var target   = parseInt(el.dataset.target, 10);
-    var prefix   = el.dataset.prefix   || '';
-    var suffix   = el.dataset.suffix   || '';
-    var fmt      = el.dataset.format   || '';
-    var duration = 1800;
-    var start    = null;
-
-    function step(ts) {
-      if (!start) start = ts;
-      var progress  = Math.min((ts - start) / duration, 1);
-      var eased     = 1 - Math.pow(1 - progress, 3);
-      var current   = Math.round(eased * target);
-      el.textContent = prefix + formatNum(current, fmt) + suffix;
-      if (progress < 1) {
-        requestAnimationFrame(step);
-      } else {
-        el.textContent = prefix + formatNum(target, fmt) + suffix;
-      }
-    }
-    requestAnimationFrame(step);
-  }
-
-  var statObserver = new IntersectionObserver(function (entries) {
-    entries.forEach(function (entry) {
-      if (entry.isIntersecting) {
-        countUp(entry.target);
-        statObserver.unobserve(entry.target);
-      }
-    });
-  }, { threshold: 0.5 });
-
-  document.querySelectorAll('[data-target]').forEach(function (el) {
-    statObserver.observe(el);
-  });
-
-  /* -------- SECTION-LEVEL staggered reveal -------- */
-  var wrapObserver = new IntersectionObserver(function (entries) {
-    entries.forEach(function (entry) {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('in');
-        wrapObserver.unobserve(entry.target);
-      }
-    });
-  }, { threshold: 0.04 });
-
-  document.querySelectorAll('.sr-wrap').forEach(function (el) {
-    wrapObserver.observe(el);
-  });
-
-  /* -------- tsParticles hero background -------- */
-  if (typeof tsParticles !== 'undefined') {
-    tsParticles.load('tsparticles', {
-      fpsLimit: 60,
-      detectRetina: true,
-      background: { color: { value: 'transparent' } },
-      particles: {
-        number: { value: 55, density: { enable: true, area: 900 } },
-        color: { value: ['#ffffff', '#f59e0b'] },
-        opacity: {
-          value: { min: 0.04, max: 0.22 },
-          animation: { enable: true, speed: 0.4, sync: false }
-        },
-        size: { value: { min: 0.6, max: 2.2 } },
-        move: {
-          enable: true,
-          speed: 0.38,
-          direction: 'none',
-          random: true,
-          straight: false,
-          outModes: { default: 'out' }
-        },
-        links: { enable: false }
-      },
-      interactivity: {
-        events: {
-          onHover: { enable: false },
-          onClick: { enable: false }
-        }
-      }
-    });
-  }
-
-  /* -------- SCROLL PROGRESS BAR -------- */
-  var progressBar = document.getElementById('lpProgress');
-  function updateProgress() {
-    var docH = document.documentElement.scrollHeight - window.innerHeight;
-    var pct  = docH > 0 ? Math.min(window.scrollY / docH * 100, 100) : 0;
-    progressBar.style.width = pct + '%';
-    progressBar.setAttribute('aria-valuenow', Math.round(pct));
-  }
-  window.addEventListener('scroll', updateProgress, { passive: true });
-  updateProgress();
-
-  /* -------- ACTIVE NAV SECTION HIGHLIGHTING -------- */
-  var lpNavLinks = document.querySelectorAll('.lp-nav-links a[href^="#"]');
-  var activeSecObserver = new IntersectionObserver(function (entries) {
-    entries.forEach(function (entry) {
-      if (entry.isIntersecting) {
-        var href = '#' + entry.target.id;
-        lpNavLinks.forEach(function (a) {
-          a.classList.toggle('lp-nav-active', a.getAttribute('href') === href);
-        });
-      }
-    });
-  }, { rootMargin: '-30% 0px -60% 0px' });
-  ['how-it-works', 'what-we-cover'].forEach(function (id) {
-    var el = document.getElementById(id);
-    if (el) activeSecObserver.observe(el);
-  });
-
-  /* -------- HERO ANIMATED COUNTERS -------- */
-  function heroCountUp(el) {
-    var target   = parseInt(el.dataset.hcount, 10);
-    var prefix   = el.dataset.hprefix || '';
-    var suffix   = el.dataset.hsuffix || '';
-    var fmt      = el.dataset.hformat || '';
-    var duration = 1600;
-    var start    = null;
-    function step(ts) {
-      if (!start) start = ts;
-      var p    = Math.min((ts - start) / duration, 1);
-      var val  = Math.round((1 - Math.pow(1 - p, 4)) * target);
-      var disp = fmt === 'comma' ? val.toLocaleString('en-US') : String(val);
-      el.textContent = prefix + disp + suffix;
-      if (p < 1) requestAnimationFrame(step);
-      else el.textContent = prefix + (fmt === 'comma' ? target.toLocaleString('en-US') : target) + suffix;
-    }
-    requestAnimationFrame(step);
-  }
-  /* Fire after headline word-animation completes (~1.4 s) */
-  setTimeout(function () {
-    document.querySelectorAll('[data-hcount]').forEach(heroCountUp);
-  }, 1450);
-
-  /* -------- TESTIMONIALS CAROUSEL -------- */
-  (function () {
-    var wrap    = document.getElementById('testiWrap');
-    var track   = document.getElementById('testiTrack');
-    var dots    = document.querySelectorAll('#testiDots .lp-testi-dot');
-    var prevBtn = document.getElementById('testiPrev');
-    var nextBtn = document.getElementById('testiNext');
-    if (!track) return;
-
-    var total   = track.children.length;
-    var current = 0;
-    var timer   = null;
-
-    function gotoSlide(n) {
-      current = ((n % total) + total) % total;
-      track.style.transform = 'translateX(-' + (current * 100) + '%)';
-      dots.forEach(function (d, i) {
-        var on = i === current;
-        d.classList.toggle('active', on);
-        d.setAttribute('aria-selected', on ? 'true' : 'false');
-      });
-    }
-
-    function startAuto() {
-      clearInterval(timer);
-      timer = setInterval(function () { gotoSlide(current + 1); }, 5200);
-    }
-    function stopAuto() { clearInterval(timer); }
-
-    prevBtn.addEventListener('click', function () { gotoSlide(current - 1); startAuto(); });
-    nextBtn.addEventListener('click', function () { gotoSlide(current + 1); startAuto(); });
-    dots.forEach(function (d) {
-      d.addEventListener('click', function () {
-        gotoSlide(parseInt(d.dataset.idx, 10));
-        startAuto();
-      });
-    });
-
-    wrap.addEventListener('mouseenter', stopAuto);
-    wrap.addEventListener('mouseleave', startAuto);
-
-    /* Pointer drag / touch swipe */
-    var dragging = false, startX = 0, deltaX = 0;
-
-    wrap.addEventListener('pointerdown', function (e) {
-      dragging = true; startX = e.clientX; deltaX = 0;
-      track.style.transition = 'none';
-      wrap.setPointerCapture(e.pointerId);
-      stopAuto();
-    });
-    wrap.addEventListener('pointermove', function (e) {
-      if (!dragging) return;
-      deltaX = e.clientX - startX;
-      track.style.transform = 'translateX(calc(-' + (current * 100) + '% + ' + deltaX + 'px))';
-    });
-    function endDrag() {
-      if (!dragging) return;
-      dragging = false;
-      track.style.transition = '';
-      if      (deltaX < -60) gotoSlide(current + 1);
-      else if (deltaX >  60) gotoSlide(current - 1);
-      else                   gotoSlide(current);
-      startAuto();
-    }
-    wrap.addEventListener('pointerup',     endDrag);
-    wrap.addEventListener('pointercancel', endDrag);
-
-    /* Keyboard navigation */
-    wrap.setAttribute('tabindex', '0');
-    wrap.addEventListener('keydown', function (e) {
-      if (e.key === 'ArrowLeft')  { gotoSlide(current - 1); startAuto(); }
-      if (e.key === 'ArrowRight') { gotoSlide(current + 1); startAuto(); }
-    });
-
-    startAuto();
-  }());
-
 })();
 </script>
-
 {% endblock %}
