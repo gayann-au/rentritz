@@ -246,7 +246,7 @@ def unlock_contact(lawyer_profile_id):
 @lawyers_bp.route('/register', methods=['GET', 'POST'])
 @login_required
 def register():
-    if current_user.role == 'lawyer' or current_user.lawyer_profile:
+    if current_user.lawyer_profile:
         return redirect(url_for('lawyers.dashboard'))
 
     form = LawyerProfileForm()

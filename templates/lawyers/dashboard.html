@@ -41,26 +41,25 @@
 }
 .ld-btn-outline:hover{background:rgba(245,158,11,0.08);border-color:var(--amber);}
 
-/* Status banner */
+/* Status banners */
 .ld-banner{
   border-radius:var(--radius);padding:20px 24px;margin-bottom:32px;
   display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;
 }
 .ld-banner-unverified{background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.3);}
-.ld-banner-pending{background:rgba(96,165,250,0.08);border:1px solid rgba(96,165,250,0.25);}
+.ld-banner-pending{background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.3);}
 .ld-banner-rejected{background:rgba(248,113,113,0.08);border:1px solid rgba(248,113,113,0.25);}
 .ld-banner-verified{background:rgba(74,222,128,0.08);border:1px solid rgba(74,222,128,0.2);}
 
-.ld-banner-text{}
 .ld-banner-title{font-size:0.95rem;font-weight:600;margin:0 0 4px;}
 .ld-banner-body{font-size:0.85rem;color:var(--text-muted);margin:0;line-height:1.5;}
 .ld-banner-unverified .ld-banner-title{color:var(--amber);}
-.ld-banner-pending .ld-banner-title{color:#60a5fa;}
+.ld-banner-pending .ld-banner-title{color:var(--amber);}
 .ld-banner-rejected .ld-banner-title{color:#f87171;}
 .ld-banner-verified .ld-banner-title{color:#4ade80;}
 
 /* Stats */
-.ld-stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:32px;}
+.ld-stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:32px;}
 @media(max-width:768px){.ld-stats-grid{grid-template-columns:repeat(2,1fr);}}
 @media(max-width:400px){.ld-stats-grid{grid-template-columns:1fr;}}
 
@@ -88,17 +87,18 @@
 #toggle-avail-btn:hover{border-color:rgba(245,158,11,0.4);color:var(--amber);}
 #toggle-avail-btn.available{color:#4ade80;border-color:rgba(74,222,128,0.3);}
 
-/* Completeness */
+/* Profile completeness */
 .ld-checklist-card{background:var(--dark-card);border:1px solid var(--border);border-radius:var(--radius);padding:24px;margin-bottom:32px;}
-.ld-checklist-title{font-size:0.67rem;font-weight:600;letter-spacing:0.2em;text-transform:uppercase;color:var(--text-dim);margin:0 0 16px;}
+.ld-checklist-header{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:16px;}
+.ld-checklist-title{font-size:0.67rem;font-weight:600;letter-spacing:0.2em;text-transform:uppercase;color:var(--text-dim);margin:0;}
 .ld-check-item{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);font-size:0.875rem;}
 .ld-check-item:last-child{border-bottom:none;}
-.ld-check-done{color:#4ade80;}
-.ld-check-missing{color:var(--text-dim);}
+.ld-check-done{color:#4ade80;font-size:0.9rem;}
+.ld-check-missing{color:var(--text-dim);font-size:0.9rem;}
 .ld-check-text-done{color:var(--white);}
 .ld-check-text-missing{color:var(--text-muted);}
 
-/* Sections */
+/* Section headings */
 .ld-section-title{font-size:0.67rem;font-weight:600;letter-spacing:0.2em;text-transform:uppercase;color:var(--text-dim);margin:0 0 16px;}
 
 /* Bookings table */
@@ -147,78 +147,53 @@
       </div>
       <div class="ld-actions">
         <a href="{{ url_for('lawyers.edit_profile') }}" class="ld-btn-outline">Edit profile</a>
+        {% if profile.verification_status == 'verified' %}
         <a href="{{ url_for('lawyers.profile', lawyer_profile_id=profile.id) }}" class="ld-btn-amber">View public profile &#8599;</a>
+        {% endif %}
       </div>
     </div>
 
-    <!-- Verification status banner -->
-    {% if profile.verification_status == 'unverified' %}
+    <!-- Status banner -->
+    {% if profile.verification_status == 'pending_review' %}
+    <div class="ld-banner ld-banner-pending sr">
+      <div>
+        <p class="ld-banner-title">Your profile is under review</p>
+        <p class="ld-banner-body">We will notify you by email once approved.</p>
+      </div>
+    </div>
+    {% elif profile.verification_status == 'rejected' %}
+    <div class="ld-banner ld-banner-rejected sr">
+      <div>
+        <p class="ld-banner-title">Verification rejected</p>
+        <p class="ld-banner-body">{{ profile.rejection_reason or 'Please update your profile and resubmit.' }}</p>
+      </div>
+      <a href="{{ url_for('lawyers.edit_profile') }}" class="ld-btn-amber" style="flex-shrink:0;">Update profile</a>
+    </div>
+    {% elif profile.verification_status == 'verified' %}
+    <div class="ld-banner ld-banner-verified sr">
+      <div>
+        <p class="ld-banner-title">&#10003; Your profile is live and visible to clients</p>
+        <p class="ld-banner-body">Verified{% if profile.verified_at %} on {{ profile.verified_at.strftime('%d %b %Y') }}{% endif %}.</p>
+      </div>
+    </div>
+    {% else %}
     <div class="ld-banner ld-banner-unverified sr">
-      <div class="ld-banner-text">
+      <div>
         <p class="ld-banner-title">Profile not yet submitted for review</p>
         <p class="ld-banner-body">Complete your profile and our team will verify your credentials. Verified profiles appear in the marketplace.</p>
       </div>
       <a href="{{ url_for('lawyers.edit_profile') }}" class="ld-btn-amber" style="flex-shrink:0;">Complete profile</a>
     </div>
-    {% elif profile.verification_status == 'pending_review' %}
-    <div class="ld-banner ld-banner-pending sr">
-      <div class="ld-banner-text">
-        <p class="ld-banner-title">Under review</p>
-        <p class="ld-banner-body">Your profile is being reviewed by our team. This typically takes 1–2 business days.</p>
-      </div>
-    </div>
-    {% elif profile.verification_status == 'rejected' %}
-    <div class="ld-banner ld-banner-rejected sr">
-      <div class="ld-banner-text">
-        <p class="ld-banner-title">Verification rejected</p>
-        <p class="ld-banner-body">
-          {% if profile.rejection_reason %}{{ profile.rejection_reason }}{% else %}Please update your profile and resubmit.{% endif %}
-        </p>
-      </div>
-      <a href="{{ url_for('lawyers.edit_profile') }}" class="ld-btn-amber" style="flex-shrink:0;">Update profile</a>
-    </div>
-    {% else %}
-    <div class="ld-banner ld-banner-verified sr">
-      <div class="ld-banner-text">
-        <p class="ld-banner-title">&#10003; Verified — live on marketplace</p>
-        <p class="ld-banner-body">Your profile is visible to clients. Verified {% if profile.verified_at %}on {{ profile.verified_at.strftime('%d %b %Y') }}{% endif %}.</p>
-      </div>
-    </div>
     {% endif %}
 
-    <!-- Stats -->
-    <div class="ld-stats-grid sr">
-      <div class="ld-stat-card">
-        <div class="ld-stat-label">Profile views</div>
-        <div class="ld-stat-value">{{ profile.profile_views }}</div>
-      </div>
-      <div class="ld-stat-card">
-        <div class="ld-stat-label">Total unlocks</div>
-        <div class="ld-stat-value">{{ profile.total_unlocks }}</div>
-      </div>
-      <div class="ld-stat-card">
-        <div class="ld-stat-label">Rating</div>
-        <div class="ld-stat-value">
-          {% if profile.average_rating %}
-          {{ "%.1f"|format(profile.average_rating) }} <span>/ 5 ({{ profile.total_reviews }})</span>
-          {% else %}
-          — <span>no reviews yet</span>
-          {% endif %}
-        </div>
-      </div>
-      <div class="ld-stat-card">
-        <div class="ld-stat-label">Completed</div>
-        <div class="ld-stat-value">{{ profile.total_completed_bookings }} <span>engagements</span></div>
-      </div>
-    </div>
-
-    <!-- Availability toggle -->
+    <!-- Availability toggle — verified only -->
+    {% if profile.verification_status == 'verified' %}
     <div class="ld-avail-row sr">
       <div>
-        <div class="ld-avail-label">Availability</div>
+        <div class="ld-avail-label">Available for new clients</div>
         <div class="ld-avail-sub">
-          {% if profile.is_available %}You are currently shown as available for new clients.
-          {% else %}You are currently shown as not taking new clients.{% endif %}
+          {% if profile.is_available %}Your profile is visible in the directory.
+          {% else %}Your profile is hidden from the directory.{% endif %}
         </div>
       </div>
       <button id="toggle-avail-btn"
@@ -228,29 +203,84 @@
         {% if profile.is_available %}&#9679; Available{% else %}&#9675; Unavailable{% endif %}
       </button>
     </div>
+    {% endif %}
 
-    <!-- Profile completeness checklist -->
-    {% set missing_items = [] %}
-    {% if not profile.bio %}{% set _ = missing_items.append('Bio') %}{% endif %}
-    {% if not profile.phone and not profile.whatsapp and not profile.contact_email %}{% set _ = missing_items.append('At least one contact method') %}{% endif %}
-    {% if not profile.specialisations %}{% set _ = missing_items.append('Practice areas') %}{% endif %}
-    {% if not profile.years_experience %}{% set _ = missing_items.append('Years of experience') %}{% endif %}
-    {% if not profile.languages %}{% set _ = missing_items.append('Languages') %}{% endif %}
-
-    {% if missing_items %}
-    <div class="ld-checklist-card sr">
-      <div class="ld-checklist-title">Profile completeness — {{ missing_items | length }} item{% if missing_items | length != 1 %}s{% endif %} missing</div>
-      {% for item in missing_items %}
-      <div class="ld-check-item">
-        <span class="ld-check-missing">&#9675;</span>
-        <span class="ld-check-text-missing">{{ item }}</span>
-        <a href="{{ url_for('lawyers.edit_profile') }}" style="margin-left:auto;font-size:0.78rem;color:var(--amber);text-decoration:none;">Add &#8594;</a>
+    <!-- Stats row — verified only -->
+    {% if profile.verification_status == 'verified' %}
+    <div class="ld-stats-grid sr">
+      <div class="ld-stat-card">
+        <div class="ld-stat-label">Contact unlocks</div>
+        <div class="ld-stat-value">{{ profile.total_unlocks }}</div>
       </div>
-      {% endfor %}
+      <div class="ld-stat-card">
+        <div class="ld-stat-label">Average rating</div>
+        <div class="ld-stat-value">
+          {% if profile.average_rating %}
+          {{ "%.1f"|format(profile.average_rating) }} <span>/ 5</span>
+          {% else %}
+          — <span>no reviews</span>
+          {% endif %}
+        </div>
+      </div>
+      <div class="ld-stat-card">
+        <div class="ld-stat-label">Total reviews</div>
+        <div class="ld-stat-value">{{ profile.total_reviews }}</div>
+      </div>
     </div>
     {% endif %}
 
-    <!-- Recent bookings -->
+    <!-- Profile completeness — always visible -->
+    <div class="ld-checklist-card sr">
+      <div class="ld-checklist-header">
+        <div class="ld-checklist-title">Profile completeness</div>
+        <a href="{{ url_for('lawyers.edit_profile') }}" class="ld-btn-outline" style="padding:7px 16px;font-size:0.78rem;">Edit My Profile</a>
+      </div>
+      <div class="ld-check-item">
+        {% if profile.photo_path %}
+        <span class="ld-check-done">&#10003;</span><span class="ld-check-text-done">Photo</span>
+        {% else %}
+        <span class="ld-check-missing">&#9675;</span><span class="ld-check-text-missing">Photo</span>
+        {% endif %}
+      </div>
+      <div class="ld-check-item">
+        {% if profile.bio %}
+        <span class="ld-check-done">&#10003;</span><span class="ld-check-text-done">Bio</span>
+        {% else %}
+        <span class="ld-check-missing">&#9675;</span><span class="ld-check-text-missing">Bio</span>
+        {% endif %}
+      </div>
+      <div class="ld-check-item">
+        {% if profile.languages %}
+        <span class="ld-check-done">&#10003;</span><span class="ld-check-text-done">Languages</span>
+        {% else %}
+        <span class="ld-check-missing">&#9675;</span><span class="ld-check-text-missing">Languages</span>
+        {% endif %}
+      </div>
+      <div class="ld-check-item">
+        {% if profile.specialisations %}
+        <span class="ld-check-done">&#10003;</span><span class="ld-check-text-done">Practice areas</span>
+        {% else %}
+        <span class="ld-check-missing">&#9675;</span><span class="ld-check-text-missing">Practice areas</span>
+        {% endif %}
+      </div>
+      <div class="ld-check-item">
+        {% if profile.years_experience %}
+        <span class="ld-check-done">&#10003;</span><span class="ld-check-text-done">Years of experience</span>
+        {% else %}
+        <span class="ld-check-missing">&#9675;</span><span class="ld-check-text-missing">Years of experience</span>
+        {% endif %}
+      </div>
+      <div class="ld-check-item">
+        {% if profile.whatsapp %}
+        <span class="ld-check-done">&#10003;</span><span class="ld-check-text-done">WhatsApp number</span>
+        {% else %}
+        <span class="ld-check-missing">&#9675;</span><span class="ld-check-text-missing">WhatsApp number</span>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Recent bookings — verified only -->
+    {% if profile.verification_status == 'verified' %}
     <div class="sr">
       <div class="ld-section-title">Recent client unlocks</div>
       {% if bookings %}
@@ -258,9 +288,9 @@
         <table class="ld-table">
           <thead>
             <tr>
+              <th>Client</th>
               <th>Date</th>
               <th>Status</th>
-              <th>Source</th>
               <th>Contact method</th>
               <th>Client note</th>
               <th>Actions</th>
@@ -269,6 +299,7 @@
           <tbody>
             {% for b in bookings %}
             <tr id="booking-row-{{ b.id }}">
+              <td style="color:var(--text-muted);">Client #{{ b.client_id }}</td>
               <td style="color:var(--text-muted);white-space:nowrap;">{{ b.created_at.strftime('%d %b %Y') }}</td>
               <td>
                 <span class="ld-status-badge
@@ -280,28 +311,23 @@
                   {{ b.status | replace('_', ' ') }}
                 </span>
               </td>
-              <td style="color:var(--text-muted);">
-                {% if b.source_category_slug %}{{ b.source_category_slug | replace('_', ' ') | title }}{% else %}—{% endif %}
-              </td>
               <td style="color:var(--text-muted);">{{ b.contact_method_chosen or '—' }}</td>
-              <td style="color:var(--text-muted);max-width:220px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
+              <td style="color:var(--text-muted);max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
                 {{ b.client_note or '—' }}
               </td>
               <td style="white-space:nowrap;" id="booking-actions-{{ b.id }}">
                 {% if b.status == 'contact_unlocked' %}
                   {% if not b.lawyer_responded_at %}
                   <button
-                    class="ld-booking-btn"
                     onclick="bookingRespond({{ b.id }})"
                     id="btn-respond-{{ b.id }}"
                     style="background:transparent;border:1px solid rgba(245,158,11,0.35);border-radius:6px;padding:4px 10px;font-size:0.75rem;font-weight:500;color:var(--amber);cursor:pointer;margin-right:4px;">
                     Responded
                   </button>
                   {% else %}
-                  <span style="font-size:0.75rem;color:#4ade80;">Responded &#10003;</span>
+                  <span style="font-size:0.75rem;color:#4ade80;margin-right:4px;">Responded &#10003;</span>
                   {% endif %}
                   <button
-                    class="ld-booking-btn"
                     onclick="bookingComplete({{ b.id }})"
                     id="btn-complete-{{ b.id }}"
                     style="background:transparent;border:1px solid rgba(74,222,128,0.3);border-radius:6px;padding:4px 10px;font-size:0.75rem;font-weight:500;color:#4ade80;cursor:pointer;">
@@ -318,28 +344,33 @@
       </div>
       {% else %}
       <div class="ld-empty" style="background:var(--dark-card);border:1px dashed var(--border);border-radius:var(--radius);">
-        No client unlocks yet. Once your profile is verified and live, clients will appear here.
+        No client unlocks yet. Once your profile is live, clients will appear here.
       </div>
       {% endif %}
     </div>
 
-    <!-- Recent reviews -->
-    {% if recent_reviews %}
+    <!-- Reviews — verified only -->
     <div class="sr" style="margin-top:40px;">
-      <div class="ld-section-title">Recent reviews</div>
-      {% for review in recent_reviews %}
-      <div class="ld-review-item">
-        <div style="display:flex;align-items:center;justify-content:space-between;">
-          <span class="ld-review-stars">
-            {% for i in range(review.rating) %}&#9733;{% endfor %}{% for i in range(5 - review.rating) %}&#9734;{% endfor %}
-          </span>
-          <span style="font-size:0.75rem;color:var(--text-dim);">{{ review.created_at.strftime('%d %b %Y') }}</span>
+      <div class="ld-section-title">Reviews</div>
+      {% if recent_reviews %}
+        {% for review in recent_reviews %}
+        <div class="ld-review-item">
+          <div style="display:flex;align-items:center;justify-content:space-between;">
+            <span class="ld-review-stars">
+              {% for i in range(review.rating) %}&#9733;{% endfor %}{% for i in range(5 - review.rating) %}&#9734;{% endfor %}
+            </span>
+            <span style="font-size:0.75rem;color:var(--text-dim);">{{ review.created_at.strftime('%d %b %Y') }}</span>
+          </div>
+          {% if review.comment %}
+          <p class="ld-review-comment">{{ review.comment }}</p>
+          {% endif %}
         </div>
-        {% if review.comment %}
-        <p class="ld-review-comment">{{ review.comment }}</p>
-        {% endif %}
+        {% endfor %}
+      {% else %}
+      <div class="ld-empty" style="background:var(--dark-card);border:1px dashed var(--border);border-radius:var(--radius);">
+        No reviews yet. Reviews appear after clients mark sessions as completed.
       </div>
-      {% endfor %}
+      {% endif %}
     </div>
     {% endif %}
 
@@ -366,8 +397,8 @@
       btn.textContent = avail ? '\u25CF Available' : '\u25CB Unavailable';
       btn.className   = avail ? 'available' : '';
       document.querySelector('.ld-avail-sub').textContent = avail
-        ? 'You are currently shown as available for new clients.'
-        : 'You are currently shown as not taking new clients.';
+        ? 'Your profile is visible in the directory.'
+        : 'Your profile is hidden from the directory.';
     })
     .catch(function(){ btn.disabled = false; });
   });
