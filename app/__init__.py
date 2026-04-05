@@ -89,6 +89,12 @@ def create_app(env=None):
         response.headers.remove('Server')
         response.headers.remove('X-Powered-By')
 
+        # Prevent browsers from caching HTML responses
+        if 'text/html' in response.content_type:
+            response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
+            response.headers['Pragma']        = 'no-cache'
+            response.headers['Expires']       = '0'
+
         # Log all 4xx and 5xx responses
         status = response.status_code
         if status >= 400:
