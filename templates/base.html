@@ -18,6 +18,10 @@
     <div class="nav-links">
       <a href="{{ url_for('core.dashboard') }}" class="{% if request.endpoint == 'core.dashboard' %}active{% endif %}">Dashboard</a>
       <a href="{{ url_for('core.history') }}">History</a>
+      <a href="{{ url_for('lawyers.browse') }}" class="{% if request.blueprint == 'lawyers' and request.endpoint == 'lawyers.browse' %}active{% endif %}">Find a Lawyer</a>
+      {% if current_user.role == 'lawyer' or current_user.lawyer_profile %}
+      <a href="{{ url_for('lawyers.dashboard') }}" class="{% if request.endpoint == 'lawyers.dashboard' %}active{% endif %}">My Lawyer Profile</a>
+      {% endif %}
       <a href="{{ url_for('core.credits') }}">
         <span class="credit-chip">{{ current_user.available_credits }} credits</span>
       </a>

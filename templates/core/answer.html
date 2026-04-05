@@ -635,12 +635,12 @@
     {% endif %}
 
     {% if lawyer_count > 0 %}
-    <div style="margin-top:2rem; padding:1.5rem; border:1px solid rgba(255,255,255,0.08); border-radius:12px; background:rgba(255,255,255,0.02);">
-      <p style="margin:0 0 0.25rem; font-weight:600; font-size:0.95rem;">Need to speak to a real lawyer?</p>
-      <p style="margin:0 0 1rem; font-size:0.85rem; opacity:0.6;">This answer gives you the legal position — but if your situation is complex, a qualified UAE lawyer can advise you personally.</p>
+    <div class="answer-section" style="text-align:center;">
+      <p style="margin:0 0 0.25rem; font-weight:600; font-size:0.95rem; color:var(--white);">Need to speak to a real lawyer?</p>
+      <p style="margin:0 0 1.25rem; font-size:0.85rem; color:var(--muted); line-height:1.6;">This answer gives you the legal position. If your situation is complex, a verified UAE lawyer can advise you personally.</p>
       <a href="{{ url_for('lawyers.browse') }}{% if specialisation_hint %}?specialisation={{ specialisation_hint }}{% endif %}"
-         style="display:inline-block; padding:0.5rem 1.25rem; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.12); border-radius:8px; font-size:0.85rem; text-decoration:none; color:inherit;">
-        Browse Lawyers →
+         class="btn-ans-primary">
+        Find a Lawyer &#8594;
       </a>
     </div>
     {% endif %}

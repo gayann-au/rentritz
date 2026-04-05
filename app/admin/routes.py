@@ -1020,6 +1020,7 @@ def verify_lawyer(profile_id):
     profile = LawyerProfile.query.get_or_404(profile_id)
 
     profile.verification_status  = 'verified'
+    profile.is_active            = True
     profile.verified_at          = datetime.utcnow()
     profile.verified_by_admin_id = current_user.id
     profile.rejection_reason     = None

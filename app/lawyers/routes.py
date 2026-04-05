@@ -1,9 +1,12 @@
 from datetime import datetime
+import os
+
 from flask import (
-    Blueprint, abort, flash, jsonify, redirect, render_template,
+    Blueprint, abort, current_app, flash, jsonify, redirect, render_template,
     request, url_for,
 )
 from flask_login import current_user, login_required
+from flask_mail import Message
 from sqlalchemy import text
 
 from app.models import (
@@ -11,7 +14,7 @@ from app.models import (
     LawyerSpecialisation, db,
 )
 from app.lawyers.forms import LawyerProfileForm
-from app import storage as _storage
+from app import mail, storage as _storage
 
 lawyers_bp = Blueprint('lawyers', __name__, url_prefix='/lawyers')
 
@@ -294,7 +297,7 @@ def register():
             notable_cases=form.notable_cases.data or None,
             linkedin_url=form.linkedin_url.data or None,
             website_url=form.website_url.data or None,
-            verification_status='unverified',
+            verification_status='pending_review',
         )
         db.session.add(profile)
         db.session.flush()
@@ -306,6 +309,32 @@ def register():
             profile.specialisations = specs
 
         db.session.commit()
+
+        # Notify admin of new lawyer registration
+        admin_email = current_app.config.get('ADMIN_EMAIL') or os.environ.get('ADMIN_EMAIL', '')
+        if admin_email:
+            try:
+                spec_names = ', '.join(s.name for s in profile.specialisations) or 'None selected'
+                profile_url = url_for('admin.lawyer_detail', profile_id=profile.id, _external=True)
+                msg = Message(
+                    subject=f'New lawyer registration pending review - {current_user.full_name}',
+                    recipients=[admin_email],
+                    html=(
+                        f'<p>A new lawyer has registered on Rentritz and requires review.</p>'
+                        f'<ul>'
+                        f'<li><strong>Name:</strong> {current_user.full_name}</li>'
+                        f'<li><strong>Email:</strong> {current_user.email}</li>'
+                        f'<li><strong>Bar number:</strong> {profile.bar_number or "Not provided"}</li>'
+                        f'<li><strong>Issuing authority:</strong> {profile.bar_issuing_authority or "Not provided"}</li>'
+                        f'<li><strong>Specialisations:</strong> {spec_names}</li>'
+                        f'</ul>'
+                        f'<p><a href="{profile_url}">Review profile in admin panel</a></p>'
+                    ),
+                )
+                mail.send(msg)
+            except Exception as e:
+                current_app.logger.error(f'Failed to send admin notification for new lawyer {current_user.email}: {e}')
+
         flash('Profile submitted. Our team will review and verify it shortly.', 'success')
         return redirect(url_for('lawyers.dashboard'))
 
