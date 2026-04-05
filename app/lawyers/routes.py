@@ -356,10 +356,9 @@ def register():
 @lawyers_bp.route('/dashboard')
 @login_required
 def dashboard():
-    if current_user.role != 'lawyer' or not current_user.lawyer_profile:
+    profile = LawyerProfile.query.filter_by(user_id=current_user.id).first()
+    if current_user.role != 'lawyer' or not profile:
         return redirect(url_for('lawyers.register'))
-
-    profile = current_user.lawyer_profile
 
     bookings = LawyerBooking.query.filter_by(
         lawyer_profile_id=profile.id
