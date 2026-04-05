@@ -37,10 +37,13 @@ def _valid_email(email):
 
 
 def _verify_hcaptcha():
-    """Return True if hCaptcha passes, or if hCaptcha is not configured (dev)."""
+    """Return True if hCaptcha passes, or if hCaptcha is not configured, or on localhost."""
     secret = current_app.config.get('HCAPTCHA_SECRET_KEY', '')
     if not secret:
-        return True  # gracefully skip in local development
+        return True  # no captcha configured
+    host = request.host.split(':')[0]
+    if host in ('localhost', '127.0.0.1'):
+        return True  # hCaptcha does not validate localhost — skip in local dev
     token = request.form.get('h-captcha-response', '')
     if not token:
         return False
