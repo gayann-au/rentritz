@@ -49,6 +49,10 @@ def _populate_specialisation_choices(form):
 
 @lawyers_bp.route('/')
 def browse():
+    if not current_user.is_authenticated:
+        flash('Please log in to find and connect with lawyers.', 'info')
+        return redirect(url_for('auth.login'))
+
     spec_slug = request.args.get('specialisation', '').strip()
     language  = request.args.get('language', '').strip()
     search    = request.args.get('search', '').strip()
@@ -111,6 +115,10 @@ def browse():
 
 @lawyers_bp.route('/<int:lawyer_profile_id>')
 def profile(lawyer_profile_id):
+    if not current_user.is_authenticated:
+        flash('Please log in to find and connect with lawyers.', 'info')
+        return redirect(url_for('auth.login'))
+
     lawyer = LawyerProfile.query.filter_by(
         id=lawyer_profile_id, is_active=True
     ).first_or_404()
