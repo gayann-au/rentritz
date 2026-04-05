@@ -62,7 +62,10 @@ def index():
 @login_required
 def dashboard():
     if current_user.role == 'lawyer':
-        return redirect(url_for('lawyers.dashboard'))
+        response = redirect(url_for('lawyers.dashboard'), 303)
+        response.headers['Cache-Control'] = 'no-store, no-cache, must-revalidate, max-age=0'
+        response.headers['Pragma'] = 'no-cache'
+        return response
     categories = Category.query.filter_by(is_active=True).order_by(Category.order).all()
     visible    = [c for c in categories if c.for_role in ('both', current_user.role)]
     recent     = Question.query.filter_by(user_id=current_user.id)\

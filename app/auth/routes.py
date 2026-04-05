@@ -240,7 +240,9 @@ def login():
         if next_page:
             return redirect(next_page)
         if user.role == 'lawyer':
-            return redirect(url_for('lawyers.dashboard'))
+            response = redirect(url_for('lawyers.dashboard'), 303)
+            response.headers['Cache-Control'] = 'no-store'
+            return response
         return redirect(url_for('core.dashboard'))
 
     return render_template('auth/login.html')
