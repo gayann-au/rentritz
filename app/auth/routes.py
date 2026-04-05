@@ -170,6 +170,8 @@ def register():
 @limiter.limit("5 per minute; 20 per hour", methods=["POST"])
 def login():
     if current_user.is_authenticated:
+        if current_user.role == 'lawyer':
+            return redirect(url_for('lawyers.dashboard'))
         return redirect(url_for('core.dashboard'))
 
     if request.method == 'POST':
@@ -235,7 +237,11 @@ def login():
             parsed = urlparse(next_page)
             if parsed.netloc or parsed.scheme or next_page.startswith('//'):
                 next_page = None
-        return redirect(next_page or url_for('core.dashboard'))
+        if next_page:
+            return redirect(next_page)
+        if user.role == 'lawyer':
+            return redirect(url_for('lawyers.dashboard'))
+        return redirect(url_for('core.dashboard'))
 
     return render_template('auth/login.html')
 
