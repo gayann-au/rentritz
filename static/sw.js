@@ -1,9 +1,6 @@
-const CACHE = 'rentritz-v2';
-const OFFLINE = '/offline';
+const CACHE = 'rentritz-v3';
 
 const PRECACHE = [
-  '/',
-  '/dashboard',
   '/static/css/main.css',
   '/static/js/main.js',
 ];
@@ -24,13 +21,27 @@ self.addEventListener('activate', e => {
 
 self.addEventListener('fetch', e => {
   if (e.request.method !== 'GET') return;
-  e.respondWith(
-    fetch(e.request)
-      .then(resp => {
-        const clone = resp.clone();
-        caches.open(CACHE).then(c => c.put(e.request, clone));
-        return resp;
+
+  const url = new URL(e.request.url);
+  const isStaticAsset = url.pathname.includes('/static/');
+  const isHtmlRoute = e.request.mode === 'navigate' || !url.pathname.includes('.');
+
+  if (isHtmlRoute) {
+    // Never cache HTML/navigation — always go to network
+    return;
+  }
+
+  if (isStaticAsset) {
+    // Cache-first for static assets
+    e.respondWith(
+      caches.match(e.request).then(cached => {
+        if (cached) return cached;
+        return fetch(e.request).then(resp => {
+          const clone = resp.clone();
+          caches.open(CACHE).then(c => c.put(e.request, clone));
+          return resp;
+        });
       })
-      .catch(() => caches.match(e.request))
-  );
+    );
+  }
 });
