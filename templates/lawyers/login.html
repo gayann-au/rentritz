@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% block title %}Sign In | Rentritz Dubai{% endblock %}
+{% block title %}Lawyer Portal | Rentritz Dubai{% endblock %}
 {% block body_class %}auth-page{% endblock %}
 
 {% block content %}
@@ -13,16 +13,23 @@
 }
 .pw-toggle:hover { color: #f59e0b; }
 .pw-toggle svg { display: block; }
+.auth-portal-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 0.7rem; font-weight: 600; letter-spacing: 0.15em; text-transform: uppercase;
+    color: #f59e0b; background: rgba(245,158,11,0.1); border: 1px solid rgba(245,158,11,0.25);
+    border-radius: 6px; padding: 4px 10px; margin-bottom: 16px;
+}
 </style>
 <div class="auth-wrap">
     <div class="auth-card">
         <div class="auth-header">
             <a href="{{ url_for('core.index') }}" class="auth-logo">Rentritz <span>Dubai</span></a>
-            <h1>Welcome back</h1>
-            <p>Sign in to access your consultations</p>
+            <div class="auth-portal-badge">&#9670; Lawyer Portal</div>
+            <h1>Lawyer Portal</h1>
+            <p>Sign in to manage your profile and client bookings</p>
         </div>
 
-        <form method="POST" action="{{ url_for('auth.login') }}" novalidate>
+        <form method="POST" action="{{ url_for('lawyers.login') }}" novalidate>
             <input type="hidden" name="csrf_token" value="{{ csrf_token() if csrf_token is defined else '' }}">
 
             <div class="form-group">
@@ -42,45 +49,21 @@
                 </div>
             </div>
 
-            <div class="form-row-split">
-                <label class="checkbox-label">
-                    <input type="checkbox" name="remember"> Keep me signed in
-                </label>
-                <a href="{{ url_for('auth.forgot_password') }}" class="forgot-link">Forgot password?</a>
-            </div>
-
-            {% if hcaptcha_site_key %}
-            <div class="h-captcha" data-sitekey="{{ hcaptcha_site_key }}" style="margin-bottom:16px"></div>
-            {% endif %}
-            <button type="submit" class="btn btn-primary btn-full">Sign in</button>
+            <button type="submit" class="btn btn-primary btn-full">Sign in to portal</button>
         </form>
 
         <div class="auth-footer">
-            Don't have an account? <a href="{{ url_for('auth.register') }}">Create one free</a>
+            Not registered yet? <a href="{{ url_for('lawyers.register') }}">Apply to join</a>
         </div>
 
         <div class="auth-footer" style="margin-top:12px; border-top:1px solid rgba(255,255,255,0.06); padding-top:16px; font-size:0.8rem; color:#555;">
-            Are you a lawyer? <a href="{{ url_for('lawyers.login') }}">Sign in to the lawyer portal</a>
+            Are you a client? <a href="{{ url_for('auth.login') }}">Sign in here</a>
         </div>
-
-        {% if unverified_email %}
-        <div class="auth-footer" style="margin-top:12px; border-top:1px solid rgba(255,255,255,0.06); padding-top:16px;">
-            Didn't receive a verification email?
-            <form method="POST" action="{{ url_for('auth.resend_verification') }}" style="display:inline" novalidate>
-                <input type="hidden" name="csrf_token" value="{{ csrf_token() if csrf_token is defined else '' }}">
-                <input type="hidden" name="email" value="{{ unverified_email }}">
-                <button type="submit" class="forgot-link" style="background:none;border:none;cursor:pointer;padding:0;font-size:inherit;">Resend verification email</button>
-            </form>
-        </div>
-        {% endif %}
     </div>
 </div>
 {% endblock %}
 
 {% block scripts %}
-{% if hcaptcha_site_key %}
-<script src="https://js.hcaptcha.com/1/api.js" async defer></script>
-{% endif %}
 <script>
 document.querySelectorAll('.pw-toggle').forEach(function(btn) {
     btn.addEventListener('click', function() {

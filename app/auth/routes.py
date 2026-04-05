@@ -190,6 +190,13 @@ def login():
 
         user = User.query.filter_by(email=email).first()
 
+        if user and user.role == 'lawyer':
+            flash(
+                'Lawyers please sign in at the <a href="/lawyers/login">lawyer portal</a>.',
+                'error'
+            )
+            return render_template('auth/login.html')
+
         # Check lockout — failed_login_lockout is the "locked until" timestamp
         if user and user.role != 'admin':
             now = datetime.utcnow()

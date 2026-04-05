@@ -1,20 +1,20 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 import os
 
 from flask import (
     Blueprint, abort, current_app, flash, jsonify, redirect, render_template,
     request, url_for,
 )
-from flask_login import current_user, login_required
+from flask_login import current_user, login_required, login_user
 from flask_mail import Message
 from sqlalchemy import text
 
 from app.models import (
     CreditLog, LawyerBooking, LawyerProfile, LawyerReview,
-    LawyerSpecialisation, db,
+    LawyerSpecialisation, User, db,
 )
 from app.lawyers.forms import LawyerProfileForm
-from app import mail, storage as _storage
+from app import mail, storage as _storage, limiter
 
 lawyers_bp = Blueprint('lawyers', __name__, url_prefix='/lawyers')
 
@@ -41,6 +41,80 @@ def _populate_specialisation_choices(form):
     ).all()
     form.specialisation_ids.choices = [(s.id, s.name) for s in specs]
     return specs
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# ROUTE 0 — Lawyer login
+# ─────────────────────────────────────────────────────────────────────────────
+
+_COOLDOWN_THRESHOLD = 3
+_LOCKOUT_THRESHOLD  = 5
+_EXTENDED_THRESHOLD = 10
+_COOLDOWN_DURATION  = timedelta(seconds=30)
+_LOCKOUT_DURATION   = timedelta(minutes=15)
+_EXTENDED_DURATION  = timedelta(hours=1)
+
+
+@lawyers_bp.route('/login', methods=['GET', 'POST'])
+@limiter.limit("5 per minute; 20 per hour", methods=["POST"])
+def login():
+    if current_user.is_authenticated:
+        if current_user.role == 'lawyer':
+            return redirect(url_for('lawyers.dashboard'))
+        return redirect(url_for('core.dashboard'))
+
+    if request.method == 'POST':
+        email    = request.form.get('email', '').strip().lower()
+        password = request.form.get('password', '')
+
+        user = User.query.filter_by(email=email).first()
+
+        if user and user.role in ('tenant', 'landlord'):
+            flash('This login is for lawyers only. Please use the client login page.', 'error')
+            return render_template('lawyers/login.html')
+
+        if user and user.role != 'lawyer':
+            flash('Incorrect email or password.', 'error')
+            return render_template('lawyers/login.html')
+
+        # Lockout check
+        if user:
+            now = datetime.utcnow()
+            if user.failed_login_lockout and now < user.failed_login_lockout:
+                flash('Incorrect email or password.', 'error')
+                return render_template('lawyers/login.html')
+
+        if not user or not user.check_password(password):
+            if user:
+                user.failed_login_count += 1
+                count = user.failed_login_count
+                now   = datetime.utcnow()
+                if count >= _EXTENDED_THRESHOLD:
+                    user.failed_login_lockout = now + _EXTENDED_DURATION
+                elif count >= _LOCKOUT_THRESHOLD:
+                    user.failed_login_lockout = now + _LOCKOUT_DURATION
+                elif count >= _COOLDOWN_THRESHOLD:
+                    user.failed_login_lockout = now + _COOLDOWN_DURATION
+                db.session.commit()
+            flash('Incorrect email or password.', 'error')
+            return render_template('lawyers/login.html')
+
+        if not user.is_active:
+            flash('Your account has been deactivated. Please contact support.', 'error')
+            return render_template('lawyers/login.html')
+
+        if not user.is_verified:
+            flash('Please verify your email before logging in.', 'error')
+            return render_template('lawyers/login.html')
+
+        user.failed_login_count   = 0
+        user.failed_login_lockout = None
+        user.last_login           = datetime.utcnow()
+        db.session.commit()
+        login_user(user)
+        return redirect(url_for('lawyers.dashboard'))
+
+    return render_template('lawyers/login.html')
 
 
 # ─────────────────────────────────────────────────────────────────────────────
