@@ -44,6 +44,7 @@ def create_app(env=None):
         static_folder   = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'static'))
     app.config.from_object(config.get(env, config['production']))
     app.config['TEMPLATES_AUTO_RELOAD'] = (env == 'development')
+    app.config['PROPAGATE_EXCEPTIONS'] = (env == 'development')
 
     # ── hCaptcha ─────────────────────────────────────────────────────────────
     app.config['HCAPTCHA_SECRET_KEY'] = os.environ.get('HCAPTCHA_SECRET_KEY', '').strip()

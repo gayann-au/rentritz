@@ -318,107 +318,130 @@ def unlock_contact(lawyer_profile_id):
 # ─────────────────────────────────────────────────────────────────────────────
 
 @lawyers_bp.route('/register', methods=['GET', 'POST'])
-@login_required
 def register():
-    if current_user.lawyer_profile:
+    # ── Role guards (no @login_required so we control the redirect destination) ──
+    if not current_user.is_authenticated:
+        flash('Please sign in to your lawyer account first.', 'info')
+        return redirect(url_for('lawyers.login'))
+
+    if current_user.role in ('tenant', 'landlord', 'client'):
+        flash('The lawyer portal is for legal professionals only.', 'error')
+        return redirect(url_for('core.dashboard'))
+
+    if current_user.role == 'lawyer' and current_user.lawyer_profile:
         return redirect(url_for('lawyers.dashboard'))
 
+    # Only lawyers without an existing profile reach here
     form = LawyerProfileForm()
     _populate_specialisation_choices(form)
 
     if form.validate_on_submit():
-        photo_path   = None
-        licence_path = None
+        try:
+            photo_path   = None
+            licence_path = None
 
-        photo_file = request.files.get('photo')
-        if photo_file and photo_file.filename:
-            try:
-                photo_path = _storage.save_lawyer_photo(photo_file, current_user.id)
-            except ValueError as e:
-                flash(str(e), 'error')
-                return render_template('lawyers/register.html', form=form)
+            photo_file = request.files.get('photo')
+            if photo_file and photo_file.filename:
+                try:
+                    photo_path = _storage.save_lawyer_photo(photo_file, current_user.id)
+                except (ValueError, OSError) as e:
+                    current_app.logger.error('Photo upload failed for user %s: %s', current_user.id, e)
+                    flash('Could not save photo. Please try again.', 'error')
+                    return render_template('lawyers/register.html', form=form)
 
-        licence_file = request.files.get('licence_pdf')
-        if licence_file and licence_file.filename:
-            try:
-                licence_path = _storage.save_lawyer_licence(licence_file, current_user.id)
-            except ValueError as e:
-                flash(str(e), 'error')
-                return render_template('lawyers/register.html', form=form)
+            licence_file = request.files.get('licence_pdf')
+            if licence_file and licence_file.filename:
+                try:
+                    licence_path = _storage.save_lawyer_licence(licence_file, current_user.id)
+                except (ValueError, OSError) as e:
+                    current_app.logger.error('Licence upload failed for user %s: %s', current_user.id, e)
+                    flash('Could not save licence file. Please try again.', 'error')
+                    return render_template('lawyers/register.html', form=form)
 
-        current_user.role = 'lawyer'
+            current_user.role = 'lawyer'
 
-        profile = LawyerProfile(
-            user_id=current_user.id,
-            display_name=form.display_name.data or None,
-            bar_number=form.bar_number.data or None,
-            bar_issuing_authority=form.bar_issuing_authority.data or None,
-            photo_path=photo_path,
-            licence_pdf_path=licence_path,
-            bio=form.bio.data,
-            years_experience=form.years_experience.data,
-            firm_name=form.firm_name.data or None,
-            firm_website=form.firm_website.data or None,
-            languages=_split_csv(form.languages.data),
-            courts_practiced_in=_split_csv(form.courts_practiced_in.data),
-            jurisdictions=_split_csv(form.jurisdictions.data),
-            consultation_modes=form.consultation_modes.data or None,
-            typical_response_hours=form.typical_response_hours.data,
-            offers_free_first_consultation=form.offers_free_first_consultation.data,
-            free_consultation_minutes=form.free_consultation_minutes.data,
-            hourly_rate_aed=form.hourly_rate_aed.data,
-            initial_consultation_fee_aed=form.initial_consultation_fee_aed.data,
-            fee_on_case_basis=form.fee_on_case_basis.data,
-            pricing_note=form.pricing_note.data or None,
-            phone=form.phone.data or None,
-            whatsapp=form.whatsapp.data or None,
-            contact_email=form.contact_email.data or None,
-            office_address=form.office_address.data or None,
-            office_city=form.office_city.data or 'Dubai',
-            office_country=form.office_country.data or 'UAE',
-            notable_cases=form.notable_cases.data or None,
-            linkedin_url=form.linkedin_url.data or None,
-            website_url=form.website_url.data or None,
-            verification_status='pending_review',
-        )
-        db.session.add(profile)
-        db.session.flush()
+            profile = LawyerProfile(
+                user_id=current_user.id,
+                display_name=form.display_name.data or None,
+                bar_number=form.bar_number.data or None,
+                bar_issuing_authority=form.bar_issuing_authority.data or None,
+                photo_path=photo_path,
+                licence_pdf_path=licence_path,
+                bio=form.bio.data,
+                years_experience=form.years_experience.data,
+                firm_name=form.firm_name.data or None,
+                firm_website=form.firm_website.data or None,
+                languages=_split_csv(form.languages.data),
+                courts_practiced_in=_split_csv(form.courts_practiced_in.data),
+                jurisdictions=_split_csv(form.jurisdictions.data),
+                consultation_modes=form.consultation_modes.data or None,
+                typical_response_hours=form.typical_response_hours.data,
+                offers_free_first_consultation=form.offers_free_first_consultation.data,
+                free_consultation_minutes=form.free_consultation_minutes.data,
+                hourly_rate_aed=form.hourly_rate_aed.data,
+                initial_consultation_fee_aed=form.initial_consultation_fee_aed.data,
+                fee_on_case_basis=form.fee_on_case_basis.data,
+                pricing_note=form.pricing_note.data or None,
+                phone=form.phone.data or None,
+                whatsapp=form.whatsapp.data or None,
+                contact_email=form.contact_email.data or None,
+                office_address=form.office_address.data or None,
+                office_city=form.office_city.data or 'Dubai',
+                office_country=form.office_country.data or 'UAE',
+                notable_cases=form.notable_cases.data or None,
+                linkedin_url=form.linkedin_url.data or None,
+                website_url=form.website_url.data or None,
+                verification_status='pending_review',
+            )
+            db.session.add(profile)
+            db.session.flush()
 
-        if form.specialisation_ids.data:
-            specs = LawyerSpecialisation.query.filter(
-                LawyerSpecialisation.id.in_(form.specialisation_ids.data)
-            ).all()
-            profile.specialisations = specs
+            if form.specialisation_ids.data:
+                specs = LawyerSpecialisation.query.filter(
+                    LawyerSpecialisation.id.in_(form.specialisation_ids.data)
+                ).all()
+                profile.specialisations = specs
 
-        db.session.commit()
+            db.session.commit()
 
-        # Notify admin of new lawyer registration
-        admin_email = current_app.config.get('ADMIN_EMAIL') or os.environ.get('ADMIN_EMAIL', '')
-        if admin_email:
-            try:
-                spec_names = ', '.join(s.name for s in profile.specialisations) or 'None selected'
-                profile_url = url_for('admin.lawyer_detail', profile_id=profile.id, _external=True)
-                msg = Message(
-                    subject=f'New lawyer registration pending review - {current_user.full_name}',
-                    recipients=[admin_email],
-                    html=(
-                        f'<p>A new lawyer has registered on Rentritz and requires review.</p>'
-                        f'<ul>'
-                        f'<li><strong>Name:</strong> {current_user.full_name}</li>'
-                        f'<li><strong>Email:</strong> {current_user.email}</li>'
-                        f'<li><strong>Bar number:</strong> {profile.bar_number or "Not provided"}</li>'
-                        f'<li><strong>Issuing authority:</strong> {profile.bar_issuing_authority or "Not provided"}</li>'
-                        f'<li><strong>Specialisations:</strong> {spec_names}</li>'
-                        f'</ul>'
-                        f'<p><a href="{profile_url}">Review profile in admin panel</a></p>'
-                    ),
-                )
-                mail.send(msg)
-            except Exception as e:
-                current_app.logger.error(f'Failed to send admin notification for new lawyer {current_user.email}: {e}')
+            # Notify admin of new lawyer registration
+            admin_email = current_app.config.get('ADMIN_EMAIL') or os.environ.get('ADMIN_EMAIL', '')
+            if admin_email:
+                try:
+                    spec_names = ', '.join(s.name for s in profile.specialisations) or 'None selected'
+                    profile_url = url_for('admin.lawyer_detail', profile_id=profile.id, _external=True)
+                    msg = Message(
+                        subject=f'New lawyer registration pending review - {current_user.full_name}',
+                        recipients=[admin_email],
+                        html=(
+                            f'<p>A new lawyer has registered on Rentritz and requires review.</p>'
+                            f'<ul>'
+                            f'<li><strong>Name:</strong> {current_user.full_name}</li>'
+                            f'<li><strong>Email:</strong> {current_user.email}</li>'
+                            f'<li><strong>Bar number:</strong> {profile.bar_number or "Not provided"}</li>'
+                            f'<li><strong>Issuing authority:</strong> {profile.bar_issuing_authority or "Not provided"}</li>'
+                            f'<li><strong>Specialisations:</strong> {spec_names}</li>'
+                            f'</ul>'
+                            f'<p><a href="{profile_url}">Review profile in admin panel</a></p>'
+                        ),
+                    )
+                    mail.send(msg)
+                except Exception as e:
+                    current_app.logger.error(
+                        'Failed to send admin notification for new lawyer %s: %s',
+                        current_user.email, e,
+                    )
 
-        flash('Profile submitted. Our team will review and verify it shortly.', 'success')
-        return redirect(url_for('lawyers.dashboard'))
+            flash('Profile submitted. Our team will review and verify it shortly.', 'success')
+            return redirect(url_for('lawyers.dashboard'))
+
+        except Exception as e:
+            db.session.rollback()
+            current_app.logger.error(
+                'Register error for user %s: %s', current_user.id, e, exc_info=True,
+            )
+            flash('Something went wrong saving your profile. Please try again.', 'error')
+            return render_template('lawyers/register.html', form=form)
 
     return render_template('lawyers/register.html', form=form)
 
@@ -483,8 +506,9 @@ def edit_profile():
                 new_path = _storage.save_lawyer_photo(photo_file, current_user.id)
                 _storage.delete_file(profile.photo_path)
                 profile.photo_path = new_path
-            except ValueError as e:
-                flash(str(e), 'error')
+            except (ValueError, OSError) as e:
+                current_app.logger.error('Photo upload failed for user %s: %s', current_user.id, e)
+                flash('Could not save photo. Please try again.', 'error')
                 return render_template('lawyers/edit_profile.html', form=form, profile=profile)
 
         # Handle licence upload
@@ -494,8 +518,9 @@ def edit_profile():
                 new_path = _storage.save_lawyer_licence(licence_file, current_user.id)
                 _storage.delete_file(profile.licence_pdf_path)
                 profile.licence_pdf_path = new_path
-            except ValueError as e:
-                flash(str(e), 'error')
+            except (ValueError, OSError) as e:
+                current_app.logger.error('Licence upload failed for user %s: %s', current_user.id, e)
+                flash('Could not save licence file. Please try again.', 'error')
                 return render_template('lawyers/edit_profile.html', form=form, profile=profile)
 
         profile.display_name          = form.display_name.data or None
