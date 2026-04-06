@@ -193,6 +193,12 @@ def profile(lawyer_profile_id):
         flash('Please log in to find and connect with lawyers.', 'info')
         return redirect(url_for('auth.login'))
 
+    # Lawyers viewing their own profile go to their dashboard, not the public page
+    if current_user.role == 'lawyer':
+        own = LawyerProfile.query.filter_by(user_id=current_user.id).first()
+        if own and own.id == lawyer_profile_id:
+            return redirect(url_for('lawyers.dashboard'))
+
     lawyer = LawyerProfile.query.filter_by(
         id=lawyer_profile_id, is_active=True
     ).first_or_404()

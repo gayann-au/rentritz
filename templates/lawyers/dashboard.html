@@ -158,7 +158,55 @@
     <div class="ld-banner ld-banner-pending sr">
       <div>
         <p class="ld-banner-title">Your profile is under review</p>
-        <p class="ld-banner-body">We will notify you by email once approved.</p>
+        <p class="ld-banner-body">Our team is reviewing your credentials. We will notify you by email once approved, usually within 1–2 business days. You can update your profile at any time while it is being reviewed.</p>
+      </div>
+      <a href="{{ url_for('lawyers.edit_profile') }}" class="ld-btn-outline" style="flex-shrink:0;">Edit profile</a>
+    </div>
+
+    <!-- Submitted details summary — pending only -->
+    <div class="ld-checklist-card sr" style="margin-bottom:32px;">
+      <div class="ld-checklist-header">
+        <div class="ld-checklist-title">Submitted details</div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:0;font-size:0.875rem;">
+        <div class="ld-check-item" style="flex-direction:column;align-items:flex-start;gap:2px;">
+          <span style="font-size:0.7rem;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-dim);">Name</span>
+          <span style="color:var(--white);">{{ profile.display_name or current_user.full_name }}</span>
+        </div>
+        <div class="ld-check-item" style="flex-direction:column;align-items:flex-start;gap:2px;">
+          <span style="font-size:0.7rem;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-dim);">Experience</span>
+          <span style="color:var(--white);">{{ profile.years_experience or '—' }} years</span>
+        </div>
+        {% if profile.bar_number %}
+        <div class="ld-check-item" style="flex-direction:column;align-items:flex-start;gap:2px;">
+          <span style="font-size:0.7rem;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-dim);">Bar number</span>
+          <span style="color:var(--white);">{{ profile.bar_number }}</span>
+        </div>
+        {% endif %}
+        {% if profile.bar_issuing_authority %}
+        <div class="ld-check-item" style="flex-direction:column;align-items:flex-start;gap:2px;">
+          <span style="font-size:0.7rem;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-dim);">Issuing authority</span>
+          <span style="color:var(--white);">{{ profile.bar_issuing_authority }}</span>
+        </div>
+        {% endif %}
+        {% if profile.specialisations %}
+        <div class="ld-check-item" style="flex-direction:column;align-items:flex-start;gap:2px;grid-column:1/-1;">
+          <span style="font-size:0.7rem;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-dim);">Practice areas</span>
+          <span style="color:var(--white);">{{ profile.specialisations | map(attribute='name') | join(', ') }}</span>
+        </div>
+        {% endif %}
+        {% if profile.languages %}
+        <div class="ld-check-item" style="flex-direction:column;align-items:flex-start;gap:2px;grid-column:1/-1;">
+          <span style="font-size:0.7rem;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-dim);">Languages</span>
+          <span style="color:var(--white);">{{ profile.languages | join(', ') }}</span>
+        </div>
+        {% endif %}
+        {% if profile.bio %}
+        <div class="ld-check-item" style="flex-direction:column;align-items:flex-start;gap:2px;grid-column:1/-1;border-bottom:none;">
+          <span style="font-size:0.7rem;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-dim);">Bio</span>
+          <span style="color:var(--text-muted);line-height:1.6;">{{ profile.bio[:300] }}{% if profile.bio|length > 300 %}…{% endif %}</span>
+        </div>
+        {% endif %}
       </div>
     </div>
     {% elif profile.verification_status == 'rejected' %}
