@@ -335,8 +335,8 @@ def register():
     form = LawyerProfileForm()
     _populate_specialisation_choices(form)
 
-    if form.validate_on_submit():
-        try:
+    try:
+        if form.validate_on_submit():
             photo_path   = None
             licence_path = None
 
@@ -435,13 +435,12 @@ def register():
             flash('Profile submitted. Our team will review and verify it shortly.', 'success')
             return redirect(url_for('lawyers.dashboard'))
 
-        except Exception as e:
-            db.session.rollback()
-            current_app.logger.error(
-                'Register error for user %s: %s', current_user.id, e, exc_info=True,
-            )
-            flash('Something went wrong saving your profile. Please try again.', 'error')
-            return render_template('lawyers/register.html', form=form)
+    except Exception as e:
+        db.session.rollback()
+        current_app.logger.error(
+            'Register error for user %s: %s', current_user.id, e, exc_info=True,
+        )
+        flash('Something went wrong saving your profile. Please try again.', 'error')
 
     return render_template('lawyers/register.html', form=form)
 
