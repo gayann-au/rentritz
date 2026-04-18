@@ -3,7 +3,7 @@ from flask import Blueprint, render_template, redirect, url_for, flash, request,
 from flask_login import login_required, current_user
 from sqlalchemy import text
 from app import limiter
-from app.models import db, Category, Scenario, Question, CreditLog
+from app.models import db, Category, Scenario, Question, CreditLog, LawyerBooking
 
 core_bp = Blueprint('core', __name__)
 
@@ -66,12 +66,28 @@ def dashboard():
         response.headers['Cache-Control'] = 'no-store, no-cache, must-revalidate, max-age=0'
         response.headers['Pragma'] = 'no-cache'
         return response
+    if current_user.role == 'admin':
+        return redirect(url_for('admin.dashboard'))
     categories = Category.query.filter_by(is_active=True).order_by(Category.order).all()
     visible    = [c for c in categories if c.for_role in ('both', current_user.role)]
     recent     = Question.query.filter_by(user_id=current_user.id)\
                     .order_by(Question.created_at.desc()).limit(5).all()
-    return render_template('core/dashboard.html', categories=visible, recent=recent,
-                           has_seen_onboarding=current_user.has_seen_onboarding)
+    question_count = Question.query.filter_by(user_id=current_user.id).count()
+    try:
+        credit_history = CreditLog.query.filter_by(
+            user_id=current_user.id,
+        ).order_by(CreditLog.created_at.desc()).limit(10).all()
+    except Exception as e:
+        current_app.logger.error(f'credit_history query failed: {e}')
+        credit_history = []
+    return render_template(
+        'core/dashboard.html',
+        categories=visible,
+        recent=recent,
+        has_seen_onboarding=current_user.has_seen_onboarding,
+        credit_history=credit_history,
+        question_count=question_count,
+    )
 
 
 @core_bp.route('/onboarding/complete', methods=['POST'])
@@ -276,7 +292,7 @@ def answer(question_id):
     # ORM session state (important under Waitress multi-thread environment).
     with db.engine.connect() as conn:
         conn.execute(
-            text('UPDATE questions SET has_been_viewed = TRUE WHERE id = :id'),
+            text('UPDATE questions SET has_been_viewed = TRUE, answer_viewed = TRUE WHERE id = :id'),
             {'id': question_id}
         )
         conn.commit()
@@ -366,3 +382,7 @@ def credits():
     return render_template('core/credits.html',
         logs=logs, packs=packs,
         page=page, total_pages=total_pages, total=total)
+
+@core_bp.route('/for-lawyers')
+def for_lawyers():
+    return render_template('core/for_lawyers.html')

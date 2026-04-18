@@ -218,6 +218,16 @@
                 onclick="toggleActive()">
           {{ 'Deactivate' if profile.is_active else 'Activate' }}
         </button>
+        <form method="POST"
+              action="{{ url_for('admin.toggle_lawyer_featured', profile_id=profile.id) }}"
+              style="display:inline;">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <button type="submit"
+                  class="btn btn-sm {{ 'btn-warning' if profile.is_featured else 'btn-outline' }}"
+                  title="{{ 'Remove from featured' if profile.is_featured else 'Mark as featured' }}">
+            {{ '&#9733; Featured' if profile.is_featured else '&#9734; Feature' }}
+          </button>
+        </form>
       </div>
 
       {% if profile.rejection_reason %}
@@ -459,21 +469,38 @@
             <th>Rating</th>
             <th>Comment</th>
             <th>Date</th>
+            <th>Visibility</th>
+            <th>Action</th>
           </tr>
         </thead>
         <tbody>
           {% for r in reviews %}
-          <tr>
+          <tr id="review-row-{{ r.id }}" style="{{ 'opacity:0.5;' if not r.is_visible else '' }}">
             <td>
               <div class="user-name">{{ r.client.full_name }}</div>
             </td>
             <td>
               <span class="stars">{% for i in range(r.rating) %}★{% endfor %}{% for i in range(5 - r.rating) %}<span style="opacity:0.2;">★</span>{% endfor %}</span>
             </td>
-            <td style="font-size:12px; color:var(--text-muted); max-width:240px;">
+            <td style="font-size:12px; color:var(--text-muted); max-width:200px;">
               {% if r.comment %}{{ r.comment | truncate(80) }}{% else %}<span style="opacity:0.4;">—</span>{% endif %}
+              {% if r.hidden_reason %}
+              <div style="font-size:11px; color:var(--danger); margin-top:3px;">Hidden: {{ r.hidden_reason }}</div>
+              {% endif %}
             </td>
             <td style="color:var(--text-muted); font-size:12px; white-space:nowrap;">{{ r.created_at.strftime('%d %b %Y') }}</td>
+            <td>
+              <span id="review-badge-{{ r.id }}" class="badge badge-{{ 'active' if r.is_visible else 'inactive' }}">
+                {{ 'Visible' if r.is_visible else 'Hidden' }}
+              </span>
+            </td>
+            <td>
+              <button type="button"
+                      class="btn btn-ghost btn-sm"
+                      onclick="toggleReview({{ r.id }}, {{ 'true' if r.is_visible else 'false' }})">
+                {{ 'Hide' if r.is_visible else 'Show' }}
+              </button>
+            </td>
           </tr>
           {% endfor %}
         </tbody>
@@ -589,5 +616,78 @@ function toggleActive() {
     }, 800);
   });
 })();
+</script>
+
+{# ── Review hide/show modal ────────────────────────────────────────────────── #}
+<div class="modal-overlay" id="review-hide-modal">
+  <div class="modal-box">
+    <div class="modal-title">Hide Review</div>
+    <p style="font-size:13px; color:var(--text-muted); margin:0 0 16px;">
+      Provide a reason why this review is being hidden. This is logged internally and shown to admin only.
+    </p>
+    <input type="hidden" id="review-hide-id" value="">
+    <label style="font-size:12px; color:var(--text-muted); display:block; margin-bottom:6px;">Reason <span style="color:var(--danger);">*</span></label>
+    <input type="text" id="review-hide-reason" class="form-input" placeholder="e.g. Abusive language, off-topic" style="width:100%; margin-bottom:16px;">
+    <div style="display:flex; gap:10px;">
+      <button class="btn btn-primary" onclick="submitHideReview()">Hide Review</button>
+      <button class="btn btn-outline" onclick="document.getElementById('review-hide-modal').classList.remove('open')">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<script>
+function toggleReview(reviewId, currentlyVisible) {
+  if (currentlyVisible) {
+    // Prompt for reason before hiding
+    document.getElementById('review-hide-id').value = reviewId;
+    document.getElementById('review-hide-reason').value = '';
+    document.getElementById('review-hide-modal').classList.add('open');
+  } else {
+    // No reason needed to un-hide
+    _sendToggleReview(reviewId, null);
+  }
+}
+
+function submitHideReview() {
+  const reviewId = document.getElementById('review-hide-id').value;
+  const reason   = document.getElementById('review-hide-reason').value.trim();
+  if (!reason) {
+    document.getElementById('review-hide-reason').focus();
+    return;
+  }
+  document.getElementById('review-hide-modal').classList.remove('open');
+  _sendToggleReview(reviewId, reason);
+}
+
+function _sendToggleReview(reviewId, reason) {
+  const body = new URLSearchParams({ csrf_token: '{{ csrf_token() }}' });
+  if (reason) body.append('hidden_reason', reason);
+
+  fetch(`/manage/reviews/${reviewId}/toggle-visible`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: body.toString(),
+  })
+  .then(r => r.json())
+  .then(data => {
+    const row   = document.getElementById(`review-row-${reviewId}`);
+    const badge = document.getElementById(`review-badge-${reviewId}`);
+    const btn   = row ? row.querySelector('button') : null;
+    if (data.is_visible) {
+      if (row)   row.style.opacity = '1';
+      if (badge) { badge.textContent = 'Visible'; badge.className = 'badge badge-active'; }
+      if (btn)   btn.textContent = 'Hide';
+    } else {
+      if (row)   row.style.opacity = '0.5';
+      if (badge) { badge.textContent = 'Hidden'; badge.className = 'badge badge-inactive'; }
+      if (btn)   btn.textContent = 'Show';
+    }
+  })
+  .catch(err => console.error('Toggle review error:', err));
+}
+
+document.getElementById('review-hide-modal').addEventListener('click', function(e) {
+  if (e.target === this) this.classList.remove('open');
+});
 </script>
 {% endblock %}

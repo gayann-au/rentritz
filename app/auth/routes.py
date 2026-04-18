@@ -338,6 +338,8 @@ def reset_password(token):
 
         login_user(user)
         flash('Your password has been reset. Welcome back!', 'success')
+        if user.role == 'lawyer':
+            return redirect(url_for('lawyers.dashboard'))
         return redirect(url_for('core.dashboard'))
 
     return render_template('auth/reset_password.html', token=token)

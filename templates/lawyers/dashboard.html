@@ -6,10 +6,10 @@
 <meta name="csrf-token" content="{{ csrf_token() }}">
 <style>
 :root{
-  --black:#0a0a0a;--dark-card:#1a1a1a;--dark-card-hover:#222222;
-  --amber:#f59e0b;--amber-dark:#d97706;--white:#ffffff;
-  --text-muted:#888888;--text-dim:#555555;
-  --border:rgba(255,255,255,0.07);--border-hover:rgba(245,158,11,0.35);
+  --black:#f8f6f2;--dark-card:#ffffff;--dark-card-hover:#f0ece6;
+  --amber:#c8820a;--amber-dark:#b8720a;--white:#1c1916;
+  --text-muted:#6b6259;--text-dim:#9a8f82;
+  --border:rgba(58,53,48,0.12);--border-hover:rgba(200,130,10,0.35);
   --radius:14px;--ease:cubic-bezier(0.4,0,0.2,1);--ease-out:cubic-bezier(0.22,1,0.36,1);
 }
 .sr{opacity:0;transform:translateY(24px);transition:opacity 0.6s var(--ease-out),transform 0.6s var(--ease-out);}
@@ -27,7 +27,7 @@
 
 .ld-btn-amber{
   display:inline-flex;align-items:center;gap:6px;
-  background:var(--amber);color:#000;border:none;border-radius:9px;
+  background:var(--amber);color:#fff;border:none;border-radius:9px;
   padding:10px 20px;font-size:0.85rem;font-weight:600;cursor:pointer;
   text-decoration:none;transition:background 0.2s var(--ease);
 }
@@ -107,9 +107,9 @@
 .ld-table th{
   font-size:0.7rem;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;
   color:var(--text-dim);padding:14px 20px;text-align:left;border-bottom:1px solid var(--border);
-  background:rgba(255,255,255,0.02);
+  background:rgba(58,53,48,0.02);
 }
-.ld-table td{font-size:0.875rem;color:var(--white);padding:14px 20px;border-bottom:1px solid rgba(255,255,255,0.04);}
+.ld-table td{font-size:0.875rem;color:var(--white);padding:14px 20px;border-bottom:1px solid rgba(58,53,48,0.04);}
 .ld-table tr:last-child td{border-bottom:none;}
 
 .ld-status-badge{
@@ -118,7 +118,7 @@
 }
 .ld-status-unlocked{color:var(--amber);background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.2);}
 .ld-status-completed{color:#4ade80;background:rgba(74,222,128,0.1);border:1px solid rgba(74,222,128,0.2);}
-.ld-status-cancelled{color:var(--text-dim);background:rgba(255,255,255,0.05);border:1px solid var(--border);}
+.ld-status-cancelled{color:var(--text-dim);background:rgba(58,53,48,0.05);border:1px solid var(--border);}
 .ld-status-pending{color:#60a5fa;background:rgba(96,165,250,0.1);border:1px solid rgba(96,165,250,0.2);}
 
 .ld-empty{text-align:center;padding:48px 20px;color:var(--text-muted);font-size:0.9rem;}
@@ -257,11 +257,15 @@
     {% if profile.verification_status == 'verified' %}
     <div class="ld-stats-grid sr">
       <div class="ld-stat-card">
-        <div class="ld-stat-label">Contact unlocks</div>
-        <div class="ld-stat-value">{{ profile.total_unlocks }}</div>
+        <div class="ld-stat-label">Profile Views</div>
+        <div class="ld-stat-value">{{ profile.profile_views or 0 }}</div>
       </div>
       <div class="ld-stat-card">
-        <div class="ld-stat-label">Average rating</div>
+        <div class="ld-stat-label">Contact Unlocks</div>
+        <div class="ld-stat-value">{{ profile.total_unlocks or 0 }}</div>
+      </div>
+      <div class="ld-stat-card">
+        <div class="ld-stat-label">Avg Rating ({{ profile.total_reviews }} reviews)</div>
         <div class="ld-stat-value">
           {% if profile.average_rating %}
           {{ "%.1f"|format(profile.average_rating) }} <span>/ 5</span>
@@ -269,10 +273,6 @@
           — <span>no reviews</span>
           {% endif %}
         </div>
-      </div>
-      <div class="ld-stat-card">
-        <div class="ld-stat-label">Total reviews</div>
-        <div class="ld-stat-value">{{ profile.total_reviews }}</div>
       </div>
     </div>
     {% endif %}
@@ -397,18 +397,19 @@
       {% endif %}
     </div>
 
-    <!-- Reviews — verified only -->
+    <!-- Client Feedback — verified only -->
     <div class="sr" style="margin-top:40px;">
-      <div class="ld-section-title">Reviews</div>
-      {% if recent_reviews %}
-        {% for review in recent_reviews %}
+      <div class="ld-section-title">Client Feedback</div>
+      {% if reviews %}
+        {% for review in reviews %}
         <div class="ld-review-item">
-          <div style="display:flex;align-items:center;justify-content:space-between;">
-            <span class="ld-review-stars">
-              {% for i in range(review.rating) %}&#9733;{% endfor %}{% for i in range(5 - review.rating) %}&#9734;{% endfor %}
-            </span>
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+            <span style="font-size:0.85rem;font-weight:600;color:var(--white);">{{ review.client.full_name }}</span>
             <span style="font-size:0.75rem;color:var(--text-dim);">{{ review.created_at.strftime('%d %b %Y') }}</span>
           </div>
+          <span class="ld-review-stars">
+            {% for i in range(review.rating) %}&#9733;{% endfor %}{% for i in range(5 - review.rating) %}&#9734;{% endfor %}
+          </span>
           {% if review.comment %}
           <p class="ld-review-comment">{{ review.comment }}</p>
           {% endif %}
@@ -416,7 +417,7 @@
         {% endfor %}
       {% else %}
       <div class="ld-empty" style="background:var(--dark-card);border:1px dashed var(--border);border-radius:var(--radius);">
-        No reviews yet. Reviews appear after clients mark sessions as completed.
+        No reviews yet.
       </div>
       {% endif %}
     </div>

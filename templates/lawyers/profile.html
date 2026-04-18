@@ -5,10 +5,10 @@
 {% block content %}
 <style>
 :root {
-  --black:#0a0a0a; --dark-card:#1a1a1a; --dark-card-hover:#222222;
-  --amber:#f59e0b; --amber-dark:#d97706; --white:#ffffff;
-  --text-muted:#888888; --text-dim:#555555;
-  --border:rgba(255,255,255,0.07); --border-hover:rgba(245,158,11,0.35);
+  --black:#f8f6f2; --dark-card:#ffffff; --dark-card-hover:#f0ece6;
+  --amber:#c8820a; --amber-dark:#b8720a; --white:#1c1916;
+  --text-muted:#6b6259; --text-dim:#9a8f82;
+  --border:rgba(58,53,48,0.12); --border-hover:rgba(200,130,10,0.35);
   --radius:14px; --ease:cubic-bezier(0.4,0,0.2,1); --ease-out:cubic-bezier(0.22,1,0.36,1);
 }
 .sr{opacity:0;transform:translateY(24px);transition:opacity 0.6s var(--ease-out),transform 0.6s var(--ease-out);}
@@ -36,7 +36,7 @@
 }
 .lp-photo{
   width:100px;height:100px;border-radius:50%;overflow:hidden;
-  background:rgba(255,255,255,0.06);border:3px solid var(--border);
+  background:rgba(58,53,48,0.06);border:3px solid var(--border);
 }
 .lp-photo img{width:100%;height:100%;object-fit:cover;}
 .lp-photo-placeholder{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:2.5rem;color:var(--text-dim);}
@@ -52,15 +52,17 @@
 .lp-badge-verified{color:#4ade80;background:rgba(74,222,128,0.1);border:1px solid rgba(74,222,128,0.2);}
 .lp-badge-pending{color:var(--amber);background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.2);}
 .lp-badge-available{color:#60a5fa;background:rgba(96,165,250,0.1);border:1px solid rgba(96,165,250,0.2);}
-.lp-badge-unavailable{color:var(--text-dim);background:rgba(255,255,255,0.05);border:1px solid var(--border);}
+.lp-badge-unavailable{color:var(--text-dim);background:rgba(58,53,48,0.05);border:1px solid var(--border);}
 
 .lp-stats-card{
-  background:var(--dark-card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;
+  background:var(--border);border:1px solid var(--border);border-radius:var(--radius);
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(80px,1fr));
+  gap:1px;overflow:hidden;
 }
-.lp-stat-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border);}
-.lp-stat-row:last-child{border-bottom:none;}
-.lp-stat-label{font-size:0.78rem;color:var(--text-muted);}
-.lp-stat-value{font-size:0.9rem;font-weight:600;color:var(--white);}
+.lp-stat-row{display:flex;flex-direction:column;align-items:center;justify-content:center;
+  text-align:center;padding:16px 10px;background:var(--dark-card);gap:6px;}
+.lp-stat-label{font-size:0.7rem;color:var(--text-dim);letter-spacing:0.04em;}
+.lp-stat-value{font-size:1.3rem;font-weight:700;color:var(--amber);line-height:1;order:-1;}
 .lp-stars{color:var(--amber);}
 
 .lp-pricing-card{
@@ -91,7 +93,7 @@
 .lp-unlock-cost{font-size:1rem;font-weight:600;color:var(--amber);}
 
 .lp-unlock-note{
-  background:rgba(255,255,255,0.04);border:1px solid var(--border);
+  background:rgba(58,53,48,0.04);border:1px solid var(--border);
   border-radius:8px;padding:8px 12px;font-size:0.875rem;color:var(--white);
   outline:none;resize:vertical;min-height:72px;transition:border-color 0.2s;
   width:100%;box-sizing:border-box;
@@ -100,7 +102,7 @@
 .lp-unlock-note::placeholder{color:var(--text-dim);}
 
 .lp-unlock-btn{
-  display:block;width:100%;background:var(--amber);color:#000;border:none;
+  display:block;width:100%;background:var(--amber);color:#fff;border:none;
   border-radius:10px;padding:14px 20px;font-size:0.9rem;font-weight:600;
   cursor:pointer;text-align:center;transition:background 0.2s var(--ease);
 }
@@ -112,6 +114,16 @@
 }
 .lp-signin-note a{color:var(--amber);}
 
+.lp-location{font-size:0.8rem;color:var(--text-muted);}
+.lp-spec-tags{display:flex;flex-wrap:wrap;justify-content:center;gap:6px;}
+.lp-languages{font-size:0.8rem;color:var(--text-muted);}
+.lp-exp{font-size:0.8rem;color:var(--text-muted);}
+.lp-free-badge{
+  display:inline-block;font-size:0.7rem;font-weight:600;letter-spacing:0.05em;
+  color:#10b981;background:rgba(16,185,129,0.1);
+  border:1px solid rgba(16,185,129,0.3);border-radius:6px;padding:3px 10px;
+}
+
 /* ── Right column ── */
 .lp-main{display:flex;flex-direction:column;gap:24px;}
 
@@ -121,12 +133,13 @@
 .lp-section-title{
   font-size:0.67rem;font-weight:600;letter-spacing:0.2em;text-transform:uppercase;
   color:var(--text-dim);margin:0 0 16px;
+  border-left:2px solid var(--amber);padding-left:10px;
 }
 .lp-bio{font-size:0.95rem;color:var(--white);line-height:1.8;margin:0;white-space:pre-wrap;}
 .lp-tags{display:flex;flex-wrap:wrap;gap:8px;}
 .lp-tag{
   font-size:0.78rem;color:var(--text-muted);
-  background:rgba(255,255,255,0.05);border:1px solid var(--border);
+  background:rgba(58,53,48,0.05);border:1px solid var(--border);
   border-radius:8px;padding:5px 12px;
 }
 .lp-tag-amber{color:var(--amber);border-color:rgba(245,158,11,0.25);background:rgba(245,158,11,0.06);}
@@ -138,7 +151,7 @@
 .lp-detail-value{font-size:0.9rem;color:var(--white);}
 
 /* Reviews */
-.lp-review-item{padding:20px 0;border-bottom:1px solid var(--border);}
+.lp-review-item{padding:20px 0 20px 14px;border-bottom:1px solid var(--border);border-left:2px solid rgba(245,158,11,.35);}
 .lp-review-item:last-child{border-bottom:none;}
 .lp-review-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
 .lp-review-stars{color:var(--amber);letter-spacing:2px;}
@@ -171,13 +184,36 @@
             {% if lawyer.photo_url %}
             <img src="{{ lawyer.photo_url }}" alt="{{ lawyer.display_name or lawyer.user.full_name }}">
             {% else %}
-            <div class="lp-photo-placeholder">&#9876;</div>
+            <div class="lp-photo-placeholder">
+              {{ (lawyer.display_name or lawyer.user.full_name or '?')[0].upper() }}
+            </div>
             {% endif %}
           </div>
           <div>
             <div class="lp-name">{{ lawyer.display_name or lawyer.user.full_name }}</div>
             {% if lawyer.firm_name %}<div class="lp-firm">{{ lawyer.firm_name }}</div>{% endif %}
           </div>
+          {% if lawyer.office_city or lawyer.office_country %}
+          <div class="lp-location">
+            {{ [lawyer.office_city, lawyer.office_country] | select | join(', ') }}
+          </div>
+          {% endif %}
+          {% if lawyer.specialisations %}
+          <div class="lp-spec-tags">
+            {% for spec in lawyer.specialisations %}
+            <span class="lp-tag">{{ spec.name }}</span>
+            {% endfor %}
+          </div>
+          {% endif %}
+          {% if lawyer.languages %}
+          <div class="lp-languages">{{ lawyer.languages | join(', ') }}</div>
+          {% endif %}
+          {% if lawyer.years_experience %}
+          <div class="lp-exp">{{ lawyer.years_experience }} yrs experience</div>
+          {% endif %}
+          {% if lawyer.offers_free_first_consultation %}
+          <span class="lp-free-badge">Free first consultation</span>
+          {% endif %}
           {% if lawyer.verification_status == 'verified' %}
           <span class="lp-badge lp-badge-verified">&#10003; Verified</span>
           {% endif %}
@@ -271,6 +307,16 @@
               <span style="font-size:0.85rem;color:var(--text-muted);line-height:1.5;">{{ lawyer.office_address }}</span>
             </div>
             {% endif %}
+            {% if unlocked_booking and unlocked_booking.contact_unlocked_at %}
+            <div style="font-size:0.75rem;color:var(--text-dim);margin-top:12px;padding-top:12px;border-top:1px solid var(--border);">
+              Unlocked on {{ unlocked_booking.contact_unlocked_at.strftime('%d %b %Y') }}
+            </div>
+            {% endif %}
+
+          {% elif viewer_is_other_lawyer %}
+            <div class="lp-signin-note">
+              Lawyers cannot unlock other lawyers' contact details.
+            </div>
 
           {% elif current_user.is_authenticated %}
             <div class="lp-unlock-box" id="unlock-box">
@@ -281,7 +327,8 @@
               {% if user_credits < lawyer.contact_unlock_credits %}
               <div style="font-size:0.8rem;color:#f87171;">
                 You have {{ user_credits }} credit{% if user_credits != 1 %}s{% endif %}.
-                <a href="{{ url_for('core.credits') }}" style="color:var(--amber);">Buy more</a>
+                You need {{ lawyer.contact_unlock_credits - user_credits }} more.
+                Contact support to get credits.
               </div>
               {% else %}
               <textarea class="lp-unlock-note" id="unlock-note"
@@ -297,9 +344,8 @@
 
           {% else %}
             <div class="lp-signin-note">
-              <a href="{{ url_for('auth.login') }}">Sign in</a> or
-              <a href="{{ url_for('auth.register') }}">create an account</a>
-              to unlock this lawyer's contact details.
+              <a href="{{ url_for('auth.login', next='/lawyers/' ~ lawyer.id) }}">Log in to connect</a>
+              with this lawyer.
             </div>
           {% endif %}
 
@@ -427,6 +473,39 @@
           {% endif %}
         </div>
 
+        <!-- Review form -->
+        {% if can_review %}
+        <div class="lp-section sr" id="review-form-section">
+          <div class="lp-section-title">Leave a Review</div>
+          <form method="POST" action="{{ url_for('lawyers.submit_lawyer_review', lawyer_profile_id=lawyer.id) }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <div style="margin-bottom:16px;">
+              <div style="font-size:0.8rem;color:var(--text-muted);margin-bottom:8px;">Rating <span style="color:#f87171;">*</span></div>
+              <div class="lp-star-rating" id="star-rating">
+                {% for i in range(1,6) %}
+                <label style="cursor:pointer;font-size:1.6rem;color:var(--text-dim);transition:color 0.15s;" data-val="{{ i }}">&#9733;
+                  <input type="radio" name="rating" value="{{ i }}" style="display:none;" required>
+                </label>
+                {% endfor %}
+              </div>
+            </div>
+            <div style="margin-bottom:16px;">
+              <div style="font-size:0.8rem;color:var(--text-muted);margin-bottom:8px;">Comment (optional)</div>
+              <textarea name="comment" class="lp-unlock-note"
+                placeholder="Share your experience with this lawyer…"
+                rows="4" maxlength="1000"></textarea>
+            </div>
+            <button type="submit" class="lp-unlock-btn" style="max-width:200px;display:inline-block;width:auto;padding:12px 24px;">
+              Submit Review
+            </button>
+          </form>
+        </div>
+        {% elif already_reviewed %}
+        <div class="lp-section sr" style="text-align:center;color:var(--text-muted);font-size:0.9rem;">
+          You have already reviewed this lawyer.
+        </div>
+        {% endif %}
+
       </div><!-- /lp-main -->
     </div><!-- /lp-layout -->
 
@@ -435,6 +514,28 @@
 {% endblock %}
 
 {% block scripts %}
+{% if can_review %}
+<script>
+(function(){
+  var labels = document.querySelectorAll('#star-rating label');
+  labels.forEach(function(lbl, idx){
+    lbl.addEventListener('mouseenter', function(){
+      labels.forEach(function(l,i){ l.style.color = i<=idx ? '#f59e0b' : '#555'; });
+    });
+    lbl.addEventListener('mouseleave', function(){
+      var checked = document.querySelector('#star-rating input:checked');
+      var val = checked ? parseInt(checked.value) : 0;
+      labels.forEach(function(l,i){ l.style.color = i<val ? '#f59e0b' : '#555'; });
+    });
+    lbl.addEventListener('click', function(){
+      var inp = lbl.querySelector('input');
+      inp.checked = true;
+      labels.forEach(function(l,i){ l.style.color = i<=idx ? '#f59e0b' : '#555'; });
+    });
+  });
+})();
+</script>
+{% endif %}
 {% if current_user.is_authenticated and not contact_unlocked %}
 <script>
 (function(){

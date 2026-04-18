@@ -1,29 +1,59 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap');
 
 :root {
-  --amber:      #f59e0b;
-  --amber-dark: #d97706;
-  --amber-glow: rgba(245, 158, 11, 0.15);
-  --black:      #0a0a0a;
-  --near-black: #111111;
-  --dark-card:  #1a1a1a;
-  --dark-line:  #2a2a2a;
   --white:      #ffffff;
-  --off-white:  #f8f7f4;
-  --text:       #1a1a1a;
-  --text-muted: #888888;
-  --text-light: #aaaaaa;
-  --error-bg:   #3b0000;
-  --error-bd:   #7f1d1d;
-  --error-text: #fca5a5;
-  --success-bg: #052e16;
-  --success-bd: #166534;
-  --success-text:#bbf7d0;
-  --radius:     12px;
-  --radius-sm:  8px;
-  --shadow:     0 4px 24px rgba(0,0,0,0.08);
-  --shadow-lg:  0 12px 48px rgba(0,0,0,0.12);
-  --transition: 0.2s ease;
+  --off-white:  #f8f6f2;
+  --cream:      #f2ede6;
+  --light-sand: #ebe4d8;
+  --warm-grey:  #9a8f82;
+  --mid-grey:   #6b6259;
+  --deep-grey:  #3a3530;
+  --charcoal:   #1c1916;
+  --black:      #0d0b09;
+
+  --amber:        #c8820a;
+  --amber-light:  #f5a623;
+  --amber-dark:   #b8720a;
+  --amber-glow:   rgba(200,130,10,0.12);
+  --amber-border: rgba(200,130,10,0.25);
+
+  --bg:             var(--off-white);
+  --surface:        var(--white);
+  --surface-raised: var(--white);
+  --surface-sunken: var(--cream);
+  --card-bg:        var(--white);
+
+  --near-black:  #1c1916;
+  --dark-card:   var(--white);
+  --dark-line:   rgba(58,53,48,0.12);
+
+  --text:           var(--charcoal);
+  --text-primary:   var(--charcoal);
+  --text-secondary: var(--mid-grey);
+  --text-muted:     var(--warm-grey);
+  --text-light:     var(--warm-grey);
+
+  --border:        rgba(58,53,48,0.12);
+  --border-strong: rgba(58,53,48,0.22);
+
+  --error-bg:    #fef2f2;
+  --error-bd:    #fca5a5;
+  --error-text:  #991b1b;
+  --success-bg:  #f0fdf4;
+  --success-bd:  #86efac;
+  --success-text:#166534;
+
+  --shadow:       0 1px 3px rgba(28,25,22,0.08), 0 1px 2px rgba(28,25,22,0.06);
+  --shadow-sm:    0 1px 3px rgba(28,25,22,0.08), 0 1px 2px rgba(28,25,22,0.06);
+  --shadow-md:    0 4px 16px rgba(28,25,22,0.10), 0 2px 6px rgba(28,25,22,0.07);
+  --shadow-lg:    0 12px 40px rgba(28,25,22,0.14), 0 4px 12px rgba(28,25,22,0.08);
+  --shadow-amber: 0 4px 24px rgba(200,130,10,0.18);
+
+  --radius:    12px;
+  --radius-sm: 8px;
+  --radius-lg: 20px;
+
+  --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -31,12 +61,16 @@
 html { scroll-behavior: smooth; }
 
 body {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   font-size: 16px;
   line-height: 1.6;
   color: var(--text);
-  background: var(--white);
+  background: var(--bg);
   -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4 {
+  font-family: "Playfair Display", Georgia, serif;
 }
 
 a { color: inherit; text-decoration: none; }
@@ -62,7 +96,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   gap: 8px;
   padding: 12px 24px;
   border-radius: var(--radius-sm);
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   font-size: 0.9rem;
   font-weight: 500;
   transition: all var(--transition);
@@ -73,24 +107,26 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 }
 
 .btn-primary {
-  background: var(--text);
+  background: var(--amber);
   color: var(--white);
+  box-shadow: var(--shadow-amber);
 }
-.btn-primary:hover { background: #333; transform: translateY(-1px); }
+.btn-primary:hover { background: var(--amber-dark); transform: translateY(-1px); }
 
 .btn-amber {
   background: var(--amber);
-  color: var(--black);
+  color: var(--white);
   font-weight: 600;
+  box-shadow: var(--shadow-amber);
 }
-.btn-amber:hover { background: var(--amber-dark); transform: translateY(-1px); box-shadow: 0 4px 20px rgba(245,158,11,0.35); }
+.btn-amber:hover { background: var(--amber-dark); transform: translateY(-1px); box-shadow: 0 6px 28px rgba(200,130,10,0.28); }
 
 .btn-outline {
   background: transparent;
   color: var(--text);
-  border: 1.5px solid #ddd;
+  border: 1.5px solid var(--border-strong);
 }
-.btn-outline:hover { border-color: var(--text); transform: translateY(-1px); }
+.btn-outline:hover { border-color: var(--amber); color: var(--amber); transform: translateY(-1px); }
 
 .btn-outline-white {
   background: transparent;
@@ -117,14 +153,17 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   position: sticky;
   top: 0;
   z-index: 100;
-  background: transparent;
-  border-bottom: 1px solid transparent;
-  transition: background 0.25s ease, border-color 0.25s ease;
+  background: rgba(248,246,242,0.94);
+  border-bottom: 1px solid var(--border);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: var(--shadow-sm);
+  transition: var(--transition);
 }
 
 .nav.scrolled {
-  background: #0a0a0a;
-  border-bottom: 1px solid rgba(255,255,255,0.08);
+  background: rgba(248,246,242,0.98);
+  box-shadow: var(--shadow-md);
 }
 
 .nav-inner {
@@ -138,14 +177,14 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 }
 
 .nav-logo {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  font-size: 1.4rem;
-  font-weight: 600;
-  color: var(--amber);
-  letter-spacing: -0.02em;
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--charcoal);
+  letter-spacing: -0.01em;
   text-decoration: none;
 }
-.nav-logo span { color: rgba(255,255,255,0.6); }
+.nav-logo span { color: var(--amber); }
 
 .nav-links {
   display: flex;
@@ -154,9 +193,10 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 }
 
 .nav-links a {
+  font-family: 'DM Sans', sans-serif;
   font-size: 0.875rem;
   font-weight: 400;
-  color: rgba(255,255,255,0.65);
+  color: var(--deep-grey);
   transition: color 0.2s ease;
   text-decoration: none;
 }
@@ -165,9 +205,9 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 
 .nav-logout {
   font-size: 0.875rem;
-  color: rgba(255,255,255,0.4) !important;
+  color: var(--warm-grey) !important;
 }
-.nav-logout:hover { color: rgba(255,255,255,0.75) !important; }
+.nav-logout:hover { color: var(--mid-grey) !important; }
 
 .credit-chip {
   display: inline-flex;
@@ -175,7 +215,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   gap: 6px;
   background: var(--amber);
   border: none;
-  color: #000 !important;
+  color: #fff !important;
   padding: 5px 12px;
   border-radius: 100px;
   font-size: 0.78rem !important;
@@ -222,8 +262,8 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 }
 
 .flash-info {
-  background: rgba(245,158,11,0.12);
-  border: 1px solid rgba(245,158,11,0.4);
+  background: var(--amber-glow);
+  border: 1px solid var(--amber-border);
   color: var(--amber);
 }
 
@@ -236,7 +276,6 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 /* ── LANDING PAGE ───────────────────────────────────────────────────────────── */
 
 .hero {
-  background: var(--black);
   min-height: 100vh;
   display: flex;
   align-items: center;
@@ -295,7 +334,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 }
 
 .hero-headline {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   font-size: clamp(3rem, 7vw, 6rem);
   font-weight: 300;
   line-height: 1.05;
@@ -400,7 +439,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 }
 
 .problem-strip h2 {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-family: 'Playfair Display', Georgia, serif;
   font-size: clamp(2rem, 4vw, 3.2rem);
   font-weight: 400;
   line-height: 1.2;
@@ -431,9 +470,9 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 }
 
 .difference-text h2 {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-family: 'Playfair Display', Georgia, serif;
   font-size: clamp(2rem, 3.5vw, 2.8rem);
-  font-weight: 400;
+  font-weight: 600;
   line-height: 1.2;
   letter-spacing: -0.02em;
   margin-bottom: 20px;
@@ -478,7 +517,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 }
 
 .difference-visual {
-  background: var(--near-black);
+  background: var(--charcoal);
   border-radius: 16px;
   padding: 40px;
   position: relative;
@@ -529,7 +568,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 
 .how-section {
   padding: 100px 24px;
-  background: var(--off-white);
+  background: var(--cream);
 }
 
 .how-section .section-header {
@@ -538,9 +577,9 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 }
 
 .how-section h2 {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-family: 'Playfair Display', Georgia, serif;
   font-size: clamp(2rem, 3.5vw, 2.8rem);
-  font-weight: 400;
+  font-weight: 600;
   letter-spacing: -0.02em;
   margin-top: 12px;
 }
@@ -564,7 +603,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 .step-card:last-child  { border-radius: 0 16px 16px 0; }
 
 .step-num {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   font-size: 3.5rem;
   font-weight: 300;
   color: rgba(0,0,0,0.06);
@@ -576,7 +615,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   font-size: 1rem;
   font-weight: 600;
   margin-bottom: 10px;
-  color: var(--text);
+  color: var(--charcoal);
 }
 
 .step-card p {
@@ -587,16 +626,16 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 
 .trust-section {
   padding: 100px 24px;
-  background: var(--black);
+  background: var(--charcoal);
   text-align: center;
 }
 
-.trust-section .section-eyebrow { color: var(--amber); }
+.trust-section .section-eyebrow { color: var(--amber-light); }
 
 .trust-section h2 {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   font-size: clamp(2rem, 4vw, 3.2rem);
-  font-weight: 300;
+  font-weight: 600;
   color: var(--white);
   letter-spacing: -0.02em;
   margin: 16px 0 20px;
@@ -632,9 +671,9 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 }
 
 .footer {
-  background: var(--near-black);
+  background: var(--charcoal);
   padding: 40px 24px;
-  border-top: 1px solid var(--dark-line);
+  border-top: 1px solid rgba(255,255,255,0.06);
 }
 
 .footer-inner {
@@ -648,12 +687,12 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 }
 
 .footer-logo {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-family: 'Playfair Display', Georgia, serif;
   font-size: 1.2rem;
-  font-weight: 600;
-  color: rgba(255,255,255,0.6);
+  font-weight: 700;
+  color: var(--warm-grey);
 }
-.footer-logo span { color: var(--amber); }
+.footer-logo span { color: var(--amber-light); }
 
 .footer-links {
   display: flex;
@@ -661,14 +700,14 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 }
 .footer-links a {
   font-size: 0.82rem;
-  color: rgba(255,255,255,0.3);
+  color: var(--warm-grey);
   transition: color var(--transition);
 }
-.footer-links a:hover { color: rgba(255,255,255,0.7); }
+.footer-links a:hover { color: var(--amber-light); }
 
 .footer-legal {
   font-size: 0.75rem;
-  color: rgba(255,255,255,0.2);
+  color: rgba(154,143,130,0.5);
   max-width: 400px;
   line-height: 1.5;
   text-align: right;
@@ -678,7 +717,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 /* ── AUTH PAGES ─────────────────────────────────────────────────────────────── */
 
 .auth-page {
-  background: #0a0a0a;
+  background: var(--cream);
   min-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -693,39 +732,40 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 }
 
 .auth-card {
-  background: #1a1a1a;
-  border-radius: 16px;
+  background: var(--white);
+  border-radius: var(--radius-lg);
   padding: 48px;
   width: 100%;
   max-width: 440px;
-  border: 1px solid rgba(255,255,255,0.08);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-md);
 }
 
 .auth-card-wide { max-width: 560px; }
 
 .auth-logo {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-family: 'Playfair Display', Georgia, serif;
   font-size: 1.3rem;
-  font-weight: 600;
-  color: var(--amber);
+  font-weight: 700;
+  color: var(--charcoal);
   display: block;
   margin-bottom: 24px;
   text-decoration: none;
 }
-.auth-logo span { color: rgba(255,255,255,0.55); }
+.auth-logo span { color: var(--amber); }
 
 .auth-header h1 {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-family: 'Playfair Display', Georgia, serif;
   font-size: 2rem;
-  font-weight: 400;
+  font-weight: 600;
   letter-spacing: -0.02em;
-  color: var(--white);
+  color: var(--charcoal);
   margin-bottom: 6px;
 }
 
 .auth-header p {
   font-size: 0.9rem;
-  color: rgba(255,255,255,0.4);
+  color: var(--warm-grey);
   margin-bottom: 32px;
 }
 
@@ -737,7 +777,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   display: block;
   font-size: 0.82rem;
   font-weight: 500;
-  color: rgba(255,255,255,0.65);
+  color: var(--mid-grey);
   margin-bottom: 7px;
 }
 
@@ -746,18 +786,18 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 .form-group input[type=password] {
   width: 100%;
   padding: 11px 14px;
-  border: 1.5px solid rgba(255,255,255,0.1);
+  border: 1.5px solid var(--border);
   border-radius: var(--radius-sm);
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   font-size: 0.9rem;
-  color: var(--white);
-  background: #111111;
+  color: var(--charcoal);
+  background: var(--white);
   transition: border-color 0.2s ease;
   outline: none;
 }
 
 .form-group input:focus { border-color: var(--amber); }
-.form-group input::placeholder { color: rgba(255,255,255,0.2); }
+.form-group input::placeholder { color: var(--warm-grey); }
 
 .form-row-split {
   display: flex;
@@ -779,7 +819,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   align-items: center;
   gap: 8px;
   font-size: 0.85rem;
-  color: rgba(255,255,255,0.4);
+  color: var(--mid-grey);
   cursor: pointer;
 }
 
@@ -793,29 +833,29 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 .role-option input[type=radio] { display: none; }
 
 .role-card {
-  border: 1.5px solid rgba(255,255,255,0.1);
+  border: 1.5px solid var(--border);
   border-radius: var(--radius-sm);
   padding: 20px 16px;
   text-align: center;
   transition: all 0.2s ease;
-  background: rgba(255,255,255,0.03);
+  background: var(--surface-sunken);
 }
 
 .role-option.selected .role-card,
 .role-option:hover .role-card {
   border-color: var(--amber);
-  background: rgba(245,158,11,0.08);
+  background: var(--amber-glow);
 }
 
 .role-icon { font-size: 1.6rem; margin-bottom: 8px; }
-.role-label { font-size: 0.9rem; font-weight: 600; color: var(--white); margin-bottom: 4px; }
-.role-desc  { font-size: 0.75rem; color: rgba(255,255,255,0.35); }
+.role-label { font-size: 0.9rem; font-weight: 600; color: var(--charcoal); margin-bottom: 4px; }
+.role-desc  { font-size: 0.75rem; color: var(--warm-grey); }
 
 .auth-footer {
   text-align: center;
   margin-top: 24px;
   font-size: 0.875rem;
-  color: rgba(255,255,255,0.35);
+  color: var(--warm-grey);
 }
 
 .auth-footer a {
@@ -838,9 +878,9 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 }
 
 .dashboard-welcome h1 {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-family: 'Playfair Display', Georgia, serif;
   font-size: 2.2rem;
-  font-weight: 400;
+  font-weight: 600;
   letter-spacing: -0.02em;
   margin-bottom: 4px;
 }
@@ -858,10 +898,10 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 }
 
 .credits-number {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-family: 'Playfair Display', Georgia, serif;
   font-size: 2.4rem;
-  font-weight: 400;
-  color: var(--amber-dark);
+  font-weight: 600;
+  color: var(--amber);
   line-height: 1;
 }
 
@@ -878,17 +918,18 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 }
 
 .category-card {
-  background: var(--white);
+  background: var(--surface);
   border-radius: var(--radius);
-  border: 1.5px solid transparent;
-  transition: all 0.25s ease;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+  transition: var(--transition);
   display: block;
   overflow: hidden;
 }
 
 .category-card:hover:not(.category-card-locked) {
-  border-color: var(--amber);
-  box-shadow: 0 8px 32px rgba(245,158,11,0.12);
+  border-color: var(--amber-border);
+  box-shadow: var(--shadow-md);
   transform: translateY(-2px);
 }
 
@@ -948,13 +989,13 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: var(--white);
+  background: var(--surface);
   padding: 14px 18px;
   border-radius: var(--radius-sm);
-  border: 1px solid transparent;
-  transition: border-color var(--transition);
+  border: 1px solid var(--border);
+  transition: border-color var(--transition), box-shadow var(--transition);
 }
-.recent-item:hover { border-color: #ddd; }
+.recent-item:hover { border-color: var(--amber-border); box-shadow: var(--shadow-sm); }
 
 .recent-category {
   font-size: 0.875rem;
@@ -967,9 +1008,9 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 /* ── WIZARD ─────────────────────────────────────────────────────────────────── */
 
 .wizard-page {
-  background: var(--black);
+  background: var(--cream);
   min-height: 100vh;
-  color: var(--white);
+  color: var(--charcoal);
 }
 
 .wizard-wrap {
@@ -987,10 +1028,10 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 
 .wizard-back {
   font-size: 0.82rem;
-  color: rgba(255,255,255,0.35);
+  color: var(--warm-grey);
   transition: color var(--transition);
 }
-.wizard-back:hover { color: rgba(255,255,255,0.7); }
+.wizard-back:hover { color: var(--mid-grey); }
 
 .wizard-category {
   font-size: 0.78rem;
@@ -1002,7 +1043,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 
 .wizard-step-indicator {
   font-size: 0.78rem;
-  color: rgba(255,255,255,0.25);
+  color: var(--warm-grey);
 }
 
 .wizard-trail {
@@ -1011,7 +1052,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   gap: 8px;
   margin-bottom: 32px;
   padding-bottom: 32px;
-  border-bottom: 1px solid rgba(255,255,255,0.06);
+  border-bottom: 1px solid var(--border);
 }
 
 .trail-item {
@@ -1020,12 +1061,12 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   gap: 12px;
   font-size: 0.82rem;
 }
-.trail-question { color: rgba(255,255,255,0.3); }
+.trail-question { color: var(--warm-grey); }
 .trail-answer {
-  color: rgba(255,255,255,0.7);
+  color: var(--charcoal);
   font-weight: 500;
   padding: 2px 10px;
-  background: rgba(255,255,255,0.06);
+  background: var(--cream);
   border-radius: 4px;
 }
 
@@ -1044,11 +1085,11 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 }
 
 .wizard-question {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-family: 'Playfair Display', Georgia, serif;
   font-size: clamp(1.6rem, 4vw, 2.4rem);
-  font-weight: 300;
+  font-weight: 600;
   line-height: 1.2;
-  color: var(--white);
+  color: var(--charcoal);
   letter-spacing: -0.02em;
   margin-bottom: 40px;
 }
@@ -1067,20 +1108,20 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   align-items: center;
   gap: 16px;
   padding: 18px 20px;
-  border: 1.5px solid rgba(255,255,255,0.1);
+  border: 1.5px solid var(--border);
   border-radius: var(--radius-sm);
   transition: all 0.2s ease;
-  background: rgba(255,255,255,0.02);
+  background: var(--surface);
 }
 
 .wizard-option:hover .wizard-option-inner {
-  border-color: rgba(245,158,11,0.4);
-  background: rgba(245,158,11,0.05);
+  border-color: var(--amber-border);
+  background: var(--amber-glow);
 }
 
 .wizard-option.selected .wizard-option-inner {
   border-color: var(--amber);
-  background: rgba(245,158,11,0.08);
+  background: var(--amber-glow);
 }
 
 .wizard-option-indicator {
@@ -1088,7 +1129,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   height: 18px;
   min-width: 18px;
   border-radius: 50%;
-  border: 2px solid rgba(255,255,255,0.2);
+  border: 2px solid var(--border-strong);
   transition: all 0.2s ease;
   display: flex;
   align-items: center;
@@ -1105,22 +1146,22 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: var(--black);
+  background: var(--white);
 }
 
 .wizard-option-label {
   font-size: 0.95rem;
-  color: rgba(255,255,255,0.75);
+  color: var(--deep-grey);
   line-height: 1.4;
 }
-.wizard-option.selected .wizard-option-label { color: var(--white); }
+.wizard-option.selected .wizard-option-label { color: var(--charcoal); }
 
 .wizard-actions { display: flex; justify-content: flex-end; }
 
 .wizard-assurance {
   margin-top: 32px;
   font-size: 0.78rem;
-  color: rgba(255,255,255,0.2);
+  color: var(--warm-grey);
   display: flex;
   align-items: center;
   gap: 8px;
@@ -1133,7 +1174,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 .answer-page { background: var(--off-white); }
 
 .answer-hero {
-  background: var(--black);
+  background: var(--charcoal);
   padding: 80px 24px;
 }
 
@@ -1153,9 +1194,9 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 }
 
 .answer-headline {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-family: 'Playfair Display', Georgia, serif;
   font-size: clamp(1.8rem, 4vw, 2.8rem);
-  font-weight: 300;
+  font-weight: 600;
   color: var(--white);
   line-height: 1.2;
   letter-spacing: -0.02em;
@@ -1285,9 +1326,9 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   padding: 48px 0 32px;
 }
 .page-header h1 {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-family: 'Playfair Display', Georgia, serif;
   font-size: 2.2rem;
-  font-weight: 400;
+  font-weight: 600;
   letter-spacing: -0.02em;
   margin-bottom: 4px;
 }
@@ -1299,15 +1340,16 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: var(--white);
+  background: var(--surface);
   border-radius: var(--radius-sm);
   padding: 18px 20px;
-  border: 1.5px solid transparent;
-  transition: border-color var(--transition);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+  transition: border-color var(--transition), box-shadow var(--transition);
   gap: 16px;
 }
 
-.history-item:hover { border-color: #e5e5e5; }
+.history-item:hover { border-color: var(--amber-border); box-shadow: var(--shadow-md); }
 .history-item-title { font-size: 0.9rem; font-weight: 500; margin-bottom: 4px; }
 .history-item-meta  { font-size: 0.78rem; color: var(--text-muted); }
 
@@ -1340,7 +1382,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 
 .credit-pack.featured {
   border-color: var(--amber);
-  box-shadow: 0 8px 32px rgba(245,158,11,0.15);
+  box-shadow: var(--shadow-amber);
 }
 
 .pack-badge {
@@ -1358,10 +1400,10 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 }
 
 .pack-count {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-family: 'Playfair Display', Georgia, serif;
   font-size: 3rem;
-  font-weight: 400;
-  color: var(--text);
+  font-weight: 600;
+  color: var(--charcoal);
   line-height: 1;
   margin-bottom: 4px;
 }
@@ -1429,7 +1471,7 @@ tbody tr:hover { background: #fafafa; }
 .admin-body {
   background: #0f0f0f;
   color: #ccc;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 }
 
 .nav-admin {
@@ -1474,10 +1516,10 @@ tbody tr:hover { background: #fafafa; }
 }
 
 .stat-value {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-family: 'Playfair Display', Georgia, serif;
   font-size: 2.4rem;
-  font-weight: 400;
-  color: var(--white);
+  font-weight: 600;
+  color: #fff;
   line-height: 1;
 }
 
@@ -1501,7 +1543,7 @@ tbody tr:hover { background: #fafafa; }
   border: 1.5px solid #2a2a2a;
   border-radius: var(--radius-sm);
   color: #eee;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   font-size: 0.9rem;
   outline: none;
   transition: border-color var(--transition);
@@ -1550,7 +1592,7 @@ tbody tr:hover { background: #fafafa; }
 }
 
 .admin-login-logo {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   font-size: 1.3rem;
   font-weight: 600;
   color: #fff;
@@ -1574,7 +1616,7 @@ tbody tr:hover { background: #fafafa; }
   border: 1.5px solid #2a2a2a;
   border-radius: var(--radius-sm);
   color: #eee;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   font-size: 0.9rem;
   outline: none;
   transition: border-color var(--transition);
@@ -1685,7 +1727,7 @@ tbody tr:hover { background: #fafafa; }
 }
 
 .stat-number {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-family: 'Playfair Display', Georgia, serif;
   font-size: 2.8rem;
   font-weight: 600;
   color: var(--amber);
@@ -1706,12 +1748,12 @@ tbody tr:hover { background: #fafafa; }
 }
 .who-section {
   padding: 80px 0;
-  background: var(--near-black);
+  background: var(--cream);
 }
 
 .who-section h2 {
   margin-bottom: 40px;
-  color: var(--white);
+  color: var(--charcoal);
 }
 
 .who-grid {
@@ -1721,10 +1763,11 @@ tbody tr:hover { background: #fafafa; }
 }
 
 .who-card {
-  background: rgba(255,255,255,0.04);
-  border: 1px solid rgba(255,255,255,0.08);
+  background: var(--white);
+  border: 1px solid var(--border);
   border-radius: var(--radius);
   padding: 28px 24px;
+  box-shadow: var(--shadow-sm);
 }
 
 .who-title {
@@ -1738,7 +1781,7 @@ tbody tr:hover { background: #fafafa; }
 
 .who-card p {
   font-size: 0.88rem;
-  color: var(--text-muted);
+  color: var(--mid-grey);
   line-height: 1.7;
   margin: 0;
 }
@@ -1843,3 +1886,7 @@ tbody tr:hover { background: #fafafa; }
   padding-left: 20px;
   transition: all 0.3s ease;
 }
+
+/* Section reveals */
+.reveal { opacity: 0; transform: translateY(30px); transition: opacity 0.6s ease, transform 0.6s ease; }
+.reveal.visible { opacity: 1; transform: translateY(0); }

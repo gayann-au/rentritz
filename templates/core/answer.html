@@ -5,15 +5,15 @@
 {% block content %}
 <style>
   :root {
-    --black:      #0a0a0a;
-    --hero-bg:    #0d0d0d;
-    --card:       #1a1a1a;
-    --amber:      #f59e0b;
-    --amber-dark: #d97706;
-    --white:      #ffffff;
-    --border:     rgba(255,255,255,0.07);
-    --muted:      rgba(255,255,255,0.35);
-    --body-text:  rgba(255,255,255,0.82);
+    --black:      #f8f6f2;
+    --hero-bg:    #f0ece6;
+    --card:       #ffffff;
+    --amber:      #c8820a;
+    --amber-dark: #b8720a;
+    --white:      #1c1916;
+    --border:     rgba(58,53,48,0.12);
+    --muted:      rgba(58,53,48,0.5);
+    --body-text:  rgba(28,25,22,0.87);
   }
 
   .ans-page {
@@ -59,7 +59,7 @@
     border: 1px solid rgba(245,158,11,0.35);
     border-radius: 100px;
     padding: 5px 16px;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     font-size: 0.73rem;
     font-weight: 600;
     letter-spacing: 0.12em;
@@ -77,10 +77,10 @@
   }
 
   .ans-hero-headline {
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     font-size: clamp(2rem, 5vw, 3.2rem);
     font-weight: 600;
-    color: var(--white);
+    color: #ffffff;
     line-height: 1.25;
     margin: 0 0 26px;
   }
@@ -95,7 +95,7 @@
   }
 
   .path-chip {
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     font-size: 0.78rem;
     color: rgba(255,255,255,0.6);
     background: rgba(255,255,255,0.04);
@@ -126,7 +126,8 @@
   }
 
   .ans-date {
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    color: rgba(255,255,255,0.6) !important;
+    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     font-size: 0.8rem;
     color: var(--muted);
   }
@@ -141,7 +142,7 @@
     background: rgba(255,255,255,0.05);
     border: 1px solid rgba(255,255,255,0.1);
     color: rgba(255,255,255,0.6);
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     font-size: 0.78rem;
     padding: 7px 10px;
     border-radius: 8px;
@@ -157,7 +158,7 @@
     gap: 6px;
     background: var(--amber);
     color: #000;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     font-size: 0.8rem;
     font-weight: 700;
     padding: 8px 16px;
@@ -177,7 +178,7 @@
   /* ── READ PROGRESS BAR ── */
   .read-progress-bar {
     height: 3px;
-    background: rgba(255,255,255,0.05);
+    background: rgba(58,53,48,0.08);
     width: 100%;
   }
 
@@ -189,7 +190,7 @@
   .progress-seg {
     flex: 1;
     height: 100%;
-    background: rgba(255,255,255,0.05);
+    background: rgba(58,53,48,0.08);
     transition: background 0.25s;
   }
   .progress-seg.done   { background: rgba(245,158,11,0.55); }
@@ -197,7 +198,7 @@
 
   .read-section-label {
     text-align: center;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     font-size: 0.7rem;
     letter-spacing: 0.12em;
     text-transform: uppercase;
@@ -248,7 +249,7 @@
     display: flex;
     align-items: center;
     gap: 10px;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     font-size: 1rem;
     font-weight: 700;
     letter-spacing: 0.1em;
@@ -268,7 +269,7 @@
 
   /* ── SITUATION ── */
   .answer-situation {
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     font-size: 1rem;
     color: var(--body-text);
     line-height: 1.85;
@@ -295,7 +296,7 @@
     display: flex;
     align-items: flex-start;
     gap: 12px;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     font-size: 0.95rem;
     color: var(--body-text);
     line-height: 1.75;
@@ -347,7 +348,7 @@
     position: absolute;
     left: 0;
     top: -6px;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     font-size: 2.5rem;
     font-weight: 300;
     color: var(--amber);
@@ -367,7 +368,7 @@
   }
 
   .law-ref-tag {
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     font-size: 0.8rem;
     color: var(--amber);
     background: rgba(245,158,11,0.05);
@@ -392,7 +393,7 @@
   .rera-section .answer-section-title { color: #000; }
   .rera-section .answer-section-title::before { background: #000; }
   .rera-section p {
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     font-size: 0.9rem;
     color: rgba(0,0,0,0.7);
     line-height: 1.75;
@@ -402,7 +403,7 @@
     display: inline-block;
     background: #000;
     color: #fff;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     font-size: 0.88rem;
     font-weight: 600;
     padding: 10px 22px;
@@ -415,7 +416,7 @@
   /* ── DISCLAIMER ── */
   .ans-disclaimer {
     text-align: center;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     font-size: 0.78rem;
     font-style: italic;
     color: var(--muted);
@@ -428,7 +429,7 @@
   .ans-disclaimer strong {
     font-weight: 600;
     font-style: normal;
-    color: rgba(255,255,255,0.45);
+    color: rgba(28,25,22,0.65);
   }
 
   /* ── ACTION BUTTONS ── */
@@ -444,7 +445,7 @@
     display: inline-block;
     background: var(--amber);
     color: #000;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     font-size: 0.92rem;
     font-weight: 700;
     padding: 14px 30px;
@@ -468,19 +469,20 @@
   .btn-ans-secondary {
     display: inline-block;
     background: transparent;
-    color: rgba(255,255,255,0.7);
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    color: var(--amber);
+    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     font-size: 0.92rem;
     font-weight: 600;
     padding: 14px 30px;
-    border: 1px solid rgba(255,255,255,0.18);
+    border: 1px solid rgba(200,130,10,0.35);
     border-radius: 10px;
     text-decoration: none;
-    transition: border-color 0.2s, color 0.2s, transform 0.15s;
+    transition: border-color 0.2s, color 0.2s, background 0.2s, transform 0.15s;
   }
   .btn-ans-secondary:hover {
-    border-color: rgba(255,255,255,0.45);
-    color: var(--white);
+    border-color: var(--amber);
+    background: rgba(200,130,10,0.06);
+    color: var(--amber-dark);
     transform: translateY(-2px);
   }
 

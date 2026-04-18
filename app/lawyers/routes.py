@@ -3,7 +3,7 @@ import os
 
 from flask import (
     Blueprint, abort, current_app, flash, jsonify, redirect, render_template,
-    request, url_for,
+    request, session, url_for,
 )
 from flask_login import current_user, login_required, login_user
 from flask_mail import Message
@@ -125,23 +125,32 @@ def login():
 def browse():
     if not current_user.is_authenticated:
         flash('Please log in to find and connect with lawyers.', 'info')
-        return redirect(url_for('auth.login'))
+        return redirect(url_for('auth.login', next='/lawyers/'))
 
-    spec_slug = request.args.get('specialisation', '').strip()
-    language  = request.args.get('language', '').strip()
-    search    = request.args.get('search', '').strip()
-    page      = request.args.get('page', 1, type=int)
+    if current_user.role == 'lawyer':
+        return redirect(url_for('lawyers.dashboard'))
+
+    spec_slug         = request.args.get('specialisation', '').strip()
+    city              = request.args.get('city', '').strip()
+    language          = request.args.get('language', '').strip()
+    search            = request.args.get('search', '').strip()
+    min_rate          = request.args.get('min_rate', '', type=str).strip()
+    max_rate          = request.args.get('max_rate', '', type=str).strip()
+    free_consultation = request.args.get('free_consultation', '')
+    page              = request.args.get('page', 1, type=int)
+
+    try:
+        min_rate_val = float(min_rate) if min_rate else None
+    except ValueError:
+        min_rate_val = None
+    try:
+        max_rate_val = float(max_rate) if max_rate else None
+    except ValueError:
+        max_rate_val = None
 
     query = LawyerProfile.query.filter(
         LawyerProfile.is_active == True,
-        LawyerProfile.is_available == True,
         LawyerProfile.verification_status == 'verified',
-        LawyerProfile.bio.isnot(None),
-        db.or_(
-            LawyerProfile.phone.isnot(None),
-            LawyerProfile.whatsapp.isnot(None),
-            LawyerProfile.contact_email.isnot(None),
-        ),
     )
 
     if spec_slug:
@@ -149,10 +158,20 @@ def browse():
             LawyerSpecialisation.slug == spec_slug
         )
 
+    if city:
+        query = query.filter(LawyerProfile.office_city.ilike(f'%{city}%'))
+
     if language:
-        query = query.filter(
-            LawyerProfile.languages.contains([language])
-        )
+        query = query.filter(LawyerProfile.languages.contains([language]))
+
+    if min_rate_val is not None:
+        query = query.filter(LawyerProfile.hourly_rate_aed >= min_rate_val)
+
+    if max_rate_val is not None:
+        query = query.filter(LawyerProfile.hourly_rate_aed <= max_rate_val)
+
+    if free_consultation == '1':
+        query = query.filter_by(offers_free_first_consultation=True)
 
     if search:
         like = f'%{search}%'
@@ -165,7 +184,8 @@ def browse():
 
     query = query.order_by(
         LawyerProfile.is_featured.desc(),
-        LawyerProfile.total_unlocks.desc(),
+        LawyerProfile.total_reviews.desc(),
+        LawyerProfile.profile_views.asc(),
     )
 
     lawyers = query.paginate(page=page, per_page=12, error_out=False)
@@ -178,8 +198,12 @@ def browse():
         lawyers=lawyers,
         specialisations=specialisations,
         current_spec=spec_slug,
+        current_city=city,
         current_language=language,
         current_search=search,
+        current_min_rate=min_rate,
+        current_max_rate=max_rate,
+        current_free_consultation=free_consultation,
     )
 
 
@@ -189,49 +213,76 @@ def browse():
 
 @lawyers_bp.route('/<int:lawyer_profile_id>')
 def profile(lawyer_profile_id):
-    if not current_user.is_authenticated:
-        flash('Please log in to find and connect with lawyers.', 'info')
-        return redirect(url_for('auth.login'))
-
-    # Lawyers viewing their own profile go to their dashboard, not the public page
-    if current_user.role == 'lawyer':
+    # Lawyers viewing their own profile go to their dashboard
+    if current_user.is_authenticated and current_user.role == 'lawyer':
         own = LawyerProfile.query.filter_by(user_id=current_user.id).first()
         if own and own.id == lawyer_profile_id:
             return redirect(url_for('lawyers.dashboard'))
 
     lawyer = LawyerProfile.query.filter_by(
-        id=lawyer_profile_id, is_active=True
+        id=lawyer_profile_id, is_active=True, verification_status='verified'
     ).first_or_404()
 
-    # Atomic increment — no ORM object load required
-    db.session.execute(
-        text('UPDATE lawyer_profiles SET profile_views = profile_views + 1 WHERE id = :id'),
-        {'id': lawyer_profile_id},
-    )
-    db.session.commit()
+    # Increment profile views — skip for admin (own lawyer already redirected)
+    if not (current_user.is_authenticated and current_user.role == 'admin'):
+        try:
+            db.session.execute(
+                text('UPDATE lawyer_profiles SET profile_views = profile_views + 1 WHERE id = :id'),
+                {'id': lawyer_profile_id},
+            )
+            db.session.commit()
+        except Exception as e:
+            db.session.rollback()
+            current_app.logger.error('profile_views increment failed: %s', e)
 
-    contact_unlocked = False
+    # Contact unlock state
+    contact_unlocked      = False
+    unlocked_booking      = None
+    viewer_is_other_lawyer = False
+
     if current_user.is_authenticated:
-        contact_unlocked = LawyerBooking.query.filter_by(
+        if current_user.role == 'admin':
+            contact_unlocked = True
+        elif current_user.role == 'lawyer':
+            viewer_is_other_lawyer = True
+        else:
+            unlocked_booking = LawyerBooking.query.filter_by(
+                client_id=current_user.id,
+                lawyer_profile_id=lawyer.id,
+            ).filter(
+                LawyerBooking.status.in_(['contact_unlocked', 'completed'])
+            ).first()
+            contact_unlocked = False
+
+    # Review eligibility — only clients who have unlocked
+    can_review      = False
+    already_reviewed = False
+    if current_user.is_authenticated and current_user.role in ('tenant', 'landlord') and unlocked_booking:
+        already_reviewed = LawyerReview.query.filter_by(
             client_id=current_user.id,
             lawyer_profile_id=lawyer.id,
-        ).filter(
-            LawyerBooking.status.in_(['contact_unlocked', 'completed'])
         ).first() is not None
+        can_review = not already_reviewed
 
     reviews = LawyerReview.query.filter_by(
         lawyer_profile_id=lawyer.id,
         is_visible=True,
-    ).order_by(LawyerReview.created_at.desc()).limit(10).all()
+    ).order_by(LawyerReview.created_at.desc()).all()
 
-    user_credits = current_user.available_credits if current_user.is_authenticated else 0
+    user_credits = 0
+    if current_user.is_authenticated and current_user.role in ('tenant', 'landlord'):
+        user_credits = current_user.available_credits
 
     return render_template(
         'lawyers/profile.html',
         lawyer=lawyer,
         reviews=reviews,
         contact_unlocked=contact_unlocked,
+        unlocked_booking=unlocked_booking,
+        viewer_is_other_lawyer=viewer_is_other_lawyer,
         user_credits=user_credits,
+        can_review=can_review,
+        already_reviewed=already_reviewed,
     )
 
 
@@ -248,18 +299,12 @@ def unlock_contact(lawyer_profile_id):
         verification_status='verified',
     ).first_or_404()
 
+    # Only tenants and landlords may unlock contact details
+    if current_user.role not in ('tenant', 'landlord'):
+        return jsonify({'error': 'forbidden', 'message': 'Only clients can unlock contact details.'}), 403
+
     if current_user.id == lawyer.user_id:
-        abort(403)
-
-    existing = LawyerBooking.query.filter_by(
-        client_id=current_user.id,
-        lawyer_profile_id=lawyer.id,
-    ).filter(
-        LawyerBooking.status.in_(['contact_unlocked', 'completed'])
-    ).first()
-
-    if existing:
-        return jsonify({'already_unlocked': True, 'message': 'Already unlocked'}), 200
+        return jsonify({'error': 'forbidden', 'message': 'You cannot unlock your own profile.'}), 403
 
     cost = lawyer.contact_unlock_credits
     if current_user.available_credits < cost:
@@ -306,7 +351,11 @@ def unlock_contact(lawyer_profile_id):
         {'id': lawyer.id},
     )
 
-    db.session.commit()
+    try:
+        db.session.commit()
+    except Exception:
+        db.session.rollback()
+        raise
 
     response_data = {'success': True, 'credits_remaining': current_user.credits}
     if lawyer.phone:
@@ -330,7 +379,7 @@ def register():
         flash('Please sign in to your lawyer account first.', 'info')
         return redirect(url_for('lawyers.login'))
 
-    if current_user.role in ('tenant', 'landlord', 'client'):
+    if current_user.role in ('tenant', 'landlord'):
         flash('The lawyer portal is for legal professionals only.', 'error')
         return redirect(url_for('core.dashboard'))
 
@@ -388,6 +437,7 @@ def register():
                 initial_consultation_fee_aed=form.initial_consultation_fee_aed.data,
                 fee_on_case_basis=form.fee_on_case_basis.data,
                 pricing_note=form.pricing_note.data or None,
+                contact_unlock_credits=form.contact_unlock_credits.data or 5,
                 phone=form.phone.data or None,
                 whatsapp=form.whatsapp.data or None,
                 contact_email=form.contact_email.data or None,
@@ -438,6 +488,27 @@ def register():
                         current_user.email, e,
                     )
 
+            # Confirm submission to the lawyer
+            try:
+                spec_names = ', '.join(s.name for s in profile.specialisations) or None
+                msg = Message(
+                    subject='Your Rentritz profile is under review',
+                    recipients=[current_user.email],
+                    html=render_template(
+                        'email/lawyer_submitted.html',
+                        name=profile.display_name or current_user.full_name.split()[0],
+                        bar_number=profile.bar_number,
+                        specialisations=spec_names,
+                        dashboard_url=url_for('lawyers.dashboard', _external=True),
+                    ),
+                )
+                mail.send(msg)
+            except Exception as e:
+                current_app.logger.error(
+                    'Failed to send submission confirmation to %s: %s',
+                    current_user.email, e,
+                )
+
             flash('Profile submitted. Our team will review and verify it shortly.', 'success')
             return redirect(url_for('lawyers.dashboard'))
 
@@ -471,11 +542,17 @@ def dashboard():
         is_visible=True,
     ).order_by(LawyerReview.created_at.desc()).limit(5).all()
 
+    reviews = LawyerReview.query.filter_by(
+        lawyer_profile_id=profile.id,
+        is_visible=True,
+    ).order_by(LawyerReview.created_at.desc()).all()
+
     return render_template(
         'lawyers/dashboard.html',
         profile=profile,
         bookings=bookings,
         recent_reviews=recent_reviews,
+        reviews=reviews,
     )
 
 
@@ -546,6 +623,7 @@ def edit_profile():
         profile.initial_consultation_fee_aed = form.initial_consultation_fee_aed.data
         profile.fee_on_case_basis     = form.fee_on_case_basis.data
         profile.pricing_note          = form.pricing_note.data or None
+        profile.contact_unlock_credits = form.contact_unlock_credits.data or 5
         profile.phone                 = form.phone.data or None
         profile.whatsapp              = form.whatsapp.data or None
         profile.contact_email         = form.contact_email.data or None
@@ -718,3 +796,76 @@ def submit_review(booking_id):
     flash('Thank you for your review.', 'success')
     return redirect(url_for('lawyers.profile',
                             lawyer_profile_id=booking.lawyer_profile_id))
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# ROUTE 11 — Submit review from profile page (POST /lawyers/<id>/review)
+# ─────────────────────────────────────────────────────────────────────────────
+
+@lawyers_bp.route('/<int:lawyer_profile_id>/review', methods=['POST'])
+@login_required
+def submit_lawyer_review(lawyer_profile_id):
+    if current_user.role not in ('tenant', 'landlord'):
+        flash('Only clients can submit reviews.', 'error')
+        return redirect(url_for('lawyers.profile', lawyer_profile_id=lawyer_profile_id))
+
+    lawyer = LawyerProfile.query.filter_by(
+        id=lawyer_profile_id, is_active=True
+    ).first_or_404()
+
+    booking = LawyerBooking.query.filter_by(
+        client_id=current_user.id,
+        lawyer_profile_id=lawyer.id,
+        status='contact_unlocked',
+    ).first()
+
+    if not booking:
+        flash('Unlock this lawyer first to leave a review.', 'error')
+        return redirect(url_for('lawyers.profile', lawyer_profile_id=lawyer.id))
+
+    existing = LawyerReview.query.filter_by(
+        client_id=current_user.id,
+        lawyer_profile_id=lawyer.id,
+    ).first()
+    if existing:
+        flash('You have already reviewed this lawyer.', 'info')
+        return redirect(url_for('lawyers.profile', lawyer_profile_id=lawyer_profile_id))
+
+    rating = request.form.get('rating', type=int)
+    if not rating or rating not in range(1, 6):
+        flash('Please select a rating from 1 to 5.', 'error')
+        return redirect(url_for('lawyers.profile', lawyer_profile_id=lawyer_profile_id))
+
+    comment = request.form.get('comment', '').strip()[:1000] or None
+
+    review = LawyerReview(
+        lawyer_profile_id=lawyer.id,
+        client_id=current_user.id,
+        booking_id=booking.id,
+        rating=rating,
+        comment=comment,
+        is_visible=True,
+    )
+    db.session.add(review)
+
+    # Recalculate denormalised stats
+    try:
+        db.session.flush()
+        all_ratings = db.session.query(
+            db.func.avg(LawyerReview.rating),
+            db.func.count(LawyerReview.id),
+        ).filter(
+            LawyerReview.lawyer_profile_id == lawyer.id,
+            LawyerReview.is_visible == True,
+        ).one()
+        lawyer.average_rating = round(float(all_ratings[0]), 2) if all_ratings[0] else None
+        lawyer.total_reviews  = all_ratings[1]
+        db.session.commit()
+    except Exception as e:
+        db.session.rollback()
+        current_app.logger.error('Review submission failed for lawyer %s: %s', lawyer_profile_id, e)
+        flash('Something went wrong. Please try again.', 'error')
+        return redirect(url_for('lawyers.profile', lawyer_profile_id=lawyer_profile_id))
+
+    flash('Review submitted. Thank you!', 'success')
+    return redirect(url_for('lawyers.profile', lawyer_profile_id=lawyer_profile_id))

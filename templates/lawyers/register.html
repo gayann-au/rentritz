@@ -5,9 +5,9 @@
 {% block content %}
 <style>
 :root{
-  --black:#0a0a0a;--dark-card:#1a1a1a;--amber:#f59e0b;--amber-dark:#d97706;
-  --white:#ffffff;--text-muted:#888888;--text-dim:#555555;
-  --border:rgba(255,255,255,0.07);--radius:14px;
+  --black:#f8f6f2;--dark-card:#ffffff;--amber:#c8820a;--amber-dark:#b8720a;
+  --white:#1c1916;--text-muted:#6b6259;--text-dim:#9a8f82;
+  --border:rgba(58,53,48,0.12);--radius:14px;
   --ease:cubic-bezier(0.4,0,0.2,1);--ease-out:cubic-bezier(0.22,1,0.36,1);
 }
 .sr{opacity:0;transform:translateY(24px);transition:opacity 0.6s var(--ease-out),transform 0.6s var(--ease-out);}
@@ -43,7 +43,7 @@
 
 .lr-input,.lr-textarea,.lr-select{
   display:block;width:100%;box-sizing:border-box;
-  background:rgba(255,255,255,0.04);border:1px solid var(--border);
+  background:rgba(58,53,48,0.03);border:1px solid var(--border);
   border-radius:8px;padding:10px 14px;font-size:0.875rem;color:var(--white);
   outline:none;transition:border-color 0.2s var(--ease);font-family:inherit;
 }
@@ -65,7 +65,7 @@
 /* File input */
 .lr-file-label{
   display:inline-flex;align-items:center;gap:8px;
-  padding:9px 16px;background:rgba(255,255,255,0.05);border:1px solid var(--border);
+  padding:9px 16px;background:rgba(58,53,48,0.03);border:1px solid var(--border);
   border-radius:8px;cursor:pointer;font-size:0.85rem;color:var(--text-muted);
   transition:border-color 0.2s,color 0.2s;
 }
@@ -262,6 +262,15 @@ input[type="file"]{display:none;}
           </label>
           {{ form.pricing_note(class='lr-textarea', rows=3, placeholder='e.g. I offer flexible payment plans for tenancy dispute cases.') }}
           {% if form.pricing_note.errors %}<div class="lr-error">{{ form.pricing_note.errors[0] }}</div>{% endif %}
+        </div>
+
+        <div class="lr-field">
+          <label class="lr-label" for="{{ form.contact_unlock_credits.id }}">
+            Contact unlock cost <span class="lr-label-opt">optional</span>
+          </label>
+          <div class="lr-hint">{{ form.contact_unlock_credits.description }}</div>
+          {{ form.contact_unlock_credits(class='lr-input', type='number', min='1', max='20', placeholder='5') }}
+          {% if form.contact_unlock_credits.errors %}<div class="lr-error">{{ form.contact_unlock_credits.errors[0] }}</div>{% endif %}
         </div>
       </div>
 

@@ -5,9 +5,9 @@
 {% block content %}
 <style>
 :root{
-  --black:#0a0a0a;--dark-card:#1a1a1a;--amber:#f59e0b;--amber-dark:#d97706;
-  --white:#ffffff;--text-muted:#888888;--text-dim:#555555;
-  --border:rgba(255,255,255,0.07);--radius:14px;
+  --black:#f8f6f2;--dark-card:#ffffff;--amber:#c8820a;--amber-dark:#b8720a;
+  --white:#1c1916;--text-muted:#6b6259;--text-dim:#9a8f82;
+  --border:rgba(58,53,48,0.12);--radius:14px;
   --ease:cubic-bezier(0.4,0,0.2,1);--ease-out:cubic-bezier(0.22,1,0.36,1);
 }
 .sr{opacity:0;transform:translateY(24px);transition:opacity 0.6s var(--ease-out),transform 0.6s var(--ease-out);}
@@ -29,7 +29,7 @@
 .lr-label-opt{font-size:0.72rem;color:var(--text-dim);font-weight:400;margin-left:6px;}
 .lr-hint{font-size:0.75rem;color:var(--text-dim);margin-top:5px;line-height:1.5;}
 .lr-error{font-size:0.75rem;color:#f87171;margin-top:5px;}
-.lr-input,.lr-textarea,.lr-select{display:block;width:100%;box-sizing:border-box;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:8px;padding:10px 14px;font-size:0.875rem;color:var(--white);outline:none;transition:border-color 0.2s var(--ease);font-family:inherit;}
+.lr-input,.lr-textarea,.lr-select{display:block;width:100%;box-sizing:border-box;background:rgba(58,53,48,0.03);border:1px solid var(--border);border-radius:8px;padding:10px 14px;font-size:0.875rem;color:var(--white);outline:none;transition:border-color 0.2s var(--ease);font-family:inherit;}
 .lr-input:focus,.lr-textarea:focus{border-color:rgba(245,158,11,0.4);}
 .lr-input::placeholder,.lr-textarea::placeholder{color:var(--text-dim);}
 .lr-textarea{resize:vertical;min-height:100px;}
@@ -39,7 +39,7 @@
 .lr-check-item{display:flex;align-items:center;gap:8px;cursor:pointer;}
 .lr-check-item input[type="checkbox"]{width:16px;height:16px;accent-color:var(--amber);cursor:pointer;flex-shrink:0;}
 .lr-check-item span{font-size:0.875rem;color:var(--white);}
-.lr-file-label{display:inline-flex;align-items:center;gap:8px;padding:9px 16px;background:rgba(255,255,255,0.05);border:1px solid var(--border);border-radius:8px;cursor:pointer;font-size:0.85rem;color:var(--text-muted);transition:border-color 0.2s,color 0.2s;}
+.lr-file-label{display:inline-flex;align-items:center;gap:8px;padding:9px 16px;background:rgba(58,53,48,0.03);border:1px solid var(--border);border-radius:8px;cursor:pointer;font-size:0.85rem;color:var(--text-muted);transition:border-color 0.2s,color 0.2s;}
 .lr-file-label:hover{border-color:rgba(245,158,11,0.4);color:var(--amber);}
 input[type="file"]{display:none;}
 .lr-file-name{font-size:0.8rem;color:var(--text-dim);margin-top:6px;}
@@ -196,6 +196,15 @@ input[type="file"]{display:none;}
           <label class="lr-label" for="{{ form.pricing_note.id }}">Pricing note <span class="lr-label-opt">optional</span></label>
           {{ form.pricing_note(class='lr-textarea', rows=3) }}
           {% if form.pricing_note.errors %}<div class="lr-error">{{ form.pricing_note.errors[0] }}</div>{% endif %}
+        </div>
+
+        <div class="lr-field">
+          <label class="lr-label" for="{{ form.contact_unlock_credits.id }}">
+            Contact unlock cost <span class="lr-label-opt">optional</span>
+          </label>
+          <div class="lr-hint">{{ form.contact_unlock_credits.description }}</div>
+          {{ form.contact_unlock_credits(class='lr-input', type='number', min='1', max='20') }}
+          {% if form.contact_unlock_credits.errors %}<div class="lr-error">{{ form.contact_unlock_credits.errors[0] }}</div>{% endif %}
         </div>
       </div>
 

@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Your Rentritz Profile Is Under Review</title>
+  <style>
+    body { margin:0; padding:0; background-color:#0f0f0f; font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif; color:#e5e5e5; }
+    .wrapper { max-width:560px; margin:0 auto; padding:40px 20px; }
+    .card { background-color:#1a1a1a; border:1px solid #2a2a2a; border-radius:12px; padding:48px 40px; }
+    .logo { font-size:22px; font-weight:700; letter-spacing:-0.5px; margin-bottom:32px; display:block; }
+    .logo span { color:#f59e0b; }
+    h1 { font-size:24px; font-weight:600; color:#ffffff; margin:0 0 12px; }
+    p { font-size:15px; line-height:1.6; color:#a3a3a3; margin:0 0 24px; }
+    .status-badge { display:inline-block; background-color:#1c1007; border:1px solid #f59e0b; color:#f59e0b; font-size:14px; font-weight:600; padding:8px 18px; border-radius:999px; margin-bottom:28px; }
+    .detail-row { display:flex; justify-content:space-between; padding:10px 0; border-bottom:1px solid #2a2a2a; font-size:14px; }
+    .detail-row:last-child { border-bottom:none; }
+    .detail-label { color:#6b6b6b; }
+    .detail-value { color:#e5e5e5; font-weight:500; }
+    .btn { display:inline-block; background-color:#f59e0b; color:#0f0f0f !important; font-size:15px; font-weight:600; text-decoration:none; padding:14px 32px; border-radius:8px; letter-spacing:0.2px; }
+    .divider { border:none; border-top:1px solid #2a2a2a; margin:36px 0; }
+    .note { font-size:13px; color:#6b6b6b; margin:0; }
+    .footer { text-align:center; margin-top:28px; font-size:12px; color:#444; }
+  </style>
+</head>
+<body>
+  <div class="wrapper">
+    <div class="card">
+      <span class="logo">Rentritz <span>Dubai</span></span>
+
+      <h1>Profile received &mdash; under review</h1>
+
+      <div class="status-badge">Pending Review</div>
+
+      <p>
+        Hi {{ name }},<br><br>
+        Thank you for submitting your lawyer profile on Rentritz Dubai.
+        Our team has received your details and will review your credentials
+        within <strong style="color:#ffffff;">1&ndash;2 business days</strong>.
+      </p>
+
+      <p>
+        You will receive an email as soon as your profile is approved or if
+        we need any additional information from you.
+      </p>
+
+      {% if bar_number %}
+      <div style="background:#111;border:1px solid #2a2a2a;border-radius:8px;padding:20px;margin-bottom:24px;">
+        <div class="detail-row">
+          <span class="detail-label">Bar / Licence Number</span>
+          <span class="detail-value">{{ bar_number }}</span>
+        </div>
+        {% if specialisations %}
+        <div class="detail-row">
+          <span class="detail-label">Practice Areas</span>
+          <span class="detail-value">{{ specialisations }}</span>
+        </div>
+        {% endif %}
+      </div>
+      {% endif %}
+
+      <p>
+        While your profile is under review, you can log in at any time
+        to update your bio, photo, or contact details.
+      </p>
+
+      <a href="{{ dashboard_url }}" class="btn">Go to your dashboard</a>
+
+      <hr class="divider">
+
+      <p class="note">
+        If you did not submit a Rentritz lawyer profile, please ignore
+        this email or contact us immediately.
+      </p>
+    </div>
+    <div class="footer">&copy; 2026 Rentritz Dubai. Dubai Legal Services.</div>
+  </div>
+</body>
+</html>

@@ -5,16 +5,16 @@
 {% block content %}
 <style>
 :root {
-  --black:      #0a0a0a;
-  --dark-card:  #1a1a1a;
-  --dark-card-hover: #222222;
-  --amber:      #f59e0b;
-  --amber-dark: #d97706;
-  --white:      #ffffff;
-  --text-muted: #888888;
-  --text-dim:   #555555;
-  --border:     rgba(255,255,255,0.07);
-  --border-hover: rgba(245,158,11,0.35);
+  --black: #f8f6f2;
+  --dark-card: #ffffff;
+  --dark-card-hover: #f0ece6;
+  --amber: #c8820a;
+  --amber-dark: #b8720a;
+  --white: #1c1916;
+  --text-muted: #6b6259;
+  --text-dim: #9a8f82;
+  --border: rgba(58,53,48,0.12);
+  --border-hover: rgba(200,130,10,0.35);
   --radius:     14px;
   --ease:       cubic-bezier(0.4, 0, 0.2, 1);
   --ease-out:   cubic-bezier(0.22, 1, 0.36, 1);
@@ -24,10 +24,12 @@
 .sr.in { opacity:1; transform:translateY(0); }
 
 .lw-page { min-height:100vh; background:var(--black); padding:56px 0 100px; }
-.lw-container { width:100%; max-width:1200px; margin:0 auto; padding:0 32px; }
+.lw-container { width:100%; max-width:1240px; margin:0 auto; padding:0 32px; }
+.lw-layout { display:grid; grid-template-columns:240px 1fr; gap:32px; align-items:start; }
+@media(max-width:900px){ .lw-layout { grid-template-columns:1fr; } }
 
 /* Header */
-.lw-header { margin-bottom:48px; }
+.lw-header { margin-bottom:40px; }
 .lw-eyebrow {
   font-size:0.67rem; font-weight:600; letter-spacing:0.2em; text-transform:uppercase;
   color:var(--amber); display:flex; align-items:center; gap:10px; margin-bottom:14px;
@@ -38,68 +40,112 @@
   letter-spacing:-0.02em; margin:0 0 10px;
 }
 .lw-header p { font-size:1rem; color:var(--text-muted); margin:0; }
+.lw-header h1::after{content:"";display:block;width:40px;height:2px;background:var(--amber);margin-top:14px;}
 
-/* Filter bar */
-.lw-filters {
-  background:var(--dark-card); border:1px solid var(--border); border-radius:var(--radius);
-  padding:20px 24px; margin-bottom:40px;
-  display:flex; flex-wrap:wrap; align-items:center; gap:12px;
+/* Sidebar */
+.lw-sidebar {
+  background:var(--dark-card); border:1px solid var(--border);
+  border-radius:var(--radius); padding:20px;
+  position:sticky; top:24px;
 }
-
-.lw-filter-label {
+.lw-sidebar-title {
   font-size:0.7rem; font-weight:600; letter-spacing:0.15em; text-transform:uppercase;
-  color:var(--text-dim); margin-right:4px;
+  color:var(--text-dim); margin:0 0 16px;
 }
-
-.lw-spec-btn {
-  display:inline-flex; align-items:center; gap:6px;
-  font-size:0.8rem; font-weight:500; color:var(--text-muted);
-  background:transparent; border:1px solid var(--border);
-  border-radius:8px; padding:7px 14px;
-  text-decoration:none; transition:all 0.2s var(--ease); cursor:pointer;
+.lw-sidebar-section { margin-bottom:24px; }
+.lw-sidebar-label {
+  font-size:0.75rem; font-weight:600; color:var(--text-muted);
+  margin-bottom:10px; display:block;
 }
-.lw-spec-btn:hover, .lw-spec-btn.active {
-  color:var(--amber); border-color:rgba(245,158,11,0.4);
-  background:rgba(245,158,11,0.06);
+.lw-spec-checkbox { display:flex; align-items:center; gap:8px; margin-bottom:8px; cursor:pointer; }
+.lw-spec-checkbox input { accent-color:var(--amber); cursor:pointer; }
+.lw-spec-checkbox span { font-size:0.82rem; color:var(--text-muted); }
+.lw-spec-checkbox:hover span { color:var(--white); }
+
+.lw-filter-input {
+  width:100%; background:#ffffff; border:1px solid rgba(58,53,48,0.15);
+  border-radius:8px; padding:8px 12px; font-size:0.82rem;
+  color:#1c1916; outline:none; transition:border-color 0.2s var(--ease);
+  box-sizing:border-box;
 }
+.lw-filter-input:focus { border-color:rgba(245,158,11,0.4); }
+.lw-filter-input::placeholder { color:var(--text-dim); }
 
-.lw-filter-sep { width:1px; height:28px; background:var(--border); margin:0 4px; }
+.lw-price-row { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
 
+.lw-toggle-label {
+  display:flex; align-items:center; justify-content:space-between;
+  cursor:pointer; padding:8px 0;
+}
+.lw-toggle-label span { font-size:0.82rem; color:var(--text-muted); }
+.lw-toggle-switch {
+  width:36px; height:20px; background:rgba(58,53,48,0.12);
+  border-radius:10px; position:relative; transition:background 0.2s;
+  flex-shrink:0;
+}
+.lw-toggle-switch::after {
+  content:''; position:absolute; top:3px; left:3px;
+  width:14px; height:14px; border-radius:50%;
+  background:#fff; transition:transform 0.2s;
+}
+input:checked + .lw-toggle-switch { background:var(--amber); }
+input:checked + .lw-toggle-switch::after { transform:translateX(16px); }
+.lw-toggle-hidden { position:absolute; opacity:0; width:0; height:0; }
+
+.lw-sidebar-apply {
+  width:100%; background:var(--amber); color:#000; border:none;
+  border-radius:8px; padding:9px; font-size:0.82rem; font-weight:600;
+  cursor:pointer; transition:background 0.2s; margin-top:4px;
+}
+.lw-sidebar-apply:hover { background:var(--amber-dark); }
+.lw-clear-filters {
+  display:block; text-align:center; margin-top:10px;
+  font-size:0.78rem; color:var(--text-dim); text-decoration:none;
+}
+.lw-clear-filters:hover { color:var(--amber); }
+
+/* Main results */
+.lw-results-header {
+  display:flex; align-items:center; justify-content:space-between;
+  margin-bottom:20px;
+}
+.lw-results-count { font-size:0.85rem; color:var(--text-muted); }
+
+.lw-search-bar {
+  display:flex; gap:10px; margin-bottom:24px;
+}
 .lw-search {
-  flex:1; min-width:200px;
-  background:rgba(255,255,255,0.04); border:1px solid var(--border);
-  border-radius:8px; padding:8px 14px; font-size:0.875rem;
-  color:var(--white); outline:none; transition:border-color 0.2s var(--ease);
+  flex:1;
+  background:#ffffff; border:1px solid rgba(58,53,48,0.15);
+  border-radius:8px; padding:9px 14px; font-size:0.875rem;
+  color:#1c1916; outline:none; transition:border-color 0.2s var(--ease);
 }
 .lw-search:focus { border-color:rgba(245,158,11,0.4); }
 .lw-search::placeholder { color:var(--text-dim); }
-
-.lw-filter-btn {
+.lw-search-btn {
   background:var(--amber); color:#000; border:none; border-radius:8px;
-  padding:8px 18px; font-size:0.8rem; font-weight:600; cursor:pointer;
-  transition:background 0.2s var(--ease);
+  padding:9px 18px; font-size:0.82rem; font-weight:600; cursor:pointer;
+  transition:background 0.2s;
 }
-.lw-filter-btn:hover { background:var(--amber-dark); }
-
-.lw-clear { font-size:0.8rem; color:var(--text-dim); text-decoration:none; }
-.lw-clear:hover { color:var(--amber); }
+.lw-search-btn:hover { background:var(--amber-dark); box-shadow:0 0 16px rgba(245,158,11,.3); }
 
 /* Grid */
 .lw-grid {
   display:grid; grid-template-columns:repeat(3,1fr); gap:20px; margin-bottom:48px;
 }
-@media(max-width:900px){ .lw-grid { grid-template-columns:repeat(2,1fr); } }
+@media(max-width:1100px){ .lw-grid { grid-template-columns:repeat(2,1fr); } }
 @media(max-width:560px){ .lw-grid { grid-template-columns:1fr; } }
 
 .lw-card {
   display:flex; flex-direction:column;
-  background:var(--dark-card); border:1px solid var(--border);
+  background:var(--dark-card); border:1px solid var(--border);  border-left:3px solid transparent;
   border-radius:var(--radius); padding:24px; text-decoration:none;
   transition:background 0.25s var(--ease),border-color 0.25s var(--ease),transform 0.25s var(--ease-out);
   position:relative; overflow:hidden;
 }
 .lw-card:hover {
   background:var(--dark-card-hover); border-color:var(--border-hover);
+  border-left-color:var(--amber);
   transform:translateY(-3px);
 }
 
@@ -111,39 +157,47 @@
 }
 
 .lw-card-photo {
-  width:60px; height:60px; border-radius:50%; overflow:hidden;
-  background:rgba(255,255,255,0.06); border:2px solid var(--border);
-  flex-shrink:0; margin-bottom:16px;
+  width:56px; height:56px; border-radius:50%; overflow:hidden;
+  background:rgba(58,53,48,0.04); border:2px solid var(--border);
+  flex-shrink:0; margin-bottom:14px;
 }
 .lw-card-photo img { width:100%; height:100%; object-fit:cover; }
 .lw-card-photo-placeholder {
   width:100%; height:100%; display:flex; align-items:center; justify-content:center;
-  font-size:1.4rem; color:var(--text-dim);
+  font-size:1.3rem; font-weight:600; color:var(--text-dim);
 }
 
-.lw-card-name {
-  font-size:1rem; font-weight:600; color:var(--white); margin:0 0 4px;
-}
-.lw-card-firm { font-size:0.8rem; color:var(--text-muted); margin:0 0 12px; }
+.lw-card-name { font-size:1rem; font-weight:600; color:var(--white); margin:0 0 2px; }
+.lw-card-firm { font-size:0.78rem; color:var(--text-muted); margin:0 0 4px; }
+.lw-card-location { font-size:0.75rem; color:var(--text-dim); margin:0 0 12px; }
 
-.lw-tags { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:14px; }
+.lw-tags { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:12px; }
 .lw-tag {
   font-size:0.7rem; font-weight:500; color:var(--text-muted);
-  background:rgba(255,255,255,0.05); border:1px solid var(--border);
+  background:rgba(58,53,48,0.03); border:1px solid var(--border);
   border-radius:6px; padding:3px 8px;
 }
+.lw-tag-more { color:var(--amber); border-color:rgba(245,158,11,0.3); background:rgba(245,158,11,0.06); }
 
-.lw-card-meta { display:flex; align-items:center; gap:14px; margin-bottom:16px; }
-.lw-meta-item { font-size:0.78rem; color:var(--text-muted); display:flex; align-items:center; gap:4px; }
-.lw-stars { color:var(--amber); letter-spacing:1px; font-size:0.75rem; }
+.lw-card-meta { display:flex; flex-wrap:wrap; align-items:center; gap:10px; margin-bottom:14px; }
+.lw-meta-item { font-size:0.75rem; color:var(--text-muted); display:flex; align-items:center; gap:4px; }
+.lw-stars { color:var(--amber); letter-spacing:1px; font-size:0.72rem; }
+.lw-free-badge {
+  font-size:0.68rem; font-weight:600; letter-spacing:0.05em;
+  color:#10b981; background:rgba(16,185,129,0.1);
+  border:1px solid rgba(16,185,129,0.3); border-radius:5px; padding:2px 7px;
+}
 
 .lw-card-footer {
-  margin-top:auto; padding-top:16px; border-top:1px solid var(--border);
+  margin-top:auto; padding-top:14px; border-top:1px solid var(--border);
   display:flex; align-items:center; justify-content:space-between;
 }
-.lw-unlock-cost { font-size:0.8rem; font-weight:500; color:var(--amber); }
-.lw-card-arrow { font-size:1rem; color:var(--amber); opacity:0; transform:translateX(-6px); transition:opacity 0.2s,transform 0.2s; }
-.lw-card:hover .lw-card-arrow { opacity:1; transform:translateX(0); }
+.lw-rate { font-size:0.82rem; font-weight:500; color:var(--amber); }
+.lw-view-btn {
+  font-size:0.75rem; font-weight:600; color:var(--amber);
+  opacity:0.6; transition:opacity 0.2s;
+}
+.lw-card:hover .lw-view-btn { opacity:1; }
 
 /* Empty state */
 .lw-empty {
@@ -166,13 +220,10 @@
 }
 .lw-page-btn[disabled] { opacity:0.3; pointer-events:none; }
 
-/* Filters mobile */
 @media(max-width:768px){
   .lw-container { padding:0 20px; }
   .lw-page { padding:40px 0 80px; }
-  .lw-filters { flex-direction:column; align-items:flex-start; gap:10px; }
-  .lw-search { width:100%; min-width:unset; }
-  .lw-filter-sep { display:none; }
+  .lw-sidebar { position:static; }
 }
 </style>
 
@@ -185,129 +236,203 @@
       <p>Verified lawyers specialising in Dubai tenancy and property law.</p>
     </div>
 
-    <!-- Filter bar -->
-    <form method="get" action="{{ url_for('lawyers.browse') }}" class="lw-filters sr">
-      <span class="lw-filter-label">Filter:</span>
+    <div class="lw-layout">
 
-      <a href="{{ url_for('lawyers.browse') }}"
-         class="lw-spec-btn {% if not current_spec %}active{% endif %}">All areas</a>
+      <!-- Sidebar filters -->
+      <aside class="lw-sidebar sr">
+        <form method="get" action="{{ url_for('lawyers.browse') }}" id="filter-form">
+          <div class="lw-sidebar-title">Filters</div>
 
-      {% for spec in specialisations %}
-      <a href="{{ url_for('lawyers.browse', specialisation=spec.slug,
-                  language=current_language, search=current_search) }}"
-         class="lw-spec-btn {% if current_spec == spec.slug %}active{% endif %}">
-        {{ spec.name }}
-      </a>
-      {% endfor %}
+          <!-- Specialisation checkboxes -->
+          <div class="lw-sidebar-section">
+            <span class="lw-sidebar-label">Practice Area</span>
+            {% for spec in specialisations %}
+            <label class="lw-spec-checkbox">
+              <input type="checkbox" name="specialisation" value="{{ spec.slug }}"
+                     {% if current_spec == spec.slug %}checked{% endif %}
+                     onchange="this.form.submit()">
+              <span>{{ spec.name }}</span>
+            </label>
+            {% endfor %}
+          </div>
 
-      <div class="lw-filter-sep"></div>
+          <!-- City -->
+          <div class="lw-sidebar-section">
+            <span class="lw-sidebar-label">City</span>
+            <input type="text" name="city" class="lw-filter-input"
+                   placeholder="e.g. Dubai" value="{{ current_city }}">
+          </div>
 
-      <input class="lw-search" type="text" name="search"
-             placeholder="Search by name or firm…"
-             value="{{ current_search }}">
+          <!-- Language -->
+          <div class="lw-sidebar-section">
+            <span class="lw-sidebar-label">Language</span>
+            <input type="text" name="language" class="lw-filter-input"
+                   placeholder="e.g. Arabic" value="{{ current_language }}">
+          </div>
 
-      {% if current_language %}
-        <input type="hidden" name="language" value="{{ current_language }}">
-      {% endif %}
-      {% if current_spec %}
-        <input type="hidden" name="specialisation" value="{{ current_spec }}">
-      {% endif %}
+          <!-- Price range -->
+          <div class="lw-sidebar-section">
+            <span class="lw-sidebar-label">Rate (AED/hr)</span>
+            <div class="lw-price-row">
+              <input type="number" name="min_rate" class="lw-filter-input"
+                     placeholder="Min" min="0" value="{{ current_min_rate }}">
+              <input type="number" name="max_rate" class="lw-filter-input"
+                     placeholder="Max" min="0" value="{{ current_max_rate }}">
+            </div>
+          </div>
 
-      <button type="submit" class="lw-filter-btn">Search</button>
+          <!-- Free consultation toggle -->
+          <div class="lw-sidebar-section">
+            <label class="lw-toggle-label">
+              <span>Free first consultation</span>
+              <input type="checkbox" name="free_consultation" value="1"
+                     {% if current_free_consultation == '1' %}checked{% endif %}
+                     class="lw-toggle-hidden" onchange="this.form.submit()">
+              <div class="lw-toggle-switch"></div>
+            </label>
+          </div>
 
-      {% if current_search or current_spec or current_language %}
-      <a href="{{ url_for('lawyers.browse') }}" class="lw-clear">Clear filters</a>
-      {% endif %}
-    </form>
-
-    <!-- Results grid -->
-    <div class="lw-grid">
-      {% for lawyer in lawyers.items %}
-      <a href="{{ url_for('lawyers.profile', lawyer_profile_id=lawyer.id) }}" class="lw-card sr">
-
-        {% if lawyer.is_featured %}
-        <div class="lw-featured-badge">Featured</div>
-        {% endif %}
-
-        <div class="lw-card-photo">
-          {% if lawyer.photo_url %}
-          <img src="{{ lawyer.photo_url }}" alt="{{ lawyer.display_name or lawyer.user.full_name }}">
-          {% else %}
-          <div class="lw-card-photo-placeholder">&#9876;</div>
+          <!-- Hidden: preserve search -->
+          {% if current_search %}
+          <input type="hidden" name="search" value="{{ current_search }}">
           {% endif %}
+
+          <button type="submit" class="lw-sidebar-apply">Apply Filters</button>
+
+          {% if current_spec or current_city or current_language or current_min_rate or current_max_rate or current_free_consultation == '1' or current_search %}
+          <a href="{{ url_for('lawyers.browse') }}" class="lw-clear-filters">Clear all filters</a>
+          {% endif %}
+        </form>
+      </aside>
+
+      <!-- Main content -->
+      <div>
+        <!-- Search bar -->
+        <form method="get" action="{{ url_for('lawyers.browse') }}" class="lw-search-bar sr">
+          {% if current_spec %}<input type="hidden" name="specialisation" value="{{ current_spec }}">{% endif %}
+          {% if current_city %}<input type="hidden" name="city" value="{{ current_city }}">{% endif %}
+          {% if current_language %}<input type="hidden" name="language" value="{{ current_language }}">{% endif %}
+          {% if current_min_rate %}<input type="hidden" name="min_rate" value="{{ current_min_rate }}">{% endif %}
+          {% if current_max_rate %}<input type="hidden" name="max_rate" value="{{ current_max_rate }}">{% endif %}
+          {% if current_free_consultation == '1' %}<input type="hidden" name="free_consultation" value="1">{% endif %}
+          <input class="lw-search" type="text" name="search"
+                 placeholder="Search by name or firm…"
+                 value="{{ current_search }}">
+          <button type="submit" class="lw-search-btn">Search</button>
+        </form>
+
+        <div class="lw-results-header sr">
+          <span class="lw-results-count">
+            {{ lawyers.total }} lawyer{% if lawyers.total != 1 %}s{% endif %} found
+          </span>
         </div>
 
-        <div class="lw-card-name">{{ lawyer.display_name or lawyer.user.full_name }}</div>
-        {% if lawyer.firm_name %}
-        <div class="lw-card-firm">{{ lawyer.firm_name }}</div>
-        {% endif %}
+        <!-- Results grid -->
+        <div class="lw-grid">
+          {% for lawyer in lawyers.items %}
+          <a href="{{ url_for('lawyers.profile', lawyer_profile_id=lawyer.id) }}" class="lw-card sr">
 
-        {% if lawyer.specialisations %}
-        <div class="lw-tags">
-          {% for spec in lawyer.specialisations[:3] %}
-          <span class="lw-tag">{{ spec.name }}</span>
+            {% if lawyer.is_featured %}
+            <div class="lw-featured-badge">Featured</div>
+            {% endif %}
+
+            <div class="lw-card-photo">
+              {% if lawyer.photo_url %}
+              <img src="{{ lawyer.photo_url }}" alt="{{ lawyer.display_name or lawyer.user.full_name }}">
+              {% else %}
+              <div class="lw-card-photo-placeholder">
+                {{ (lawyer.display_name or lawyer.user.full_name or '?')[0].upper() }}
+              </div>
+              {% endif %}
+            </div>
+
+            <div class="lw-card-name">{{ lawyer.display_name or lawyer.user.full_name }}</div>
+            {% if lawyer.firm_name %}
+            <div class="lw-card-firm">{{ lawyer.firm_name }}</div>
+            {% endif %}
+            {% if lawyer.office_city or lawyer.office_country %}
+            <div class="lw-card-location">
+              {{ [lawyer.office_city, lawyer.office_country] | select | join(', ') }}
+            </div>
+            {% endif %}
+
+            {% if lawyer.specialisations %}
+            <div class="lw-tags">
+              {% set specs = lawyer.specialisations[:3] %}
+              {% set extra = lawyer.specialisations | length - 3 %}
+              {% for spec in specs %}
+              <span class="lw-tag">{{ spec.name }}</span>
+              {% endfor %}
+              {% if extra > 0 %}
+              <span class="lw-tag lw-tag-more">+{{ extra }}</span>
+              {% endif %}
+            </div>
+            {% endif %}
+
+            <div class="lw-card-meta">
+              {% if lawyer.average_rating %}
+              <span class="lw-meta-item">
+                <span class="lw-stars">&#9733;</span>
+                {{ "%.1f"|format(lawyer.average_rating) }}
+                ({{ lawyer.total_reviews }})
+              </span>
+              {% endif %}
+              {% if lawyer.languages %}
+              <span class="lw-meta-item">{{ lawyer.languages[:2] | join(', ') }}</span>
+              {% endif %}
+              {% if lawyer.offers_free_first_consultation %}
+              <span class="lw-free-badge">Free consult</span>
+              {% endif %}
+            </div>
+
+            <div class="lw-card-footer">
+              <span class="lw-rate">
+                {% if lawyer.hourly_rate_aed %}
+                  From AED {{ "%g"|format(lawyer.hourly_rate_aed|float) }}/hr
+                {% else %}
+                  Contact for pricing
+                {% endif %}
+              </span>
+              <span class="lw-view-btn">View Profile →</span>
+            </div>
+
+          </a>
+          {% else %}
+          <div class="lw-empty">
+            <p>No lawyers found matching your filters.</p>
+            <p><a href="{{ url_for('lawyers.browse') }}" style="color:var(--amber)">Clear all filters</a></p>
+          </div>
           {% endfor %}
         </div>
-        {% endif %}
 
-        <div class="lw-card-meta">
-          {% if lawyer.years_experience %}
-          <span class="lw-meta-item">{{ lawyer.years_experience }} yrs exp</span>
+        <!-- Pagination -->
+        {% if lawyers.pages > 1 %}
+        <div class="lw-pagination">
+          {% set pargs = {'specialisation': current_spec, 'city': current_city,
+                          'language': current_language, 'search': current_search,
+                          'min_rate': current_min_rate, 'max_rate': current_max_rate,
+                          'free_consultation': current_free_consultation} %}
+          {% if lawyers.has_prev %}
+          <a href="{{ url_for('lawyers.browse', page=lawyers.prev_num, **pargs) }}" class="lw-page-btn">&#8592; Prev</a>
           {% endif %}
-          {% if lawyer.average_rating %}
-          <span class="lw-meta-item">
-            <span class="lw-stars">&#9733;</span>
-            {{ "%.1f"|format(lawyer.average_rating) }}
-            ({{ lawyer.total_reviews }})
-          </span>
-          {% endif %}
-          {% if lawyer.languages %}
-          <span class="lw-meta-item">{{ lawyer.languages | join(', ') }}</span>
+
+          {% for p in lawyers.iter_pages(left_edge=1, right_edge=1, left_current=2, right_current=2) %}
+            {% if p %}
+            <a href="{{ url_for('lawyers.browse', page=p, **pargs) }}"
+               class="lw-page-btn {% if p == lawyers.page %}current{% endif %}">{{ p }}</a>
+            {% else %}
+            <span style="color:var(--text-dim)">…</span>
+            {% endif %}
+          {% endfor %}
+
+          {% if lawyers.has_next %}
+          <a href="{{ url_for('lawyers.browse', page=lawyers.next_num, **pargs) }}" class="lw-page-btn">Next &#8594;</a>
           {% endif %}
         </div>
-
-        <div class="lw-card-footer">
-          <span class="lw-unlock-cost">{{ lawyer.contact_unlock_credits }} credit{% if lawyer.contact_unlock_credits != 1 %}s{% endif %} to unlock</span>
-          <span class="lw-card-arrow">&#8594;</span>
-        </div>
-
-      </a>
-      {% else %}
-      <div class="lw-empty">
-        <p>No lawyers found matching your filters.</p>
-        <p><a href="{{ url_for('lawyers.browse') }}" style="color:var(--amber)">Clear all filters</a></p>
-      </div>
-      {% endfor %}
-    </div>
-
-    <!-- Pagination -->
-    {% if lawyers.pages > 1 %}
-    <div class="lw-pagination">
-      {% if lawyers.has_prev %}
-      <a href="{{ url_for('lawyers.browse', page=lawyers.prev_num,
-                  specialisation=current_spec, language=current_language,
-                  search=current_search) }}" class="lw-page-btn">&#8592; Prev</a>
-      {% endif %}
-
-      {% for p in lawyers.iter_pages(left_edge=1, right_edge=1, left_current=2, right_current=2) %}
-        {% if p %}
-        <a href="{{ url_for('lawyers.browse', page=p,
-                    specialisation=current_spec, language=current_language,
-                    search=current_search) }}"
-           class="lw-page-btn {% if p == lawyers.page %}current{% endif %}">{{ p }}</a>
-        {% else %}
-        <span style="color:var(--text-dim)">…</span>
         {% endif %}
-      {% endfor %}
 
-      {% if lawyers.has_next %}
-      <a href="{{ url_for('lawyers.browse', page=lawyers.next_num,
-                  specialisation=current_spec, language=current_language,
-                  search=current_search) }}" class="lw-page-btn">Next &#8594;</a>
-      {% endif %}
-    </div>
-    {% endif %}
-
+      </div><!-- /main -->
+    </div><!-- /layout -->
   </div>
 </div>
 

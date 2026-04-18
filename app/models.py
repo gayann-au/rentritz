@@ -388,9 +388,6 @@ class LawyerBooking(db.Model):
     """
     Records a client unlocking a lawyer's contact details.
 
-    The unique constraint 'uq_booking_client_lawyer' ensures a client pays
-    once per lawyer — subsequent access reuses the existing booking record.
-
     Status lifecycle:
         pending → contact_unlocked → completed
         pending → cancelled
@@ -398,10 +395,6 @@ class LawyerBooking(db.Model):
     """
 
     __tablename__  = 'lawyer_bookings'
-    __table_args__ = (
-        db.UniqueConstraint('client_id', 'lawyer_profile_id', name='uq_booking_client_lawyer'),
-    )
-
     id                = db.Column(db.Integer, primary_key=True)
     client_id         = db.Column(
         db.Integer, db.ForeignKey('users.id', ondelete='CASCADE'),

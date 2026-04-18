@@ -8,7 +8,7 @@ from flask_login import current_user, login_user, logout_user
 from flask_mail import Message
 from app import limiter, mail
 from app.models import db, User, Category, Scenario, Question, Payment, CreditLog, \
-    LawyerProfile, LawyerBooking, LawyerReview
+    LawyerProfile, LawyerBooking, LawyerReview, LawyerSpecialisation
 
 admin_bp = Blueprint('admin', __name__)
 logger   = logging.getLogger(__name__)
@@ -747,22 +747,28 @@ def add_credits(user_id):
         flash('Invalid credit amount.', 'error')
         return redirect(request.referrer or url_for('admin.users'))
 
-    if amount != 0:
-        user.credits = max(0, user.credits + amount)
-        action = 'admin_grant' if amount > 0 else 'admin_deduct'
-        note   = 'Credits added by admin' if amount > 0 else 'Credits deducted by admin'
-        log = CreditLog(
-            user_id = user.id,
-            action  = action,
-            amount  = amount,
-            balance = user.credits,
-            note    = note,
-        )
-        db.session.add(log)
-        db.session.commit()
-        verb = f'Added {amount}' if amount > 0 else f'Deducted {abs(amount)}'
-        flash(f'{verb} credits for {user.email}.', 'success')
+    if not (1 <= amount <= 100):
+        flash('Credit amount must be between 1 and 100.', 'error')
+        return redirect(request.referrer or url_for('admin.users'))
+
+    user.credits += amount
+    log = CreditLog(
+        user_id = user.id,
+        action  = 'admin_topup',
+        amount  = amount,
+        balance = user.credits,
+        note    = f'Admin top-up by {current_user.email}',
+    )
+    db.session.add(log)
+    db.session.commit()
+    flash(f'Added {amount} credits to {user.full_name}.', 'success')
     return redirect(request.referrer or url_for('admin.users'))
+
+
+@admin_bp.route('/users/<int:user_id>')
+@admin_required
+def user_detail_alias(user_id):
+    return redirect(url_for('admin.user_detail', id=user_id))
 
 
 @admin_bp.route('/users/<int:id>/detail')
@@ -772,7 +778,7 @@ def user_detail(id):
     questions = Question.query.filter_by(user_id=id)\
                     .order_by(Question.created_at.desc()).all()
     logs      = CreditLog.query.filter_by(user_id=id)\
-                    .order_by(CreditLog.created_at.desc()).all()
+                    .order_by(CreditLog.created_at.desc()).limit(20).all()
     return render_template('admin/user_detail.html', user=user, questions=questions, logs=logs)
 
 
@@ -1094,6 +1100,21 @@ def toggle_lawyer_active(profile_id):
     return jsonify({'is_active': profile.is_active})
 
 
+@admin_bp.route('/lawyers/<int:profile_id>/toggle-featured', methods=['POST'])
+@admin_required
+def toggle_lawyer_featured(profile_id):
+    profile             = LawyerProfile.query.get_or_404(profile_id)
+    profile.is_featured = not profile.is_featured
+    db.session.commit()
+    logger.info(f'Lawyer profile {profile_id} is_featured={profile.is_featured} by admin {current_user.email}')
+    flash(
+        f'{"Featured" if profile.is_featured else "Removed from featured"}: '
+        f'{profile.display_name or profile.user.full_name}',
+        'success',
+    )
+    return redirect(url_for('admin.lawyer_detail', profile_id=profile_id))
+
+
 @admin_bp.route('/lawyers/<int:profile_id>/notes', methods=['POST'])
 @admin_required
 def update_lawyer_notes(profile_id):
@@ -1101,3 +1122,105 @@ def update_lawyer_notes(profile_id):
     profile.admin_notes = request.form.get('notes', '').strip() or None
     db.session.commit()
     return jsonify({'saved': True})
+
+
+# ── REVIEWS ──────────────────────────────────────────────────────────────────
+
+@admin_bp.route('/reviews/<int:review_id>/toggle-visible', methods=['POST'])
+@admin_required
+def toggle_review_visible(review_id):
+    review = LawyerReview.query.get_or_404(review_id)
+    review.is_visible = not review.is_visible
+    if not review.is_visible:
+        review.hidden_reason = request.form.get('hidden_reason', '').strip() or None
+    else:
+        review.hidden_reason = None
+    db.session.commit()
+    logger.info(
+        'Review %s is_visible=%s hidden_reason=%r by admin %s',
+        review_id, review.is_visible, review.hidden_reason, current_user.email,
+    )
+    return jsonify({'is_visible': review.is_visible})
+
+
+# ── SPECIALISATIONS ───────────────────────────────────────────────────────────
+
+@admin_bp.route('/specialisations')
+@admin_required
+def specialisations():
+    specs = LawyerSpecialisation.query.order_by(LawyerSpecialisation.order).all()
+    return render_template('admin/specialisations.html', specs=specs)
+
+
+@admin_bp.route('/specialisations/new', methods=['GET', 'POST'])
+@admin_required
+def new_specialisation():
+    if request.method == 'POST':
+        slug = request.form.get('slug', '').strip().lower()
+        if not slug:
+            flash('Slug is required.', 'error')
+            return render_template('admin/specialisation_form.html', spec=None)
+        if LawyerSpecialisation.query.filter_by(slug=slug).first():
+            flash('A specialisation with this slug already exists.', 'error')
+            return render_template('admin/specialisation_form.html', spec=None)
+
+        try:
+            order = int(request.form.get('order', 99))
+        except (ValueError, TypeError):
+            order = 99
+
+        spec = LawyerSpecialisation(
+            name        = request.form.get('name', '').strip(),
+            slug        = slug,
+            description = request.form.get('description', '').strip() or None,
+            icon        = request.form.get('icon', '').strip() or None,
+            order       = order,
+            is_active   = True,
+        )
+        db.session.add(spec)
+        db.session.commit()
+        logger.info(f'Specialisation created: {spec.slug} by admin {current_user.email}')
+        flash(f'Specialisation "{spec.name}" created.', 'success')
+        return redirect(url_for('admin.specialisations'))
+
+    return render_template('admin/specialisation_form.html', spec=None)
+
+
+@admin_bp.route('/specialisations/<int:id>/edit', methods=['GET', 'POST'])
+@admin_required
+def edit_specialisation(id):
+    spec = LawyerSpecialisation.query.get_or_404(id)
+
+    if request.method == 'POST':
+        slug = request.form.get('slug', '').strip().lower()
+        existing = LawyerSpecialisation.query.filter_by(slug=slug).first()
+        if existing and existing.id != spec.id:
+            flash('A specialisation with this slug already exists.', 'error')
+            return render_template('admin/specialisation_form.html', spec=spec)
+
+        try:
+            order = int(request.form.get('order', spec.order))
+        except (ValueError, TypeError):
+            order = spec.order
+
+        spec.name        = request.form.get('name', '').strip()
+        spec.slug        = slug
+        spec.description = request.form.get('description', '').strip() or None
+        spec.icon        = request.form.get('icon', '').strip() or None
+        spec.order       = order
+        db.session.commit()
+        logger.info(f'Specialisation updated: {spec.slug} by admin {current_user.email}')
+        flash(f'Specialisation "{spec.name}" updated.', 'success')
+        return redirect(url_for('admin.specialisations'))
+
+    return render_template('admin/specialisation_form.html', spec=spec)
+
+
+@admin_bp.route('/specialisations/<int:id>/toggle', methods=['POST'])
+@admin_required
+def toggle_specialisation(id):
+    spec           = LawyerSpecialisation.query.get_or_404(id)
+    spec.is_active = not spec.is_active
+    db.session.commit()
+    logger.info(f'Specialisation {spec.slug} is_active={spec.is_active} by admin {current_user.email}')
+    return redirect(url_for('admin.specialisations'))

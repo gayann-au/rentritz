@@ -1,0 +1,73 @@
+{% extends "admin/base_admin.html" %}
+
+{% block title %}{{ 'Edit' if spec else 'New' }} Specialisation{% endblock %}
+
+{% block topbar_title %}
+  {{ 'Edit Specialisation' if spec else 'New Specialisation' }}
+  <span>{{ spec.name if spec else '' }}</span>
+{% endblock %}
+
+{% block topbar_actions %}
+<a href="{{ url_for('admin.specialisations') }}" class="btn btn-outline">← Back</a>
+{% endblock %}
+
+{% block main %}
+<div class="admin-content">
+  <div class="card" style="max-width:600px;">
+    <form method="POST">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <div class="form-grid" style="margin-bottom:16px;">
+        <div class="form-group">
+          <label class="form-label">Name <span class="required">*</span></label>
+          <input type="text" name="name" class="form-input"
+            value="{{ spec.name if spec else '' }}"
+            placeholder="e.g. Tenancy" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Slug <span class="required">*</span></label>
+          <input type="text" name="slug" class="form-input" id="slug-input"
+            value="{{ spec.slug if spec else '' }}"
+            placeholder="e.g. tenancy" required>
+          <span class="form-hint">Unique identifier, lowercase, no spaces</span>
+        </div>
+        <div class="form-group form-col-span">
+          <label class="form-label">Description</label>
+          <input type="text" name="description" class="form-input"
+            value="{{ spec.description if spec else '' }}"
+            placeholder="Brief description (optional)">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Icon</label>
+          <input type="text" name="icon" class="form-input"
+            value="{{ spec.icon if spec else '' }}"
+            placeholder="e.g. home, briefcase, shield">
+          <span class="form-hint">Feather icon name used in the marketplace</span>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Display Order</label>
+          <input type="number" name="order" class="form-input"
+            value="{{ spec.order if spec else 99 }}">
+        </div>
+      </div>
+      <div style="display:flex; gap:10px;">
+        <button type="submit" class="btn btn-primary">
+          {{ 'Save Changes' if spec else 'Create Specialisation' }}
+        </button>
+        <a href="{{ url_for('admin.specialisations') }}" class="btn btn-outline">Cancel</a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+const nameInput = document.querySelector('input[name="name"]');
+const slugInput = document.getElementById('slug-input');
+{% if not spec %}
+nameInput.addEventListener('input', () => {
+  slugInput.value = nameInput.value.toLowerCase().replace(/\s+/g, '_').replace(/[^a-z0-9_]/g, '');
+});
+{% endif %}
+</script>
+{% endblock %}

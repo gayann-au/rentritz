@@ -10,7 +10,8 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}" />
   <link rel="manifest" href="/static/manifest.json">
   <meta name="theme-color" content="#f59e0b">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  {% block styles %}{% endblock %}
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 </head>
 <body class="{% block body_class %}{% endblock %}">
 
@@ -30,6 +31,7 @@
       <a href="{{ url_for('core.dashboard') }}" class="{% if request.endpoint == 'core.dashboard' %}active{% endif %}">Dashboard</a>
       <a href="{{ url_for('core.history') }}">History</a>
       <a href="{{ url_for('lawyers.browse') }}" class="{% if request.blueprint == 'lawyers' and request.endpoint == 'lawyers.browse' %}active{% endif %}">Find a Lawyer</a>
+      <a href="{{ url_for('core.for_lawyers') }}">For Lawyers</a>
       <a href="{{ url_for('core.credits') }}">
         <span class="credit-chip">{{ current_user.available_credits }} credits</span>
       </a>

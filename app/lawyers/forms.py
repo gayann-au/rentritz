@@ -16,6 +16,20 @@ class MultiCheckboxField(SelectMultipleField):
     option_widget = CheckboxInput()
 
 
+class OptionalDecimalField(DecimalField):
+    """DecimalField that treats an empty or whitespace-only submission as None.
+
+    Standard WTForms DecimalField raises "Not a valid decimal value" before
+    the Optional() validator runs, so blank fee fields crash with a 500 error.
+    This subclass short-circuits that by returning None for blank input.
+    """
+    def process_formdata(self, valuelist):
+        if valuelist and valuelist[0].strip() == '':
+            self.data = None
+            return
+        super().process_formdata(valuelist)
+
+
 class LawyerProfileForm(FlaskForm):
     # --- Identity ---
     display_name = StringField('Display Name', validators=[Optional(), Length(max=150)])
@@ -76,12 +90,12 @@ class LawyerProfileForm(FlaskForm):
         'Free consultation duration (minutes)',
         validators=[Optional(), NumberRange(15, 120)],
     )
-    hourly_rate_aed = DecimalField(
+    hourly_rate_aed = OptionalDecimalField(
         'Hourly Rate (AED)',
         validators=[Optional(), NumberRange(0, 50000)],
         places=2,
     )
-    initial_consultation_fee_aed = DecimalField(
+    initial_consultation_fee_aed = OptionalDecimalField(
         'Initial Consultation Fee (AED)',
         validators=[Optional(), NumberRange(0, 50000)],
         places=2,
@@ -91,6 +105,12 @@ class LawyerProfileForm(FlaskForm):
         'Pricing Note',
         validators=[Optional(), Length(max=500)],
         description='e.g. I offer flexible payment plans for tenancy disputes',
+    )
+    contact_unlock_credits = IntegerField(
+        'Credits clients pay to unlock your contact details',
+        validators=[Optional(), NumberRange(min=1, max=20)],
+        default=5,
+        description='How many credits a client must spend to see your phone/email. Default is 5.',
     )
 
     # --- Contact (private) ---
@@ -128,3 +148,22 @@ class LawyerProfileForm(FlaskForm):
     )
 
     submit = SubmitField('Submit for Verification')
+
+    def validate(self, extra_validators=None):
+        rv = super().validate(extra_validators)
+        if not self.specialisation_ids.data:
+            self.specialisation_ids.errors.append(
+                'Select at least one practice area.'
+            )
+            return False
+        if not any([
+            self.phone.data and self.phone.data.strip(),
+            self.whatsapp.data and self.whatsapp.data.strip(),
+            self.contact_email.data and self.contact_email.data.strip(),
+        ]):
+            self.phone.errors.append(
+                'At least one contact method is required '
+                '(phone, WhatsApp, or contact email).'
+            )
+            return False
+        return rv

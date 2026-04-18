@@ -8,17 +8,17 @@
    CSS VARIABLES
    ============================================================ */
 :root {
-  --black:      #0a0a0a;
-  --near-black: #111111;
-  --dark-card:  #1a1a1a;
-  --dark-card-hover: #222222;
-  --amber:      #f59e0b;
-  --amber-dark: #d97706;
-  --white:      #ffffff;
-  --text-muted: #888888;
-  --text-dim:   #555555;
-  --border:     rgba(255,255,255,0.07);
-  --border-hover: rgba(245,158,11,0.35);
+  --black:      #f8f6f2;
+  --near-black: #f0ece6;
+  --dark-card:  #ffffff;
+  --dark-card-hover: #f0ece6;
+  --amber:      #c8820a;
+  --amber-dark: #b8720a;
+  --white:      #1c1916;
+  --text-muted: #6b6259;
+  --text-dim:   #9a8f82;
+  --border:     rgba(58,53,48,0.12);
+  --border-hover: rgba(200,130,10,0.35);
   --radius:     14px;
   --ease:       cubic-bezier(0.4, 0, 0.2, 1);
   --ease-out:   cubic-bezier(0.22, 1, 0.36, 1);
@@ -65,13 +65,15 @@
   justify-content: space-between;
   gap: 24px;
   margin-bottom: 56px;
+  padding-bottom: 40px;
+  border-bottom: 1px solid rgba(245,158,11,.1);
 }
 
 .db-greeting-label {
   display: inline-flex;
   align-items: center;
   gap: 10px;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   font-size: 0.67rem;
   font-weight: 600;
   letter-spacing: 0.2em;
@@ -89,7 +91,7 @@
 }
 
 .db-greeting h1 {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   font-size: clamp(2.4rem, 5vw, 4rem);
   font-weight: 400;
   color: var(--white);
@@ -99,7 +101,7 @@
 }
 
 .db-greeting p {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   font-size: 1rem;
   color: var(--text-muted);
   margin: 0;
@@ -124,7 +126,7 @@
 }
 
 .db-credits-number {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   font-size: 2.8rem;
   font-weight: 500;
   color: var(--amber);
@@ -132,7 +134,7 @@
 }
 
 .db-credits-label {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   font-size: 0.8rem;
   font-weight: 500;
   color: var(--text-muted);
@@ -141,7 +143,7 @@
 }
 
 .db-credits-block .btn {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   font-size: 0.8rem;
   font-weight: 500;
   padding: 8px 18px;
@@ -153,7 +155,7 @@
 
 .db-btn-amber {
   background: var(--amber);
-  color: #000;
+  color: #fff;
   border: none;
 }
 .db-btn-amber:hover {
@@ -176,7 +178,7 @@
    SECTION LABEL
    ============================================================ */
 .db-section-label {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   font-size: 0.67rem;
   font-weight: 600;
   letter-spacing: 0.2em;
@@ -220,9 +222,18 @@
   background: var(--dark-card-hover);
   border-color: var(--border-hover);
   transform: translateY(-3px);
-  box-shadow: 0 12px 40px rgba(0,0,0,0.4), 0 0 0 1px rgba(245,158,11,0.1);
+  box-shadow: 0 12px 40px rgba(0,0,0,0.12), 0 0 0 1px rgba(245,158,11,0.1);
 }
 .db-card:hover::before { opacity: 1; }
+.db-card::after{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;
+  background:var(--amber);opacity:0;border-radius:var(--radius) 0 0 var(--radius);
+  transition:opacity .25s var(--ease);}
+.db-card:hover::after{opacity:1;}
+.db-quick-stats{display:flex;gap:24px;flex-wrap:wrap;align-items:center;margin-bottom:40px;}
+.db-qs-item{display:flex;align-items:center;gap:8px;}
+.db-qs-num{font-size:.9rem;font-weight:600;color:var(--white);}
+.db-qs-label{font-size:.75rem;color:var(--text-muted);}
+.db-qs-sep{width:1px;height:14px;background:rgba(58,53,48,.1);flex-shrink:0;}
 
 .db-card-locked {
   opacity: 0.5;
@@ -249,7 +260,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(255,255,255,0.04);
+  background: rgba(58,53,48,0.04);
   border-radius: 12px;
   border: 1px solid var(--border);
 }
@@ -260,7 +271,7 @@
 }
 
 .db-card-content h3 {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   font-size: 1rem;
   font-weight: 600;
   color: var(--white);
@@ -269,7 +280,7 @@
 }
 
 .db-card-content p {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   font-size: 0.82rem;
   color: var(--text-muted);
   margin: 0;
@@ -294,14 +305,14 @@
 
 .db-coming-soon {
   flex-shrink: 0;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   font-size: 0.65rem;
   font-weight: 600;
   letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--text-dim);
-  background: rgba(255,255,255,0.05);
-  border: 1px solid rgba(255,255,255,0.08);
+  background: rgba(58,53,48,0.04);
+  border: 1px solid rgba(58,53,48,0.09);
   border-radius: 6px;
   padding: 4px 8px;
 }
@@ -311,7 +322,7 @@
   text-align: center;
   padding: 60px 20px;
   color: var(--text-muted);
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   font-size: 0.95rem;
 }
 
@@ -331,7 +342,7 @@
 }
 
 .db-recent-header h2 {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   font-size: 1.6rem;
   font-weight: 500;
   color: var(--white);
@@ -340,7 +351,7 @@
 }
 
 .db-view-all {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   font-size: 0.8rem;
   color: var(--text-muted);
   text-decoration: none;
@@ -371,7 +382,7 @@
 }
 .db-recent-item:hover {
   background: var(--dark-card-hover);
-  border-color: rgba(255,255,255,0.12);
+  border-color: rgba(58,53,48,0.12);
 }
 
 .db-recent-left {
@@ -382,20 +393,20 @@
 }
 
 .db-recent-category {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   font-size: 0.9rem;
   font-weight: 500;
   color: var(--white);
 }
 
 .db-recent-date {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   font-size: 0.75rem;
   color: var(--text-muted);
 }
 
 .db-badge {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   font-size: 0.7rem;
   font-weight: 600;
   letter-spacing: 0.06em;
@@ -413,7 +424,7 @@
 
 .db-badge-incomplete {
   color: var(--text-muted);
-  background: rgba(255,255,255,0.05);
+  background: rgba(58,53,48,0.05);
   border: 1px solid var(--border);
 }
 
@@ -421,7 +432,7 @@
   text-align: center;
   padding: 48px 20px;
   color: var(--text-muted);
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   font-size: 0.9rem;
   background: var(--dark-card);
   border: 1px dashed var(--border);
@@ -516,6 +527,23 @@
       </div>
     </div>
 
+    <!-- Quick stats -->
+    <div class="db-quick-stats sr sr-d2">
+      <div class="db-qs-item">
+        <span class="db-qs-num">{{ current_user.available_credits }}</span>
+        <span class="db-qs-label">credits remaining</span>
+      </div>
+      <div class="db-qs-sep"></div>
+      <div class="db-qs-item">
+        <span class="db-qs-num">{{ question_count }}</span>
+        <span class="db-qs-label">consultations</span>
+      </div>
+      <div class="db-qs-sep"></div>
+      <div class="db-qs-item">
+        <span class="db-qs-label">Member since {{ current_user.created_at.strftime("%d %b %Y") }}</span>
+      </div>
+    </div>
+
     <!-- Category Grid -->
     <div class="db-section-label sr sr-d2">Choose a topic</div>
     <div class="db-grid">
@@ -570,17 +598,52 @@
       <div>
         <div class="db-section-label" style="margin-bottom:8px;">Lawyer marketplace</div>
         <p style="
-          font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+          font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
           font-size: 1rem; font-weight: 600; color: var(--white); margin: 0 0 6px;
         ">Need legal advice from a real lawyer?</p>
         <p style="
-          font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+          font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
           font-size: 0.85rem; color: var(--text-muted); margin: 0; line-height: 1.5;
         ">Browse verified Dubai lawyers who specialise in tenancy and property law.</p>
       </div>
       <a href="{{ url_for('lawyers.browse') }}" class="btn db-btn-amber" style="white-space:nowrap; flex-shrink:0;">
         Find a Lawyer &#8594;
       </a>
+    </div>
+    {% endif %}
+
+    <!-- Credit History -->
+    {% if credit_history %}
+    <div class="db-recent sr" style="margin-bottom:48px;">
+      <div class="db-recent-header" style="margin-bottom:20px;">
+        <h2>Credit History</h2>
+      </div>
+      <div style="background:var(--dark-card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;">
+        {% for entry in credit_history %}
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 20px;border-bottom:1px solid var(--border);{% if loop.last %}border-bottom:none;{% endif %}">
+          <div>
+            <div style="font-size:0.85rem;color:var(--white);">
+              {% set action_labels = {
+                'signup_bonus':   'Welcome credits',
+                'admin_topup':    'Credits added by admin',
+                'unlock_contact': 'Lawyer contact unlocked',
+                'consultation':   'Consultation used'
+              } %}
+              {{ action_labels.get(entry.action, entry.action | replace('_', ' ') | title) }}
+            </div>
+            {% if entry.note %}
+            <div style="font-size:0.75rem;color:var(--text-muted);">{{ entry.note }}</div>
+            {% endif %}
+          </div>
+          <div style="display:flex;align-items:center;gap:20px;flex-shrink:0;">
+            <span style="font-size:0.9rem;font-weight:600;color:{% if entry.amount >= 0 %}#4ade80{% else %}#f87171{% endif %};">
+              {% if entry.amount >= 0 %}+{% endif %}{{ entry.amount }}
+            </span>
+            <span style="font-size:0.75rem;color:var(--text-dim);">{{ entry.created_at.strftime('%d %b %Y') }}</span>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
     </div>
     {% endif %}
 
@@ -667,7 +730,7 @@
   width: 100%;
   max-width: 560px;
   background: #111111;
-  border: 1px solid rgba(255,255,255,0.08);
+  border: 1px solid rgba(58,53,48,0.1);
   border-radius: 20px;
   padding: 56px 48px;
   animation: ob-panel-in 0.4s ease-out both;
@@ -685,7 +748,7 @@
 
 .ob-tag {
   display: inline-block;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   font-size: 0.72rem;
   font-weight: 600;
   letter-spacing: 0.12em;
@@ -699,7 +762,7 @@
 }
 
 .ob-heading {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   font-size: 2rem;
   font-weight: 700;
   color: #ffffff;
@@ -709,7 +772,7 @@
 }
 
 .ob-subtitle {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   font-size: 0.95rem;
   color: #888888;
   line-height: 1.7;
@@ -718,7 +781,7 @@
 
 .ob-divider {
   height: 1px;
-  background: rgba(255,255,255,0.07);
+  background: rgba(58,53,48,0.05);
   margin: 0 0 32px;
 }
 
@@ -768,7 +831,7 @@
 }
 
 .ob-point-label {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   font-size: 0.95rem;
   font-weight: 600;
   color: #ffffff;
@@ -776,7 +839,7 @@
 }
 
 .ob-point-desc {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   font-size: 0.85rem;
   color: #888888;
   line-height: 1.6;
@@ -791,7 +854,7 @@
   border: none;
   border-radius: 10px;
   padding: 16px 24px;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   font-size: 0.95rem;
   font-weight: 600;
   letter-spacing: -0.01em;
@@ -811,7 +874,7 @@
 }
 
 .ob-footer-note {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   font-size: 0.78rem;
   color: #555555;
   text-align: center;
@@ -950,8 +1013,11 @@
     entries.forEach(function(e) {
       if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
     });
-  }, { threshold: 0.1 });
+  }, { threshold: 0, rootMargin: "0px 0px 800px 0px" });
   els.forEach(function(el) { io.observe(el); });
+  setTimeout(function() {
+    document.querySelectorAll(".sr:not(.in)").forEach(function(el) { el.classList.add("in"); });
+  }, 600);
 })();
 </script>
 {% endblock %}

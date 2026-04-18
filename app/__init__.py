@@ -77,12 +77,12 @@ def create_app(env=None):
             "default-src 'self'; "
             "script-src 'self' 'unsafe-inline' fonts.googleapis.com "
                 "https://js.hcaptcha.com https://*.hcaptcha.com "
-                "https://cdn.jsdelivr.net; "
+                "https://cdn.jsdelivr.net https://esm.sh; "
             "style-src 'self' 'unsafe-inline' fonts.googleapis.com fonts.gstatic.com "
                 "https://hcaptcha.com https://*.hcaptcha.com; "
             "font-src fonts.gstatic.com; "
             "img-src 'self' images.unsplash.com data: https://hcaptcha.com https://*.hcaptcha.com; "
-            "connect-src 'self' https://hcaptcha.com https://*.hcaptcha.com; "
+            "connect-src 'self' https://hcaptcha.com https://*.hcaptcha.com https://esm.sh; "
             "frame-src https://hcaptcha.com https://*.hcaptcha.com"
         )
         if not app.config.get('DEBUG'):
@@ -129,20 +129,15 @@ def create_app(env=None):
     app.register_blueprint(lawyers_bp, url_prefix='/lawyers')
 
     # Serve locally-uploaded files (lawyer photos, licence PDFs)
-    import os as _os
-    from flask import send_from_directory as _send_from_directory
+    from flask import send_from_directory
 
     @app.route('/uploads/<path:filename>')
     def serve_upload(filename):
         upload_folder = app.config.get(
             'UPLOAD_FOLDER',
-            _os.path.join(app.root_path, '..', 'uploads'),
+            os.path.join(app.root_path, '..', 'uploads'),
         )
-        return _send_from_directory(upload_folder, filename)
-
-    # Expose hCaptcha site key to every template
-    hcaptcha_site_key = os.environ.get('HCAPTCHA_SITE_KEY', '').strip()
-    app.jinja_env.globals['hcaptcha_site_key'] = hcaptcha_site_key
+        return send_from_directory(upload_folder, filename)
 
     @app.context_processor
     def inject_hcaptcha():
