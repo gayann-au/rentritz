@@ -79,3 +79,14 @@ backups/
 seed_*.py
 update_scenarios_*.py
 check_content.py
+
+# ── User uploads (runtime files, never commit) ────────────────────────────────
+uploads/
+
+# ── Development screenshots ───────────────────────────────────────────────────
+ss*.png
+ss_*.png
+
+# ── Local dev scratch folders ─────────────────────────────────────────────────
+landing/
+.playwright-mcp/
