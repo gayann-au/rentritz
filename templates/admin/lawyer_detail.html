@@ -249,11 +249,11 @@
 
       <div class="info-row">
         <span class="info-label">Bar Number</span>
-        <span class="info-value">{{ profile.bar_number or '—' }}</span>
+        <span class="info-value">{{ profile.bar_number or 'N/A' }}</span>
       </div>
       <div class="info-row">
         <span class="info-label">Issuing Authority</span>
-        <span class="info-value">{{ profile.bar_issuing_authority or '—' }}</span>
+        <span class="info-value">{{ profile.bar_issuing_authority or 'N/A' }}</span>
       </div>
       {% if profile.licence_pdf_path %}
       <div class="info-row">
@@ -265,11 +265,11 @@
       {% endif %}
       <div class="info-row">
         <span class="info-label">Years Experience</span>
-        <span class="info-value">{{ profile.years_experience or '—' }}</span>
+        <span class="info-value">{{ profile.years_experience or 'N/A' }}</span>
       </div>
       <div class="info-row">
         <span class="info-label">Firm</span>
-        <span class="info-value">{{ profile.firm_name or '—' }}</span>
+        <span class="info-value">{{ profile.firm_name or 'N/A' }}</span>
       </div>
       {% if profile.firm_website %}
       <div class="info-row">
@@ -282,20 +282,20 @@
         <span class="info-value">
           {% if profile.specialisations %}
             {{ profile.specialisations | map(attribute='name') | join(', ') }}
-          {% else %}—{% endif %}
+          {% else %}N/A{% endif %}
         </span>
       </div>
       <div class="info-row">
         <span class="info-label">Languages</span>
-        <span class="info-value">{{ (profile.languages | join(', ')) if profile.languages else '—' }}</span>
+        <span class="info-value">{{ (profile.languages | join(', ')) if profile.languages else '-' }}</span>
       </div>
       <div class="info-row">
         <span class="info-label">Courts</span>
-        <span class="info-value">{{ (profile.courts_practiced_in | join(', ')) if profile.courts_practiced_in else '—' }}</span>
+        <span class="info-value">{{ (profile.courts_practiced_in | join(', ')) if profile.courts_practiced_in else '-' }}</span>
       </div>
       <div class="info-row">
         <span class="info-label">Jurisdictions</span>
-        <span class="info-value">{{ (profile.jurisdictions | join(', ')) if profile.jurisdictions else '—' }}</span>
+        <span class="info-value">{{ (profile.jurisdictions | join(', ')) if profile.jurisdictions else '-' }}</span>
       </div>
     </div>
 
@@ -312,11 +312,11 @@
       <div class="section-title">Pricing & Availability</div>
       <div class="info-row">
         <span class="info-label">Consultation Modes</span>
-        <span class="info-value">{{ (profile.consultation_modes | join(', ')) if profile.consultation_modes else '—' }}</span>
+        <span class="info-value">{{ (profile.consultation_modes | join(', ')) if profile.consultation_modes else '-' }}</span>
       </div>
       <div class="info-row">
         <span class="info-label">Typical Response</span>
-        <span class="info-value">{{ (profile.typical_response_hours | string + 'h') if profile.typical_response_hours else '—' }}</span>
+        <span class="info-value">{{ (profile.typical_response_hours | string + 'h') if profile.typical_response_hours else '-' }}</span>
       </div>
       <div class="info-row">
         <span class="info-label">Free First Consult</span>
@@ -328,11 +328,11 @@
       </div>
       <div class="info-row">
         <span class="info-label">Hourly Rate</span>
-        <span class="info-value">{{ ('AED ' + profile.hourly_rate_aed | string) if profile.hourly_rate_aed else '—' }}</span>
+        <span class="info-value">{{ ('AED ' + profile.hourly_rate_aed | string) if profile.hourly_rate_aed else '-' }}</span>
       </div>
       <div class="info-row">
         <span class="info-label">Initial Consult Fee</span>
-        <span class="info-value">{{ ('AED ' + profile.initial_consultation_fee_aed | string) if profile.initial_consultation_fee_aed else '—' }}</span>
+        <span class="info-value">{{ ('AED ' + profile.initial_consultation_fee_aed | string) if profile.initial_consultation_fee_aed else '-' }}</span>
       </div>
       <div class="info-row">
         <span class="info-label">Fee on Case Basis</span>
@@ -350,24 +350,24 @@
       {% endif %}
     </div>
 
-    {# Contact details — always shown to admin #}
+    {# Contact details - always shown to admin #}
     <div class="card">
       <div class="section-title">Contact Details (Admin Only)</div>
       <div class="info-row">
         <span class="info-label">Phone</span>
-        <span class="info-value">{{ profile.phone or '—' }}</span>
+        <span class="info-value">{{ profile.phone or 'N/A' }}</span>
       </div>
       <div class="info-row">
         <span class="info-label">WhatsApp</span>
-        <span class="info-value">{{ profile.whatsapp or '—' }}</span>
+        <span class="info-value">{{ profile.whatsapp or 'N/A' }}</span>
       </div>
       <div class="info-row">
         <span class="info-label">Contact Email</span>
-        <span class="info-value">{{ profile.contact_email or '—' }}</span>
+        <span class="info-value">{{ profile.contact_email or 'N/A' }}</span>
       </div>
       <div class="info-row">
         <span class="info-label">Office Address</span>
-        <span class="info-value">{{ profile.office_address or '—' }}</span>
+        <span class="info-value">{{ profile.office_address or 'N/A' }}</span>
       </div>
       <div class="info-row">
         <span class="info-label">City / Country</span>
@@ -396,7 +396,7 @@
         <div style="font-size:12px; color:var(--text-muted); margin-bottom:4px;">Education</div>
         {% for e in profile.education %}
         <div style="font-size:13px; margin-bottom:2px;">
-          {{ e.degree or '' }}{% if e.degree and e.institution %} — {% endif %}{{ e.institution or '' }}{% if e.year %} ({{ e.year }}){% endif %}
+          {{ e.degree or '' }}{% if e.degree and e.institution %} - {% endif %}{{ e.institution or '' }}{% if e.year %} ({{ e.year }}){% endif %}
         </div>
         {% endfor %}
       </div>
@@ -406,7 +406,7 @@
         <div style="font-size:12px; color:var(--text-muted); margin-bottom:4px;">Certifications</div>
         {% for c in profile.certifications %}
         <div style="font-size:13px; margin-bottom:2px;">
-          {{ c.name or '' }}{% if c.issuer %} — {{ c.issuer }}{% endif %}{% if c.year %} ({{ c.year }}){% endif %}
+          {{ c.name or '' }}{% if c.issuer %} - {{ c.issuer }}{% endif %}{% if c.year %} ({{ c.year }}){% endif %}
         </div>
         {% endfor %}
       </div>
@@ -483,7 +483,7 @@
               <span class="stars">{% for i in range(r.rating) %}★{% endfor %}{% for i in range(5 - r.rating) %}<span style="opacity:0.2;">★</span>{% endfor %}</span>
             </td>
             <td style="font-size:12px; color:var(--text-muted); max-width:200px;">
-              {% if r.comment %}{{ r.comment | truncate(80) }}{% else %}<span style="opacity:0.4;">—</span>{% endif %}
+              {% if r.comment %}{{ r.comment | truncate(80) }}{% else %}<span style="opacity:0.4;">N/A</span>{% endif %}
               {% if r.hidden_reason %}
               <div style="font-size:11px; color:var(--danger); margin-top:3px;">Hidden: {{ r.hidden_reason }}</div>
               {% endif %}
@@ -546,7 +546,7 @@
     <form method="POST" action="{{ url_for('admin.reject_lawyer', profile_id=profile.id) }}">
       <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
       <label style="font-size:12px; color:var(--text-muted); display:block; margin-bottom:6px;">Reason <span style="color:var(--danger);">*</span></label>
-      <textarea name="reason" class="form-input" rows="3" required style="width:100%; resize:vertical; font-size:13px; margin-bottom:12px;" placeholder="e.g. Bar number could not be verified — please provide a copy of your licence certificate."></textarea>
+      <textarea name="reason" class="form-input" rows="3" required style="width:100%; resize:vertical; font-size:13px; margin-bottom:12px;" placeholder="e.g. Bar number could not be verified - please provide a copy of your licence certificate."></textarea>
       <label style="font-size:12px; color:var(--text-muted); display:block; margin-bottom:6px;">Admin Notes (optional, internal only)</label>
       <textarea name="admin_notes" class="form-input" rows="2" style="width:100%; resize:vertical; font-size:13px;" placeholder="Internal notes…">{{ profile.admin_notes or '' }}</textarea>
       <div class="modal-actions">

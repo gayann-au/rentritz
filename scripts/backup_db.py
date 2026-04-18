@@ -1,5 +1,5 @@
 """
-Rentritz Dubai — PostgreSQL backup script.
+Rentritz Dubai - PostgreSQL backup script.
 
 Reads DATABASE_URL from .env, dumps the database with pg_dump using a
 timestamped filename, saves it to backups/ at the project root, and
@@ -56,7 +56,7 @@ if not db_name:
 BACKUP_DIR = Path(__file__).parent.parent / 'backups'
 BACKUP_DIR.mkdir(exist_ok=True)
 
-# Timestamped filename — custom (compressed) pg_dump format
+# Timestamped filename - custom (compressed) pg_dump format
 timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
 backup_file = BACKUP_DIR / f'rentritz_{timestamp}.dump'
 

@@ -44,7 +44,7 @@ def _populate_specialisation_choices(form):
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# ROUTE 0 — Lawyer login
+# ROUTE 0 - Lawyer login
 # ─────────────────────────────────────────────────────────────────────────────
 
 _COOLDOWN_THRESHOLD = 3
@@ -118,7 +118,7 @@ def login():
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# ROUTE 1 — Browse
+# ROUTE 1 - Browse
 # ─────────────────────────────────────────────────────────────────────────────
 
 @lawyers_bp.route('/')
@@ -208,7 +208,7 @@ def browse():
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# ROUTE 2 — Profile page
+# ROUTE 2 - Profile page
 # ─────────────────────────────────────────────────────────────────────────────
 
 @lawyers_bp.route('/<int:lawyer_profile_id>')
@@ -223,7 +223,7 @@ def profile(lawyer_profile_id):
         id=lawyer_profile_id, is_active=True, verification_status='verified'
     ).first_or_404()
 
-    # Increment profile views — skip for admin (own lawyer already redirected)
+    # Increment profile views - skip for admin (own lawyer already redirected)
     if not (current_user.is_authenticated and current_user.role == 'admin'):
         try:
             db.session.execute(
@@ -254,7 +254,7 @@ def profile(lawyer_profile_id):
             ).first()
             contact_unlocked = False
 
-    # Review eligibility — only clients who have unlocked
+    # Review eligibility - only clients who have unlocked
     can_review      = False
     already_reviewed = False
     if current_user.is_authenticated and current_user.role in ('tenant', 'landlord') and unlocked_booking:
@@ -287,7 +287,7 @@ def profile(lawyer_profile_id):
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# ROUTE 3 — Unlock contact
+# ROUTE 3 - Unlock contact
 # ─────────────────────────────────────────────────────────────────────────────
 
 @lawyers_bp.route('/<int:lawyer_profile_id>/unlock', methods=['POST'])
@@ -369,7 +369,7 @@ def unlock_contact(lawyer_profile_id):
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# ROUTE 4 — Register as lawyer
+# ROUTE 4 - Register as lawyer
 # ─────────────────────────────────────────────────────────────────────────────
 
 @lawyers_bp.route('/register', methods=['GET', 'POST'])
@@ -523,7 +523,7 @@ def register():
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# ROUTE 5 — Lawyer dashboard
+# ROUTE 5 - Lawyer dashboard
 # ─────────────────────────────────────────────────────────────────────────────
 
 @lawyers_bp.route('/dashboard')
@@ -557,7 +557,7 @@ def dashboard():
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# ROUTE 6 — Edit profile
+# ROUTE 6 - Edit profile
 # ─────────────────────────────────────────────────────────────────────────────
 
 @lawyers_bp.route('/edit-profile', methods=['GET', 'POST'])
@@ -657,7 +657,7 @@ def edit_profile():
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# ROUTE 7 — Toggle availability
+# ROUTE 7 - Toggle availability
 # ─────────────────────────────────────────────────────────────────────────────
 
 @lawyers_bp.route('/toggle-availability', methods=['POST'])
@@ -674,7 +674,7 @@ def toggle_availability():
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# ROUTE 8 — Mark booking as responded
+# ROUTE 8 - Mark booking as responded
 # ─────────────────────────────────────────────────────────────────────────────
 
 @lawyers_bp.route('/bookings/<int:booking_id>/respond', methods=['POST'])
@@ -698,7 +698,7 @@ def booking_respond(booking_id):
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# ROUTE 9 — Mark booking as completed
+# ROUTE 9 - Mark booking as completed
 # ─────────────────────────────────────────────────────────────────────────────
 
 @lawyers_bp.route('/bookings/<int:booking_id>/complete', methods=['POST'])
@@ -721,7 +721,7 @@ def booking_complete(booking_id):
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# ROUTE 10 — Review form (GET) + Submit review (POST)
+# ROUTE 10 - Review form (GET) + Submit review (POST)
 # ─────────────────────────────────────────────────────────────────────────────
 
 @lawyers_bp.route('/bookings/<int:booking_id>/review', methods=['GET'])
@@ -799,7 +799,7 @@ def submit_review(booking_id):
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# ROUTE 11 — Submit review from profile page (POST /lawyers/<id>/review)
+# ROUTE 11 - Submit review from profile page (POST /lawyers/<id>/review)
 # ─────────────────────────────────────────────────────────────────────────────
 
 @lawyers_bp.route('/<int:lawyer_profile_id>/review', methods=['POST'])

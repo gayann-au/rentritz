@@ -48,7 +48,7 @@ def save_lawyer_photo(file_storage, user_id):
     folder = os.path.join(_base_upload_path(), 'lawyers', 'photos', str(user_id))
     _ensure_dir(folder)
     file_storage.save(os.path.join(folder, filename))
-    # Return relative path — stored in DB.
+    # Return relative path - stored in DB.
     # To migrate to S3/R2: upload to bucket here, return the object URL instead.
     return os.path.join('lawyers', 'photos', str(user_id), filename)
 
@@ -70,7 +70,7 @@ def save_lawyer_licence(file_storage, user_id):
     folder = os.path.join(_base_upload_path(), 'lawyers', 'licences', str(user_id))
     _ensure_dir(folder)
     file_storage.save(os.path.join(folder, filename))
-    # Return relative path — stored in DB.
+    # Return relative path - stored in DB.
     # To migrate to S3/R2: upload to bucket here, return the object URL instead.
     return os.path.join('lawyers', 'licences', str(user_id), filename)
 

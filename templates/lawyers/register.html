@@ -312,7 +312,7 @@ input[type="file"]{display:none;}
 
       <!-- CONTACT (private) -->
       <div class="lr-section sr">
-        <div class="lr-section-title">Contact information <span style="font-size:0.72rem;font-weight:400;color:var(--amber);text-transform:none;letter-spacing:0;">— private, only shown after unlock</span></div>
+        <div class="lr-section-title">Contact information <span style="font-size:0.72rem;font-weight:400;color:var(--amber);text-transform:none;letter-spacing:0;">- private, only shown after unlock</span></div>
         <div class="lr-hint" style="margin-bottom:20px;font-size:0.85rem;">
           This information is <strong style="color:var(--white);">never shown publicly</strong>. It is only revealed to a client after they pay the credit unlock fee.
         </div>
@@ -364,7 +364,7 @@ input[type="file"]{display:none;}
             </label>
             {{ form.photo(id=form.photo.id, onchange="document.getElementById('photo-name').textContent=this.files[0]?this.files[0].name:'No file chosen'") }}
             <div class="lr-file-name" id="photo-name">No file chosen</div>
-            <div class="lr-hint">JPG, PNG or WebP — max 5 MB</div>
+            <div class="lr-hint">JPG, PNG or WebP - max 5 MB</div>
           </div>
           <div class="lr-field">
             <label class="lr-label">Licence / Bar certificate <span class="lr-label-opt">optional</span></label>
@@ -373,7 +373,7 @@ input[type="file"]{display:none;}
             </label>
             {{ form.licence_pdf(id=form.licence_pdf.id, onchange="document.getElementById('licence-name').textContent=this.files[0]?this.files[0].name:'No file chosen'") }}
             <div class="lr-file-name" id="licence-name">No file chosen</div>
-            <div class="lr-hint">PDF — max 10 MB. Reviewed by admin only.</div>
+            <div class="lr-hint">PDF - max 10 MB. Reviewed by admin only.</div>
           </div>
         </div>
       </div>

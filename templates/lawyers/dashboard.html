@@ -158,12 +158,12 @@
     <div class="ld-banner ld-banner-pending sr">
       <div>
         <p class="ld-banner-title">Your profile is under review</p>
-        <p class="ld-banner-body">Our team is reviewing your credentials. We will notify you by email once approved, usually within 1–2 business days. You can update your profile at any time while it is being reviewed.</p>
+        <p class="ld-banner-body">Our team is reviewing your credentials. We will notify you by email once approved, usually within 1-2 business days. You can update your profile at any time while it is being reviewed.</p>
       </div>
       <a href="{{ url_for('lawyers.edit_profile') }}" class="ld-btn-outline" style="flex-shrink:0;">Edit profile</a>
     </div>
 
-    <!-- Submitted details summary — pending only -->
+    <!-- Submitted details summary - pending only -->
     <div class="ld-checklist-card sr" style="margin-bottom:32px;">
       <div class="ld-checklist-header">
         <div class="ld-checklist-title">Submitted details</div>
@@ -175,7 +175,7 @@
         </div>
         <div class="ld-check-item" style="flex-direction:column;align-items:flex-start;gap:2px;">
           <span style="font-size:0.7rem;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-dim);">Experience</span>
-          <span style="color:var(--white);">{{ profile.years_experience or '—' }} years</span>
+          <span style="color:var(--white);">{{ profile.years_experience or 'N/A' }} years</span>
         </div>
         {% if profile.bar_number %}
         <div class="ld-check-item" style="flex-direction:column;align-items:flex-start;gap:2px;">
@@ -234,7 +234,7 @@
     </div>
     {% endif %}
 
-    <!-- Availability toggle — verified only -->
+    <!-- Availability toggle - verified only -->
     {% if profile.verification_status == 'verified' %}
     <div class="ld-avail-row sr">
       <div>
@@ -253,7 +253,7 @@
     </div>
     {% endif %}
 
-    <!-- Stats row — verified only -->
+    <!-- Stats row - verified only -->
     {% if profile.verification_status == 'verified' %}
     <div class="ld-stats-grid sr">
       <div class="ld-stat-card">
@@ -270,14 +270,14 @@
           {% if profile.average_rating %}
           {{ "%.1f"|format(profile.average_rating) }} <span>/ 5</span>
           {% else %}
-          — <span>no reviews</span>
+          - <span>no reviews</span>
           {% endif %}
         </div>
       </div>
     </div>
     {% endif %}
 
-    <!-- Profile completeness — always visible -->
+    <!-- Profile completeness - always visible -->
     <div class="ld-checklist-card sr">
       <div class="ld-checklist-header">
         <div class="ld-checklist-title">Profile completeness</div>
@@ -327,7 +327,7 @@
       </div>
     </div>
 
-    <!-- Recent bookings — verified only -->
+    <!-- Recent bookings - verified only -->
     {% if profile.verification_status == 'verified' %}
     <div class="sr">
       <div class="ld-section-title">Recent client unlocks</div>
@@ -359,9 +359,9 @@
                   {{ b.status | replace('_', ' ') }}
                 </span>
               </td>
-              <td style="color:var(--text-muted);">{{ b.contact_method_chosen or '—' }}</td>
+              <td style="color:var(--text-muted);">{{ b.contact_method_chosen or 'N/A' }}</td>
               <td style="color:var(--text-muted);max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
-                {{ b.client_note or '—' }}
+                {{ b.client_note or 'N/A' }}
               </td>
               <td style="white-space:nowrap;" id="booking-actions-{{ b.id }}">
                 {% if b.status == 'contact_unlocked' %}
@@ -382,7 +382,7 @@
                     Mark Complete
                   </button>
                 {% else %}
-                  <span style="color:var(--text-dim);font-size:0.75rem;">—</span>
+                  <span style="color:var(--text-dim);font-size:0.75rem;">N/A</span>
                 {% endif %}
               </td>
             </tr>
@@ -397,7 +397,7 @@
       {% endif %}
     </div>
 
-    <!-- Client Feedback — verified only -->
+    <!-- Client Feedback - verified only -->
     <div class="sr" style="margin-top:40px;">
       <div class="ld-section-title">Client Feedback</div>
       {% if reviews %}

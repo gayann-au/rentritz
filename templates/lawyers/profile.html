@@ -332,12 +332,12 @@
               </div>
               {% else %}
               <textarea class="lp-unlock-note" id="unlock-note"
-                placeholder="Brief context (optional) — e.g. I received an eviction notice..."
+                placeholder="Brief context (optional) - e.g. I received an eviction notice..."
                 rows="3"></textarea>
               <button class="lp-unlock-btn" id="unlock-btn"
                 data-profile-id="{{ lawyer.id }}"
                 data-csrf="{{ csrf_token() }}">
-                Unlock Contact — {{ lawyer.contact_unlock_credits }} credit{% if lawyer.contact_unlock_credits != 1 %}s{% endif %}
+                Unlock Contact - {{ lawyer.contact_unlock_credits }} credit{% if lawyer.contact_unlock_credits != 1 %}s{% endif %}
               </button>
               {% endif %}
             </div>

@@ -204,7 +204,7 @@ class CreditLog(db.Model):
 # ============================================================================
 
 # ---------------------------------------------------------------------------
-# MODEL 1 — LawyerSpecialisation
+# MODEL 1 - LawyerSpecialisation
 # ---------------------------------------------------------------------------
 
 class LawyerSpecialisation(db.Model):
@@ -247,7 +247,7 @@ lawyer_profile_specialisations = db.Table(
 
 
 # ---------------------------------------------------------------------------
-# MODEL 2 — LawyerProfile
+# MODEL 2 - LawyerProfile
 # ---------------------------------------------------------------------------
 
 class LawyerProfile(db.Model):
@@ -259,7 +259,7 @@ class LawyerProfile(db.Model):
     exists for the requesting client.
 
     Denormalised stats (average_rating, total_reviews, etc.) are updated by
-    application logic after each review/booking change — never recalculated
+    application logic after each review/booking change - never recalculated
     on read to avoid aggregate queries on every profile page load.
     """
 
@@ -291,7 +291,7 @@ class LawyerProfile(db.Model):
     # ^ e.g. ['in_person', 'phone', 'video']
     typical_response_hours = db.Column(db.Integer, nullable=True)
 
-    # --- Pricing (all nullable — lawyer fills what applies) ---
+    # --- Pricing (all nullable - lawyer fills what applies) ---
     offers_free_first_consultation = db.Column(db.Boolean, default=False)
     free_consultation_minutes      = db.Column(db.Integer,     nullable=True)
     hourly_rate_aed                = db.Column(db.Numeric(10, 2), nullable=True)
@@ -303,7 +303,7 @@ class LawyerProfile(db.Model):
     contact_unlock_credits         = db.Column(db.Integer, default=5, nullable=False)
     # ^ cost in credits to unlock contact; snapshot stored on booking at unlock time
 
-    # --- Contact (private — revealed only after credit unlock) ---
+    # --- Contact (private - revealed only after credit unlock) ---
     phone          = db.Column(db.String(30),  nullable=True)
     whatsapp       = db.Column(db.String(30),  nullable=True)
     contact_email  = db.Column(db.String(255), nullable=True)
@@ -381,7 +381,7 @@ class LawyerProfile(db.Model):
 
 
 # ---------------------------------------------------------------------------
-# MODEL 3 — LawyerBooking
+# MODEL 3 - LawyerBooking
 # ---------------------------------------------------------------------------
 
 class LawyerBooking(db.Model):
@@ -449,7 +449,7 @@ class LawyerBooking(db.Model):
 
 
 # ---------------------------------------------------------------------------
-# MODEL 4 — LawyerReview
+# MODEL 4 - LawyerReview
 # ---------------------------------------------------------------------------
 
 class LawyerReview(db.Model):
@@ -457,7 +457,7 @@ class LawyerReview(db.Model):
     Client review of a lawyer, gated on a completed booking.
 
     Enforced at application layer:
-    - rating 1–5
+    - rating 1-5
     - one review per booking (unique FK on booking_id)
     - only clients with booking.status == 'completed' may submit
 
@@ -482,7 +482,7 @@ class LawyerReview(db.Model):
     )
 
     # --- Review content ---
-    rating           = db.Column(db.Integer,  nullable=False)   # 1–5
+    rating           = db.Column(db.Integer,  nullable=False)   # 1-5
     comment          = db.Column(db.Text,     nullable=True)
     would_recommend  = db.Column(db.Boolean,  nullable=True)
     lawyer_reply     = db.Column(db.Text,     nullable=True)

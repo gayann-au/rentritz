@@ -43,7 +43,7 @@ def _verify_hcaptcha():
         return True  # no captcha configured
     host = request.host.split(':')[0]
     if host in ('localhost', '127.0.0.1'):
-        return True  # hCaptcha does not validate localhost — skip in local dev
+        return True  # hCaptcha does not validate localhost - skip in local dev
     token = request.form.get('h-captcha-response', '')
     if not token:
         return False
@@ -197,7 +197,7 @@ def login():
             )
             return render_template('auth/login.html')
 
-        # Check lockout — failed_login_lockout is the "locked until" timestamp
+        # Check lockout - failed_login_lockout is the "locked until" timestamp
         if user and user.role != 'admin':
             now = datetime.utcnow()
             if user.failed_login_lockout and now < user.failed_login_lockout:

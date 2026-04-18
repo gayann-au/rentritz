@@ -57,7 +57,7 @@ class LawyerProfileForm(FlaskForm):
         validators=[Optional(), URL(require_tld=True), Length(max=300)],
     )
 
-    # --- Practice details (comma-separated — split to array in route) ---
+    # --- Practice details (comma-separated - split to array in route) ---
     languages           = StringField(
         'Languages Spoken',
         validators=[Optional()],

@@ -13,7 +13,7 @@
 .sr{opacity:0;transform:translateY(24px);transition:opacity 0.6s var(--ease-out),transform 0.6s var(--ease-out);}
 .sr.in{opacity:1;transform:translateY(0);}
 
-/* Reuse register page styles — identical form */
+/* Reuse register page styles - identical form */
 .lr-page{min-height:100vh;background:var(--black);padding:56px 0 100px;}
 .lr-container{width:100%;max-width:800px;margin:0 auto;padding:0 32px;}
 .lr-header{margin-bottom:40px;}
@@ -240,7 +240,7 @@ input[type="file"]{display:none;}
 
       <!-- CONTACT -->
       <div class="lr-section sr">
-        <div class="lr-section-title">Contact information <span style="font-size:0.72rem;font-weight:400;color:var(--amber);text-transform:none;letter-spacing:0;">— private</span></div>
+        <div class="lr-section-title">Contact information <span style="font-size:0.72rem;font-weight:400;color:var(--amber);text-transform:none;letter-spacing:0;">- private</span></div>
 
         <div class="lr-grid2">
           <div class="lr-field">
@@ -293,7 +293,7 @@ input[type="file"]{display:none;}
             </label>
             {{ form.photo(id=form.photo.id, onchange="document.getElementById('photo-name').textContent=this.files[0]?this.files[0].name:'No file chosen'") }}
             <div class="lr-file-name" id="photo-name">No file chosen</div>
-            <div class="lr-hint">JPG, PNG or WebP — max 5 MB. Replaces current photo.</div>
+            <div class="lr-hint">JPG, PNG or WebP - max 5 MB. Replaces current photo.</div>
           </div>
           <div class="lr-field">
             <label class="lr-label">Licence / Bar certificate</label>
@@ -307,7 +307,7 @@ input[type="file"]{display:none;}
             </label>
             {{ form.licence_pdf(id=form.licence_pdf.id, onchange="document.getElementById('licence-name').textContent=this.files[0]?this.files[0].name:'No file chosen'") }}
             <div class="lr-file-name" id="licence-name">No file chosen</div>
-            <div class="lr-hint">PDF — max 10 MB. Replaces current file.</div>
+            <div class="lr-hint">PDF - max 10 MB. Replaces current file.</div>
           </div>
         </div>
       </div>
