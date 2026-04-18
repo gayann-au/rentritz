@@ -133,6 +133,12 @@ def create_app(env=None):
 
     @app.route('/uploads/<path:filename>')
     def serve_upload(filename):
+        from flask_login import current_user
+        from flask import abort
+        # Licence PDFs are admin-only - they contain sensitive legal credentials
+        if filename.startswith('lawyers/licences/'):
+            if not current_user.is_authenticated or current_user.role != 'admin':
+                abort(403)
         upload_folder = app.config.get(
             'UPLOAD_FOLDER',
             os.path.join(app.root_path, '..', 'uploads'),

@@ -126,7 +126,7 @@ def register():
             full_name=full_name,
             email=email,
             role=role,
-            is_verified=True,
+            is_verified=False,
             credits=free_credits,
         )
         user.set_password(password)
@@ -141,27 +141,27 @@ def register():
             note=f'{free_credits} free credits on registration',
         )
         db.session.add(log)
+
+        # Generate email verification token
+        token = secrets.token_urlsafe(32)
+        user.reset_token        = token
+        user.reset_token_expiry = datetime.utcnow() + timedelta(hours=24)
         db.session.commit()
 
+        verify_url = url_for('auth.verify_email', token=token, _external=True)
         try:
-            login_url = url_for('auth.login', _external=True)
             msg = Message(
-                subject='Welcome to Rentritz',
+                subject='Verify your Rentritz email address',
                 recipients=[user.email],
-                html=render_template('email/welcome.html',
-                                     user=user,
-                                     free_credits=free_credits,
-                                     login_url=login_url),
+                html=render_template('email/verify_email.html',
+                                     user=user, verify_url=verify_url),
             )
             mail.send(msg)
         except Exception as e:
-            current_app.logger.error(f'Failed to send welcome email to {user.email}: {e}')
+            current_app.logger.error(f'Failed to send verification email to {user.email}: {e}')
 
-        login_user(user)
-        flash(f'Welcome, {user.full_name}. You have {free_credits} free consultations to get started.', 'success')
-        if user.role == 'lawyer':
-            return redirect(url_for('lawyers.register'))
-        return redirect(url_for('core.dashboard'))
+        flash(f'Welcome, {user.full_name}! Check your email to verify your account before logging in.', 'success')
+        return redirect(url_for('auth.login'))
 
     return render_template('auth/register.html')
 
@@ -191,10 +191,7 @@ def login():
         user = User.query.filter_by(email=email).first()
 
         if user and user.role == 'lawyer':
-            flash(
-                'Lawyers please sign in at the <a href="/lawyers/login">lawyer portal</a>.',
-                'error'
-            )
+            flash('This login is for clients only. Lawyers use the lawyer portal.', 'error')
             return render_template('auth/login.html')
 
         # Check lockout - failed_login_lockout is the "locked until" timestamp
@@ -240,10 +237,8 @@ def login():
         login_user(user, remember=remember)
 
         next_page = request.args.get('next')
-        if next_page:
-            parsed = urlparse(next_page)
-            if parsed.netloc or parsed.scheme or next_page.startswith('//'):
-                next_page = None
+        if next_page and (not next_page.startswith('/') or next_page.startswith('//')):
+            next_page = None
         if next_page:
             return redirect(next_page)
         if user.role == 'lawyer':

@@ -306,6 +306,20 @@ def unlock_contact(lawyer_profile_id):
     if current_user.id == lawyer.user_id:
         return jsonify({'error': 'forbidden', 'message': 'You cannot unlock your own profile.'}), 403
 
+    # Idempotency: prevent double-spend if client already unlocked this lawyer
+    existing_booking = LawyerBooking.query.filter_by(
+        client_id=current_user.id,
+        lawyer_profile_id=lawyer.id,
+    ).filter(
+        LawyerBooking.status.in_(['contact_unlocked', 'completed'])
+    ).first()
+    if existing_booking:
+        response_data = {'success': True, 'credits_remaining': current_user.credits, 'already_unlocked': True}
+        if lawyer.phone:         response_data['phone']    = lawyer.phone
+        if lawyer.whatsapp:      response_data['whatsapp'] = lawyer.whatsapp
+        if lawyer.contact_email: response_data['email']    = lawyer.contact_email
+        return jsonify(response_data)
+
     cost = lawyer.contact_unlock_credits
     if current_user.available_credits < cost:
         return jsonify({
@@ -816,7 +830,8 @@ def submit_lawyer_review(lawyer_profile_id):
     booking = LawyerBooking.query.filter_by(
         client_id=current_user.id,
         lawyer_profile_id=lawyer.id,
-        status='contact_unlocked',
+    ).filter(
+        LawyerBooking.status.in_(['contact_unlocked', 'completed'])
     ).first()
 
     if not booking:

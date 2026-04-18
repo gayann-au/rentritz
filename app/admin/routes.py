@@ -66,13 +66,35 @@ def login():
         ip       = request.remote_addr
         user     = User.query.filter_by(email=email, role='admin').first()
 
+        # Per-account brute force lockout (same thresholds as client/lawyer login)
+        if user:
+            now = datetime.utcnow()
+            if user.failed_login_lockout and now < user.failed_login_lockout:
+                _log_admin_access('admin_login', email, ip, success=False, detail='locked_out')
+                flash('Invalid credentials.', 'error')
+                return render_template('admin/login.html')
+
         if user and user.check_password(password) and user.is_active:
-            login_user(user)
-            session['admin_verified'] = True
+            user.failed_login_count   = 0
+            user.failed_login_lockout = None
             user.last_login = datetime.utcnow()
             db.session.commit()
+            login_user(user)
+            session['admin_verified'] = True
             _log_admin_access('admin_login', email, ip, success=True)
             return redirect(url_for('admin.dashboard'))
+
+        if user:
+            user.failed_login_count += 1
+            count = user.failed_login_count
+            now   = datetime.utcnow()
+            if count >= 10:
+                user.failed_login_lockout = now + timedelta(hours=1)
+            elif count >= 5:
+                user.failed_login_lockout = now + timedelta(minutes=15)
+            elif count >= 3:
+                user.failed_login_lockout = now + timedelta(seconds=30)
+            db.session.commit()
 
         _log_admin_access('admin_login', email, ip, success=False,
                           detail='bad_credentials' if not user else 'wrong_password_or_inactive')

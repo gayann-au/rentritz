@@ -99,7 +99,7 @@ class DevelopmentConfig(Config):
 
 class ProductionConfig(Config):
     DEBUG                 = False
-    SESSION_COOKIE_SECURE = os.environ.get('HTTPS', 'false').lower() == 'true'
+    SESSION_COOKIE_SECURE = True  # always require HTTPS in production
 
 
 config = {
