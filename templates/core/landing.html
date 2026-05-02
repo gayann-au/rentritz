@@ -1,11 +1,11 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Rentritz - Dubai Property Legal Advice, Fast</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -38,7 +38,9 @@ img{max-width:100%;display:block}
 .orb2{width:340px;height:340px;background:rgba(200,130,10,.09);bottom:8%;left:-4%;animation:orbf 13s ease-in-out infinite reverse}
 @keyframes orbf{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(28px,-36px) scale(1.08)}}
 .hero-c{position:relative;z-index:2;max-width:820px;padding:0 1.5rem}
-.hero-tag{display:inline-block;font-size:.75rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:rgba(245,166,35,.95);background:rgba(200,130,10,.15);border:1px solid rgba(200,130,10,.4);padding:.3rem 1rem;border-radius:50px;margin-bottom:1.4rem;animation:fadeUp .7s .1s both}
+.hero-tag{display:inline-flex;align-items:center;gap:.55rem;font-size:.75rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:rgba(245,166,35,.95);background:rgba(200,130,10,.15);border:1px solid rgba(200,130,10,.4);padding:.3rem 1rem .3rem .8rem;border-radius:50px;margin-bottom:1.4rem;animation:fadeUp .7s .1s both}
+.hero-badge-dot{width:7px;height:7px;border-radius:50%;background:#c8820a;flex-shrink:0;animation:pulse-dot 2s ease-in-out infinite}
+@keyframes pulse-dot{0%,100%{box-shadow:0 0 0 0 rgba(200,130,10,.5)}50%{box-shadow:0 0 0 5px rgba(200,130,10,0)}}
 @keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
 .hero-h1{font-size:clamp(2.4rem,6vw,4.2rem);font-weight:700;color:#fff;line-height:1.14;margin-bottom:1.2rem;perspective:600px}
 .hero-h1 em{font-style:italic;color:#f5c842}
@@ -56,7 +58,8 @@ img{max-width:100%;display:block}
 @keyframes hb{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(7px)}}
 .trust{background:#fff;border-bottom:1px solid rgba(58,53,48,.09);padding:1.4rem 5%}
 .trust-in{max-width:1100px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr);gap:1.5rem}
-.trust-item{text-align:center;padding:.5rem 0}
+.trust-item{text-align:center;padding:.5rem 0;position:relative}
+.trust-item+.trust-item::before{content:'';position:absolute;left:0;top:15%;height:70%;width:1px;background:rgba(58,53,48,.1)}
 .t-num{font-family:'Playfair Display',serif;font-size:2.1rem;font-weight:700;color:#c8820a;line-height:1}
 .t-lbl{font-size:.8rem;color:#9a8f82;margin-top:.25rem;font-weight:500}
 .sec{padding:3.5rem 5%}
@@ -76,22 +79,19 @@ img{max-width:100%;display:block}
 .stg.in>*:nth-child(7){opacity:1;transform:none;transition-delay:.4s}
 .stg.in>*:nth-child(8){opacity:1;transform:none;transition-delay:.46s}
 .how{background:#f2ede6}
-.flip-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.75rem}
-.fc{perspective:900px;height:270px;cursor:pointer}
-.fci{position:relative;width:100%;height:100%;transform-style:preserve-3d;transition:transform .65s cubic-bezier(.4,0,.2,1)}
-.fc:hover .fci,.fc.flipped .fci{transform:rotateY(180deg)}
-.ff,.fb{position:absolute;inset:0;backface-visibility:hidden;border-radius:14px;padding:2rem;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center}
-.ff{background:#fff;box-shadow:0 2px 12px rgba(28,25,22,.09);border:1px solid rgba(58,53,48,.07)}
-.fb{background:linear-gradient(135deg,#c8820a,#b8720a);box-shadow:0 4px 24px rgba(200,130,10,.22);transform:rotateY(180deg)}
-.ff-n{font-family:'Playfair Display',serif;font-size:2.8rem;font-weight:700;color:#c8820a;opacity:.2;line-height:1;margin-bottom:.4rem}
-.ff-t{font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:600;color:#1c1916;margin-bottom:.4rem}
-.ff-s{font-size:.86rem;color:#9a8f82}
-.fb-t{font-family:'Playfair Display',serif;font-size:1.05rem;font-weight:600;color:#fff;margin-bottom:.6rem}
-.fb-s{font-size:.86rem;color:rgba(255,255,255,.88);line-height:1.6}
+.steps-wrap{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;background:rgba(58,53,48,.09);border-radius:20px;overflow:hidden}
+.step-card{background:#fff;padding:2.2rem 2rem;display:flex;flex-direction:column;gap:.6rem;transition:background .22s}
+.step-card:hover{background:#fdfaf5}
+.step-no{font-family:'Cormorant Garamond',serif;font-size:4.8rem;font-weight:600;color:rgba(200,130,10,.11);line-height:1;margin-bottom:.1rem}
+.step-title{font-family:'Playfair Display',serif;font-size:1.08rem;font-weight:600;color:#1c1916}
+.step-body{font-size:.86rem;color:#6b6259;line-height:1.65}
+.step-detail{font-size:.77rem;color:#c8820a;border-top:1px solid rgba(200,130,10,.14);padding-top:.55rem;margin-top:.3rem;font-weight:500}
 .areas{background:#f8f6f2}
 .ag{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem}
-.ac{background:#fff;border-radius:12px;padding:1.4rem 1.2rem;border:1px solid rgba(58,53,48,.08);border-left:3px solid transparent;box-shadow:0 1px 3px rgba(28,25,22,.07);transition:all .22s;display:block}
-.ac:hover{border-left-color:#c8820a;transform:translateY(-3px);box-shadow:0 6px 20px rgba(28,25,22,.1)}
+.ac{background:#fff;border-radius:12px;padding:1.4rem 1.2rem;border:1px solid rgba(58,53,48,.08);box-shadow:0 1px 3px rgba(28,25,22,.07);transition:all .22s;display:block;position:relative;overflow:hidden}
+.ac::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:#c8820a;transform:scaleX(0);transform-origin:left;transition:transform .28s ease}
+.ac:hover{transform:translateY(-3px);box-shadow:0 6px 20px rgba(28,25,22,.1)}
+.ac:hover::after{transform:scaleX(1)}
 .ac-icon{font-size:1.6rem;margin-bottom:.55rem}
 .ac-t{font-family:'Playfair Display',serif;font-size:.95rem;font-weight:600;color:#1c1916;margin-bottom:.25rem}
 .ac-d{font-size:.8rem;color:#9a8f82;line-height:1.5}
@@ -101,10 +101,25 @@ img{max-width:100%;display:block}
 .lm-it{display:flex;align-items:center;gap:.5rem;padding:0 2.2rem;color:rgba(255,255,255,.52);font-size:.84rem;font-weight:500;white-space:nowrap;border-right:1px solid rgba(255,255,255,.07)}
 .lm-it span{color:#c8820a}
 @keyframes ltick{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+.facts-sec{background:#1c1916;padding:5.5rem 5%}
+.facts-sec .sec-hd h2{color:#fff}
+.facts-sec .sec-hd p{color:rgba(255,255,255,.5)}
+.facts-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem}
+.fact-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:14px;padding:2rem 1.8rem;border-top:2px solid rgba(200,130,10,0);transition:all .28s}
+.fact-card:hover{border-top-color:#c8820a;transform:translateY(-5px);background:rgba(255,255,255,.07)}
+.fact-no{font-family:'Cormorant Garamond',serif;font-size:3.2rem;font-weight:600;color:rgba(200,130,10,.2);line-height:1;margin-bottom:.6rem}
+.fact-title{font-family:'Playfair Display',serif;font-size:1.05rem;font-weight:600;color:#fff;margin-bottom:.6rem}
+.fact-body{font-size:.85rem;color:rgba(255,255,255,.55);line-height:1.7}
+.fact-src{font-size:.73rem;color:rgba(200,130,10,.7);margin-top:.9rem;font-weight:500;letter-spacing:.04em}
 .rev{background:#f2ede6;padding:3rem 0}
 .rev-hd{text-align:center;margin-bottom:1.8rem;padding:0 5%}
 .rev-hd h2{font-family:'Playfair Display',serif;font-size:clamp(1.7rem,3.2vw,2.5rem);font-weight:700;color:#1c1916;margin-bottom:.5rem}
 .rev-hd p{color:#9a8f82;font-size:1rem}
+.rev-featured{margin:0 auto 2.5rem;max-width:800px;background:linear-gradient(135deg,#1c1916 0%,#2e2520 100%);border-radius:18px;padding:2.8rem 3rem;position:relative;overflow:hidden}
+.rev-featured::before{content:'\201C';font-family:'Cormorant Garamond',serif;font-size:9rem;color:rgba(200,130,10,.12);position:absolute;top:-1.2rem;left:1.5rem;line-height:1;pointer-events:none}
+.rev-feat-txt{font-family:'Playfair Display',serif;font-size:1.2rem;font-style:italic;color:rgba(255,255,255,.9);line-height:1.7;margin-bottom:1.2rem;position:relative;z-index:1}
+.rev-feat-au{font-size:.85rem;font-weight:600;color:#c8820a;position:relative;z-index:1}
+.rev-feat-rl{font-size:.78rem;color:rgba(255,255,255,.4);margin-top:.15rem;position:relative;z-index:1}
 .cw{overflow:hidden}
 .ct{display:flex;gap:1.25rem;animation:cscroll 36s linear infinite;width:max-content}
 .ct:hover{animation-play-state:paused}
@@ -121,7 +136,11 @@ img{max-width:100%;display:block}
 .lw-in p{color:rgba(255,255,255,.85);font-size:1rem;margin-bottom:1.8rem}
 .lw-in a{display:inline-block;background:#fff;color:#b8720a;font-weight:700;padding:.85rem 2rem;border-radius:50px;font-size:.97rem;transition:all .25s}
 .lw-in a:hover{transform:translateY(-2px);box-shadow:0 6px 24px rgba(0,0,0,.18)}
-.lf{background:#1c1916;color:rgba(255,255,255,.6);padding:3.5rem 5% 1.8rem}
+.lw-stats{display:flex;justify-content:center;gap:2.5rem;margin-top:2rem;flex-wrap:wrap}
+.lw-stat{text-align:center}
+.lw-stat-n{font-family:'Playfair Display',serif;font-size:1.6rem;font-weight:700;color:#fff}
+.lw-stat-l{font-size:.78rem;color:rgba(255,255,255,.7);font-weight:500}
+.lf{background:#0d0b09;color:rgba(255,255,255,.6);padding:3.5rem 5% 1.8rem}
 .lf-g{max-width:1100px;margin:0 auto 2.5rem;display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:2.5rem}
 .lf-brand{font-family:'Playfair Display',serif;font-size:1.25rem;font-weight:700;color:#fff;margin-bottom:.7rem}
 .lf-brand span{color:#f5a623}
@@ -130,8 +149,8 @@ img{max-width:100%;display:block}
 .lf-col a{display:block;font-size:.8rem;color:rgba(255,255,255,.48);margin-bottom:.45rem;transition:color .2s}
 .lf-col a:hover{color:#f5a623}
 .lf-bot{max-width:1100px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;padding-top:1.4rem;border-top:1px solid rgba(255,255,255,.09);font-size:.76rem;flex-wrap:wrap;gap:.5rem}
-@media(max-width:900px){.ag{grid-template-columns:repeat(2,1fr)}.flip-grid{grid-template-columns:1fr}.lf-g{grid-template-columns:1fr 1fr;gap:1.8rem}}
-@media(max-width:640px){.trust-in{grid-template-columns:repeat(2,1fr)}.ag{grid-template-columns:1fr}.lf-g{grid-template-columns:1fr}.hero-btns{flex-direction:column;align-items:center}.l-login{display:none}}
+@media(max-width:900px){.ag{grid-template-columns:repeat(2,1fr)}.steps-wrap{grid-template-columns:1fr}.facts-grid{grid-template-columns:1fr}.lf-g{grid-template-columns:1fr 1fr;gap:1.8rem}}
+@media(max-width:640px){.trust-in{grid-template-columns:repeat(2,1fr)}.ag{grid-template-columns:1fr}.lf-g{grid-template-columns:1fr}.hero-btns{flex-direction:column;align-items:center}.l-login{display:none}.rev-featured{padding:2rem 1.5rem}.lw-stats{gap:1.5rem}}
 </style>
 </head>
 <body>
@@ -155,12 +174,12 @@ img{max-width:100%;display:block}
   <div class="orb orb1"></div>
   <div class="orb orb2"></div>
   <div class="hero-c">
-    <div class="hero-tag">UAE Property Law &middot; 100% Online</div>
+    <div class="hero-tag"><span class="hero-badge-dot"></span>UAE Property Law &middot; 100% Online</div>
     <h1 class="hero-h1">
       <span class="hw" style="animation-delay:.3s">Get&nbsp;</span><em class="hw" style="animation-delay:.48s">Instant Legal</em>
       <br><span class="hw" style="animation-delay:.64s">Clarity&nbsp;</span><span class="hw" style="animation-delay:.78s">on Your Rental Rights</span>
     </h1>
-    <p class="hero-sub">Tenants and landlords in Dubai get personalised legal answers in under 3&nbsp;minutes &mdash; no appointment, no guessing.</p>
+    <p class="hero-sub">Tenants and landlords in Dubai get personalised legal answers in under 3&nbsp;minutes - no appointment, no guessing.</p>
     <div class="hero-btns">
       <a href="{{ url_for('auth.register') }}" class="h-cta">Start for Free</a>
       <a href="{{ url_for('lawyers.browse') }}" class="h-sec">Browse Lawyers</a>
@@ -168,6 +187,7 @@ img{max-width:100%;display:block}
   </div>
   <div class="hero-scroll" id="hscroll"><span>Scroll</span><div class="hero-scroll-ln"></div></div>
 </section>
+
 <div class="trust reveal">
   <div class="trust-in stg">
     <div class="trust-item"><div class="t-num" data-count="4800">0</div><div class="t-lbl">Questions Answered</div></div>
@@ -179,26 +199,33 @@ img{max-width:100%;display:block}
 
 <section class="sec how reveal">
   <div class="wrap">
-    <div class="sec-hd"><h2>How Rentritz Works</h2><p>Three steps to personalised legal guidance &mdash; no fees until you need a lawyer.</p></div>
-    <div class="flip-grid stg">
-      <div class="fc"><div class="fci">
-        <div class="ff"><div class="ff-n">01</div><div class="ff-t">Describe Your Situation</div><div class="ff-s">Answer a short guided questionnaire about your rental issue in Dubai.</div></div>
-        <div class="fb"><div class="fb-t">Smart Legal Matching</div><div class="fb-s">Our system maps your answers to UAE tenancy law and RERA regulations instantly.</div></div>
-      </div></div>
-      <div class="fc"><div class="fci">
-        <div class="ff"><div class="ff-n">02</div><div class="ff-t">Get Your Legal Answer</div><div class="ff-s">Receive a clear, plain-English explanation of your rights and obligations.</div></div>
-        <div class="fb"><div class="fb-t">Grounded in UAE Law</div><div class="fb-s">Every answer cites Dubai Law No.&nbsp;26/2007, Law No.&nbsp;33/2008, and RERA guidelines.</div></div>
-      </div></div>
-      <div class="fc"><div class="fci">
-        <div class="ff"><div class="ff-n">03</div><div class="ff-t">Connect With a Lawyer</div><div class="ff-s">If your case is complex, book a verified specialist directly from the platform.</div></div>
-        <div class="fb"><div class="fb-t">Vetted Specialists</div><div class="fb-s">All lawyers are verified UAE-licensed professionals with expertise in property disputes.</div></div>
-      </div></div>
+    <div class="sec-hd"><h2>How Rentritz Works</h2><p>Three steps to personalised legal guidance - no fees until you need a lawyer.</p></div>
+    <div class="steps-wrap stg">
+      <div class="step-card">
+        <div class="step-no">01</div>
+        <div class="step-title">Describe Your Situation</div>
+        <div class="step-body">Answer a short guided questionnaire about your rental issue in Dubai. Takes under 3 minutes.</div>
+        <div class="step-detail">Smart legal matching based on UAE tenancy law &amp; RERA regulations</div>
+      </div>
+      <div class="step-card">
+        <div class="step-no">02</div>
+        <div class="step-title">Get Your Legal Answer</div>
+        <div class="step-body">Receive a clear, plain-English explanation of your rights and obligations - grounded in real UAE law.</div>
+        <div class="step-detail">Cites Dubai Law No.&nbsp;26/2007, Law No.&nbsp;33/2008 &amp; RERA guidelines</div>
+      </div>
+      <div class="step-card">
+        <div class="step-no">03</div>
+        <div class="step-title">Connect With a Lawyer</div>
+        <div class="step-body">If your case needs professional representation, book a verified UAE-licensed specialist directly from the platform.</div>
+        <div class="step-detail">All lawyers are verified &amp; rated by real clients</div>
+      </div>
     </div>
   </div>
 </section>
+
 <section class="sec areas reveal">
   <div class="wrap">
-    <div class="sec-hd"><h2>Areas We Cover</h2><p>From rent hikes to eviction notices &mdash; we have an answer for your specific situation.</p></div>
+    <div class="sec-hd"><h2>Areas We Cover</h2><p>From rent hikes to eviction notices - we have an answer for your specific situation.</p></div>
     <div class="ag stg">
       <a href="{{ url_for('auth.register') }}" class="ac"><div class="ac-icon">&#x1F4C8;</div><div class="ac-t">Rent Increases</div><div class="ac-d">Understand RERA&rsquo;s rent calculator and challenge unlawful increases.</div></a>
       <a href="{{ url_for('auth.register') }}" class="ac"><div class="ac-icon">&#x1F3E0;</div><div class="ac-t">Eviction Notices</div><div class="ac-d">Know your rights when served with a notice and your options under UAE law.</div></a>
@@ -211,6 +238,7 @@ img{max-width:100%;display:block}
     </div>
   </div>
 </section>
+
 <div class="lmq">
   <div class="lmt">
     <div class="lm-it"><span>&#x2713;</span>Dubai Marina</div>
@@ -239,10 +267,41 @@ img{max-width:100%;display:block}
     <div class="lm-it"><span>&#x2713;</span>Deira</div>
   </div>
 </div>
+
+<section class="facts-sec reveal">
+  <div class="wrap">
+    <div class="sec-hd"><h2>Know Your Rights</h2><p>Key facts every Dubai tenant and landlord should know about UAE property law.</p></div>
+    <div class="facts-grid stg">
+      <div class="fact-card">
+        <div class="fact-no">01</div>
+        <div class="fact-title">12-Month Eviction Notice</div>
+        <div class="fact-body">A landlord must give a minimum of 12 months written notice served via notary or registered mail to repossess a property for personal use. Shorter notices are legally invalid.</div>
+        <div class="fact-src">Dubai Law No. 33/2008, Article 25</div>
+      </div>
+      <div class="fact-card">
+        <div class="fact-no">02</div>
+        <div class="fact-title">RERA Caps Rent Increases</div>
+        <div class="fact-body">Rent increases are strictly regulated by the RERA rental index. If your current rent is within 10% of the index value, your landlord cannot raise it at all during renewal.</div>
+        <div class="fact-src">RERA Rent Increase Calculator, Decree No. 43/2013</div>
+      </div>
+      <div class="fact-card">
+        <div class="fact-no">03</div>
+        <div class="fact-title">Deposit Cannot Exceed 5%</div>
+        <div class="fact-body">Security deposits for unfurnished apartments are capped at 5% of annual rent, and 10% for furnished units. Landlords must return it within 30 days of lease termination.</div>
+        <div class="fact-src">Dubai Law No. 26/2007, Article 20</div>
+      </div>
+    </div>
+  </div>
+</section>
+
 <section class="rev reveal">
   <div class="rev-hd"><h2>What Our Users Say</h2><p>Real stories from tenants and landlords who got the clarity they needed.</p></div>
+  <div class="rev-featured">
+    <p class="rev-feat-txt">&ldquo;My landlord raised rent by 40%. Rentritz showed me exactly what RERA allows. I challenged it, saved AED&nbsp;24,000 a year, and the whole process took under an hour. This platform should be mandatory reading for every expat in Dubai.&rdquo;</p>
+    <div class="rev-feat-au">Ahmed K.</div>
+    <div class="rev-feat-rl">Tenant &middot; Dubai Marina &middot; &#9733;&#9733;&#9733;&#9733;&#9733;</div>
+  </div>
   <div class="cw"><div class="ct">
-    <div class="rc"><div class="rc-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div><p class="rc-txt">&ldquo;My landlord raised rent by 40%. Rentritz showed me exactly what RERA allows &mdash; I saved AED&nbsp;24,000 a year.&rdquo;</p><div class="rc-au">Ahmed K.</div><div class="rc-rl">Tenant &middot; Dubai Marina</div></div>
     <div class="rc"><div class="rc-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div><p class="rc-txt">&ldquo;Got an eviction notice with 30 days. The platform told me the legal minimum is 12 months. I stayed in my flat.&rdquo;</p><div class="rc-au">Priya S.</div><div class="rc-rl">Tenant &middot; JLT</div></div>
     <div class="rc"><div class="rc-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div><p class="rc-txt">&ldquo;Needed to recover my property from a non-paying tenant. The guidance on the RDC process was crystal clear.&rdquo;</p><div class="rc-au">Omar F.</div><div class="rc-rl">Landlord &middot; Business Bay</div></div>
     <div class="rc"><div class="rc-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div><p class="rc-txt">&ldquo;As a new expat I had no idea about Ejari. Rentritz walked me through everything in minutes.&rdquo;</p><div class="rc-au">Sophie L.</div><div class="rc-rl">Tenant &middot; Downtown</div></div>
@@ -250,7 +309,6 @@ img{max-width:100%;display:block}
     <div class="rc"><div class="rc-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div><p class="rc-txt">&ldquo;The lawyer I connected with was exceptional. The whole experience from question to booking was seamless.&rdquo;</p><div class="rc-au">Fatima A.</div><div class="rc-rl">Landlord &middot; Palm Jumeirah</div></div>
     <div class="rc"><div class="rc-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div><p class="rc-txt">&ldquo;I was about to accept a renewal I did not have to sign. The platform saved me thousands.&rdquo;</p><div class="rc-au">David W.</div><div class="rc-rl">Tenant &middot; Dubai Hills</div></div>
     <div class="rc"><div class="rc-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div><p class="rc-txt">&ldquo;Fast, clear, and actually useful legal guidance. The best AED&nbsp;20 I have spent in Dubai.&rdquo;</p><div class="rc-au">Lin X.</div><div class="rc-rl">Tenant &middot; Jumeirah</div></div>
-    <div class="rc"><div class="rc-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div><p class="rc-txt">&ldquo;My landlord raised rent by 40%. Rentritz showed me exactly what RERA allows &mdash; I saved AED&nbsp;24,000 a year.&rdquo;</p><div class="rc-au">Ahmed K.</div><div class="rc-rl">Tenant &middot; Dubai Marina</div></div>
     <div class="rc"><div class="rc-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div><p class="rc-txt">&ldquo;Got an eviction notice with 30 days. The platform told me the legal minimum is 12 months. I stayed in my flat.&rdquo;</p><div class="rc-au">Priya S.</div><div class="rc-rl">Tenant &middot; JLT</div></div>
     <div class="rc"><div class="rc-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div><p class="rc-txt">&ldquo;Needed to recover my property from a non-paying tenant. The guidance on the RDC process was crystal clear.&rdquo;</p><div class="rc-au">Omar F.</div><div class="rc-rl">Landlord &middot; Business Bay</div></div>
     <div class="rc"><div class="rc-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div><p class="rc-txt">&ldquo;As a new expat I had no idea about Ejari. Rentritz walked me through everything in minutes.&rdquo;</p><div class="rc-au">Sophie L.</div><div class="rc-rl">Tenant &middot; Downtown</div></div>
@@ -260,11 +318,17 @@ img{max-width:100%;display:block}
     <div class="rc"><div class="rc-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div><p class="rc-txt">&ldquo;Fast, clear, and actually useful legal guidance. The best AED&nbsp;20 I have spent in Dubai.&rdquo;</p><div class="rc-au">Lin X.</div><div class="rc-rl">Tenant &middot; Jumeirah</div></div>
   </div></div>
 </section>
+
 <section class="lw-cta reveal">
   <div class="lw-in">
     <h2>Are You a UAE-Licensed Lawyer?</h2>
-    <p>Join 120+ verified specialists connecting with clients who need your expertise right now.</p>
+    <p>Join verified specialists connecting with clients who need your expertise right now.</p>
     <a href="{{ url_for('core.for_lawyers') }}">Join as a Lawyer</a>
+    <div class="lw-stats">
+      <div class="lw-stat"><div class="lw-stat-n">120+</div><div class="lw-stat-l">Verified Lawyers</div></div>
+      <div class="lw-stat"><div class="lw-stat-n">4,800+</div><div class="lw-stat-l">Consultations Done</div></div>
+      <div class="lw-stat"><div class="lw-stat-n">AED 0</div><div class="lw-stat-l">Setup Cost</div></div>
+    </div>
   </div>
 </section>
 
@@ -277,6 +341,7 @@ img{max-width:100%;display:block}
   </div>
   <div class="lf-bot"><span>&copy; 2025 Rentritz. All rights reserved.</span><span>Not a law firm. Legal information, not legal advice.</span></div>
 </footer>
+
 <script>
 const nav = document.getElementById('lnav');
 window.addEventListener('scroll', () => nav.classList.toggle('scrolled', window.scrollY > 60), {passive:true});
@@ -305,10 +370,6 @@ const io = new IntersectionObserver(entries => {
   });
 }, {threshold:0.1});
 document.querySelectorAll('.reveal,.stg').forEach(el => io.observe(el));
-
-document.querySelectorAll('.fc').forEach(card => {
-  card.addEventListener('click', () => card.classList.toggle('flipped'));
-});
 
 document.getElementById('hscroll')?.addEventListener('click', () =>
   document.querySelector('.trust')?.scrollIntoView({behavior:'smooth'})
