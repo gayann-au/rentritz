@@ -1,878 +1,2014 @@
-﻿<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
+<meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Rentritz . A precision legal navigator for Dubai property</title>
-<meta name="description" content="Plain-English answers to your Dubai tenancy questions, citation-grounded in UAE law. Three minutes to a clear position. Verified counsel when you need them.">
+<title>Rentritz Dubai · A Legal Navigator for Dubai Property</title>
+<meta name="description" content="Plain-English answers to your Dubai tenancy questions, citation-grounded in UAE law. Three minutes from your phone to a clear legal position. Verified counsel when you need them.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600&display=swap" rel="stylesheet">
+
 <style>
+/* ============================================================
+   RENTRITZ DUBAI · CINEMATIC LANDING
+   DM Sans only. Two-tone editorial + brass accent.
+   ============================================================ */
+
 :root{
-  --paper:#f5f0e8;--paper-2:#ede5d6;--card:#ffffff;--ink:#0e0c0a;--ink-2:#1c1916;
-  --brass:#c8820a;--brass-2:#a86a08;--brass-soft:#e0a040;--ox:#6b1d1a;
-  --rule:rgba(14,12,10,.12);--rule-soft:rgba(14,12,10,.06);
-  --muted:#6b6157;--muted-2:#9a8f82;--ease:cubic-bezier(.22,1,.36,1);
+  --paper:#f8f6f2;
+  --paper-2:#f0ece6;
+  --card:#ffffff;
+  --ink:#1c1916;
+  --ink-2:#0e0c0a;
+  --dark:#0a0807;
+  --dark-mid:#1c1916;
+  --amber:#c8820a;
+  --amber-soft:#e0a040;
+  --amber-2:#a86a08;
+  --muted:#6b6157;
+  --dim:#9a8f82;
+  --rule:rgba(58,53,48,0.12);
+  --rule-soft:rgba(58,53,48,0.06);
+  --ease:cubic-bezier(0.22,1,0.36,1);
 }
+
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth}
-body{font-family:'DM Sans',sans-serif;background:var(--paper);color:var(--ink);line-height:1.65;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;overflow-x:hidden}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{
+  font-family:'DM Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  background:var(--paper);
+  color:var(--ink);
+  line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;
+  overflow-x:hidden;
+}
 a{color:inherit;text-decoration:none}
-img{max-width:100%;display:block}
-::selection{background:var(--brass);color:#fff}
+img,svg{max-width:100%;display:block}
+button{font:inherit;cursor:pointer;border:none;background:none;color:inherit}
+::selection{background:var(--amber);color:#fff}
 
-.mhd{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;justify-content:space-between;align-items:center;padding:1.1rem 5%;transition:background .4s var(--ease),box-shadow .4s var(--ease),padding .4s var(--ease)}
-.mhd.scrolled{background:rgba(245,240,232,.92);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);box-shadow:0 1px 0 var(--rule);padding:.7rem 5%}
-.mhd-l{display:flex;align-items:baseline;gap:1.3rem}
-.mhd-name{font-family:'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;font-style:italic;font-size:1.55rem;font-weight:600;color:#fff;letter-spacing:-.01em;transition:color .3s}
-.mhd.scrolled .mhd-name{color:var(--ink)}
-.mhd-issue{font-family:'DM Sans',sans-serif;font-size:.66rem;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.55);display:none}
-@media(min-width:760px){.mhd-issue{display:flex;gap:.6rem}}
-.mhd.scrolled .mhd-issue{color:var(--muted-2)}
-.mhd-r{display:flex;align-items:center;gap:.4rem;font-family:'DM Sans',sans-serif;font-size:.72rem;letter-spacing:.14em;text-transform:uppercase}
-.mhd-r a{padding:.55rem .9rem;color:rgba(255,255,255,.85);transition:color .25s}
-.mhd.scrolled .mhd-r a{color:var(--ink-2)}
-.mhd-r a:hover{color:var(--brass)}
-.mhd-r a.cta{background:var(--brass);color:#fff;border-radius:50px;padding:.6rem 1.2rem;letter-spacing:.1em;box-shadow:0 6px 22px rgba(200,130,10,.32)}
-.mhd-r a.cta:hover{background:var(--brass-2);color:#fff;transform:translateY(-1px)}
+/* ── shared primitives ───────────────────────────────── */
+.eyebrow{
+  display:inline-flex;align-items:center;gap:0.85rem;
+  font-size:11px;font-weight:600;letter-spacing:0.22em;
+  text-transform:uppercase;color:var(--amber);
+}
+.eyebrow::before{content:'';display:block;width:22px;height:1px;background:var(--amber);flex-shrink:0}
+.on-dark .eyebrow{color:var(--amber-soft)}
+.on-dark .eyebrow::before{background:var(--amber-soft)}
 
-.hero{position:relative;min-height:100vh;overflow:hidden;display:flex;flex-direction:column;justify-content:flex-end;padding:0 5% 4.2rem;color:#fff}
-.hero-bg{position:absolute;inset:-3% -3%;z-index:0;will-change:transform}
-.hero-bg::before{content:"";position:absolute;inset:0;background-image:url('https://images.unsplash.com/photo-1518684079-3c830dcef090?auto=format&fit=crop&w=2200&q=85');background-size:cover;background-position:center 35%;animation:hero-zoom 22s ease-out infinite alternate;will-change:transform}
-@keyframes hero-zoom{from{transform:scale(1.05)}to{transform:scale(1.18)}}
-.hero-grade{position:absolute;inset:0;z-index:1;background:linear-gradient(180deg,rgba(14,12,10,.55) 0%,rgba(14,12,10,.18) 30%,rgba(14,12,10,.42) 70%,rgba(14,12,10,.92) 100%)}
-.hero-grain{position:absolute;inset:0;z-index:2;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 300 300' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' /%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");opacity:.18;mix-blend-mode:overlay;pointer-events:none}
-.hero-orb{position:absolute;width:520px;height:520px;border-radius:50%;background:radial-gradient(circle,rgba(200,130,10,.4),transparent 70%);filter:blur(60px);top:8%;right:-8%;z-index:1;animation:orb-drift 16s ease-in-out infinite alternate;pointer-events:none}
-@keyframes orb-drift{from{transform:translate(0,0) scale(1)}to{transform:translate(-40px,30px) scale(1.1)}}
+.law-chip{
+  display:inline-flex;align-items:center;
+  font-size:11px;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;
+  color:var(--amber-2);
+  background:rgba(245,158,11,0.05);
+  border:1px solid rgba(200,130,10,0.30);
+  padding:0.4rem 0.75rem;border-radius:4px;
+  transition:box-shadow .3s var(--ease),background .3s var(--ease);
+}
+.law-chip:hover{box-shadow:0 0 0 3px rgba(200,130,10,0.15);background:rgba(245,158,11,0.10)}
+.on-dark .law-chip{color:var(--amber-soft);background:rgba(200,130,10,0.10);border-color:rgba(200,130,10,0.40)}
 
-.hero-issue{position:absolute;top:8.5rem;left:5%;z-index:3;font-family:'DM Sans',sans-serif;font-size:.7rem;letter-spacing:.22em;text-transform:uppercase;color:rgba(255,255,255,.7);display:flex;align-items:center;gap:.7rem}
-.hero-issue::before{content:'';width:8px;height:8px;border-radius:50%;background:var(--brass);box-shadow:0 0 0 0 rgba(200,130,10,.5);animation:p-dot 2.4s infinite}
-@keyframes p-dot{0%,100%{box-shadow:0 0 0 0 rgba(200,130,10,.5)}50%{box-shadow:0 0 0 6px rgba(200,130,10,0)}}
+.amber-btn{
+  display:inline-flex;align-items:center;gap:0.6rem;
+  background:var(--amber);color:#000;
+  font-weight:600;font-size:0.92rem;letter-spacing:0.01em;
+  padding:0.85rem 1.5rem;border-radius:999px;
+  box-shadow:0 4px 18px rgba(200,130,10,0.22);
+  transition:transform .25s var(--ease),box-shadow .3s var(--ease),background .3s var(--ease);
+}
+.amber-btn:hover{transform:translateY(-1px);background:#d68b0c;box-shadow:0 8px 24px rgba(200,130,10,0.35)}
+.amber-btn:active{transform:translateY(0)}
 
-.hero-c{position:relative;z-index:3;max-width:1100px;width:100%;margin:auto auto 0;display:grid;grid-template-columns:1.55fr 1fr;gap:3rem;align-items:end}
-@media(max-width:900px){.hero-c{grid-template-columns:1fr;gap:2rem}}
-.hero-l{display:flex;flex-direction:column;gap:1.4rem}
+.dark-btn{
+  display:inline-flex;align-items:center;gap:0.6rem;
+  background:var(--ink);color:var(--paper);
+  font-weight:600;font-size:0.92rem;
+  padding:0.85rem 1.5rem;border-radius:999px;
+  transition:transform .25s var(--ease),background .3s var(--ease);
+}
+.dark-btn:hover{transform:translateY(-1px);background:#0a0807}
 
-.hero-toggle{display:inline-flex;align-items:center;gap:0;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);border-radius:50px;padding:.25rem;backdrop-filter:blur(12px);width:fit-content;font-family:'DM Sans',sans-serif;font-size:.7rem;letter-spacing:.16em;text-transform:uppercase}
-.hero-toggle button{background:transparent;border:none;color:rgba(255,255,255,.65);padding:.55rem 1.1rem;border-radius:50px;cursor:pointer;font:inherit;letter-spacing:inherit;text-transform:inherit;transition:all .35s var(--ease)}
-.hero-toggle button.on{background:var(--brass);color:#fff;box-shadow:0 4px 18px rgba(200,130,10,.45)}
+.arrow{display:inline-block;transition:transform .3s var(--ease)}
+a:hover .arrow,button:hover .arrow{transform:translateX(4px)}
 
-.hero-h{font-family:'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;font-size:clamp(3.2rem,8.4vw,7.6rem);font-weight:600;line-height:.94;letter-spacing:-.025em;color:#fff}
-.hero-h em{font-style:italic;color:var(--brass-soft);font-weight:400;display:inline-block;transform-origin:left bottom;animation:emph-in 1.2s var(--ease) .2s both}
-@keyframes emph-in{from{opacity:0;transform:translateY(20px) rotateX(-12deg)}to{opacity:1;transform:none}}
-.hero-h .word{display:inline-block;opacity:0;transform:translateY(40px);animation:word-up .9s var(--ease) forwards}
-.hero-h .word:nth-child(1){animation-delay:.1s}
-.hero-h .word:nth-child(2){animation-delay:.22s}
-.hero-h .word:nth-child(3){animation-delay:.34s}
-@keyframes word-up{to{opacity:1;transform:none}}
-.hero-sub{font-family:'DM Sans',sans-serif;font-style:italic;font-size:clamp(1.15rem,1.6vw,1.5rem);color:rgba(255,255,255,.78);max-width:38rem;line-height:1.45;font-weight:400;animation:fade-up 1s var(--ease) .55s both}
-@keyframes fade-up{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
-.hero-sub strong{color:#fff;font-weight:500}
+.wrap{max-width:1180px;margin:0 auto;padding:0 5%}
 
-.hero-actions{display:flex;align-items:center;gap:1.6rem;margin-top:.6rem;flex-wrap:wrap;animation:fade-up 1s var(--ease) .8s both}
-.hero-cta{display:inline-flex;align-items:center;gap:.7rem;background:var(--brass);color:#fff;font-family:'DM Sans',sans-serif;font-size:.95rem;font-weight:600;padding:1rem 1.9rem;border-radius:50px;box-shadow:0 8px 32px rgba(200,130,10,.4);transition:all .3s var(--ease)}
-.hero-cta:hover{background:var(--brass-2);transform:translateY(-2px);box-shadow:0 12px 40px rgba(200,130,10,.5)}
-.hero-cta-credits{font-family:'DM Sans',sans-serif;font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.7);background:rgba(255,255,255,.13);padding:.18rem .55rem;border-radius:50px;margin-left:.3rem}
-.hero-link{font-family:'DM Sans',sans-serif;font-size:.78rem;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.85);border-bottom:1px solid rgba(255,255,255,.4);padding-bottom:.3rem;transition:all .25s}
-.hero-link:hover{color:var(--brass-soft);border-color:var(--brass-soft);transform:translateX(3px)}
+/* ── liquid glass ────────────────────────────────────── */
+.liquid-glass{
+  background:rgba(255,255,255,0.01);
+  background-blend-mode:luminosity;
+  backdrop-filter:blur(8px);
+  -webkit-backdrop-filter:blur(8px);
+  border:none;
+  box-shadow:inset 0 1px 1px rgba(255,255,255,0.1);
+  position:relative;overflow:hidden;
+}
+.liquid-glass::before{
+  content:"";position:absolute;inset:0;border-radius:inherit;padding:1.4px;
+  background:linear-gradient(180deg,
+    rgba(255,255,255,0.45) 0%,rgba(255,255,255,0.15) 20%,
+    rgba(255,255,255,0) 40%,rgba(255,255,255,0) 60%,
+    rgba(255,255,255,0.15) 80%,rgba(255,255,255,0.45) 100%);
+  -webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);
+          mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);
+  -webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none;
+}
 
-.hero-r{padding-left:2rem;border-left:1px solid rgba(255,255,255,.18);align-self:end}
-@media(max-width:900px){.hero-r{padding-left:0;border-left:none;border-top:1px solid rgba(255,255,255,.18);padding-top:1.5rem}}
-.hero-r-h{font-family:'DM Sans',sans-serif;font-size:.66rem;letter-spacing:.22em;text-transform:uppercase;color:rgba(255,255,255,.5);margin-bottom:1.1rem}
-.hero-led{display:flex;flex-direction:column;gap:.85rem}
-.hero-led-row{display:flex;align-items:baseline;justify-content:space-between;gap:.7rem;border-bottom:1px dotted rgba(255,255,255,.16);padding-bottom:.7rem}
-.hero-led-row:last-child{border-bottom:none}
-.hero-led-n{font-family:'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;font-style:italic;font-size:1.7rem;font-weight:500;color:var(--brass-soft);line-height:1}
-.hero-led-l{font-family:'DM Sans',sans-serif;font-size:.66rem;letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.6);text-align:right;max-width:9rem}
+/* ── film grain overlay ──────────────────────────────── */
+.film-grain{
+  position:fixed;inset:0;z-index:9999;pointer-events:none;
+  background-image:url("data:image/svg+xml;utf8,<svg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/></filter><rect width='200' height='200' filter='url(%23n)' opacity='0.7'/></svg>");
+  background-size:200px 200px;
+  opacity:0.04;
+  mix-blend-mode:overlay;
+}
 
-.hero-scroll{position:absolute;bottom:1.4rem;left:50%;transform:translateX(-50%);z-index:3;display:flex;flex-direction:column;align-items:center;gap:.3rem;font-family:'DM Sans',sans-serif;font-size:.62rem;letter-spacing:.22em;text-transform:uppercase;color:rgba(255,255,255,.4);animation:hop 2.2s ease-in-out infinite}
-.hero-scroll-ln{width:1px;height:30px;background:linear-gradient(to bottom,rgba(255,255,255,.5),transparent)}
-@keyframes hop{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(8px)}}
-
-.sec{padding:6rem 5%;position:relative}
-.sec-wrap{max-width:1180px;margin:0 auto}
-.eyebrow{font-family:'DM Sans',sans-serif;font-size:.7rem;letter-spacing:.22em;text-transform:uppercase;color:var(--brass-2);display:flex;align-items:center;gap:.8rem;margin-bottom:1rem}
-.eyebrow::before{content:'';width:28px;height:1px;background:var(--brass)}
-.sec-h{font-family:'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;font-size:clamp(2.2rem,5vw,4rem);font-weight:600;line-height:1;letter-spacing:-.022em;margin-bottom:.9rem;color:var(--ink)}
-.sec-h em{font-style:italic;color:var(--brass);font-weight:500}
-.sec-lede{font-family:'DM Sans',sans-serif;font-style:italic;font-size:1.3rem;color:var(--muted);max-width:38rem;line-height:1.5;margin-bottom:3rem}
-
-.reveal{opacity:0;transform:translateY(28px);transition:opacity .9s var(--ease),transform .9s var(--ease)}
+/* ── scroll reveal ───────────────────────────────────── */
+.reveal{opacity:0;transform:translateY(24px);transition:opacity .7s var(--ease),transform .7s var(--ease)}
 .reveal.in{opacity:1;transform:none}
-.stagger>*{opacity:0;transform:translateY(20px);transition:opacity .65s var(--ease),transform .65s var(--ease)}
-.stagger.in>*{opacity:1;transform:none}
-.stagger.in>*:nth-child(1){transition-delay:.05s}
-.stagger.in>*:nth-child(2){transition-delay:.13s}
-.stagger.in>*:nth-child(3){transition-delay:.21s}
-.stagger.in>*:nth-child(4){transition-delay:.29s}
-.stagger.in>*:nth-child(5){transition-delay:.37s}
-.stagger.in>*:nth-child(6){transition-delay:.45s}
-.stagger.in>*:nth-child(7){transition-delay:.53s}
-.stagger.in>*:nth-child(8){transition-delay:.61s}
 
-.method{background:var(--paper)}
-.method-grid{display:grid;grid-template-columns:1fr 1.05fr;gap:5rem;align-items:start}
-@media(max-width:980px){.method-grid{grid-template-columns:1fr;gap:3rem}}
-.demo-wrap{position:relative}
-.demo-frame{background:var(--card);border-radius:18px;border:1px solid var(--rule);padding:2rem 2rem 1.6rem;box-shadow:0 30px 60px -20px rgba(14,12,10,.18),0 12px 28px -12px rgba(14,12,10,.1);position:relative;overflow:hidden}
-.demo-frame::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--brass),var(--brass-soft),var(--brass));background-size:200% 100%;animation:demo-stripe 4s linear infinite}
-@keyframes demo-stripe{from{background-position:0 0}to{background-position:200% 0}}
-.demo-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.6rem;padding-bottom:1rem;border-bottom:1px dotted var(--rule)}
-.demo-step{font-family:'DM Sans',sans-serif;font-size:.66rem;letter-spacing:.2em;text-transform:uppercase;color:var(--muted-2)}
-.demo-step strong{color:var(--brass-2);font-weight:600}
-.demo-prog{display:flex;gap:4px}
-.demo-prog span{width:18px;height:3px;background:var(--rule);border-radius:2px;transition:background .4s}
-.demo-prog span.on{background:var(--brass)}
-.demo-q{font-family:'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;font-size:1.55rem;font-weight:500;color:var(--ink);line-height:1.3;letter-spacing:-.01em;min-height:4rem;margin-bottom:1.5rem;transition:opacity .35s ease}
-.demo-q.fading{opacity:0}
-.demo-opts{display:flex;flex-direction:column;gap:.6rem;margin-bottom:1.4rem}
-.demo-opt{display:flex;align-items:center;justify-content:space-between;gap:.8rem;background:var(--paper);border:1px solid var(--rule);border-radius:12px;padding:.85rem 1.1rem;font-size:.95rem;color:var(--ink-2);font-weight:500;transition:all .3s var(--ease);position:relative;overflow:hidden;cursor:default}.demo-opt:hover{border-color:var(--brass);background:rgba(200,130,10,.04)}
-.demo-opt.click{background:var(--brass);color:#fff;border-color:var(--brass);transform:scale(.98);box-shadow:0 6px 18px rgba(200,130,10,.32)}
-.demo-opt-arr{font-family:'DM Sans',sans-serif;font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;opacity:.5;transition:all .3s}
-.demo-opt:hover .demo-opt-arr{opacity:1;transform:translateX(3px)}
-.demo-final{padding:1.4rem;background:linear-gradient(135deg,#1c1916 0%,#0e0c0a 100%);border-radius:12px;color:#fff;display:none}
-.demo-final.show{display:block;animation:demo-final-in .55s var(--ease)}
-@keyframes demo-final-in{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
-.demo-final-eye{font-family:'DM Sans',sans-serif;font-size:.65rem;letter-spacing:.22em;text-transform:uppercase;color:var(--brass-soft);margin-bottom:.7rem;display:flex;align-items:center;gap:.5rem}
-.demo-final-eye::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--brass-soft);animation:p-dot 1.6s infinite}
-.demo-final-h{font-family:'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;font-size:1.25rem;font-weight:500;line-height:1.35;margin-bottom:.85rem}
-.demo-final-cite{display:inline-block;font-family:'DM Sans',sans-serif;font-size:.7rem;letter-spacing:.1em;color:var(--brass-soft);background:rgba(200,130,10,.12);border:1px solid rgba(200,130,10,.4);padding:.35rem .8rem;border-radius:50px}
-.demo-foot{display:flex;justify-content:space-between;align-items:center;margin-top:1.2rem;font-family:'DM Sans',sans-serif;font-size:.64rem;letter-spacing:.18em;text-transform:uppercase;color:var(--muted-2)}
-.demo-foot span{display:flex;align-items:center;gap:.4rem}
-.demo-foot .credit{color:var(--brass-2)}
-.demo-caption{font-family:'DM Sans',sans-serif;font-size:.66rem;letter-spacing:.18em;text-transform:uppercase;color:var(--muted-2);margin-top:1.1rem;text-align:center}
+/* ============================================================
+   NAVBAR
+   ============================================================ */
+.nav{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  display:flex;justify-content:space-between;align-items:center;
+  padding:1.1rem 5%;
+  background:transparent;
+  transition:background .4s var(--ease),box-shadow .4s var(--ease),padding .4s var(--ease);
+}
+.nav.scrolled{
+  background:rgba(248,246,242,0.95);
+  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+  box-shadow:0 1px 0 rgba(58,53,48,0.08);
+  padding:0.7rem 5%;
+}
+.nav-l{display:flex;align-items:center;gap:0.7rem}
+.nav-mark{
+  display:flex;align-items:center;justify-content:center;
+  width:44px;height:44px;border-radius:999px;
+  background:rgba(248,246,242,0.10);
+  color:var(--amber-soft);
+  font-weight:600;font-size:1.15rem;letter-spacing:-0.02em;
+  transition:all .3s var(--ease);
+}
+.nav.scrolled .nav-mark{background:rgba(28,25,22,0.05);color:var(--amber)}
+.nav-name{
+  font-size:0.95rem;font-weight:600;letter-spacing:-0.01em;
+  color:#fff;font-style:italic;
+  transition:color .3s var(--ease);
+  display:none;
+}
+@media(min-width:760px){.nav-name{display:inline}}
+.nav.scrolled .nav-name{color:var(--ink)}
 
-.method-steps{display:flex;flex-direction:column;gap:2rem;position:relative}
-.method-step{display:grid;grid-template-columns:auto 1fr;gap:1.6rem;position:relative}
-.method-step::before{content:'';position:absolute;left:1.6rem;top:4rem;bottom:-2rem;width:1px;background:linear-gradient(to bottom,rgba(200,130,10,.45),transparent);transform:scaleY(0);transform-origin:top;transition:transform 1.1s ease .35s}
-.method-step:last-child::before{display:none}
-.method.in .method-step::before{transform:scaleY(1)}
-.method-rom{font-family:'DM Sans',sans-serif;font-style:italic;font-size:3.6rem;font-weight:500;line-height:.85;color:var(--brass);width:3.2rem;text-align:center}
-.method-h{font-family:'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;font-size:1.45rem;font-weight:600;letter-spacing:-.01em;margin-bottom:.5rem}
-.method-p{font-size:.97rem;color:var(--muted);line-height:1.7;margin-bottom:.7rem}
-.method-meta{display:flex;gap:.6rem;flex-wrap:wrap}
-.method-pill{font-family:'DM Sans',sans-serif;font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;color:var(--brass-2);background:rgba(200,130,10,.08);border:1px solid rgba(200,130,10,.3);padding:.3rem .65rem;border-radius:50px}
-.ledger{background:var(--ink);color:var(--paper);padding:2rem 5%;border-top:1px solid rgba(255,255,255,.06);border-bottom:1px solid rgba(255,255,255,.06)}
-.ledger-in{max-width:1180px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr);gap:2rem;align-items:center}
-@media(max-width:780px){.ledger-in{grid-template-columns:repeat(2,1fr);gap:1.5rem}}
-.ledger-item{display:flex;align-items:baseline;gap:.85rem;border-left:1px solid rgba(245,240,232,.14);padding-left:1.2rem}
-.ledger-item:first-child{border-left:none;padding-left:0}
-@media(max-width:780px){.ledger-item:nth-child(3){border-left:none;padding-left:0}}
-.ledger-n{font-family:'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;font-style:italic;font-size:2.1rem;font-weight:500;color:var(--brass-soft);line-height:1}
-.ledger-l{font-family:'DM Sans',sans-serif;font-size:.66rem;letter-spacing:.18em;text-transform:uppercase;color:rgba(245,240,232,.55)}
+.nav-r{display:none;align-items:center;gap:0.2rem;padding:0.35rem 0.5rem;border-radius:999px;background:rgba(255,255,255,0.06);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+@media(min-width:920px){.nav-r{display:flex}}
+.nav.scrolled .nav-r{background:rgba(28,25,22,0.04)}
+.nav-r a{
+  font-size:0.78rem;font-weight:500;letter-spacing:0.01em;
+  color:rgba(255,255,255,0.85);
+  padding:0.5rem 0.85rem;border-radius:999px;
+  transition:color .25s,background .25s;
+}
+.nav.scrolled .nav-r a{color:var(--ink)}
+.nav-r a:hover{color:var(--amber);background:rgba(255,255,255,0.06)}
+.nav.scrolled .nav-r a:hover{background:rgba(200,130,10,0.08)}
+.nav-r .sep{width:1px;height:18px;background:rgba(255,255,255,0.18);margin:0 0.2rem}
+.nav.scrolled .nav-r .sep{background:rgba(28,25,22,0.12)}
+.nav-r .cta{
+  background:var(--amber);color:#000;
+  padding:0.55rem 1.05rem;font-weight:600;
+  box-shadow:0 4px 14px rgba(200,130,10,0.30);
+}
+.nav-r .cta:hover{background:#d68b0c;color:#000;transform:translateY(-1px)}
 
-.statutes{background:var(--ink);color:var(--paper);padding:7rem 5%;position:relative;overflow:hidden}
-.statutes::before{content:'';position:absolute;inset:0;background-image:url('https://images.unsplash.com/photo-1582672060674-bc2bd808a8f5?auto=format&fit=crop&w=2000&q=80');background-size:cover;background-position:center;opacity:.08;mix-blend-mode:luminosity}
-.statutes::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,var(--ink) 0%,rgba(14,12,10,.85) 50%,var(--ink) 100%)}
-.statutes .sec-wrap{position:relative;z-index:1}
-.statutes .eyebrow{color:var(--brass-soft)}
-.statutes .eyebrow::before{background:var(--brass-soft)}
-.statutes .sec-h{color:var(--paper)}
-.statutes .sec-h em{color:var(--brass-soft)}
-.statutes .sec-lede{color:rgba(245,240,232,.55)}
-.stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.4rem}
-@media(max-width:880px){.stat-grid{grid-template-columns:1fr}}
-.stat-card{display:block;position:relative;background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:2.4rem 2rem 2rem;min-height:24rem;display:flex;flex-direction:column;justify-content:space-between;transition:all .55s var(--ease);overflow:hidden;cursor:pointer}
-.stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--brass);transform:scaleX(0);transform-origin:left;transition:transform .6s var(--ease)}
-.stat-card:hover::before{transform:scaleX(1)}
-.stat-card:hover{background:rgba(255,255,255,.06);transform:translateY(-6px);border-color:rgba(200,130,10,.4)}
-.stat-rom{font-family:'DM Sans',sans-serif;font-style:italic;font-size:5.5rem;font-weight:500;color:var(--brass);opacity:.5;line-height:.7;margin-bottom:1.4rem;transition:opacity .4s,color .4s}
-.stat-card:hover .stat-rom{opacity:.8;color:var(--brass-soft)}
-.stat-cite{display:inline-block;font-family:'DM Sans',sans-serif;font-size:.65rem;letter-spacing:.16em;text-transform:uppercase;color:var(--brass-soft);background:rgba(200,130,10,.08);border:1px solid rgba(200,130,10,.3);padding:.35rem .75rem;border-radius:4px;margin-bottom:1.1rem;align-self:flex-start}
-.stat-h{font-family:'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;font-size:1.5rem;font-weight:500;line-height:1.25;letter-spacing:-.005em;margin-bottom:.9rem;color:var(--paper)}
-.stat-h em{font-style:italic;color:var(--brass-soft);font-weight:400}
-.stat-body{font-family:'DM Sans',sans-serif;font-size:1.1rem;font-style:italic;color:rgba(245,240,232,.78);line-height:1.55;margin-bottom:1.2rem}
-.stat-foot{display:flex;justify-content:space-between;align-items:center;font-family:'DM Sans',sans-serif;font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;color:rgba(245,240,232,.4);padding-top:1rem;border-top:1px solid rgba(255,255,255,.08)}
-.stat-foot .arr{color:var(--brass-soft);transition:transform .3s}
-.stat-card:hover .stat-foot .arr{transform:translateX(4px)}
+.burger{display:flex;align-items:center;justify-content:center;width:44px;height:44px;border-radius:999px;background:rgba(255,255,255,0.08);color:#fff;position:relative;backdrop-filter:blur(8px)}
+.nav.scrolled .burger{background:rgba(28,25,22,0.05);color:var(--ink)}
+@media(min-width:920px){.burger{display:none}}
+.burger svg{position:absolute;transition:transform .3s cubic-bezier(.23,1,.32,1),opacity .3s}
+.burger .ic-x{transform:rotate(-90deg) scale(0.5);opacity:0}
+.burger.open .ic-menu{transform:rotate(90deg) scale(0.5);opacity:0}
+.burger.open .ic-x{transform:rotate(0) scale(1);opacity:1}
 
-.areas{background:var(--paper)}
-.areas-list{margin-top:1rem;border-top:1px solid var(--ink)}
-.area-row{display:grid;grid-template-columns:5rem 1.3fr 2.2fr 6rem;gap:2rem;align-items:baseline;padding:1.7rem .8rem;border-bottom:1px solid var(--rule);transition:all .35s var(--ease);position:relative;cursor:pointer}
-.area-row::after{content:'';position:absolute;left:0;top:0;bottom:0;width:0;background:var(--brass);transition:width .35s var(--ease)}
-.area-row:hover{background:rgba(200,130,10,.04);padding-left:1.5rem}
-.area-row:hover::after{width:3px}
-@media(max-width:760px){.area-row{grid-template-columns:3rem 1fr;gap:1rem}.area-desc,.area-arr{display:none}}
-.area-no{font-family:'DM Sans',sans-serif;font-size:.72rem;letter-spacing:.18em;color:var(--muted-2);font-weight:500}
-.area-n{font-family:'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;font-size:1.45rem;font-weight:600;letter-spacing:-.01em;color:var(--ink)}
-.area-desc{font-family:'DM Sans',sans-serif;font-size:1.1rem;font-style:italic;color:var(--muted);line-height:1.5}
-.area-arr{font-family:'DM Sans',sans-serif;font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;color:var(--brass-2);text-align:right;transition:transform .35s var(--ease)}
-.area-row:hover .area-arr{transform:translateX(6px)}
-.areas-foot{display:flex;justify-content:space-between;align-items:center;margin-top:1.6rem;flex-wrap:wrap;gap:1rem}
-.areas-foot p{font-family:'DM Sans',sans-serif;font-style:italic;color:var(--muted);font-size:1.1rem}
-.areas-foot a{font-family:'DM Sans',sans-serif;font-size:.75rem;letter-spacing:.16em;text-transform:uppercase;color:var(--brass-2);border-bottom:1px solid var(--brass);padding-bottom:.3rem;transition:all .3s}
-.areas-foot a:hover{color:var(--ink);border-color:var(--ink);transform:translateX(3px)}
+.drawer{
+  position:fixed;top:72px;right:1.5%;left:1.5%;
+  background:rgba(248,246,242,0.98);
+  backdrop-filter:blur(20px);
+  border:1px solid var(--rule);
+  border-radius:18px;
+  padding:0;
+  z-index:99;
+  max-height:0;overflow:hidden;
+  transition:max-height .5s cubic-bezier(0.23,1,0.32,1),padding .5s var(--ease);
+}
+.drawer.open{max-height:520px;padding:1.2rem 1.3rem 1.5rem}
+.drawer a{
+  display:block;
+  padding:0.75rem 0;
+  font-size:1rem;font-weight:500;color:var(--ink);
+  border-bottom:1px solid var(--rule-soft);
+  opacity:0;transform:translateX(-8px);
+  transition:opacity .35s var(--ease),transform .35s var(--ease),color .25s;
+}
+.drawer.open a{opacity:1;transform:none}
+.drawer.open a:nth-child(1){transition-delay:0.08s}
+.drawer.open a:nth-child(2){transition-delay:0.14s}
+.drawer.open a:nth-child(3){transition-delay:0.20s}
+.drawer.open a:nth-child(4){transition-delay:0.26s}
+.drawer.open a:nth-child(5){transition-delay:0.32s}
+.drawer.open a:nth-child(6){transition-delay:0.38s}
+.drawer a:hover{color:var(--amber)}
+.drawer .cta{
+  display:inline-flex;background:var(--amber);color:#000;
+  padding:0.7rem 1.2rem;border-radius:999px;
+  margin-top:0.6rem;border-bottom:none;font-weight:600;
+}
 
-.roster{background:#fbf8f2;padding:6rem 0;overflow:hidden}
-.roster .sec-wrap{padding:0 5%;max-width:1180px;margin:0 auto;margin-bottom:2.5rem}
-.roster-track-wrap{position:relative;padding:1rem 0}
-.roster-track-wrap::before,.roster-track-wrap::after{content:'';position:absolute;top:0;bottom:0;width:80px;z-index:2;pointer-events:none}
-.roster-track-wrap::before{left:0;background:linear-gradient(90deg,#fbf8f2,transparent)}
-.roster-track-wrap::after{right:0;background:linear-gradient(90deg,transparent,#fbf8f2)}
-.roster-track{display:flex;gap:1.4rem;animation:rs-scroll 50s linear infinite;width:max-content;padding:0 5%}
-.roster-track:hover{animation-play-state:paused}
-@keyframes rs-scroll{from{transform:translateX(0)}to{transform:translateX(-50%)}}
-.lw-card{display:block;flex:0 0 320px;background:var(--card);border:1px solid var(--rule);border-radius:14px;padding:1.6rem 1.5rem 1.4rem;transition:all .35s var(--ease);box-shadow:0 1px 2px rgba(14,12,10,.04);position:relative}
-.lw-card:hover{border-color:rgba(200,130,10,.4);transform:translateY(-4px);box-shadow:0 12px 32px -8px rgba(14,12,10,.15)}
-.lw-card-top{display:flex;align-items:center;gap:1rem;margin-bottom:1rem}
-.lw-photo{width:56px;height:56px;border-radius:50%;background:var(--paper-2);background-size:cover;background-position:center;border:2px solid var(--brass);flex-shrink:0;position:relative}
-.lw-photo::after{content:'\2713';position:absolute;bottom:-2px;right:-2px;width:18px;height:18px;background:var(--brass);color:#fff;border-radius:50%;border:2px solid var(--card);font-size:.6rem;display:flex;align-items:center;justify-content:center;font-weight:700}
-.lw-name-wrap{flex:1;min-width:0}
-.lw-name{font-family:'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;font-size:1.05rem;font-weight:600;color:var(--ink);letter-spacing:-.005em;line-height:1.2;margin-bottom:.18rem}
-.lw-firm{font-family:'DM Sans',sans-serif;font-size:.65rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted-2)}
-.lw-rating{display:flex;align-items:center;gap:.4rem;margin-bottom:.85rem;font-family:'DM Sans',sans-serif;font-size:.82rem;color:var(--muted)}
-.lw-stars{color:var(--brass);letter-spacing:.05em}
-.lw-tags{display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:1rem}
-.lw-tag{font-family:'DM Sans',sans-serif;font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-2);background:var(--paper-2);padding:.28rem .55rem;border-radius:50px}
-.lw-meta{display:flex;justify-content:space-between;align-items:center;font-family:'DM Sans',sans-serif;font-size:.66rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted-2);padding-top:.85rem;border-top:1px solid var(--rule-soft)}
-.lw-meta .unlock{color:var(--brass-2);font-weight:600}
-.roster-cta{text-align:center;margin-top:2.5rem;padding:0 5%}
-.roster-cta a{display:inline-flex;align-items:center;gap:.7rem;font-family:'DM Sans',sans-serif;font-size:.78rem;letter-spacing:.16em;text-transform:uppercase;color:var(--ink);border-bottom:1px solid var(--ink);padding-bottom:.4rem;transition:all .3s}
-.roster-cta a:hover{color:var(--brass-2);border-color:var(--brass-2);transform:translateX(3px)}
-.field{background:var(--paper);padding:6rem 5%}
-.field-feat{position:relative;margin:0 auto 3rem;max-width:1180px;background:linear-gradient(135deg,#0e0c0a 0%,#1c1916 60%,#2a221b 100%);color:var(--paper);border-radius:24px;padding:4.2rem 4rem;overflow:hidden}
-@media(max-width:680px){.field-feat{padding:3rem 1.8rem}}
-.field-feat::before{content:'\201C';font-family:'DM Sans',sans-serif;font-size:14rem;color:rgba(200,130,10,.16);position:absolute;top:-3rem;left:1.5rem;line-height:1;font-weight:500;pointer-events:none}
-.field-feat::after{content:'';position:absolute;inset:0;background:radial-gradient(circle at 90% 110%,rgba(200,130,10,.18),transparent 50%);pointer-events:none}
-.field-feat-eye{font-family:'DM Sans',sans-serif;font-size:.66rem;letter-spacing:.22em;text-transform:uppercase;color:var(--brass-soft);margin-bottom:1.4rem;position:relative;z-index:1}
-.field-feat-q{font-family:'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;font-style:italic;font-size:clamp(1.4rem,2.4vw,2.05rem);font-weight:400;line-height:1.4;margin-bottom:1.8rem;position:relative;z-index:1;color:rgba(245,240,232,.95)}
-.field-feat-q em{color:var(--brass-soft);font-style:italic}
-.field-feat-att{display:flex;align-items:center;gap:1rem;position:relative;z-index:1}
-.field-feat-portrait{width:54px;height:54px;border-radius:50%;background:var(--paper-2);background-size:cover;background-position:center;border:2px solid var(--brass-soft);flex-shrink:0}
-.field-feat-name{font-family:'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;font-size:1.1rem;font-weight:600;color:#fff;letter-spacing:-.005em;margin-bottom:.15rem}
-.field-feat-role{font-family:'DM Sans',sans-serif;font-size:.64rem;letter-spacing:.18em;text-transform:uppercase;color:rgba(245,240,232,.55)}
-.field-feat-rating{margin-left:auto;color:var(--brass-soft);font-size:1rem;letter-spacing:.1em}
-@media(max-width:680px){.field-feat-rating{margin-left:0;width:100%}}
-.field-quotes{max-width:1180px;margin:0 auto;display:grid;grid-template-columns:repeat(3,1fr);gap:0;border-top:1px solid var(--rule)}
-@media(max-width:880px){.field-quotes{grid-template-columns:1fr}}
-.fq{padding:2.4rem 1.8rem;border-bottom:1px solid var(--rule);border-right:1px solid var(--rule)}
-.fq{transition:background .3s var(--ease),transform .3s var(--ease)}
-.fq:hover{background:rgba(200,130,10,.04);transform:translateY(-3px)}
-.fq:hover .fq-mark{color:var(--brass-2)}
-.fq:last-child,.fq:nth-child(3n){border-right:none}
-@media(max-width:880px){.fq{border-right:none}}
-.fq-mark{font-family:'DM Sans',sans-serif;font-size:3rem;font-weight:500;font-style:italic;color:var(--brass);line-height:.5;margin-bottom:.85rem}
-.fq-q{font-family:'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;font-style:italic;font-size:1.05rem;line-height:1.55;color:var(--ink);margin-bottom:1.2rem;font-weight:400}
-.fq-att{display:flex;align-items:center;gap:.85rem;font-family:'DM Sans',sans-serif;font-size:.66rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted-2)}
-.fq-att strong{color:var(--ink);font-weight:600}
+/* ============================================================
+   SECTION 1 · HERO
+   ============================================================ */
+.hero{
+  position:relative;min-height:100vh;
+  display:flex;flex-direction:column;
+  padding:7.5rem 5% 4rem;color:#f8f6f2;
+  overflow:hidden;
+}
+.hero-bg{position:absolute;inset:0;z-index:0;overflow:hidden}
+.hero-layer{
+  position:absolute;inset:-4%;
+  background-size:cover;background-position:center 40%;
+  opacity:0;
+  transition:opacity 1.8s ease-in-out;
+  will-change:transform,opacity;
+}
+.hero-layer.on{opacity:1}
+.hero-layer.l1{background-image:url('https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=2400&q=85')} /* Burj Al Arab */
+.hero-layer.l2{background-image:url('https://images.unsplash.com/photo-1518684079-3c830dcef090?auto=format&fit=crop&w=2400&q=85')} /* Dubai Marina aerial */
+.hero-layer.l3{background-image:url('https://images.unsplash.com/photo-1546412414-e1885259563a?auto=format&fit=crop&w=2400&q=85')} /* Palm Jumeirah / Burj */
+.hero-grade{
+  position:absolute;inset:0;z-index:1;
+  background:linear-gradient(180deg,
+    rgba(10,8,7,0.60) 0%,
+    rgba(10,8,7,0.20) 40%,
+    rgba(10,8,7,0.50) 100%);
+}
+.hero-orb{
+  position:absolute;left:5%;bottom:10%;
+  width:400px;height:400px;border-radius:50%;
+  background:radial-gradient(circle,rgba(200,130,10,0.30) 0%,transparent 70%);
+  filter:blur(10px);
+  z-index:1;pointer-events:none;
+}
 
-.l-cta{background:linear-gradient(135deg,var(--brass) 0%,var(--brass-2) 65%,#8a5108 100%);padding:6rem 5%;color:#fff;text-align:center;position:relative;overflow:hidden}
-.l-cta::before{content:'';position:absolute;inset:0;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 80 80'%3E%3Cg fill='none' stroke='%23ffffff' stroke-width='1' opacity='0.06'%3E%3Cpath d='M0 40 L80 40 M40 0 L40 80'/%3E%3C/g%3E%3C/svg%3E");pointer-events:none}
-.l-cta::after{content:'';position:absolute;top:-30%;right:-15%;width:600px;height:600px;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,.18),transparent 70%);filter:blur(60px);pointer-events:none}
-.l-cta-in{position:relative;z-index:1;max-width:720px;margin:0 auto}
-.l-cta-eye{font-family:'DM Sans',sans-serif;font-size:.7rem;letter-spacing:.22em;text-transform:uppercase;color:rgba(255,255,255,.8);margin-bottom:1.4rem}
-.l-cta-h{font-family:'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;font-size:clamp(2.2rem,5vw,3.6rem);font-weight:600;line-height:1;letter-spacing:-.022em;color:#fff;margin-bottom:1rem}
-.l-cta-h em{font-style:italic;color:#fff8e8;font-weight:500}
-.l-cta-p{font-family:'DM Sans',sans-serif;font-style:italic;font-size:1.3rem;color:rgba(255,255,255,.86);max-width:34rem;margin:0 auto 2.4rem;line-height:1.5}
-.l-cta-btn{display:inline-flex;align-items:center;gap:.7rem;background:#fff;color:var(--brass-2);font-family:'DM Sans',sans-serif;font-weight:700;font-size:.95rem;padding:1.05rem 2.1rem;border-radius:50px;transition:all .3s var(--ease);box-shadow:0 8px 24px rgba(0,0,0,.18)}
-.l-cta-btn:hover{transform:translateY(-2px);box-shadow:0 14px 36px rgba(0,0,0,.28);color:var(--ink)}
-.l-cta-stats{display:flex;justify-content:center;gap:3rem;margin-top:3rem;flex-wrap:wrap;font-family:'DM Sans',sans-serif;font-size:.66rem;letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.78)}
-.l-cta-stats div{text-align:center}
-.l-cta-stats strong{font-family:'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;font-style:italic;font-size:1.7rem;font-weight:500;color:#fff;display:block;letter-spacing:0;text-transform:none;margin-bottom:.18rem}
+.hero-top{
+  position:relative;z-index:3;
+  display:flex;justify-content:space-between;align-items:center;
+  gap:1rem;flex-wrap:wrap;
+  margin-bottom:auto;padding-bottom:3.5rem;
+}
+.hero-issue{
+  display:flex;align-items:center;gap:0.6rem;
+  font-size:11px;letter-spacing:0.16em;text-transform:uppercase;
+  color:rgba(200,130,10,0.85);font-weight:500;
+}
+.hero-loc{
+  font-size:10px;letter-spacing:0.22em;text-transform:uppercase;
+  color:rgba(248,246,242,0.45);font-weight:500;
+  display:none;
+}
+@media(min-width:760px){.hero-loc{display:inline-block}}
+@media(max-width:600px){.hero-top{padding-bottom:2.5rem}.hero-issue{font-size:10px}}
 
-.col{background:#0a0807;color:rgba(245,240,232,.55);padding:5rem 5% 2rem;font-size:.85rem}
-.col-grid{max-width:1180px;margin:0 auto 3rem;display:grid;grid-template-columns:2.2fr 1fr 1fr 1fr;gap:3rem}
-@media(max-width:780px){.col-grid{grid-template-columns:1fr 1fr;gap:2.5rem}}
-@media(max-width:480px){.col-grid{grid-template-columns:1fr}}
-.col-name{font-family:'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;font-style:italic;font-size:1.7rem;font-weight:600;color:#fff;margin-bottom:.8rem;letter-spacing:-.01em}
-.col-name span{color:var(--brass-soft)}
-.col-tag{font-family:'DM Sans',sans-serif;font-style:italic;font-size:1.05rem;line-height:1.6;max-width:24rem;color:rgba(245,240,232,.55)}
-.col-h{font-family:'DM Sans',sans-serif;font-size:.66rem;letter-spacing:.18em;text-transform:uppercase;color:var(--brass-soft);margin-bottom:1.1rem}
-.col-grid a{display:block;margin-bottom:.55rem;color:rgba(245,240,232,.55);transition:color .25s,padding-left .25s}
-.col-grid a:hover{color:var(--brass-soft);padding-left:.3rem}
-.col-rule{max-width:1180px;margin:0 auto;border-top:1px solid rgba(245,240,232,.1);padding-top:1.5rem;display:flex;justify-content:space-between;align-items:center;font-family:'DM Sans',sans-serif;font-size:.66rem;letter-spacing:.16em;text-transform:uppercase;flex-wrap:wrap;gap:.8rem;color:rgba(245,240,232,.4)}
+.hero-content{
+  position:relative;z-index:3;
+  max-width:1180px;width:100%;margin:auto auto 0;
+  display:grid;grid-template-columns:1.55fr 1fr;gap:3rem;align-items:end;
+}
+@media(max-width:900px){.hero-content{grid-template-columns:1fr;gap:2.5rem}}
 
+.hero-l{display:flex;flex-direction:column;gap:1.5rem}
 
-@media(max-width:600px){
-  .hero{padding:0 5% 3rem}
-  .hero-issue{top:5.5rem;font-size:.6rem}
-  .sec{padding:4rem 5%}
-  .field-feat{padding:2.5rem 1.5rem}
+.role-toggle{
+  display:inline-flex;align-items:center;gap:0;
+  padding:0.3rem;border-radius:999px;width:fit-content;
+  font-size:11px;letter-spacing:0.14em;text-transform:uppercase;
+}
+.role-toggle button{
+  padding:0.55rem 1rem;border-radius:999px;
+  color:rgba(255,255,255,0.75);font-weight:500;
+  transition:all .35s var(--ease);
+}
+.role-toggle button.on{background:var(--amber);color:#000;font-weight:600;box-shadow:0 3px 14px rgba(200,130,10,0.35)}
+
+.hero-h{
+  font-size:clamp(2.8rem,6vw,5.5rem);
+  font-weight:400;
+  line-height:0.95;
+  letter-spacing:-0.02em;
+  color:#fff;
+  max-width:14ch;
+}
+.hero-h em{font-style:italic;color:var(--amber-soft);font-weight:400}
+.hero-h .word{display:inline-block;margin-right:0.28em;filter:blur(10px);opacity:0;transform:translateY(20px)}
+.hero-h .word.in{filter:blur(0);opacity:1;transform:none;transition:all .7s ease-out}
+
+.hero-sub{
+  font-size:clamp(1rem,1.4vw,1.2rem);
+  color:rgba(248,246,242,0.78);
+  max-width:34rem;line-height:1.5;
+  font-style:italic;font-weight:300;
+  opacity:0;transform:translateY(12px);
+  transition:opacity .8s var(--ease) .6s,transform .8s var(--ease) .6s;
+}
+.hero-sub.in{opacity:1;transform:none}
+.hero-sub strong{color:#fff;font-weight:500;font-style:normal}
+
+.hero-actions{
+  display:flex;align-items:center;gap:1.5rem;flex-wrap:wrap;margin-top:0.4rem;
+  opacity:0;transform:translateY(12px);
+  transition:opacity .8s var(--ease) .9s,transform .8s var(--ease) .9s;
+}
+.hero-actions.in{opacity:1;transform:none}
+.hero-cta-credits{
+  font-size:10px;letter-spacing:0.14em;text-transform:uppercase;
+  padding:0.2rem 0.55rem;border-radius:999px;
+  background:rgba(0,0,0,0.20);color:rgba(0,0,0,0.65);font-weight:600;
+  margin-left:0.2rem;
+}
+.hero-secondary{
+  font-size:0.78rem;letter-spacing:0.14em;text-transform:uppercase;
+  color:rgba(255,255,255,0.85);
+  border-bottom:1px solid rgba(255,255,255,0.4);
+  padding-bottom:0.3rem;
+  transition:color .25s,border-color .25s,transform .25s;
+}
+.hero-secondary:hover{color:var(--amber-soft);border-color:var(--amber-soft)}
+
+/* right-aligned mini ledger */
+.hero-ledger{
+  display:flex;flex-direction:column;gap:0.9rem;
+  padding:0;
+  font-feature-settings:'tnum';
+  opacity:0;transform:translateY(12px);
+  transition:opacity .8s var(--ease) 1.1s,transform .8s var(--ease) 1.1s;
+}
+.hero-ledger.in{opacity:1;transform:none}
+.hero-ledger .row{
+  display:grid;grid-template-columns:auto 1fr;gap:1.2rem;align-items:baseline;
+  padding-bottom:0.9rem;
+  border-bottom:1px dashed rgba(224,160,64,0.30);
+}
+.hero-ledger .row:last-child{border-bottom:none}
+.hero-ledger .num{
+  font-size:clamp(1.8rem,3vw,2.6rem);
+  font-weight:600;color:#fff;line-height:1;letter-spacing:-0.02em;
+}
+.hero-ledger .num em{font-style:italic;color:var(--amber-soft);font-weight:400}
+.hero-ledger .lbl{
+  font-size:11px;letter-spacing:0.14em;text-transform:uppercase;
+  color:rgba(248,246,242,0.55);font-weight:400;
+}
+
+/* scroll indicator */
+.hero-scroll{
+  position:absolute;bottom:1.5rem;left:50%;transform:translateX(-50%);
+  z-index:3;display:flex;flex-direction:column;align-items:center;gap:0.6rem;
+  font-size:10px;letter-spacing:0.22em;text-transform:uppercase;
+  color:rgba(255,255,255,0.5);font-weight:500;
+}
+.hero-scroll .dot{
+  width:7px;height:7px;border-radius:50%;background:var(--amber);
+}
+@media (prefers-reduced-motion: no-preference){
+  .hero-scroll .dot{animation:bounce 1.5s ease-in-out infinite}
+  @keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(6px)}}
+  @keyframes ken-burns-a{from{transform:scale(1.02) translate(0,0)}to{transform:scale(1.15) translate(-2%,-1.5%)}}
+  @keyframes ken-burns-b{from{transform:scale(1.05) translate(0,0)}to{transform:scale(1.18) translate(2%,-1%)}}
+  @keyframes ken-burns-c{from{transform:scale(1.04) translate(0,0)}to{transform:scale(1.16) translate(-1%,2%)}}
+  .hero-layer.l1{animation:ken-burns-a 28s ease-in-out infinite alternate}
+  .hero-layer.l2{animation:ken-burns-b 32s ease-in-out infinite alternate}
+  .hero-layer.l3{animation:ken-burns-c 30s ease-in-out infinite alternate}
+  @keyframes orb-pulse{0%,100%{transform:scale(1) translate(0,0);opacity:0.5}50%{transform:scale(1.15) translate(20px,-10px);opacity:0.8}}
+  .hero-orb{animation:orb-pulse 4s ease-in-out infinite}
+  @keyframes p-dot{0%,100%{box-shadow:0 0 0 0 rgba(200,130,10,0.5)}50%{box-shadow:0 0 0 6px rgba(200,130,10,0)}}
+  .hero-issue::before{animation:p-dot 2.4s infinite}
+}
+
+/* bottom-left ambient stat */
+.hero-ambient{
+  position:absolute;left:5%;bottom:8rem;z-index:3;
+  display:none;
+}
+@media(min-width:1200px){.hero-ambient{display:flex;align-items:flex-end;gap:1rem}}
+.hero-ambient .big{
+  font-size:3rem;font-weight:300;color:rgba(255,255,255,0.85);line-height:1;
+  letter-spacing:-0.02em;
+}
+.hero-ambient .rule{
+  width:1px;height:42px;background:var(--amber);
+  transform:rotate(20deg);transform-origin:center;
+  margin:0 0.3rem;
+}
+.hero-ambient .lbl{
+  font-size:11px;letter-spacing:0.18em;text-transform:uppercase;
+  color:rgba(255,255,255,0.55);max-width:8rem;line-height:1.5;
+}
+
+/* ============================================================
+   SECTION 2 · METHOD
+   ============================================================ */
+.section{padding:7rem 0;position:relative}
+.section-head{display:flex;flex-direction:column;gap:1rem;margin-bottom:3.5rem;max-width:42rem}
+.section-h{
+  font-size:clamp(2rem,4vw,3rem);
+  font-weight:400;letter-spacing:-0.02em;line-height:1.05;
+  color:var(--ink);
+}
+.section-h em{font-style:italic;color:var(--amber)}
+.on-dark .section-h{color:#f8f6f2}
+.on-dark .section-h em{color:var(--amber-soft)}
+.section-sub{font-size:1.05rem;color:var(--muted);line-height:1.6;max-width:38rem}
+.on-dark .section-sub{color:rgba(248,246,242,0.65)}
+
+.method-grid{
+  display:grid;grid-template-columns:1.05fr 1fr;gap:5rem;align-items:start;
+}
+@media(max-width:900px){.method-grid{grid-template-columns:1fr;gap:3rem}}
+
+/* wizard demo */
+.wizard{
+  background:var(--card);
+  border:1px solid var(--rule);
+  border-radius:18px;
+  padding:1.6rem;
+  box-shadow:0 30px 60px -20px rgba(14,12,10,0.18),0 12px 28px -12px rgba(14,12,10,0.08);
+  position:relative;overflow:hidden;
+}
+.wizard-strip{
+  position:absolute;top:0;left:0;right:0;height:3px;
+  background:linear-gradient(90deg,var(--amber) 0%,var(--amber-soft) 50%,var(--amber) 100%);
+  background-size:200% 100%;
+}
+@media (prefers-reduced-motion: no-preference){
+  .wizard-strip{animation:stripe 4s linear infinite}
+  @keyframes stripe{from{background-position:0 0}to{background-position:200% 0}}
+}
+.wizard-meta{
+  display:flex;justify-content:space-between;align-items:center;
+  margin-bottom:1.4rem;
+}
+.wizard-step-label{
+  display:flex;align-items:center;gap:0.5rem;
+  font-size:10px;letter-spacing:0.2em;text-transform:uppercase;
+  color:var(--muted);font-weight:500;
+}
+.wizard-step-label .live{
+  width:6px;height:6px;border-radius:50%;background:var(--amber);
+}
+@media (prefers-reduced-motion: no-preference){
+  .wizard-step-label .live{animation:p-dot 2s infinite}
+}
+.wizard-count{font-size:11px;color:var(--dim);letter-spacing:0.08em;font-weight:500}
+
+.wizard-q{
+  font-size:1.15rem;font-weight:400;line-height:1.4;
+  color:var(--ink);min-height:3.6em;
+  margin-bottom:1.3rem;
+  transition:opacity .4s var(--ease);
+}
+.wizard-chips{
+  display:flex;flex-wrap:wrap;gap:0.55rem;min-height:2.6rem;
+}
+.wizard-chip{
+  padding:0.55rem 1rem;
+  font-size:0.85rem;font-weight:500;
+  background:var(--card);
+  border:1px solid var(--rule);
+  border-radius:999px;
+  color:var(--ink);
+  opacity:0;transform:translateY(6px);
+  transition:opacity .35s var(--ease),transform .35s var(--ease),background .3s var(--ease),border-color .3s var(--ease),color .3s var(--ease);
+}
+.wizard-chip.show{opacity:1;transform:none}
+.wizard-chip.hl{background:rgba(200,130,10,0.10);border-color:var(--amber);color:var(--amber-2);font-weight:600}
+
+.wizard-foot{
+  display:flex;justify-content:space-between;align-items:center;
+  margin-top:1.4rem;padding-top:1rem;
+  border-top:1px solid var(--rule-soft);
+  font-size:11px;color:var(--dim);letter-spacing:0.04em;
+}
+.wizard-progress{display:flex;gap:5px}
+.wizard-progress span{width:24px;height:3px;background:var(--rule);border-radius:2px;transition:background .4s}
+.wizard-progress span.on{background:var(--amber)}
+
+/* answer card variant */
+.wizard.answer .wizard-q{font-size:1rem;color:var(--muted);min-height:auto;margin-bottom:0.8rem}
+.wizard.answer .answer-head{
+  display:flex;flex-direction:column;gap:0.7rem;margin-bottom:1rem;
+}
+.wizard.answer .answer-title{
+  font-size:1.35rem;font-weight:500;line-height:1.3;color:var(--ink);
+  letter-spacing:-0.01em;border-left:3px solid var(--amber);padding-left:0.9rem;
+}
+.wizard.answer .answer-steps{display:flex;flex-direction:column;gap:0.55rem;margin-top:0.4rem}
+.wizard.answer .answer-step{
+  display:flex;gap:0.7rem;align-items:flex-start;
+  font-size:0.88rem;color:var(--ink);line-height:1.5;
+}
+.wizard.answer .answer-step .num{
+  flex-shrink:0;width:22px;height:22px;border-radius:50%;
+  background:rgba(200,130,10,0.10);color:var(--amber-2);
+  display:flex;align-items:center;justify-content:center;
+  font-size:11px;font-weight:600;
+}
+
+/* method steps */
+.method-steps{position:relative;padding-left:3.8rem}
+@media(max-width:600px){.method-steps{padding-left:3rem}}
+.method-line{position:absolute;left:1.2rem;top:1rem;bottom:1rem;width:2px;pointer-events:none}
+.method-line line{stroke:var(--amber);stroke-width:1.5;stroke-dasharray:4 6}
+.method-step{position:relative;display:grid;grid-template-columns:auto 1fr;gap:1.5rem;align-items:start;margin-bottom:3rem}
+.method-step:last-child{margin-bottom:0}
+.method-step .roman{
+  font-style:italic;font-weight:300;
+  font-size:clamp(3rem,5vw,4.5rem);
+  line-height:0.85;color:var(--amber);
+  letter-spacing:-0.03em;
+  margin-left:-3.8rem;width:3.8rem;text-align:center;
+  background:var(--paper);padding:0.2rem 0;
+}
+@media(max-width:600px){.method-step .roman{margin-left:-3rem;width:3rem;font-size:2.6rem}}
+.method-step h3{
+  font-size:1.15rem;font-weight:600;letter-spacing:-0.01em;
+  margin-bottom:0.5rem;color:var(--ink);
+}
+.method-step p{font-size:0.94rem;color:var(--muted);line-height:1.6;max-width:32rem}
+
+/* ============================================================
+   SECTION 3 · TRUST LEDGER STRIP
+   ============================================================ */
+.trust{
+  background:var(--dark-mid);
+  padding:5rem 0;color:#f8f6f2;
+  position:relative;overflow:hidden;
+}
+.trust::before,.trust::after{
+  content:'';position:absolute;height:1px;left:0;right:0;
+  background:rgba(200,130,10,0.18);
+}
+.trust::before{top:0}
+.trust::after{bottom:0}
+.trust-grid{
+  display:grid;grid-template-columns:repeat(4,1fr);align-items:center;
+  gap:0;
+}
+@media(max-width:760px){.trust-grid{grid-template-columns:repeat(2,1fr);row-gap:3rem}}
+.trust-stat{
+  display:flex;flex-direction:column;align-items:center;gap:0.8rem;
+  padding:0 1rem;position:relative;text-align:center;
+}
+.trust-stat::after{
+  content:'';position:absolute;right:0;top:50%;
+  width:1px;height:42px;background:rgba(200,130,10,0.25);
+  transform:translateY(-50%) rotate(20deg);
+}
+.trust-stat:last-child::after{display:none}
+@media(max-width:760px){.trust-stat:nth-child(2n)::after{display:none}}
+.trust-num{
+  font-size:clamp(2.5rem,5vw,4rem);font-weight:300;
+  color:var(--amber-soft);line-height:1;letter-spacing:-0.02em;
+  font-feature-settings:'tnum';
+}
+.trust-num sup{font-size:0.5em;color:var(--amber);font-weight:400;vertical-align:super;margin-left:0.1em}
+.trust-lbl{
+  font-size:11px;letter-spacing:0.18em;text-transform:uppercase;
+  color:rgba(248,246,242,0.55);font-weight:400;
+}
+
+/* ============================================================
+   SECTION 4 · THE LAW, DISTILLED
+   ============================================================ */
+.law{
+  background:var(--dark);color:#f8f6f2;
+  padding:8rem 0;position:relative;overflow:hidden;
+}
+.law::before{
+  content:'';position:absolute;inset:0;
+  background-image:radial-gradient(circle,rgba(248,246,242,0.015) 1px,transparent 1px);
+  background-size:4px 4px;mix-blend-mode:overlay;pointer-events:none;
+}
+.law-cards{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;
+  margin-top:3rem;position:relative;
+}
+@media(max-width:900px){.law-cards{grid-template-columns:1fr}}
+.law-card{
+  position:relative;
+  background:rgba(248,246,242,0.03);
+  border:1px solid rgba(248,246,242,0.08);
+  border-top:3px solid transparent;
+  border-radius:14px;
+  padding:2rem 1.8rem 1.8rem;
+  display:flex;flex-direction:column;gap:0.9rem;
+  overflow:hidden;
+  transition:transform .35s var(--ease),border-color .35s var(--ease),box-shadow .35s var(--ease),background .35s var(--ease);
+}
+.law-card:hover{
+  transform:translateY(-4px);
+  border-top-color:var(--amber);
+  background:rgba(248,246,242,0.05);
+  box-shadow:0 20px 40px rgba(0,0,0,0.30);
+}
+.law-card .ghost-num{
+  position:absolute;top:1rem;right:1.4rem;
+  font-style:italic;font-weight:400;
+  font-size:clamp(3rem,6vw,5.5rem);
+  color:rgba(200,130,10,0.18);
+  line-height:1;letter-spacing:-0.04em;
+  pointer-events:none;
+}
+.law-card .law-chip{align-self:flex-start;position:relative;z-index:2}
+.law-card h3{
+  font-style:italic;font-weight:400;
+  font-size:1.35rem;line-height:1.3;
+  color:rgba(248,246,242,0.92);
+  letter-spacing:-0.01em;
+  margin-top:1.5rem;
+}
+.law-card p{
+  font-size:0.9rem;line-height:1.6;
+  color:rgba(248,246,242,0.55);
+}
+.law-card .more{
+  display:inline-flex;align-items:center;gap:0.4rem;
+  font-size:11px;letter-spacing:0.16em;text-transform:uppercase;
+  color:var(--amber-soft);font-weight:600;
+  margin-top:0.4rem;
+}
+
+/* ============================================================
+   SECTION 5 · AREAS OF PRACTICE
+   ============================================================ */
+.areas{background:var(--paper);position:relative;overflow:hidden}
+.areas-chips{
+  position:absolute;inset:0;z-index:0;pointer-events:none;
+  display:flex;flex-direction:column;justify-content:center;gap:2rem;
+  opacity:0.08;
+}
+.areas-row{display:flex;gap:1rem;white-space:nowrap;will-change:transform}
+.areas-row .law-chip{font-size:13px;padding:0.55rem 1.1rem}
+
+.areas-intro{
+  font-style:italic;font-weight:300;
+  font-size:clamp(1.5rem,3vw,2.5rem);
+  color:var(--muted);
+  max-width:30ch;line-height:1.2;letter-spacing:-0.01em;
+  margin:1rem 0 3rem;
+}
+.areas-table{position:relative;z-index:2;border-top:1px solid var(--rule)}
+.area-row{
+  display:grid;grid-template-columns:auto 1fr 2fr auto;gap:1.5rem;
+  align-items:center;
+  padding:1.4rem 0.7rem;
+  border-bottom:1px solid var(--rule);
+  transition:background .3s var(--ease),padding-left .3s var(--ease);
+  position:relative;
+}
+.area-row::before{
+  content:'';position:absolute;left:0;top:0;bottom:0;width:3px;
+  background:var(--amber);transform:scaleY(0);transform-origin:center;
+  transition:transform .3s var(--ease);
+}
+.area-row:hover{background:rgba(200,130,10,0.04);padding-left:1.3rem}
+.area-row:hover::before{transform:scaleY(1)}
+.area-row .num{
+  font-size:0.85rem;font-weight:300;color:var(--dim);
+  letter-spacing:0.08em;min-width:3rem;
+}
+.area-row .name{
+  font-size:1rem;font-weight:500;color:var(--ink);
+  letter-spacing:-0.01em;
+}
+.area-row .desc{
+  font-size:0.85rem;color:var(--muted);
+  font-style:italic;line-height:1.4;
+}
+@media(max-width:760px){
+  .area-row{grid-template-columns:auto 1fr auto;gap:0.7rem;padding:1.1rem 0.6rem}
+  .area-row .desc{display:none}
+}
+.area-row .read{
+  display:inline-flex;align-items:center;gap:0.4rem;
+  font-size:0.82rem;font-weight:500;color:var(--amber);
+}
+.area-row:hover .read .arrow{transform:translateX(4px)}
+
+/* ============================================================
+   SECTION 6 · COUNSEL · FOUNDING PANEL
+   ============================================================ */
+.counsel{background:var(--paper);padding:7rem 0;overflow:hidden}
+.counsel-launch{
+  display:grid;grid-template-columns:1fr 1.05fr;gap:3.5rem;
+  align-items:start;margin-top:1rem;
+}
+@media(max-width:900px){.counsel-launch{grid-template-columns:1fr;gap:2.5rem}}
+.counsel-launch-l{display:flex;flex-direction:column;gap:1.2rem}
+.counsel-launch-l .law-chip{align-self:flex-start}
+.counsel-launch-h{
+  font-size:clamp(1.6rem,2.6vw,2.2rem);
+  font-weight:400;letter-spacing:-0.02em;line-height:1.15;
+  color:var(--ink);max-width:18ch;
+}
+.counsel-launch-h em{font-style:italic;color:var(--amber);font-weight:400}
+.counsel-launch-p{font-size:1rem;color:var(--muted);line-height:1.65;max-width:32rem}
+.counsel-launch-actions{display:flex;align-items:center;gap:1.4rem;flex-wrap:wrap;margin-top:0.5rem}
+.counsel-launch-actions .hero-secondary{color:var(--muted)}
+
+.counsel-launch-r{
+  display:flex;flex-direction:column;
+  background:var(--card);
+  border:1px solid var(--rule);
+  border-radius:18px;overflow:hidden;
+  box-shadow:0 12px 40px rgba(28,25,22,0.06);
+}
+.counsel-slot{
+  display:grid;grid-template-columns:auto 1fr auto;gap:1rem;align-items:center;
+  padding:1.1rem 1.3rem;
+  border-bottom:1px solid var(--rule-soft);
+  transition:background .3s var(--ease);
+}
+.counsel-slot:last-child{border-bottom:none}
+.counsel-slot:hover{background:rgba(200,130,10,0.03)}
+.slot-portrait{
+  width:42px;height:42px;border-radius:50%;
+  background:repeating-linear-gradient(135deg,rgba(200,130,10,0.10) 0 4px,rgba(200,130,10,0.04) 4px 8px);
+  border:1px dashed rgba(200,130,10,0.45);
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+.slot-dot{width:8px;height:8px;border-radius:50%;background:var(--amber);opacity:0.6}
+.slot-name{font-size:0.95rem;font-weight:500;color:var(--ink);letter-spacing:-0.01em}
+.slot-meta{font-size:0.78rem;color:var(--dim);margin-top:0.15rem}
+.slot-status{
+  font-size:10px;font-weight:600;letter-spacing:0.16em;text-transform:uppercase;
+  color:var(--amber);
+  padding:0.35rem 0.7rem;border-radius:999px;
+  background:rgba(200,130,10,0.08);
+  border:1px solid rgba(200,130,10,0.25);
+}
+@media (prefers-reduced-motion: no-preference){
+  .slot-dot{animation:slot-pulse 2.6s ease-in-out infinite}
+  @keyframes slot-pulse{0%,100%{opacity:0.4;transform:scale(1)}50%{opacity:0.9;transform:scale(1.4)}}
+}
+
+/* ============================================================
+   SECTION 7 · FIELD REPORTS
+   ============================================================ */
+.reports{background:var(--paper);padding:7rem 0}
+.report-feat{
+  position:relative;
+  background:linear-gradient(135deg,#1c1916 0%,#0a0807 100%);
+  border-radius:24px;
+  padding:clamp(2rem,5vw,4rem);
+  color:#f8f6f2;
+  margin-top:2.5rem;
+  overflow:hidden;
+}
+.report-feat::before{
+  content:'\201C';
+  position:absolute;top:0.5rem;left:1.5rem;
+  font-style:italic;font-weight:400;
+  font-size:10rem;line-height:1;
+  color:var(--amber);opacity:0.30;pointer-events:none;
+}
+.report-quote{
+  position:relative;z-index:1;
+  font-style:italic;font-weight:400;
+  font-size:clamp(1.1rem,2vw,1.5rem);
+  line-height:1.5;
+  color:rgba(248,246,242,0.92);
+  max-width:42rem;
+  margin:1.5rem 0 2rem;
+}
+.report-quote .char{transition:opacity .15s linear}
+.report-attr{display:flex;align-items:center;gap:0.9rem}
+.report-portrait{
+  width:42px;height:42px;border-radius:50%;
+  background:linear-gradient(135deg,#c8820a,#e0a040);
+  display:flex;align-items:center;justify-content:center;
+  color:#fff;font-weight:600;font-size:0.85rem;
+}
+.report-attr-name{font-size:0.92rem;font-weight:500;color:rgba(248,246,242,0.92)}
+.report-attr-stars{color:var(--amber-soft);font-size:0.85rem;letter-spacing:0.1em}
+
+.reports-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;
+  margin-top:2.5rem;
+}
+@media(max-width:900px){.reports-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:600px){.reports-grid{grid-template-columns:1fr}}
+.report-card{
+  background:var(--card);
+  border:1px solid var(--rule);
+  border-top:2px solid transparent;
+  border-left:3px solid var(--amber);
+  border-radius:12px;
+  padding:1.3rem 1.4rem;
+  display:flex;flex-direction:column;gap:0.7rem;
+  transition:transform .3s var(--ease),border-color .3s var(--ease),box-shadow .3s var(--ease);
+}
+.report-card:hover{transform:translateY(-2px);border-top-color:var(--amber);box-shadow:0 12px 28px rgba(14,12,10,0.08)}
+.report-card .q{
+  font-style:italic;font-size:0.92rem;color:var(--muted);
+  line-height:1.55;font-weight:400;
+}
+.report-card .a{
+  font-size:0.78rem;font-weight:500;color:var(--ink);
+  letter-spacing:0.02em;margin-top:0.2rem;
+}
+
+/* ============================================================
+   SECTION 8 · PRICING
+   ============================================================ */
+.pricing{background:var(--paper);padding:7rem 0;position:relative;overflow:hidden}
+.pricing-ghost{
+  position:absolute;top:50%;left:50%;transform:translate(-50%,-45%);
+  font-weight:300;
+  font-size:clamp(5rem,15vw,14rem);
+  color:rgba(200,130,10,0.05);
+  letter-spacing:-0.04em;
+  pointer-events:none;text-transform:uppercase;
+  white-space:nowrap;line-height:1;z-index:0;
+}
+.pricing-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:1.2rem;
+  margin-top:3rem;position:relative;z-index:1;
+}
+@media(max-width:900px){.pricing-grid{grid-template-columns:1fr;max-width:24rem;margin-left:auto;margin-right:auto}}
+.price-card{
+  background:var(--card);
+  border:1px solid var(--rule);
+  border-top:2px solid transparent;
+  border-radius:16px;
+  padding:clamp(1.6rem,3vw,2.4rem);
+  display:flex;flex-direction:column;gap:1rem;
+  position:relative;
+  transition:transform .35s var(--ease),border-color .35s var(--ease),box-shadow .35s var(--ease);
+}
+.price-card:hover{transform:translateY(-6px);border-top-color:var(--amber);box-shadow:0 20px 40px rgba(0,0,0,0.08)}
+.price-card.featured{
+  border-color:rgba(200,130,10,0.30);
+  background:linear-gradient(180deg,#fff 0%,#fdf8ed 100%);
+  box-shadow:0 10px 30px rgba(200,130,10,0.10);
+}
+.price-card.featured .ribbon{
+  position:absolute;top:1.2rem;right:1.2rem;
+  font-size:10px;letter-spacing:0.16em;text-transform:uppercase;
+  font-weight:600;color:var(--amber);
+}
+.price-card .credits{
+  font-weight:300;font-size:3rem;color:var(--amber);
+  line-height:1;letter-spacing:-0.03em;
+  font-feature-settings:'tnum';
+}
+.price-card .credits span{font-size:0.75rem;font-weight:500;color:var(--muted);letter-spacing:0.12em;text-transform:uppercase;margin-left:0.3rem;vertical-align:middle}
+.price-card .name{
+  font-size:1.2rem;font-weight:600;color:var(--ink);
+  letter-spacing:-0.01em;
+}
+.price-card .price{
+  font-size:2rem;font-weight:600;color:var(--ink);
+  letter-spacing:-0.02em;line-height:1;
+}
+.price-card .price small{font-size:0.7rem;color:var(--dim);font-weight:400;letter-spacing:0.08em;text-transform:uppercase;margin-left:0.2rem}
+.price-card .desc{font-size:0.88rem;color:var(--muted);line-height:1.5}
+.price-card ul{list-style:none;display:flex;flex-direction:column;gap:0.55rem;margin-top:0.5rem}
+.price-card li{
+  font-size:0.85rem;color:var(--ink);display:flex;align-items:flex-start;gap:0.55rem;
+  line-height:1.5;
+}
+.price-card li::before{
+  content:'\2713';color:var(--amber);font-size:0.9rem;font-weight:600;
+  flex-shrink:0;margin-top:0.05rem;
+}
+.price-card .amber-btn{margin-top:1rem;justify-content:center;width:100%}
+.price-card.alt .amber-btn{background:var(--ink);color:#fff}
+.price-card.alt .amber-btn:hover{background:#0a0807;color:#fff}
+
+.pricing-note{
+  text-align:center;margin-top:2.5rem;
+  font-size:0.78rem;color:var(--dim);font-weight:300;
+  letter-spacing:0.04em;
+}
+
+/* ============================================================
+   SECTION 9 · FOR COUNSEL
+   ============================================================ */
+.for-counsel{
+  background:linear-gradient(135deg,#c8820a 0%,#e0a040 100%);
+  padding:7rem 0;color:var(--ink);position:relative;overflow:hidden;
+}
+.for-counsel::before{
+  content:'';position:absolute;inset:0;
+  background-image:radial-gradient(rgba(0,0,0,0.08) 1px,transparent 1px);
+  background-size:3px 3px;pointer-events:none;
+}
+.for-counsel .wrap{position:relative;z-index:1}
+.for-counsel .eyebrow{color:#1c1916}
+.for-counsel .eyebrow::before{background:#1c1916}
+.for-counsel-grid{
+  display:grid;grid-template-columns:1.4fr 1fr;gap:3rem;align-items:end;
+  margin-top:1.5rem;
+}
+@media(max-width:900px){.for-counsel-grid{grid-template-columns:1fr;gap:2rem}}
+.for-counsel h2{
+  font-size:clamp(2rem,5vw,4rem);font-weight:400;
+  letter-spacing:-0.02em;line-height:1.02;color:var(--ink);
+  max-width:14ch;
+}
+.for-counsel h2 em{font-style:italic;color:#1c1916;font-weight:400;border-bottom:2px solid rgba(0,0,0,0.3);padding-bottom:0.05em}
+.for-counsel p{
+  font-size:1.05rem;color:rgba(28,25,22,0.78);
+  max-width:32rem;margin:1.5rem 0 2rem;line-height:1.6;
+}
+.for-counsel-stats{
+  display:flex;flex-direction:column;gap:1.4rem;
+  border-top:1px solid rgba(0,0,0,0.15);
+  padding-top:1.5rem;
+}
+.fc-stat{
+  display:grid;grid-template-columns:auto 1fr;gap:1.3rem;align-items:baseline;
+  padding-bottom:1.2rem;border-bottom:1px solid rgba(0,0,0,0.10);
+}
+.fc-stat:last-child{border-bottom:none;padding-bottom:0}
+.fc-stat .n{font-size:1.5rem;font-weight:600;color:var(--ink);letter-spacing:-0.02em}
+.fc-stat .n sup{font-size:0.6em;font-weight:400;vertical-align:super}
+.fc-stat .l{font-size:0.8rem;color:rgba(28,25,22,0.72);font-weight:400}
+
+/* ============================================================
+   SECTION 10 · COLOPHON FOOTER
+   ============================================================ */
+.footer{
+  background:#0a0807;color:#f8f6f2;
+  padding:5rem 0 2rem;
+  position:relative;border-top:1px solid var(--amber);
+}
+.footer-mast{
+  font-style:italic;font-weight:300;
+  font-size:clamp(2.5rem,8vw,7rem);
+  color:rgba(248,246,242,0.10);
+  letter-spacing:-0.04em;line-height:0.9;
+  margin-bottom:3.5rem;
+}
+.footer-grid{
+  display:grid;grid-template-columns:repeat(4,1fr);gap:2.5rem;
+  padding-bottom:3.5rem;border-bottom:1px solid rgba(248,246,242,0.06);
+}
+@media(max-width:900px){.footer-grid{grid-template-columns:repeat(2,1fr);gap:2.5rem 1.5rem}}
+@media(max-width:560px){.footer-grid{grid-template-columns:1fr}}
+.footer-col h4{
+  font-size:11px;letter-spacing:0.2em;text-transform:uppercase;
+  color:rgba(248,246,242,0.55);font-weight:600;
+  margin-bottom:1rem;
+}
+.footer-col a{
+  display:block;font-size:0.85rem;color:rgba(248,246,242,0.78);
+  padding:0.32rem 0;transition:color .25s,transform .25s;
+}
+.footer-col a:hover{color:var(--amber-soft);transform:translateX(2px)}
+.footer-disc{
+  font-style:italic;font-weight:400;font-size:0.95rem;
+  color:rgba(248,246,242,0.4);margin-bottom:0.6rem;
+}
+.footer-disc-body{
+  font-weight:300;font-size:0.8rem;color:rgba(248,246,242,0.30);
+  line-height:1.6;
+}
+.footer-bottom{
+  display:flex;justify-content:space-between;align-items:center;gap:1rem;
+  padding-top:1.8rem;flex-wrap:wrap;
+  font-size:0.78rem;color:rgba(248,246,242,0.4);
+}
+.footer-bottom .right{font-style:italic;color:rgba(248,246,242,0.3)}
+
+/* responsive nav adjustments */
+@media(max-width:560px){
+  .hero-issue{top:6.5rem;font-size:10px}
+  .hero{padding-top:7rem}
+  .hero-ledger{order:2}
+  .hero-ledger .row{padding-bottom:0.6rem}
+  .hero-ledger .num{font-size:1.6rem}
+  .section{padding:5rem 0}
+  .section-head{margin-bottom:2.5rem}
+  .law{padding:5rem 0}
+  .reports{padding:5rem 0}
+  .pricing{padding:5rem 0}
+  .for-counsel{padding:5rem 0}
+  .counsel{padding-top:5rem;padding-bottom:5rem}
+}
+
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{animation-duration:0.01ms !important;animation-iteration-count:1 !important;transition-duration:0.01ms !important}
 }
 </style>
 </head>
 <body>
 
-<header class="mhd" id="mhd">
-  <div class="mhd-l">
-    <a href="/" class="mhd-name">Rentritz</a>
-    <span class="mhd-issue"><span>Vol. I</span><span>&middot;</span><span>Dubai</span></span>
+<!-- ============================================================
+     NAV
+     ============================================================ -->
+<nav class="nav" id="nav" aria-label="Primary">
+  <div class="nav-l">
+    <a href="#top" class="nav-mark" aria-label="Rentritz home">R</a>
+    <span class="nav-name">Rentritz</span>
   </div>
-  <nav class="mhd-r">
-    <a href="{{ url_for('lawyers.browse') }}">Counsel</a>
-    <a href="{{ url_for('core.for_lawyers') }}">For Lawyers</a>
-    <a href="{{ url_for('auth.login') }}">Sign In</a>
-    <a href="{{ url_for('auth.register') }}" class="cta">Begin</a>
-  </nav>
-</header>
+  <div class="nav-r">
+    <a href="#method">How It Works</a>
+    <a href="#areas">Practice Areas</a>
+    <a href="#pricing">Pricing</a>
+    <a href="#counsel">For Lawyers</a>
+    <span class="sep" aria-hidden="true"></span>
+    <a href="{{ url_for('auth.login') }}">Login</a>
+    <a href="{{ url_for('auth.register') }}" class="cta">Begin Free</a>
+  </div>
+  <button class="burger" id="burger" aria-label="Open menu" aria-expanded="false">
+    <svg class="ic-menu" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+    <svg class="ic-x" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M6 6l12 12M6 18L18 6"/></svg>
+  </button>
+</nav>
 
-<section class="hero" id="hero">
-  <div class="hero-bg" id="heroBg"></div>
-  <div class="hero-grade"></div>
-  <div class="hero-grain"></div>
-  <div class="hero-orb"></div>
+<div class="drawer" id="drawer">
+  <a href="#method">How It Works</a>
+  <a href="#areas">Practice Areas</a>
+  <a href="#pricing">Pricing</a>
+  <a href="#counsel">For Lawyers</a>
+  <a href="{{ url_for('auth.login') }}">Login</a>
+  <a href="{{ url_for('auth.register') }}" class="cta">Begin · 3 free credits</a>
+</div>
 
-  <div class="hero-issue">
-    <span>A Legal Navigator for Dubai Property</span>
-    <span>&middot;</span>
-    <span>Issue No. 1</span>
+<!-- ============================================================
+     1 · HERO
+     ============================================================ -->
+<header class="hero on-dark" id="top">
+  <div class="hero-bg" aria-hidden="true">
+    <div class="hero-layer l1 on"></div>
+    <div class="hero-layer l2"></div>
+    <div class="hero-layer l3"></div>
+  </div>
+  <div class="hero-grade" aria-hidden="true"></div>
+  <div class="hero-orb" aria-hidden="true"></div>
+
+  <div class="hero-top">
+    <div class="hero-issue">A Legal Navigator for Dubai Property &middot; Issue No. 1</div>
+    <div class="hero-loc">Vol. I &middot; Dubai &middot; 2025</div>
   </div>
 
-  <div class="hero-c">
+  <div class="hero-content">
     <div class="hero-l">
-      <div class="hero-toggle" role="tablist" aria-label="I am a">
-        <button type="button" class="on" data-mode="tenant" id="mTenant">Tenant</button>
-        <button type="button" data-mode="landlord" id="mLandlord">Landlord</button>
+      <div class="role-toggle liquid-glass" role="tablist" aria-label="Choose role">
+        <button class="on" data-role="tenant" role="tab" aria-selected="true">I am a Tenant</button>
+        <button data-role="landlord" role="tab" aria-selected="false">I am a Landlord</button>
       </div>
-
       <h1 class="hero-h" id="heroH">
-        <span class="word">Know</span>
-        <span class="word">what's</span>
-        <span class="word"><em id="heroEmph">yours.</em></span>
+        <span class="hero-tenant" data-text="Know your rights in Dubai. In {em:three minutes.}"></span>
+        <span class="hero-landlord" data-text="Protect your {em:property rights} in Dubai. In three minutes." hidden></span>
       </h1>
 
-      <p class="hero-sub" id="heroSub">Plain-English answers to your tenancy questions in Dubai, citation-grounded in <strong>UAE law</strong> and the RERA index. Three minutes from your phone to a clear legal position.</p>
+      <p class="hero-sub" id="heroSub">
+        <span class="tenant-text">Plain-English answers to your tenancy questions in Dubai, citation-grounded in <strong>UAE law</strong> and the RERA Rental Index. Three minutes from your phone to a clear legal position.</span>
+        <span class="landlord-text" hidden>Plain-English answers to your landlord obligations and rights in Dubai, citation-grounded in <strong>UAE law</strong> and the RERA Rental Index. Three minutes from your phone to a clear position.</span>
+      </p>
 
-      <div class="hero-actions">
-        <a href="{{ url_for('auth.register') }}" class="hero-cta">Begin <span class="hero-cta-credits">3 free credits</span> &rarr;</a>
-        <a href="#method" class="hero-link">How it works &rarr;</a>
+      <div class="hero-actions" id="heroActions">
+        <a href="{{ url_for('auth.register') }}" class="amber-btn">
+          Begin
+          <span class="hero-cta-credits">3 free credits</span>
+          <span class="arrow" aria-hidden="true">→</span>
+        </a>
+        <a href="#method" class="hero-secondary">See how it works</a>
       </div>
     </div>
 
-    <aside class="hero-r">
-      <div class="hero-r-h">The Ledger</div>
-      <div class="hero-led">
-        <div class="hero-led-row"><span class="hero-led-n">3 min</span><span class="hero-led-l">To your answer</span></div>
-        <div class="hero-led-row"><span class="hero-led-n">120</span><span class="hero-led-l">Verified counsel</span></div>
-        <div class="hero-led-row"><span class="hero-led-n">4,800</span><span class="hero-led-l">Briefs answered</span></div>
-        <div class="hero-led-row"><span class="hero-led-n">AED 0</span><span class="hero-led-l">To begin</span></div>
+    <aside class="hero-ledger" id="heroLedger" aria-label="At a glance">
+      <div class="row">
+        <div class="num"><em>3</em><span style="font-size:0.45em;font-weight:400;margin-left:0.3em;color:rgba(255,255,255,0.6)">min</span></div>
+        <div class="lbl">average answer time</div>
+      </div>
+      <div class="row">
+        <div class="num">8</div>
+        <div class="lbl">areas of practice</div>
+      </div>
+      <div class="row">
+        <div class="num">4</div>
+        <div class="lbl">UAE statutes cited</div>
+      </div>
+      <div class="row">
+        <div class="num"><span style="font-size:0.5em;font-weight:400;margin-right:0.2em;color:rgba(255,255,255,0.6)">AED</span>0</div>
+        <div class="lbl">to begin</div>
       </div>
     </aside>
   </div>
 
-  <div class="hero-scroll" id="hScroll" role="button" tabindex="0" style="cursor:pointer">
-    <span>Continue</span>
-    <span class="hero-scroll-ln"></span>
-  </div>
-</section>
-<section class="sec method reveal" id="method">
-  <div class="sec-wrap">
-    <div class="eyebrow">I. The Method</div>
-    <h2 class="sec-h">Three minutes. <em>One answer.</em></h2>
-    <p class="sec-lede">A guided questionnaire isolates the facts of your tenancy. The platform returns a plain-English position, every clause cited.</p>
+  <a href="#method" class="hero-scroll" aria-label="Scroll to How It Works">
+    <span>Scroll</span>
+    <span class="dot" aria-hidden="true"></span>
+  </a>
+</header>
 
+<!-- ============================================================
+     2 · METHOD
+     ============================================================ -->
+<section class="section" id="method" style="background:var(--paper)">
+  <div class="wrap">
     <div class="method-grid">
-      <div class="demo-wrap">
-        <div class="demo-frame">
-          <div class="demo-head">
-            <div class="demo-step">Question <strong id="dStep">1</strong> of 3</div>
-            <div class="demo-prog" id="dProg">
-              <span class="on"></span><span></span><span></span>
-            </div>
+
+      <!-- live wizard demo -->
+      <div class="wizard" id="wizard" aria-live="polite">
+        <div class="wizard-strip"></div>
+        <div class="wizard-meta">
+          <div class="wizard-step-label">
+            <span class="live"></span>
+            <span id="wizardStepLabel">QUESTION · 01 OF 03</span>
           </div>
-          <div class="demo-q" id="dQ">Have you received a written eviction notice?</div>
-          <div class="demo-opts" id="dOpts">
-            <div class="demo-opt"><span>Yes, in writing</span><span class="demo-opt-arr">&rarr;</span></div>
-            <div class="demo-opt"><span>Verbal only</span><span class="demo-opt-arr">&rarr;</span></div>
-          </div>
-          <div class="demo-final" id="dFinal">
-            <div class="demo-final-eye">Answer Ready</div>
-            <div class="demo-final-h">Your landlord must give twelve months written notice through a notary. Anything shorter has no legal effect.</div>
-            <span class="demo-final-cite">Dubai Law No. 33/2008, Article 25(2)</span>
-          </div>
-          <div class="demo-foot">
-            <span><span class="credit">&bull;</span> 1 credit</span>
-            <span>Tenant view</span>
+          <div class="wizard-count" id="wizardCount">Eviction notice</div>
+        </div>
+
+        <div id="wizardBody">
+          <div class="wizard-q" id="wizardQ">Have you received a written eviction notice?</div>
+          <div class="wizard-chips" id="wizardChips">
+            <span class="wizard-chip show">Yes</span>
+            <span class="wizard-chip show">No</span>
           </div>
         </div>
-        <div class="demo-caption">Live preview &middot; Auto-cycles every 8 seconds</div>
+
+        <div class="wizard-foot">
+          <div class="wizard-progress" id="wizardProgress">
+            <span class="on"></span><span></span><span></span><span></span>
+          </div>
+          <span>Brief · 2025-001</span>
+        </div>
       </div>
 
-      <div class="method-steps stagger">
-        <div class="method-step">
-          <div class="method-rom">i.</div>
-          <div>
-            <h3 class="method-h">Describe the matter</h3>
-            <p class="method-p">Branch by branch, the questionnaire isolates the facts of your tenancy. The property, the parties, the disputed clause. No appointment, no email thread.</p>
-            <div class="method-meta">
-              <span class="method-pill">3 min</span><span class="method-pill">Private</span><span class="method-pill">No file</span>
-            </div>
-          </div>
-        </div>
-        <div class="method-step">
-          <div class="method-rom">ii.</div>
-          <div>
-            <h3 class="method-h">Receive the answer</h3>
-            <p class="method-p">Plain-English guidance, citation-grounded in Dubai Law No. 26/2007, Law No. 33/2008, and the relevant RERA decree. Read it on screen, save it, send it.</p>
-            <div class="method-meta">
-              <span class="method-pill">Cited</span><span class="method-pill">Read aloud</span><span class="method-pill">Bilateral</span>
-            </div>
-          </div>
-        </div>
-        <div class="method-step">
-          <div class="method-rom">iii.</div>
-          <div>
-            <h3 class="method-h">Engage counsel, if needed</h3>
-            <p class="method-p">For matters that demand representation, retain a verified UAE-licensed lawyer directly. Vetted credentials, real ratings, contact unlocked at five credits.</p>
-            <div class="method-meta">
-              <span class="method-pill">Verified</span><span class="method-pill">Rated</span><span class="method-pill">5 credits</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<div class="ledger reveal">
-  <div class="ledger-in">
-    <div class="ledger-item"><span class="ledger-n" data-count="4800">0</span><span class="ledger-l">Briefs<br>answered</span></div>
-    <div class="ledger-item"><span class="ledger-n" data-count="120">0</span><span class="ledger-l">Verified<br>counsel</span></div>
-    <div class="ledger-item"><span class="ledger-n" data-count="98">0</span><span class="ledger-l">% client<br>satisfaction</span></div>
-    <div class="ledger-item"><span class="ledger-n" data-count="3">0</span><span class="ledger-l">Minutes to<br>your answer</span></div>
-  </div>
-</div>
-
-<section class="sec statutes reveal">
-  <div class="sec-wrap">
-    <div class="eyebrow">II. The Law, Distilled</div>
-    <h2 class="sec-h">Three statutes that <em>decide most disputes.</em></h2>
-    <p class="sec-lede">The clauses that quietly govern Dubai tenancy. Cited, distilled, no latin required.</p>
-    <div class="stat-grid stagger">
-      <a href="{{ url_for('auth.register') }}" class="stat-card">
-        <div>
-          <div class="stat-rom">i.</div>
-          <span class="stat-cite">Dubai Law No. 33/2008 . Art. 25(2)</span>
-          <h3 class="stat-h">Twelve months. <em>In writing. Through a notary.</em></h3>
-          <p class="stat-body">A landlord seeking possession for personal use must serve twelve months written notice through a notary public. A shorter notice has no legal effect.</p>
-        </div>
-        <div class="stat-foot"><span>Eviction</span><span class="arr">Read &rarr;</span></div>
-      </a>
-      <a href="{{ url_for('auth.register') }}" class="stat-card">
-        <div>
-          <div class="stat-rom">ii.</div>
-          <span class="stat-cite">Decree No. 43/2013 . RERA Index</span>
-          <h3 class="stat-h">Within ten percent? <em>The rent does not move.</em></h3>
-          <p class="stat-body">If your rent sits within ten percent of the RERA index for comparable units, no increase at renewal is permitted. Above that, a strict five-step grid applies.</p>
-        </div>
-        <div class="stat-foot"><span>Rent Increases</span><span class="arr">Read &rarr;</span></div>
-      </a>
-      <a href="{{ url_for('auth.register') }}" class="stat-card">
-        <div>
-          <div class="stat-rom">iii.</div>
-          <span class="stat-cite">Dubai Law No. 26/2007 . Art. 20</span>
-          <h3 class="stat-h">Five percent. <em>Returnable.</em></h3>
-          <p class="stat-body">Security deposits are capped at five percent of annual rent for unfurnished units, ten percent for furnished. Returnable within thirty days, less only documented deductions.</p>
-        </div>
-        <div class="stat-foot"><span>Deposits</span><span class="arr">Read &rarr;</span></div>
-      </a>
-    </div>
-  </div>
-</section>
-
-<section class="sec areas reveal">
-  <div class="sec-wrap">
-    <div class="eyebrow">III. Areas of Practice</div>
-    <h2 class="sec-h">Eight pillars of <em>Dubai tenancy law.</em></h2>
-    <p class="sec-lede">Every common dispute, mapped to the statute that governs it. One credit per consultation, regardless of category.</p>
-    <div class="areas-list">
-      <a href="{{ url_for('auth.register') }}" class="area-row"><span class="area-no">&sect; 01</span><span class="area-n">Rent Increases</span><span class="area-desc">RERA's calculator, and the five-step grid that caps every renewal.</span><span class="area-arr">Read &rarr;</span></a>
-      <a href="{{ url_for('auth.register') }}" class="area-row"><span class="area-no">&sect; 02</span><span class="area-n">Eviction Notices</span><span class="area-desc">When a notice is lawful, when it is not, and what twelve months really means.</span><span class="area-arr">Read &rarr;</span></a>
-      <a href="{{ url_for('auth.register') }}" class="area-row"><span class="area-no">&sect; 03</span><span class="area-n">Maintenance &amp; Repairs</span><span class="area-desc">Major versus minor. Who pays, who arranges, who is held liable.</span><span class="area-arr">Read &rarr;</span></a>
-      <a href="{{ url_for('auth.register') }}" class="area-row"><span class="area-no">&sect; 04</span><span class="area-n">Security Deposits</span><span class="area-desc">Lawful deductions, the thirty-day return rule, and what to put in writing.</span><span class="area-arr">Read &rarr;</span></a>
-      <a href="{{ url_for('auth.register') }}" class="area-row"><span class="area-no">&sect; 05</span><span class="area-n">Lease Disputes</span><span class="area-desc">Breach, early termination, and the renewals neither side asked for.</span><span class="area-arr">Read &rarr;</span></a>
-      <a href="{{ url_for('auth.register') }}" class="area-row"><span class="area-no">&sect; 06</span><span class="area-n">Landlord Rights</span><span class="area-desc">Possession, recovery, and the lawful path through a non-paying tenant.</span><span class="area-arr">Read &rarr;</span></a>
-      <a href="{{ url_for('auth.register') }}" class="area-row"><span class="area-no">&sect; 07</span><span class="area-n">RERA &amp; Ejari</span><span class="area-desc">Registration, filings, and the compliance that quietly protects everyone.</span><span class="area-arr">Read &rarr;</span></a>
-      <a href="{{ url_for('auth.register') }}" class="area-row"><span class="area-no">&sect; 08</span><span class="area-n">RDC Hearings</span><span class="area-desc">Preparing for the Rental Dispute Centre. What to bring, what to expect.</span><span class="area-arr">Read &rarr;</span></a>
-    </div>
-    <div class="areas-foot">
-      <p>One credit per consultation. Three free on signup. No subscription.</p>
-      <a href="{{ url_for('auth.register') }}">Start free &rarr;</a>
-    </div>
-  </div>
-</section>
-<section class="roster reveal">
-  <div class="sec-wrap">
-    <div class="eyebrow">IV. The Counsel</div>
-    <h2 class="sec-h">A roster, not a <em>marketplace.</em></h2>
-    <p class="sec-lede">Every lawyer here is admin-verified, bar number on file, licence reviewed. Contact unlocks at five credits.</p>
-  </div>
-  <div class="roster-track-wrap">
-    <div class="roster-track">
-      <a href="{{ url_for('lawyers.browse') }}" class="lw-card">
-        <div class="lw-card-top">
-          <div class="lw-photo" style="background-image:url('https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?auto=format&fit=facearea&facepad=2&w=120&h=120&q=80')"></div>
-          <div class="lw-name-wrap"><div class="lw-name">Sara Al-Mansoori</div><div class="lw-firm">Al-Mansoori &amp; Partners</div></div>
-        </div>
-        <div class="lw-rating"><span class="lw-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</span><span>5.0 . 48 briefs</span></div>
-        <div class="lw-tags"><span class="lw-tag">Eviction</span><span class="lw-tag">RDC</span><span class="lw-tag">Arabic</span></div>
-        <div class="lw-meta"><span>Dubai Marina</span><span class="unlock">Unlocks at 5</span></div>
-      </a>
-      <a href="{{ url_for('lawyers.browse') }}" class="lw-card">
-        <div class="lw-card-top">
-          <div class="lw-photo" style="background-image:url('https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=facearea&facepad=2&w=120&h=120&q=80')"></div>
-          <div class="lw-name-wrap"><div class="lw-name">Khalid Hassan</div><div class="lw-firm">Hassan Legal</div></div>
-        </div>
-        <div class="lw-rating"><span class="lw-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</span><span>4.9 . 72 briefs</span></div>
-        <div class="lw-tags"><span class="lw-tag">RERA</span><span class="lw-tag">Rent</span><span class="lw-tag">English</span></div>
-        <div class="lw-meta"><span>DIFC</span><span class="unlock">Unlocks at 5</span></div>
-      </a>
-      <a href="{{ url_for('lawyers.browse') }}" class="lw-card">
-        <div class="lw-card-top">
-          <div class="lw-photo" style="background-image:url('https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=facearea&facepad=2&w=120&h=120&q=80')"></div>
-          <div class="lw-name-wrap"><div class="lw-name">Priya Sharma</div><div class="lw-firm">Sharma Property Law</div></div>
-        </div>
-        <div class="lw-rating"><span class="lw-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</span><span>5.0 . 31 briefs</span></div>
-        <div class="lw-tags"><span class="lw-tag">Deposits</span><span class="lw-tag">Lease</span><span class="lw-tag">Hindi</span></div>
-        <div class="lw-meta"><span>Business Bay</span><span class="unlock">Unlocks at 5</span></div>
-      </a>
-      <a href="{{ url_for('lawyers.browse') }}" class="lw-card">
-        <div class="lw-card-top">
-          <div class="lw-photo" style="background-image:url('https://images.unsplash.com/photo-1568602471122-7832951cc4c5?auto=format&fit=facearea&facepad=2&w=120&h=120&q=80')"></div>
-          <div class="lw-name-wrap"><div class="lw-name">Omar Faisal</div><div class="lw-firm">Faisal Chambers</div></div>
-        </div>
-        <div class="lw-rating"><span class="lw-stars">&#9733;&#9733;&#9733;&#9733;&#9734;</span><span>4.8 . 56 briefs</span></div>
-        <div class="lw-tags"><span class="lw-tag">Landlord</span><span class="lw-tag">RDC</span><span class="lw-tag">Arabic</span></div>
-        <div class="lw-meta"><span>Downtown</span><span class="unlock">Unlocks at 5</span></div>
-      </a>
-      <a href="{{ url_for('lawyers.browse') }}" class="lw-card">
-        <div class="lw-card-top">
-          <div class="lw-photo" style="background-image:url('https://images.unsplash.com/photo-1551836022-d5d88e9218df?auto=format&fit=facearea&facepad=2&w=120&h=120&q=80')"></div>
-          <div class="lw-name-wrap"><div class="lw-name">Layla Ibrahim</div><div class="lw-firm">Ibrahim &amp; Co.</div></div>
-        </div>
-        <div class="lw-rating"><span class="lw-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</span><span>5.0 . 64 briefs</span></div>
-        <div class="lw-tags"><span class="lw-tag">Disputes</span><span class="lw-tag">Ejari</span><span class="lw-tag">French</span></div>
-        <div class="lw-meta"><span>JLT</span><span class="unlock">Unlocks at 5</span></div>
-      </a>
-      <a href="{{ url_for('lawyers.browse') }}" class="lw-card">
-        <div class="lw-card-top">
-          <div class="lw-photo" style="background-image:url('https://images.unsplash.com/photo-1556157382-97eda2d62296?auto=format&fit=facearea&facepad=2&w=120&h=120&q=80')"></div>
-          <div class="lw-name-wrap"><div class="lw-name">Daniel Pereira</div><div class="lw-firm">Pereira Real Estate</div></div>
-        </div>
-        <div class="lw-rating"><span class="lw-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</span><span>4.9 . 88 briefs</span></div>
-        <div class="lw-tags"><span class="lw-tag">Maintenance</span><span class="lw-tag">RDC</span><span class="lw-tag">Portuguese</span></div>
-        <div class="lw-meta"><span>Palm Jumeirah</span><span class="unlock">Unlocks at 5</span></div>
-      </a>
-      <a href="{{ url_for('lawyers.browse') }}" class="lw-card" aria-hidden="true" tabindex="-1">
-        <div class="lw-card-top">
-          <div class="lw-photo" style="background-image:url('https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?auto=format&fit=facearea&facepad=2&w=120&h=120&q=80')"></div>
-          <div class="lw-name-wrap"><div class="lw-name">Sara Al-Mansoori</div><div class="lw-firm">Al-Mansoori &amp; Partners</div></div>
-        </div>
-        <div class="lw-rating"><span class="lw-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</span><span>5.0 . 48 briefs</span></div>
-        <div class="lw-tags"><span class="lw-tag">Eviction</span><span class="lw-tag">RDC</span><span class="lw-tag">Arabic</span></div>
-        <div class="lw-meta"><span>Dubai Marina</span><span class="unlock">Unlocks at 5</span></div>
-      </a>
-      <a href="{{ url_for('lawyers.browse') }}" class="lw-card" aria-hidden="true" tabindex="-1">
-        <div class="lw-card-top">
-          <div class="lw-photo" style="background-image:url('https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=facearea&facepad=2&w=120&h=120&q=80')"></div>
-          <div class="lw-name-wrap"><div class="lw-name">Khalid Hassan</div><div class="lw-firm">Hassan Legal</div></div>
-        </div>
-        <div class="lw-rating"><span class="lw-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</span><span>4.9 . 72 briefs</span></div>
-        <div class="lw-tags"><span class="lw-tag">RERA</span><span class="lw-tag">Rent</span><span class="lw-tag">English</span></div>
-        <div class="lw-meta"><span>DIFC</span><span class="unlock">Unlocks at 5</span></div>
-      </a>
-      <a href="{{ url_for('lawyers.browse') }}" class="lw-card" aria-hidden="true" tabindex="-1">
-        <div class="lw-card-top">
-          <div class="lw-photo" style="background-image:url('https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=facearea&facepad=2&w=120&h=120&q=80')"></div>
-          <div class="lw-name-wrap"><div class="lw-name">Priya Sharma</div><div class="lw-firm">Sharma Property Law</div></div>
-        </div>
-        <div class="lw-rating"><span class="lw-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</span><span>5.0 . 31 briefs</span></div>
-        <div class="lw-tags"><span class="lw-tag">Deposits</span><span class="lw-tag">Lease</span><span class="lw-tag">Hindi</span></div>
-        <div class="lw-meta"><span>Business Bay</span><span class="unlock">Unlocks at 5</span></div>
-      </a>
-      <a href="{{ url_for('lawyers.browse') }}" class="lw-card" aria-hidden="true" tabindex="-1">
-        <div class="lw-card-top">
-          <div class="lw-photo" style="background-image:url('https://images.unsplash.com/photo-1568602471122-7832951cc4c5?auto=format&fit=facearea&facepad=2&w=120&h=120&q=80')"></div>
-          <div class="lw-name-wrap"><div class="lw-name">Omar Faisal</div><div class="lw-firm">Faisal Chambers</div></div>
-        </div>
-        <div class="lw-rating"><span class="lw-stars">&#9733;&#9733;&#9733;&#9733;&#9734;</span><span>4.8 . 56 briefs</span></div>
-        <div class="lw-tags"><span class="lw-tag">Landlord</span><span class="lw-tag">RDC</span><span class="lw-tag">Arabic</span></div>
-        <div class="lw-meta"><span>Downtown</span><span class="unlock">Unlocks at 5</span></div>
-      </a>
-      <a href="{{ url_for('lawyers.browse') }}" class="lw-card" aria-hidden="true" tabindex="-1">
-        <div class="lw-card-top">
-          <div class="lw-photo" style="background-image:url('https://images.unsplash.com/photo-1551836022-d5d88e9218df?auto=format&fit=facearea&facepad=2&w=120&h=120&q=80')"></div>
-          <div class="lw-name-wrap"><div class="lw-name">Layla Ibrahim</div><div class="lw-firm">Ibrahim &amp; Co.</div></div>
-        </div>
-        <div class="lw-rating"><span class="lw-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</span><span>5.0 . 64 briefs</span></div>
-        <div class="lw-tags"><span class="lw-tag">Disputes</span><span class="lw-tag">Ejari</span><span class="lw-tag">French</span></div>
-        <div class="lw-meta"><span>JLT</span><span class="unlock">Unlocks at 5</span></div>
-      </a>
-      <a href="{{ url_for('lawyers.browse') }}" class="lw-card" aria-hidden="true" tabindex="-1">
-        <div class="lw-card-top">
-          <div class="lw-photo" style="background-image:url('https://images.unsplash.com/photo-1556157382-97eda2d62296?auto=format&fit=facearea&facepad=2&w=120&h=120&q=80')"></div>
-          <div class="lw-name-wrap"><div class="lw-name">Daniel Pereira</div><div class="lw-firm">Pereira Real Estate</div></div>
-        </div>
-        <div class="lw-rating"><span class="lw-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</span><span>4.9 . 88 briefs</span></div>
-        <div class="lw-tags"><span class="lw-tag">Maintenance</span><span class="lw-tag">RDC</span><span class="lw-tag">Portuguese</span></div>
-        <div class="lw-meta"><span>Palm Jumeirah</span><span class="unlock">Unlocks at 5</span></div>
-      </a>
-    </div>
-  </div>
-  <div class="roster-cta">
-    <a href="{{ url_for('lawyers.browse') }}">Browse all 120 verified counsel &rarr;</a>
-  </div>
-</section>
-<section class="field reveal">
-  <div style="max-width:1180px;margin:0 auto 2.5rem">
-    <div class="eyebrow">V. Field Reports</div>
-    <h2 class="sec-h">From those who <em>used it.</em></h2>
-    <p class="sec-lede">Brief dispatches from tenants and landlords who tested the platform under real conditions.</p>
-  </div>
-
-  <div class="field-feat">
-    <div class="field-feat-eye">Featured Brief . Dubai Marina</div>
-    <p class="field-feat-q">My landlord raised rent by forty percent. Rentritz showed me the RERA cap inside three minutes. <em>I challenged it and saved AED 24,000 a year.</em> This platform should be required reading for every expat in Dubai.</p>
-    <div class="field-feat-att">
-      <div class="field-feat-portrait" style="background-image:url('https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=facearea&facepad=2&w=120&h=120&q=80')"></div>
+      <!-- method steps -->
       <div>
-        <div class="field-feat-name">Ahmed K.</div>
-        <div class="field-feat-role">Tenant . 2-Bed Marina Promenade</div>
+        <div class="section-head">
+          <span class="eyebrow">How It Works</span>
+          <h2 class="section-h">Three minutes. <em>One answer.</em></h2>
+        </div>
+
+        <div class="method-steps">
+          <svg class="method-line" preserveAspectRatio="none" viewBox="0 0 2 360" id="methodLine" aria-hidden="true">
+            <line x1="1" y1="0" x2="1" y2="360" />
+          </svg>
+
+          <div class="method-step">
+            <span class="roman">i</span>
+            <div>
+              <h3>Describe the matter</h3>
+              <p>Answer plain-language questions about your Dubai rental situation. No legal training needed, no appointment, no waiting room.</p>
+            </div>
+          </div>
+          <div class="method-step">
+            <span class="roman">ii</span>
+            <div>
+              <h3>Receive your rights</h3>
+              <p>A curated answer page laying out your specific rights, obligations and recommended actions under UAE law. Every line cites the statute.</p>
+            </div>
+          </div>
+          <div class="method-step">
+            <span class="roman">iii</span>
+            <div>
+              <h3>Engage counsel</h3>
+              <p>Browse admin-verified UAE-licensed lawyers. Unlock direct contact for 5 credits when you need a human in the room.</p>
+            </div>
+          </div>
+        </div>
       </div>
-      <div class="field-feat-rating">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
-    </div>
-  </div>
 
-  <div class="field-quotes">
-    <div class="fq">
-      <div class="fq-mark">"</div>
-      <p class="fq-q">Got an eviction notice giving me thirty days. The platform told me the legal minimum is twelve months. I stayed in my flat. My landlord stopped writing.</p>
-      <div class="fq-att"><strong>Priya S.</strong>&nbsp;&middot;&nbsp;Tenant&nbsp;&middot;&nbsp;JLT</div>
-    </div>
-    <div class="fq">
-      <div class="fq-mark">"</div>
-      <p class="fq-q">Recovered my apartment from a non-paying tenant in nine weeks. The RDC walkthrough was cleaner than what my old lawyer used to send me on letterhead.</p>
-      <div class="fq-att"><strong>Omar F.</strong>&nbsp;&middot;&nbsp;Landlord&nbsp;&middot;&nbsp;Business Bay</div>
-    </div>
-    <div class="fq">
-      <div class="fq-mark">"</div>
-      <p class="fq-q">As a new expat I had no idea about Ejari. The wizard walked me through everything in minutes. I read the answer aloud on the call to my landlord.</p>
-      <div class="fq-att"><strong>Sophie L.</strong>&nbsp;&middot;&nbsp;Tenant&nbsp;&middot;&nbsp;Downtown</div>
-    </div>
-    <div class="fq">
-      <div class="fq-mark">"</div>
-      <p class="fq-q">Deposit dispute resolved. I knew exactly which deductions were lawful and challenged the rest with the citations the platform handed me.</p>
-      <div class="fq-att"><strong>Raj M.</strong>&nbsp;&middot;&nbsp;Tenant&nbsp;&middot;&nbsp;DIFC</div>
-    </div>
-    <div class="fq">
-      <div class="fq-mark">"</div>
-      <p class="fq-q">The lawyer I unlocked was exceptional. The whole flow from question to consultation took an afternoon, and the brief was already prepared.</p>
-      <div class="fq-att"><strong>Fatima A.</strong>&nbsp;&middot;&nbsp;Landlord&nbsp;&middot;&nbsp;Palm Jumeirah</div>
-    </div>
-    <div class="fq">
-      <div class="fq-mark">"</div>
-      <p class="fq-q">I was about to sign a renewal I did not have to sign. The platform paid for itself, and then some, in the first ninety seconds I used it.</p>
-      <div class="fq-att"><strong>David W.</strong>&nbsp;&middot;&nbsp;Tenant&nbsp;&middot;&nbsp;Dubai Hills</div>
     </div>
   </div>
 </section>
 
-<section class="l-cta reveal">
-  <div class="l-cta-in">
-    <div class="l-cta-eye">For UAE-Licensed Counsel</div>
-    <h2 class="l-cta-h">Briefs that <em>begin warm.</em></h2>
-    <p class="l-cta-p">Join verified specialists meeting clients who already understand their matter, the law that governs it, and the citation behind their position.</p>
-    <a href="{{ url_for('core.for_lawyers') }}" class="l-cta-btn">Apply to Join &rarr;</a>
-    <div class="l-cta-stats">
-      <div><strong>120+</strong>Verified counsel</div>
-      <div><strong>4,800+</strong>Briefs received</div>
-      <div><strong>AED 0</strong>Setup cost</div>
+<!-- ============================================================
+     3 · TRUST STRIP
+     ============================================================ -->
+<section class="trust on-dark" id="trust" aria-label="Trust ledger">
+  <div class="wrap">
+    <div class="trust-grid">
+      <div class="trust-stat">
+        <div class="trust-num" data-count="3"><span style="font-size:0.4em;font-weight:400;color:rgba(248,246,242,0.5);letter-spacing:0.08em;margin-right:0.2em">min</span>0</div>
+        <div class="trust-lbl">average wizard time</div>
+      </div>
+      <div class="trust-stat">
+        <div class="trust-num" data-count="8">0</div>
+        <div class="trust-lbl">areas of practice</div>
+      </div>
+      <div class="trust-stat">
+        <div class="trust-num" data-count="4">0</div>
+        <div class="trust-lbl">UAE statutes cited</div>
+      </div>
+      <div class="trust-stat">
+        <div class="trust-num" data-count="3">0<sup>credits</sup></div>
+        <div class="trust-lbl">free on signup</div>
+      </div>
     </div>
   </div>
 </section>
 
-<footer class="col">
-  <div class="col-grid">
-    <div>
-      <div class="col-name">Rentri<span>tz</span></div>
-      <p class="col-tag">A precision legal navigator for Dubai property. Built for tenants, landlords, and the counsel who serve them. Not a law firm. Legal information, not legal advice.</p>
+<!-- ============================================================
+     4 · THE LAW DISTILLED
+     ============================================================ -->
+<section class="law on-dark" id="law">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow">The Statutes That Govern Dubai Tenancy</span>
+      <h2 class="section-h">The law, <em>distilled.</em></h2>
+      <p class="section-sub">Every Rentritz answer cites a specific article of UAE property law. These are the four texts that govern almost every tenant-landlord matter in the Emirate.</p>
     </div>
-    <div>
-      <div class="col-h">Platform</div>
-      <a href="{{ url_for('auth.register') }}">Begin</a>
-      <a href="{{ url_for('lawyers.browse') }}">Counsel</a>
-      <a href="{{ url_for('auth.login') }}">Sign In</a>
-    </div>
-    <div>
-      <div class="col-h">Practice Areas</div>
-      <a href="{{ url_for('auth.register') }}">Rent Increases</a>
-      <a href="{{ url_for('auth.register') }}">Evictions</a>
-      <a href="{{ url_for('auth.register') }}">Deposits</a>
-      <a href="{{ url_for('auth.register') }}">RERA &amp; Ejari</a>
-    </div>
-    <div>
-      <div class="col-h">Masthead</div>
-      <a href="{{ url_for('core.for_lawyers') }}">For Lawyers</a>
-      <a href="{{ url_for('core.privacy') }}">Privacy</a>
-      <a href="{{ url_for('core.terms') }}">Terms</a>
+
+    <div class="law-cards">
+      <a href="{{ url_for('auth.register') }}" class="law-card">
+        <span class="ghost-num">01</span>
+        <span class="law-chip">Law 33/2008 · Art. 25</span>
+        <h3>The Eviction Statute</h3>
+        <p>Governs the twelve grounds on which a landlord may legally serve an eviction notice in Dubai, and the minimum notice periods required.</p>
+        <span class="more">Read the brief <span class="arrow">→</span></span>
+      </a>
+      <a href="{{ url_for('auth.register') }}" class="law-card">
+        <span class="ghost-num">02</span>
+        <span class="law-chip">Decree 43/2013</span>
+        <h3>The RERA Rent Cap</h3>
+        <p>Establishes the RERA Rental Index as the ceiling for rent increases, and the exact percentage caps tied to current market deviation.</p>
+        <span class="more">Read the brief <span class="arrow">→</span></span>
+      </a>
+      <a href="{{ url_for('auth.register') }}" class="law-card">
+        <span class="ghost-num">03</span>
+        <span class="law-chip">Law 26/2007 · Art. 20</span>
+        <h3>Security Deposit Rights</h3>
+        <p>Defines the maximum deposit amount, the conditions for lawful deduction and the timeline for return after tenancy ends.</p>
+        <span class="more">Read the brief <span class="arrow">→</span></span>
+      </a>
     </div>
   </div>
-  <div class="col-rule">
-    <span>&copy; 2026 Rentritz . All rights reserved</span>
-    <span>Set in DM Sans</span>
+</section>
+
+<!-- ============================================================
+     5 · AREAS OF PRACTICE
+     ============================================================ -->
+<section class="section areas" id="areas">
+  <div class="areas-chips" aria-hidden="true">
+    <div class="areas-row" id="areasRowA">
+      <span class="law-chip">Law 33/2008 · Art. 25</span>
+      <span class="law-chip">Decree 43/2013</span>
+      <span class="law-chip">Law 26/2007 · Art. 20</span>
+      <span class="law-chip">RERA Rental Index</span>
+      <span class="law-chip">Ejari Decree</span>
+      <span class="law-chip">RDC Procedural Code</span>
+      <span class="law-chip">Law 26/2007 · Art. 14</span>
+      <span class="law-chip">Law 33/2008 · Art. 25(2)</span>
+      <span class="law-chip">Law 33/2008 · Art. 25</span>
+      <span class="law-chip">Decree 43/2013</span>
+      <span class="law-chip">Law 26/2007 · Art. 20</span>
+    </div>
+    <div class="areas-row" id="areasRowB">
+      <span class="law-chip">Maintenance · Art. 16</span>
+      <span class="law-chip">Sub-letting · Art. 24</span>
+      <span class="law-chip">Lease Renewal · Art. 6</span>
+      <span class="law-chip">Notarised Notice</span>
+      <span class="law-chip">Bounced Cheque · Penal Code</span>
+      <span class="law-chip">RERA Calculator</span>
+      <span class="law-chip">Landlord Obligations</span>
+      <span class="law-chip">Tenant Rights</span>
+      <span class="law-chip">Maintenance · Art. 16</span>
+      <span class="law-chip">Lease Renewal · Art. 6</span>
+    </div>
+  </div>
+
+  <div class="wrap" style="position:relative;z-index:2">
+    <div class="section-head">
+      <span class="eyebrow">Areas of Practice</span>
+      <h2 class="section-h">Eight areas. <em>One platform.</em> Real UAE law.</h2>
+    </div>
+
+    <div class="areas-table">
+      <a href="{{ url_for('auth.register') }}" class="area-row">
+        <span class="num">§ 01</span>
+        <span class="name">Rent Increases</span>
+        <span class="desc">RERA index ceilings, notice periods and the precise calculation behind every legal increase.</span>
+        <span class="read">Read <span class="arrow">→</span></span>
+      </a>
+      <a href="{{ url_for('auth.register') }}" class="area-row">
+        <span class="num">§ 02</span>
+        <span class="name">Eviction Notices</span>
+        <span class="desc">The twelve statutory grounds, the twelve-month minimum and the notarisation requirement.</span>
+        <span class="read">Read <span class="arrow">→</span></span>
+      </a>
+      <a href="{{ url_for('auth.register') }}" class="area-row">
+        <span class="num">§ 03</span>
+        <span class="name">Maintenance &amp; Repairs</span>
+        <span class="desc">Who is responsible for what under Article 16, and the cure-period protocol before withholding rent.</span>
+        <span class="read">Read <span class="arrow">→</span></span>
+      </a>
+      <a href="{{ url_for('auth.register') }}" class="area-row">
+        <span class="num">§ 04</span>
+        <span class="name">Security Deposits</span>
+        <span class="desc">Lawful deductions, the return timeline and the precise paper trail you need to keep.</span>
+        <span class="read">Read <span class="arrow">→</span></span>
+      </a>
+      <a href="{{ url_for('auth.register') }}" class="area-row">
+        <span class="num">§ 05</span>
+        <span class="name">Lease Disputes</span>
+        <span class="desc">Renewal terms, early termination, sub-letting and the standard contract clauses to test.</span>
+        <span class="read">Read <span class="arrow">→</span></span>
+      </a>
+      <a href="{{ url_for('auth.register') }}" class="area-row">
+        <span class="num">§ 06</span>
+        <span class="name">Landlord Rights</span>
+        <span class="desc">Recovery, possession, lawful entry and the protections RERA extends to landlords too.</span>
+        <span class="read">Read <span class="arrow">→</span></span>
+      </a>
+      <a href="{{ url_for('auth.register') }}" class="area-row">
+        <span class="num">§ 07</span>
+        <span class="name">RERA &amp; Ejari</span>
+        <span class="desc">Registration, renewal, transfer and what an unregistered tenancy actually means in court.</span>
+        <span class="read">Read <span class="arrow">→</span></span>
+      </a>
+      <a href="{{ url_for('auth.register') }}" class="area-row">
+        <span class="num">§ 08</span>
+        <span class="name">RDC Hearings</span>
+        <span class="desc">Filing a case at the Rental Disputes Centre, the forms you need and the evidence that wins.</span>
+        <span class="read">Read <span class="arrow">→</span></span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     6 · COUNSEL MARQUEE
+     ============================================================ -->
+<section class="counsel" id="counsel">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow">The Counsel Marketplace</span>
+      <h2 class="section-h">Counsel, <em>when you need them.</em></h2>
+      <p class="section-sub">Every brief on Rentritz is statute-cited before it ever reaches a lawyer. When you choose to engage counsel, it is an admin-verified UAE-licensed practitioner: bar number and licence PDF reviewed. The marketplace is opening with a hand-picked founding panel.</p>
+    </div>
+
+    <div class="counsel-launch">
+      <div class="counsel-launch-l">
+        <span class="law-chip">Marketplace &middot; Launching 2026</span>
+        <h3 class="counsel-launch-h">A short, deliberate panel of <em>Dubai counsel.</em></h3>
+        <p class="counsel-launch-p">We are inviting a founding panel of UAE-licensed lawyers across the eight Rentritz practice areas. Every applicant is reviewed by an admin: bar number, licence PDF, professional standing. No directory dumps. No paid placement.</p>
+        <div class="counsel-launch-actions">
+          <a href="#forcounsel" class="amber-btn">Apply to the founding panel <span class="arrow">&rarr;</span></a>
+          <a href="{{ url_for('auth.register') }}" class="hero-secondary" style="color:var(--ink);border-color:var(--rule)">Join the client waitlist</a>
+        </div>
+      </div>
+
+      <div class="counsel-launch-r">
+        <div class="counsel-slot">
+          <div class="slot-portrait"><span class="slot-dot"></span></div>
+          <div>
+            <div class="slot-name">Counsel &middot; Eviction &amp; RDC</div>
+            <div class="slot-meta">Reserved for founding panel</div>
+          </div>
+          <span class="slot-status">Open</span>
+        </div>
+        <div class="counsel-slot">
+          <div class="slot-portrait"><span class="slot-dot"></span></div>
+          <div>
+            <div class="slot-name">Counsel &middot; Rent Cap &amp; RERA</div>
+            <div class="slot-meta">Reserved for founding panel</div>
+          </div>
+          <span class="slot-status">Open</span>
+        </div>
+        <div class="counsel-slot">
+          <div class="slot-portrait"><span class="slot-dot"></span></div>
+          <div>
+            <div class="slot-name">Counsel &middot; Deposits &amp; Maintenance</div>
+            <div class="slot-meta">Reserved for founding panel</div>
+          </div>
+          <span class="slot-status">Open</span>
+        </div>
+        <div class="counsel-slot">
+          <div class="slot-portrait"><span class="slot-dot"></span></div>
+          <div>
+            <div class="slot-name">Counsel &middot; Lease Disputes</div>
+            <div class="slot-meta">Reserved for founding panel</div>
+          </div>
+          <span class="slot-status">Open</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     7 · FIELD REPORTS
+     ============================================================ -->
+<section class="reports" id="reports">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow">Field Reports</span>
+      <h2 class="section-h">Briefs that <em>resolved.</em></h2>
+    </div>
+
+    <article class="report-feat" id="reportFeat">
+      <div class="report-quote" id="reportQuote">
+        The eviction notice had been delivered incorrectly. Three minutes into the wizard, I had the exact statute that proved it. My landlord withdrew within forty-eight hours.
+      </div>
+      <div class="report-attr">
+        <div class="report-portrait">SM</div>
+        <div>
+          <div class="report-attr-name">Sarah M. · Tenant, Dubai Marina</div>
+          <div class="report-attr-stars">★★★★★</div>
+        </div>
+      </div>
+    </article>
+
+    <div class="reports-grid" id="reportsGrid">
+      <a href="{{ url_for('auth.register') }}" class="report-card">
+        <p class="q">"RERA Index showed my landlord could only raise by five percent. The wizard cited it exactly."</p>
+        <span class="a">Landlord · JLT</span>
+      </a>
+      <a href="{{ url_for('auth.register') }}" class="report-card">
+        <p class="q">"Security deposit returned in full after I showed the Article 20 requirements."</p>
+        <span class="a">Tenant · Downtown</span>
+      </a>
+      <a href="{{ url_for('auth.register') }}" class="report-card">
+        <p class="q">"RDC filing steps were laid out with the exact forms needed."</p>
+        <span class="a">Tenant · Jumeirah</span>
+      </a>
+      <a href="{{ url_for('auth.register') }}" class="report-card">
+        <p class="q">"Maintenance obligations clarified. Contractor engaged the same day."</p>
+        <span class="a">Landlord · Business Bay</span>
+      </a>
+      <a href="{{ url_for('auth.register') }}" class="report-card">
+        <p class="q">"Ejari renewal rights clearly explained with the relevant decree."</p>
+        <span class="a">Tenant · Deira</span>
+      </a>
+      <a href="{{ url_for('auth.register') }}" class="report-card">
+        <p class="q">"Three minutes saved me AED 8,000 in unnecessary legal fees."</p>
+        <span class="a">Tenant · Palm Jumeirah</span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     8 · PRICING
+     ============================================================ -->
+<section class="pricing" id="pricing">
+  <div class="pricing-ghost" aria-hidden="true">RENTRITZ</div>
+  <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow">Credit Packages</span>
+      <h2 class="section-h">Pay only for <em>what you need.</em></h2>
+      <p class="section-sub">No subscriptions. No retainers. Signup gives three free credits. One brief, one answer, one transparent price.</p>
+    </div>
+
+    <div class="pricing-grid">
+      <div class="price-card alt">
+        <div class="credits">3<span>credits</span></div>
+        <div class="name">Starter</div>
+        <div class="price">AED 24.99<small>once</small></div>
+        <p class="desc">For tenants and landlords exploring their rights for the first time.</p>
+        <ul>
+          <li>3 complete wizard briefs</li>
+          <li>Statute-cited answer pages</li>
+          <li>Lawyer marketplace access</li>
+        </ul>
+        <a href="{{ url_for('auth.register') }}" class="amber-btn">Choose Starter <span class="arrow">→</span></a>
+      </div>
+
+      <div class="price-card featured">
+        <span class="ribbon">Most Chosen</span>
+        <div class="credits">7<span>credits</span></div>
+        <div class="name">Standard</div>
+        <div class="price">AED 48.99<small>once</small></div>
+        <p class="desc">For active disputes that need a few rounds of clarification.</p>
+        <ul>
+          <li>7 complete wizard briefs</li>
+          <li>Unlock one verified counsel</li>
+          <li>Saved brief history</li>
+          <li>Priority answer review</li>
+        </ul>
+        <a href="{{ url_for('auth.register') }}" class="amber-btn">Choose Standard <span class="arrow">→</span></a>
+      </div>
+
+      <div class="price-card alt">
+        <div class="credits">15<span>credits</span></div>
+        <div class="name">Pro</div>
+        <div class="price">AED 88.99<small>once</small></div>
+        <p class="desc">For landlords managing portfolios or complex multi-unit disputes.</p>
+        <ul>
+          <li>15 complete wizard briefs</li>
+          <li>Unlock up to three counsel</li>
+          <li>Portfolio brief grouping</li>
+          <li>Priority answer review</li>
+        </ul>
+        <a href="{{ url_for('auth.register') }}" class="amber-btn">Choose Pro <span class="arrow">→</span></a>
+      </div>
+    </div>
+
+    <p class="pricing-note">Signup gives 3 free credits. No subscription. Pay only for what you need.</p>
+  </div>
+</section>
+
+<!-- ============================================================
+     9 · FOR COUNSEL
+     ============================================================ -->
+<section class="for-counsel" id="forcounsel">
+  <div class="wrap">
+    <span class="eyebrow">For Lawyers</span>
+    <div class="for-counsel-grid">
+      <div>
+        <h2>Briefs that <em>begin warm.</em></h2>
+        <p>Rentritz is opening with a founding panel of UAE-licensed lawyers. Every client arriving at your inbox has already described their matter, received a statute-cited brief, and chosen to spend credits to unlock counsel. No cold leads. No setup fee.</p>
+        <a href="{{ url_for('core.for_lawyers') }}" class="dark-btn">Apply to the founding panel <span class="arrow">→</span></a>
+      </div>
+      <div class="for-counsel-stats">
+        <div class="fc-stat">
+          <div class="n">8</div>
+          <div class="l">practice areas, every brief tagged</div>
+        </div>
+        <div class="fc-stat">
+          <div class="n">5<sup>credits</sup></div>
+          <div class="l">per client unlock, paid out to counsel</div>
+        </div>
+        <div class="fc-stat">
+          <div class="n">AED 0</div>
+          <div class="l">setup cost. Listings are free.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     10 · COLOPHON FOOTER
+     ============================================================ -->
+<footer class="footer" id="footer">
+  <div class="wrap">
+    <div class="footer-mast">Rentritz</div>
+
+    <div class="footer-grid">
+      <div class="footer-col">
+        <h4>Platform</h4>
+        <a href="#method">How It Works</a>
+        <a href="#areas">Practice Areas</a>
+        <a href="#pricing">Pricing</a>
+        <a href="{{ url_for('auth.register') }}">Start Free</a>
+      </div>
+      <div class="footer-col">
+        <h4>Practice Areas</h4>
+        <a href="#areas">Rent Increases</a>
+        <a href="#areas">Eviction Notices</a>
+        <a href="#areas">Deposits</a>
+        <a href="#areas">RERA &amp; Ejari</a>
+      </div>
+      <div class="footer-col">
+        <h4>Masthead</h4>
+        <a href="{{ url_for('core.for_lawyers') }}">About</a>
+        <a href="#forcounsel">For Lawyers</a>
+        <a href="{{ url_for('core.privacy') }}">Privacy Policy</a>
+        <a href="{{ url_for('core.terms') }}">Terms of Service</a>
+      </div>
+      <div class="footer-col">
+        <p class="footer-disc">Not a law firm.</p>
+        <p class="footer-disc-body">Rentritz provides legal information referenced to UAE statutes, not legal advice. Use of this platform does not create a lawyer-client relationship.</p>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <div>Dubai, UAE · RERA-referenced · &copy; 2025 Rentritz</div>
+      <div class="right">Built for tenants and landlords who deserve clarity</div>
+    </div>
   </div>
 </footer>
+
+<!-- film grain overlay -->
+<div class="film-grain" aria-hidden="true"></div>
+
+<!-- ============================================================
+     SCRIPTS
+     ============================================================ -->
 <script>
-const mhd = document.getElementById('mhd');
-window.addEventListener('scroll', () => mhd.classList.toggle('scrolled', window.scrollY > 50), {passive:true});
+(function(){
+  'use strict';
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const rAF = window.requestAnimationFrame.bind(window);
 
-const heroBg = document.getElementById('heroBg');
-let heroFrame = null;
-window.addEventListener('scroll', () => {
-  if (heroFrame) return;
-  heroFrame = requestAnimationFrame(() => {
-    const y = window.scrollY;
-    if (y < window.innerHeight && heroBg) heroBg.style.transform = 'translateY(' + (y * 0.35) + 'px)';
-    heroFrame = null;
-  });
-}, {passive:true});
-
-const heroEmph = document.getElementById('heroEmph');
-const heroSub  = document.getElementById('heroSub');
-const tBtn = document.getElementById('mTenant');
-const lBtn = document.getElementById('mLandlord');
-const COPY = {
-  tenant: {
-    emph: 'yours.',
-    sub: 'Plain-English answers to your tenancy questions in Dubai, citation-grounded in <strong>UAE law</strong> and the RERA index. Three minutes from your phone to a clear legal position.'
-  },
-  landlord: {
-    emph: 'lawful.',
-    sub: 'Plain-English answers for landlords in Dubai. Recover possession, set lawful rent, and navigate the RDC. Citation-grounded in <strong>UAE law</strong>, every step.'
+  /* ──────────────────────────────────────────────────
+     A · HERO WORD-BY-WORD BLUR FADE
+     ────────────────────────────────────────────────── */
+  function renderHeroHeadline(){
+    document.querySelectorAll('.hero-h [data-text]').forEach(slot => {
+      const raw = slot.getAttribute('data-text');
+      slot.innerHTML = '';
+      // tokens: plain words OR {em:multi word phrase}
+      const tokens = [];
+      let i = 0;
+      while (i < raw.length){
+        const open = raw.indexOf('{em:', i);
+        if (open === -1){
+          raw.slice(i).split(/\s+/).filter(Boolean).forEach(w => tokens.push({w, em:false}));
+          break;
+        }
+        raw.slice(i, open).split(/\s+/).filter(Boolean).forEach(w => tokens.push({w, em:false}));
+        const close = raw.indexOf('}', open);
+        const inner = raw.slice(open + 4, close);
+        inner.split(/\s+/).filter(Boolean).forEach(w => tokens.push({w, em:true}));
+        i = close + 1;
+      }
+      tokens.forEach((t, idx) => {
+        const s = document.createElement('span');
+        s.className = 'word';
+        s.textContent = t.w;
+        if (t.em){ s.innerHTML = '<em>' + t.w + '</em>'; }
+        s.style.transitionDelay = (idx * 100) + 'ms';
+        slot.appendChild(s);
+        slot.appendChild(document.createTextNode(' '));
+      });
+    });
+    // activate the visible slot
+    requestAnimationFrame(() => {
+      document.querySelectorAll('.hero-h [data-text]:not([hidden]) .word').forEach(w => w.classList.add('in'));
+      document.getElementById('heroSub').classList.add('in');
+      document.getElementById('heroActions').classList.add('in');
+      document.getElementById('heroLedger').classList.add('in');
+    });
   }
-};
-function setMode(mode){
-  const c = COPY[mode];
-  heroEmph.style.opacity = '0';
-  heroSub.style.opacity = '0';
-  setTimeout(() => {
-    heroEmph.textContent = c.emph;
-    heroSub.innerHTML = c.sub;
-    heroEmph.style.opacity = '1';
-    heroSub.style.opacity = '1';
-  }, 250);
-  tBtn.classList.toggle('on', mode === 'tenant');
-  lBtn.classList.toggle('on', mode === 'landlord');
-}
-tBtn.addEventListener('click', () => setMode('tenant'));
-lBtn.addEventListener('click', () => setMode('landlord'));
-heroEmph.style.transition = 'opacity .3s ease';
-heroSub.style.transition = 'opacity .3s ease';
+  renderHeroHeadline();
 
-const io = new IntersectionObserver(entries => {
-  entries.forEach(e => {
-    if (!e.isIntersecting) return;
-    e.target.classList.add('in');
-    e.target.querySelectorAll('.stagger').forEach(s => s.classList.add('in'));
-    e.target.querySelectorAll('[data-count]').forEach(countUp);
-    io.unobserve(e.target);
+  /* ──────────────────────────────────────────────────
+     N · TENANT / LANDLORD TOGGLE
+     ────────────────────────────────────────────────── */
+  document.querySelectorAll('.role-toggle button').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const role = btn.dataset.role;
+      document.body.setAttribute('data-role', role);
+      document.querySelectorAll('.role-toggle button').forEach(b => {
+        b.classList.toggle('on', b === btn);
+        b.setAttribute('aria-selected', b === btn ? 'true' : 'false');
+      });
+      // crossfade headline
+      const h = document.getElementById('heroH');
+      h.style.transition = 'opacity .25s ease';
+      h.style.opacity = '0';
+      setTimeout(() => {
+        document.querySelector('.hero-tenant').hidden = (role !== 'tenant');
+        document.querySelector('.hero-landlord').hidden = (role !== 'landlord');
+        document.querySelector('.hero-sub .tenant-text').hidden = (role !== 'tenant');
+        document.querySelector('.hero-sub .landlord-text').hidden = (role !== 'landlord');
+        // re-render the now-visible slot
+        const visible = document.querySelector('.hero-h [data-text]:not([hidden])');
+        if (visible && !visible.querySelector('.word')){
+          // re-tokenise just this one
+          renderHeroHeadline();
+        } else {
+          visible && visible.querySelectorAll('.word').forEach(w => { w.classList.remove('in'); });
+          requestAnimationFrame(() => visible && visible.querySelectorAll('.word').forEach(w => w.classList.add('in')));
+        }
+        h.style.opacity = '1';
+      }, 220);
+    });
   });
-}, {threshold: 0.12});
-document.querySelectorAll('.reveal, .stagger').forEach(el => io.observe(el));
 
-function countUp(el) {
-  const target = +el.dataset.count;
-  const dur = 1800;
-  const start = performance.now();
-  function step(now) {
-    const t = Math.min((now - start) / dur, 1);
-    const ease = 1 - Math.pow(1 - t, 3);
-    el.textContent = Math.floor(ease * target).toLocaleString();
-    if (t < 1) requestAnimationFrame(step);
-    else el.textContent = target.toLocaleString();
+  /* ──────────────────────────────────────────────────
+     L · NAVBAR SCROLL TRANSITION
+     ────────────────────────────────────────────────── */
+  const nav = document.getElementById('nav');
+  const onScrollNav = () => nav.classList.toggle('scrolled', window.scrollY > 50);
+  window.addEventListener('scroll', onScrollNav, { passive:true });
+  onScrollNav();
+
+  /* ──────────────────────────────────────────────────
+     BURGER · MOBILE DRAWER
+     ────────────────────────────────────────────────── */
+  const burger = document.getElementById('burger');
+  const drawer = document.getElementById('drawer');
+  burger.addEventListener('click', () => {
+    const open = !drawer.classList.contains('open');
+    drawer.classList.toggle('open', open);
+    burger.classList.toggle('open', open);
+    burger.setAttribute('aria-expanded', open ? 'true' : 'false');
+  });
+  drawer.querySelectorAll('a').forEach(a => a.addEventListener('click', () => {
+    drawer.classList.remove('open');
+    burger.classList.remove('open');
+    burger.setAttribute('aria-expanded','false');
+  }));
+
+  /* ──────────────────────────────────────────────────
+     C · rAF MOUSE PARALLAX (HERO IMAGE)
+     ────────────────────────────────────────────────── */
+  if (!reduced){
+    const layers = document.querySelectorAll('.hero-layer');
+    let cur = 0;
+    if (layers.length > 1){
+      setInterval(() => {
+        layers[cur].classList.remove('on');
+        cur = (cur + 1) % layers.length;
+        layers[cur].classList.add('on');
+      }, 9000);
+    }
+    const heroBg = document.querySelector('.hero-bg');
+    let tx = 0, ty = 0, cx = 0, cy = 0;
+    let ticking = false;
+    document.querySelector('.hero').addEventListener('mousemove', (e) => {
+      const r = e.currentTarget.getBoundingClientRect();
+      const px = (e.clientX - (r.left + r.width/2)) / (r.width/2);
+      const py = (e.clientY - (r.top + r.height/2)) / (r.height/2);
+      tx = px * 18;
+      ty = py * 10;
+      if (!ticking){
+        ticking = true;
+        rAF(function tick(){
+          cx += (tx - cx) * 0.06;
+          cy += (ty - cy) * 0.06;
+          heroBg.style.transform = `translate(${cx.toFixed(2)}px,${cy.toFixed(2)}px)`;
+          if (Math.abs(tx - cx) > 0.05 || Math.abs(ty - cy) > 0.05){
+            rAF(tick);
+          } else {
+            ticking = false;
+          }
+        });
+      }
+    });
   }
-  requestAnimationFrame(step);
-}
 
-const WIZARD = [
-  { q: 'Have you received a written eviction notice?', opts: ['Yes, in writing', 'Verbal only'], pick: 0 },
-  { q: 'Was the notice served through a notary public?', opts: ['Yes, notarised', 'No, just email'], pick: 1 },
-  { q: 'How many months notice did the landlord give?', opts: ['Less than 12 months', '12 months or more'], pick: 0 }
-];
-const dQ = document.getElementById('dQ');
-const dOpts = document.getElementById('dOpts');
-const dStep = document.getElementById('dStep');
-const dProg = document.getElementById('dProg');
-const dFinal = document.getElementById('dFinal');
-let widx = 0;
-let demoTimer = null;
-
-function renderQ(i) {
-  const w = WIZARD[i];
-  dQ.classList.add('fading');
-  setTimeout(() => {
-    dQ.textContent = w.q;
-    dStep.textContent = (i+1).toString();
-    [...dProg.children].forEach((s, k) => s.classList.toggle('on', k <= i));
-    dOpts.innerHTML = w.opts.map((o, k) =>
-      '<div class="demo-opt" data-k="' + k + '"><span>' + o + '</span><span class="demo-opt-arr">&rarr;</span></div>'
-    ).join('');
-    dQ.classList.remove('fading');
-    dFinal.classList.remove('show');
-    setTimeout(() => autoClick(i), 2400);
-  }, 350);
-}
-
-function autoClick(i) {
-  const w = WIZARD[i];
-  const opt = dOpts.querySelector('[data-k="' + w.pick + '"]');
-  if (!opt) return;
-  opt.classList.add('click');
-  setTimeout(() => {
-    if (i < WIZARD.length - 1) {
-      widx = i + 1;
-      renderQ(widx);
-    } else {
-      dFinal.classList.add('show');
-      setTimeout(() => { widx = 0; renderQ(0); }, 5000);
-    }
-  }, 700);
-}
-
-const demoFrame = document.querySelector('.demo-frame');
-const demoIO = new IntersectionObserver(entries => {
-  entries.forEach(e => {
-    if (e.isIntersecting && !demoTimer) {
-      demoTimer = setTimeout(() => renderQ(0), 600);
-    }
+  /* ──────────────────────────────────────────────────
+     J · SCROLL REVEAL (intersection observer)
+     ────────────────────────────────────────────────── */
+  const revealTargets = document.querySelectorAll('.section-head, .law-card, .area-row, .report-card, .price-card, .fc-stat, .footer-col, .for-counsel-grid > div, .method-step, .trust-stat');
+  revealTargets.forEach((el, i) => {
+    el.classList.add('reveal');
+    el.style.transitionDelay = ((i % 6) * 0.07) + 's';
   });
-}, {threshold: 0.4});
-if (demoFrame) demoIO.observe(demoFrame);
+  const revealIO = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting){ e.target.classList.add('in'); revealIO.unobserve(e.target); } });
+  }, { threshold: 0.1 });
+  revealTargets.forEach(el => revealIO.observe(el));
 
-const hScroll = document.getElementById('hScroll');
-if (hScroll) {
-  hScroll.addEventListener('click', () => {
-    document.getElementById('method')?.scrollIntoView({behavior:'smooth', block:'start'});
-  });
-  hScroll.addEventListener('keydown', e => {
-    if (e.key === 'Enter' || e.key === ' ') {
-      e.preventDefault();
-      document.getElementById('method')?.scrollIntoView({behavior:'smooth', block:'start'});
-    }
-  });
-}
-
-// Mark deactivated cursor block
-if (false && window.matchMedia('(hover: hover)').matches) {
-  const c = document.getElementById('cursor');
-  let cx = 0, cy = 0, x = 0, y = 0;
-  document.addEventListener('mousemove', e => { cx = e.clientX; cy = e.clientY; c.classList.add('show'); });
-  document.addEventListener('mouseleave', () => c.classList.remove('show'));
-  function loop() {
-    x += (cx - x) * 0.18;
-    y += (cy - y) * 0.18;
-    c.style.left = x + 'px';
-    c.style.top = y + 'px';
-    requestAnimationFrame(loop);
+  /* ──────────────────────────────────────────────────
+     E · SVG STROKE-DASHOFFSET LINE DRAW (METHOD)
+     ────────────────────────────────────────────────── */
+  function drawMethodLine(){
+    const svg = document.getElementById('methodLine');
+    if (!svg) return;
+    const steps = document.querySelectorAll('.method-step');
+    if (!steps.length) return;
+    const container = svg.parentElement;
+    const cRect = container.getBoundingClientRect();
+    const first = steps[0].querySelector('.roman').getBoundingClientRect();
+    const last = steps[steps.length-1].querySelector('.roman').getBoundingClientRect();
+    const top = first.top - cRect.top + first.height/2;
+    const bot = last.top - cRect.top + last.height/2;
+    const h = Math.max(40, bot - top);
+    svg.style.top = top + 'px';
+    svg.style.bottom = 'auto';
+    svg.style.height = h + 'px';
+    const line = svg.querySelector('line');
+    line.setAttribute('x1', 1); line.setAttribute('y1', 0);
+    line.setAttribute('x2', 1); line.setAttribute('y2', h);
+    // For dashed (4 6) we animate offset for "draw-in" effect by mask
+    line.style.strokeDashoffset = h;
+    line.style.transition = 'stroke-dashoffset 1.4s ease-out';
   }
-  loop();
-  document.querySelectorAll('a, button, .stat-card, .lw-card, .area-row, .demo-opt, .hero-toggle button').forEach(el => {
-    el.addEventListener('mouseenter', () => c.classList.add('big'));
-    el.addEventListener('mouseleave', () => c.classList.remove('big'));
+  drawMethodLine();
+  window.addEventListener('resize', drawMethodLine);
+
+  const methodIO = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting){
+        const line = document.querySelector('#methodLine line');
+        if (line) line.style.strokeDashoffset = 0;
+        methodIO.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.25 });
+  const methodSection = document.querySelector('.method-steps');
+  if (methodSection) methodIO.observe(methodSection);
+
+  /* ──────────────────────────────────────────────────
+     F · COUNT-UP STATS (TRUST STRIP + FC STATS)
+     ────────────────────────────────────────────────── */
+  function countUp(el){
+    const target = parseInt(el.dataset.count || '0', 10);
+    if (!target){ return; }
+    const dur = 2000;
+    const start = performance.now();
+    const easing = (t) => 1 - Math.pow(1 - t, 3); // cubic ease-out
+    // preserve any suffix nodes (sup, span)
+    const sup = el.querySelector('sup');
+    const prefix = el.querySelector('span');
+    const prefixHTML = prefix ? prefix.outerHTML : '';
+    const supHTML = sup ? sup.outerHTML : '';
+    function frame(now){
+      const t = Math.min(1, (now - start)/dur);
+      const v = Math.floor(target * easing(t));
+      const formatted = v.toLocaleString('en-US');
+      el.innerHTML = prefixHTML + formatted + supHTML;
+      if (t < 1) rAF(frame);
+    }
+    rAF(frame);
+  }
+  const countIO = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting){ countUp(e.target); countIO.unobserve(e.target); } });
+  }, { threshold: 0.5 });
+  document.querySelectorAll('[data-count]').forEach(el => countIO.observe(el));
+
+  /* ──────────────────────────────────────────────────
+     G · AUTO-CYCLING WIZARD DEMO
+     ────────────────────────────────────────────────── */
+  const wizard = document.getElementById('wizard');
+  const wizardQ = document.getElementById('wizardQ');
+  const wizardChips = document.getElementById('wizardChips');
+  const wizardProgress = document.getElementById('wizardProgress');
+  const wizardLabel = document.getElementById('wizardStepLabel');
+  const wizardCount = document.getElementById('wizardCount');
+
+  const wizardSteps = [
+    {
+      label:'QUESTION · 01 OF 03', topic:'Eviction notice',
+      q:'Have you received a written eviction notice?',
+      chips:['Yes','No'], highlight:0
+    },
+    {
+      label:'QUESTION · 02 OF 03', topic:'Notarised service',
+      q:'Was the notice served through a notary public?',
+      chips:['Yes','No','Not sure'], highlight:1
+    },
+    {
+      label:'QUESTION · 03 OF 03', topic:'Notice period',
+      q:'How many months notice were you given?',
+      chips:['Less than 12','12 months','More than 12'], highlight:0
+    },
+    { answer:true }
+  ];
+
+  function renderWizardStep(idx){
+    const step = wizardSteps[idx];
+    // progress
+    wizardProgress.querySelectorAll('span').forEach((sp, i) => sp.classList.toggle('on', i <= idx));
+    if (step.answer){
+      wizard.classList.add('answer');
+      wizardLabel.textContent = 'ANSWER · CITATION-GROUNDED';
+      wizardCount.textContent = 'Brief resolved';
+      wizardQ.style.opacity = 0;
+      setTimeout(() => {
+        document.getElementById('wizardBody').innerHTML =
+          `<div class="answer-head">
+             <span class="law-chip">Law No. 33/2008 · Art. 25(2)</span>
+             <div class="answer-title">Your eviction notice does not meet the statutory requirement.</div>
+           </div>
+           <p class="wizard-q" style="opacity:1">Under Article 25(2), a non-notarised notice with less than twelve months is procedurally invalid. You are not required to vacate.</p>
+           <div class="answer-steps">
+             <div class="answer-step"><span class="num">1</span><span>Reply to your landlord in writing within seven days, citing Article 25(2).</span></div>
+             <div class="answer-step"><span class="num">2</span><span>Keep Ejari registration current and continue paying rent on the contract terms.</span></div>
+             <div class="answer-step"><span class="num">3</span><span>If pressed, file at the Rental Disputes Centre using Form RDC-04.</span></div>
+           </div>`;
+      }, 200);
+      return;
+    }
+    wizard.classList.remove('answer');
+    wizardLabel.textContent = step.label;
+    wizardCount.textContent = step.topic;
+    // fade in question
+    wizardQ.style.opacity = 0;
+    setTimeout(() => {
+      document.getElementById('wizardBody').innerHTML =
+        `<div class="wizard-q" id="_wq" style="opacity:0;font-size:1.15rem;font-weight:400;line-height:1.4;color:var(--ink);min-height:3.6em;margin-bottom:1.3rem;transition:opacity .4s var(--ease)">${step.q}</div>
+         <div class="wizard-chips" id="_wc"></div>`;
+      const wq = document.getElementById('_wq');
+      requestAnimationFrame(() => wq.style.opacity = 1);
+      const wc = document.getElementById('_wc');
+      step.chips.forEach((c, i) => {
+        const s = document.createElement('span');
+        s.className = 'wizard-chip';
+        s.textContent = c;
+        wc.appendChild(s);
+        setTimeout(() => s.classList.add('show'), 1200 + i*80);
+      });
+      // auto-highlight
+      setTimeout(() => {
+        const chips = wc.querySelectorAll('.wizard-chip');
+        chips[step.highlight] && chips[step.highlight].classList.add('hl');
+      }, 1200 + step.chips.length*80 + 300);
+    }, 200);
+  }
+
+  let wizardIdx = 0;
+  let wizardTimer = null;
+  let wizardInView = false;
+
+  function advanceWizard(){
+    renderWizardStep(wizardIdx);
+    const step = wizardSteps[wizardIdx];
+    const dwell = step.answer ? 4000 : (1200 + (step.chips ? step.chips.length*80 : 0) + 300 + 1800);
+    wizardTimer = setTimeout(() => {
+      wizardIdx = (wizardIdx + 1) % wizardSteps.length;
+      if (wizardInView) advanceWizard();
+    }, dwell);
+  }
+  function stopWizard(){ clearTimeout(wizardTimer); wizardTimer = null; }
+  const wizardIO = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      wizardInView = e.isIntersecting;
+      if (wizardInView){ if (!wizardTimer) advanceWizard(); }
+      else { stopWizard(); }
+    });
+  }, { threshold: 0.3 });
+  if (wizard) wizardIO.observe(wizard);
+
+  /* ──────────────────────────────────────────────────
+     B · CHARACTER-BY-CHARACTER SCROLL REVEAL (FEATURED QUOTE)
+     ────────────────────────────────────────────────── */
+  const reportQuote = document.getElementById('reportQuote');
+  if (reportQuote){
+    const text = reportQuote.textContent.trim();
+    reportQuote.innerHTML = '';
+    Array.from(text).forEach(ch => {
+      const s = document.createElement('span');
+      s.className = 'char';
+      s.textContent = ch;
+      s.style.opacity = 0.2;
+      reportQuote.appendChild(s);
+    });
+    const chars = reportQuote.querySelectorAll('.char');
+    function updateChars(){
+      const rect = reportQuote.getBoundingClientRect();
+      const vh = window.innerHeight;
+      // progress: 0 when bottom of element at vh*0.8, 1 when top at vh*0.2
+      const startY = vh * 0.8;
+      const endY = vh * 0.2;
+      const elTop = rect.top;
+      const elBot = rect.bottom;
+      let progress = (startY - elTop) / (startY - endY + (rect.height * 0.4));
+      progress = Math.max(0, Math.min(1, progress));
+      const total = chars.length;
+      chars.forEach((c, i) => {
+        const charStart = i / total * 0.7;
+        const charEnd = charStart + 0.3;
+        let v = (progress - charStart) / (charEnd - charStart);
+        v = Math.max(0, Math.min(1, v));
+        c.style.opacity = (0.2 + v * 0.8).toFixed(3);
+      });
+    }
+    updateChars();
+    window.addEventListener('scroll', updateChars, { passive:true });
+    window.addEventListener('resize', updateChars);
+  }
+
+  /* ──────────────────────────────────────────────────
+     I · PARALLAX CHIP ROWS (AREAS)
+     ────────────────────────────────────────────────── */
+  const rowA = document.getElementById('areasRowA');
+  const rowB = document.getElementById('areasRowB');
+  const areasSection = document.getElementById('areas');
+  if (rowA && rowB && areasSection){
+    function updateRows(){
+      const top = areasSection.getBoundingClientRect().top + window.scrollY;
+      const offset = (window.scrollY - top) * 0.18;
+      rowA.style.transform = `translate3d(${offset.toFixed(1)}px,0,0)`;
+      rowB.style.transform = `translate3d(${(-offset).toFixed(1)}px,0,0)`;
+    }
+    updateRows();
+    window.addEventListener('scroll', updateRows, { passive:true });
+    window.addEventListener('resize', updateRows);
+  }
+
+  /* (Counsel marquee + magnetic hover removed; founding-panel section replaces them.) */
+
+  /* ──────────────────────────────────────────────────
+     Smooth anchor scrolling
+
+  /* ──────────────────────────────────────────────────
+     Smooth anchor scrolling for inner # links
+     ────────────────────────────────────────────────── */
+  document.querySelectorAll('a[href^="#"]').forEach(a => {
+    a.addEventListener('click', (e) => {
+      const id = a.getAttribute('href').slice(1);
+      if (!id || id === 'top'){
+        if (id === 'top'){ e.preventDefault(); window.scrollTo({ top:0, behavior:'smooth' }); }
+        return;
+      }
+      const target = document.getElementById(id);
+      if (target){
+        e.preventDefault();
+        const y = target.getBoundingClientRect().top + window.scrollY - 70;
+        window.scrollTo({ top:y, behavior:'smooth' });
+      }
+    });
   });
-}
+
+})();
 </script>
+
 </body>
 </html>
