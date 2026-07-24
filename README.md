@@ -37,7 +37,7 @@ Users register as either a tenant or a landlord, then navigate a role-aware deci
 | ORM | SQLAlchemy 2.0 (JSONB for decision trees) |
 | Auth | Flask-Login + Werkzeug password hashing |
 | Forms / CSRF | Flask-WTF |
-| Email | Flask-Mail + SendGrid |
+| Email | Flask-Mail + Gmail SMTP |
 | Payments | nGenius (Network International) |
 | Templates | Jinja2 |
 | Production server | Waitress |
@@ -124,7 +124,6 @@ Copy `.env.example` to `.env` and set every value before running.
 | `ADMIN_EMAIL` | Yes | Email address for the admin account created on first startup |
 | `ADMIN_PASSWORD` | Yes | Password for the admin account created on first startup |
 | `DEBUG` | No | Set to `true` in local development only. Defaults to `false` |
-| `SENDGRID_API_KEY` | No | SendGrid API key for transactional email |
 | `NGENIUS_OUTLET_ID` | No | nGenius outlet ID for payment processing |
 | `NGENIUS_API_KEY` | No | nGenius API key for payment processing |
 | `NGENIUS_ENV` | No | `TEST` or `LIVE`. Defaults to `TEST` |

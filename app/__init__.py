@@ -192,6 +192,7 @@ def _migrate_schema():
     from sqlalchemy import text
     stmts = [
         'ALTER TABLE questions ADD COLUMN IF NOT EXISTS has_been_viewed BOOLEAN NOT NULL DEFAULT FALSE',
+        'ALTER TABLE questions ADD COLUMN IF NOT EXISTS answer_viewed BOOLEAN NOT NULL DEFAULT FALSE',
         'ALTER TABLE users ADD COLUMN IF NOT EXISTS reset_token VARCHAR(100)',
         'ALTER TABLE users ADD COLUMN IF NOT EXISTS reset_token_expiry TIMESTAMP',
         'ALTER TABLE users ADD COLUMN IF NOT EXISTS failed_login_count INTEGER NOT NULL DEFAULT 0',

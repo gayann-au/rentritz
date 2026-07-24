@@ -8,12 +8,16 @@ from app.models import db, Category, Scenario, Question, CreditLog, LawyerBookin
 core_bp = Blueprint('core', __name__)
 
 CATEGORY_TO_SPECIALISATION = {
-    'rent_increase':   'tenancy',
-    'eviction':        'tenancy',
-    'maintenance':     'tenancy',
-    'deposit':         'tenancy',
-    'dispute':         'tenancy',
-    'landlord_rights': 'tenancy',
+    'rent_increase':       'tenancy',
+    'eviction':            'tenancy',
+    'maintenance':         'tenancy',
+    'deposit':             'tenancy',
+    'dispute':             'tenancy',
+    'early_termination':   'tenancy',
+    'subletting':          'tenancy',
+    'lease_renewal':       'tenancy',
+    'rent_payment_issues': 'tenancy',
+    'moving_in':           'tenancy',
 }
 
 

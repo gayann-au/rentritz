@@ -74,7 +74,7 @@ cmd = [
     db_name,
 ]
 
-print(f'Starting backup → {backup_file}')
+print(f'Starting backup -> {backup_file}')
 result = subprocess.run(cmd, env=env, capture_output=True, text=True)
 
 if result.returncode != 0:

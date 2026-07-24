@@ -58,7 +58,7 @@ class Config:
     SESSION_COOKIE_NAME       = '_rs'
     PERMANENT_SESSION_LIFETIME = timedelta(hours=24)
 
-    FREE_CREDITS_ON_SIGNUP = 3
+    FREE_CREDITS_ON_SIGNUP = 2
 
     UPLOAD_FOLDER = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'uploads')
 
