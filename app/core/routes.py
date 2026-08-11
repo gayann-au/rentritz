@@ -96,7 +96,9 @@ def dashboard():
 
 @core_bp.route('/onboarding/complete', methods=['POST'])
 @login_required
-@limiter.limit("3 per hour")
+# 3/hour was low enough that a user who reloaded the dashboard a few times got
+# a 429 on a harmless "I've seen the tour" ping.
+@limiter.limit("60 per hour")
 def onboarding_complete():
     current_user.has_seen_onboarding = True
     db.session.commit()
@@ -379,12 +381,18 @@ def credits():
                    .order_by(CreditLog.created_at.desc())
     total    = logs_q.count()
     logs     = logs_q.offset((page - 1) * per_page).limit(per_page).all()
-    for log in logs:
-        log.created_at = log.created_at + timedelta(hours=4)
+    # Render GST (UTC+4) without touching the mapped attribute. Assigning to
+    # log.created_at marks the row dirty, so any later flush in this request
+    # would write the shifted time back and the drift would compound on every
+    # page view.
+    log_rows = [
+        (log, log.created_at + timedelta(hours=4) if log.created_at else None)
+        for log in logs
+    ]
     total_pages = (total + per_page - 1) // per_page
     packs       = current_app.config['CREDIT_PACKS']
     return render_template('core/credits.html',
-        logs=logs, packs=packs,
+        logs=log_rows, packs=packs,
         page=page, total_pages=total_pages, total=total)
 
 @core_bp.route('/for-lawyers')

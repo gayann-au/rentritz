@@ -532,7 +532,9 @@
             </tr>
           </thead>
           <tbody>
-            {% for l in logs %}
+            {# logs is a list of (log, shown_at); shown_at is created_at in GST,
+               computed in the view so the ORM attribute is never mutated. #}
+            {% for l, shown_at in logs %}
             <tr>
               <td style="font-weight:500;">{{ l.action | replace('_', ' ') | title }}</td>
               <td>
@@ -542,7 +544,7 @@
               </td>
               <td class="cr-td-muted">{{ l.balance }}</td>
               <td class="cr-td-muted">{{ l.note or 'N/A' }}</td>
-              <td class="cr-td-mono">{{ l.created_at.strftime('%d %b %Y, %H:%M') }}</td>
+              <td class="cr-td-mono">{{ shown_at.strftime('%d %b %Y, %H:%M') if shown_at else 'N/A' }}</td>
             </tr>
             {% endfor %}
           </tbody>
