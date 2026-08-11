@@ -109,7 +109,16 @@ Paste the output as your `SECRET_KEY` in `.env`.
 python run.py
 ```
 
-The app will start on `http://localhost:5000`. On first run it automatically creates all database tables and seeds the admin user from your `.env` values.
+The app will start on `http://localhost:5000`.
+
+**Creating the schema.** Table creation and seeding no longer run on every boot —
+that used to fire `CREATE TABLE` / `ALTER TABLE` against production on every
+restart. Set `RUN_DB_BOOTSTRAP=true` for the first run (or after a schema
+change), then remove it:
+
+```bash
+RUN_DB_BOOTSTRAP=true python run.py
+```
 
 ---
 
@@ -121,14 +130,50 @@ Copy `.env.example` to `.env` and set every value before running.
 |---|---|---|
 | `DATABASE_URL` | Yes | PostgreSQL connection string, e.g. `postgresql://user:password@localhost:5432/rentritz` |
 | `SECRET_KEY` | Yes | Flask session secret, minimum 32 characters. Generate with `secrets.token_hex(32)` |
-| `ADMIN_EMAIL` | Yes | Email address for the admin account created on first startup |
-| `ADMIN_PASSWORD` | Yes | Password for the admin account created on first startup |
+| `ADMIN_EMAIL` | Yes | Email address for the admin account created during bootstrap |
+| `ADMIN_PASSWORD` | Yes | Password for that admin account |
+| `RUN_DB_BOOTSTRAP` | No | `true` runs `create_all()`, the schema migrations and the data seed **once**. Leave unset in normal operation |
+| `ENV_FILE` | No | Which env file to load. Defaults to `.env`; use `.env.test` to point at a test database |
+| `PREFERRED_URL_SCHEME` | No | Scheme for emailed links. Defaults to `https` |
+| `SERVER_NAME` | No | Only set if you need `url_for()` outside a request. **When set, Flask rejects any request whose Host header differs** |
+| `TRUST_PROXY` | No | Defaults to `true` (one proxy hop, correct on Render). Set `false` only with no reverse proxy in front |
+| `LOG_DIR` | No | Where `rentritz.log` is written. Defaults to `logs/` |
+| `MAIL_SUPPRESS_SEND` | No | `true` disables outbound email entirely (used by the tests) |
 | `DEBUG` | No | Set to `true` in local development only. Defaults to `false` |
 | `NGENIUS_OUTLET_ID` | No | nGenius outlet ID for payment processing |
 | `NGENIUS_API_KEY` | No | nGenius API key for payment processing |
 | `NGENIUS_ENV` | No | `TEST` or `LIVE`. Defaults to `TEST` |
 
-The app will **refuse to start** if `DATABASE_URL`, `SECRET_KEY`, `ADMIN_EMAIL`, or `ADMIN_PASSWORD` are missing or invalid.
+The app will **refuse to start** if `DATABASE_URL` or `SECRET_KEY` are missing or
+invalid. `ADMIN_EMAIL` / `ADMIN_PASSWORD` are only required when
+`RUN_DB_BOOTSTRAP` is set.
+
+---
+
+## Testing
+
+The suite runs against a **real PostgreSQL database, never production**.
+`tests/conftest.py` refuses to start unless `DATABASE_URL` names a database
+containing `rentritz_test`.
+
+```bash
+pip install -r requirements-dev.txt
+ENV_FILE=.env.test python -m pytest
+```
+
+Coverage: registration and immediate login for all four roles, wrong password,
+locked and self-clearing accounts, CSRF acceptance and rejection, every route
+returning non-5xx for anonymous plus each role, and the full tenant / landlord /
+lawyer / admin journeys including credits, bookings and reviews.
+
+To get four known logins for manual checking:
+
+```bash
+ENV_FILE=.env.test python scripts/seed_test_accounts.py
+```
+
+It prints the credentials, is safe to re-run, and refuses to touch production
+unless passed `--allow-production`.
 
 ---
 
