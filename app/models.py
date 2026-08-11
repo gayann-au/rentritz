@@ -16,9 +16,12 @@ class User(UserMixin, db.Model):
     email         = db.Column(db.String(255), unique=True, nullable=False, index=True)
     password_hash = db.Column(db.String(255), nullable=True)
     role          = db.Column(db.String(20), nullable=False)
-    is_active     = db.Column(db.Boolean, default=True)
-    is_verified   = db.Column(db.Boolean, default=False)
-    credits       = db.Column(db.Integer, default=0)
+    # NOT NULL + server_default: a NULL is_active makes Flask-Login reject the
+    # user with no error message anywhere, which is impossible to debug.
+    is_active     = db.Column(db.Boolean, default=True, nullable=False,
+                              server_default='true')
+    is_verified   = db.Column(db.Boolean, default=False, server_default='false')
+    credits       = db.Column(db.Integer, default=0, server_default='0')
     total_asked   = db.Column(db.Integer, default=0)
     created_at    = db.Column(db.DateTime, default=datetime.utcnow)
     last_login              = db.Column(db.DateTime)

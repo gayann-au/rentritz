@@ -42,12 +42,36 @@ class Config:
         'pool_pre_ping':     True,
     }
 
+    # ── External URL generation ──────────────────────────────────────────────
+    # Verification and password-reset links are built with _external=True. Behind
+    # Render's proxy the request arrives as plain HTTP, so without this the links
+    # come out as http://. ProxyFix (app/__init__.py) supplies the real host and
+    # scheme for in-request URL building; PREFERRED_URL_SCHEME covers the rest.
+    #
+    # SERVER_NAME is deliberately opt-in: when set, Flask refuses any request
+    # whose Host header does not match, which silently 404s health checks and
+    # custom domains. Set it only if you need url_for() outside a request.
+    PREFERRED_URL_SCHEME = os.environ.get('PREFERRED_URL_SCHEME', 'https')
+    _server_name         = (os.environ.get('SERVER_NAME') or '').strip()
+    if _server_name:
+        SERVER_NAME = _server_name
+
     MAIL_SERVER         = 'smtp.gmail.com'
     MAIL_PORT           = 587
     MAIL_USE_TLS        = True
     MAIL_USERNAME       = os.environ.get('MAIL_USERNAME')
     MAIL_PASSWORD       = (os.environ.get('MAIL_PASSWORD') or '').replace(' ', '')
     MAIL_DEFAULT_SENDER = os.environ.get('MAIL_USERNAME')
+    MAIL_SUPPRESS_SEND  = os.environ.get('MAIL_SUPPRESS_SEND', 'false').lower() == 'true'
+
+    # Admin address used for lawyer-registration notifications.
+    ADMIN_EMAIL = os.environ.get('ADMIN_EMAIL', '')
+
+    # Trust exactly one proxy hop (Render). Disable only when running with no
+    # reverse proxy in front, otherwise X-Forwarded-For could be spoofed.
+    TRUST_PROXY = os.environ.get('TRUST_PROXY', 'true').lower() == 'true'
+
+    LOG_DIR = os.environ.get('LOG_DIR', '')
 
     NGENIUS_OUTLET_ID = os.environ.get('NGENIUS_OUTLET_ID')
     NGENIUS_API_KEY   = os.environ.get('NGENIUS_API_KEY')
@@ -57,6 +81,13 @@ class Config:
     SESSION_COOKIE_SAMESITE   = 'Lax'
     SESSION_COOKIE_NAME       = '_rs'
     PERMANENT_SESSION_LIFETIME = timedelta(hours=24)
+
+    # CSRF stays on. What is switched off is the token's separate 1-hour clock:
+    # by default a login or wizard page left open for an hour submits with an
+    # "expired" token and the user gets an opaque 400. The token is still bound
+    # to the session cookie, which is what actually stops cross-site forgery,
+    # and that cookie expires on its own schedule above.
+    WTF_CSRF_TIME_LIMIT = None
 
     FREE_CREDITS_ON_SIGNUP = 2
 
