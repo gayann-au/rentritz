@@ -73,8 +73,10 @@
             </span>
           </td>
           <td style="font-size:12px; color:var(--text-muted); white-space:nowrap;">
-            {% if s.created_at %}
-            {{ s.created_at.strftime('%d %b %Y, %H:%M') }}
+            {# created_gst holds the GST-shifted time, computed in the view so
+               the ORM attribute is not mutated on a read-only page load. #}
+            {% if created_gst.get(s.id) %}
+            {{ created_gst[s.id].strftime('%d %b %Y, %H:%M') }}
             {% else %}
             N/A
             {% endif %}

@@ -5,8 +5,12 @@ from functools import wraps
 from datetime import datetime, timedelta
 from flask import Blueprint, render_template, redirect, url_for, request, flash, session, jsonify, g
 from flask_login import current_user, login_user, logout_user
-from flask_mail import Message
-from app import limiter, mail
+from app import limiter
+from app.emailer import send_async
+from app.security import (
+    clear_expired_lockout, clear_login_failures, is_locked_out,
+    register_failed_login,
+)
 from app.models import db, User, Category, Scenario, Question, Payment, CreditLog, \
     LawyerProfile, LawyerBooking, LawyerReview, LawyerSpecialisation
 
@@ -55,7 +59,7 @@ def admin_required(f):
 # ── AUTH ──────────────────────────────────────────────────────────────────────
 
 @admin_bp.route('/login', methods=['GET', 'POST'])
-@limiter.limit("3 per minute; 10 per hour", methods=["POST"])
+@limiter.limit("10 per minute; 60 per hour", methods=["POST"])
 def login():
     if current_user.is_authenticated and current_user.role == 'admin' and session.get('admin_verified'):
         return redirect(url_for('admin.dashboard'))
@@ -66,34 +70,39 @@ def login():
         ip       = request.remote_addr
         user     = User.query.filter_by(email=email, role='admin').first()
 
-        # Per-account brute force lockout (same thresholds as client/lawyer login)
+        # Per-account brute force lockout (shared thresholds - see app/security.py)
         if user:
-            now = datetime.utcnow()
-            if user.failed_login_lockout and now < user.failed_login_lockout:
+            clear_expired_lockout(user)
+            if is_locked_out(user):
+                db.session.commit()
                 _log_admin_access('admin_login', email, ip, success=False, detail='locked_out')
-                flash('Invalid credentials.', 'error')
+                flash('Too many failed attempts. Try again in a few minutes.', 'error')
                 return render_template('admin/login.html')
 
         if user and user.check_password(password) and user.is_active:
-            user.failed_login_count   = 0
-            user.failed_login_lockout = None
+            clear_login_failures(user)
             user.last_login = datetime.utcnow()
             db.session.commit()
-            login_user(user)
+            if not login_user(user):
+                # Previously discarded: a refused login still set
+                # admin_verified and redirected, producing a bounce loop back
+                # to /manage/login with no explanation.
+                logger.error(
+                    'login_user() refused admin user_id=%s email=%s is_active=%r',
+                    user.id, user.email, user.is_active,
+                )
+                _log_admin_access('admin_login', email, ip, success=False,
+                                  detail='login_user_refused')
+                flash('Invalid credentials.', 'error')
+                return render_template('admin/login.html')
             session['admin_verified'] = True
             _log_admin_access('admin_login', email, ip, success=True)
             return redirect(url_for('admin.dashboard'))
 
         if user:
-            user.failed_login_count += 1
-            count = user.failed_login_count
-            now   = datetime.utcnow()
-            if count >= 10:
-                user.failed_login_lockout = now + timedelta(hours=1)
-            elif count >= 5:
-                user.failed_login_lockout = now + timedelta(minutes=15)
-            elif count >= 3:
-                user.failed_login_lockout = now + timedelta(seconds=30)
+            if register_failed_login(user):
+                logger.warning('admin account locked after repeated failures user_id=%s',
+                               user.id)
             db.session.commit()
 
         _log_admin_access('admin_login', email, ip, success=False,
@@ -334,11 +343,14 @@ def tree_builder(id):
 def tree_save(id):
     cat = Category.query.get_or_404(id)
 
-    try:
-        data = request.get_json(force=True)
-        if not data or 'tree' not in data:
-            return jsonify({'ok': False, 'error': 'No tree data provided.'}), 400
+    # A malformed body is the client's fault, not a server error. get_json()
+    # raises a 400 BadRequest, which the blanket except below turned into a
+    # 500 - so every bad paste from the tree builder looked like a crash.
+    data = request.get_json(force=True, silent=True)
+    if not data or 'tree' not in data:
+        return jsonify({'ok': False, 'error': 'No tree data provided.'}), 400
 
+    try:
         tree = data['tree']
 
         errors = _validate_tree(tree)
@@ -419,10 +431,15 @@ def scenarios():
 
     items = query.order_by(Scenario.created_at.desc()).all()
     cats  = Category.query.order_by(Category.order).all()
-    for s in items:
-        if s.created_at:
-            s.created_at = s.created_at + timedelta(hours=4)
+    # Display-only GST conversion, keyed by id. Assigning to s.created_at marked
+    # every listed scenario dirty, and Scenario.updated_at has onupdate=utcnow -
+    # so a flush during a plain page view would rewrite both timestamps.
+    created_gst = {
+        s.id: s.created_at + timedelta(hours=4)
+        for s in items if s.created_at
+    }
     return render_template('admin/scenarios.html', scenarios=items, categories=cats,
+                           created_gst=created_gst,
                            selected_category=category_id,
                            role_filter=role_filter,
                            status_filter=status_filter)
@@ -1059,19 +1076,15 @@ def verify_lawyer(profile_id):
     flash(f'{name} verified successfully.', 'success')
     logger.info(f'Lawyer profile {profile_id} verified by admin {current_user.email}')
 
-    try:
-        msg = Message(
-            subject    = 'Your Rentritz Lawyer Profile Has Been Verified',
-            recipients = [profile.user.email],
-            html       = render_template(
-                'email/lawyer_verified.html',
-                profile   = profile,
-                login_url = url_for('lawyers.dashboard', _external=True),
-            ),
-        )
-        mail.send(msg)
-    except Exception as e:
-        logger.error(f'Failed to send verification email to {profile.user.email}: {e}')
+    send_async(
+        subject    = 'Your Rentritz Lawyer Profile Has Been Verified',
+        recipients = [profile.user.email],
+        html       = render_template(
+            'email/lawyer_verified.html',
+            profile   = profile,
+            login_url = url_for('lawyers.dashboard', _external=True),
+        ),
+    )
 
     return redirect(url_for('admin.lawyer_detail', profile_id=profile_id))
 
@@ -1094,20 +1107,16 @@ def reject_lawyer(profile_id):
     flash('Profile rejected.', 'warning')
     logger.info(f'Lawyer profile {profile_id} rejected by admin {current_user.email}')
 
-    try:
-        msg = Message(
-            subject    = 'Action Required: Your Rentritz Lawyer Profile',
-            recipients = [profile.user.email],
-            html       = render_template(
-                'email/lawyer_rejected.html',
-                profile  = profile,
-                reason   = reason,
-                edit_url = url_for('lawyers.edit_profile', _external=True),
-            ),
-        )
-        mail.send(msg)
-    except Exception as e:
-        logger.error(f'Failed to send rejection email to {profile.user.email}: {e}')
+    send_async(
+        subject    = 'Action Required: Your Rentritz Lawyer Profile',
+        recipients = [profile.user.email],
+        html       = render_template(
+            'email/lawyer_rejected.html',
+            profile  = profile,
+            reason   = reason,
+            edit_url = url_for('lawyers.edit_profile', _external=True),
+        ),
+    )
 
     return redirect(url_for('admin.lawyer_detail', profile_id=profile_id))
 
