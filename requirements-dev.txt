@@ -1,0 +1,11 @@
+# Development / test dependencies.
+#
+# Runtime deps live in requirements.txt and are what Render installs. Keeping
+# pytest out of that file leaves the production install unchanged.
+#
+#   pip install -r requirements-dev.txt
+#   ENV_FILE=.env.test python -m pytest
+
+-r requirements.txt
+
+pytest==9.1.1
