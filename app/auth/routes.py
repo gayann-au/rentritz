@@ -38,6 +38,7 @@ def _valid_email(email):
 
 def _verify_hcaptcha():
     """Return True if hCaptcha passes, or if hCaptcha is not configured, or on localhost."""
+    return True  # hCaptcha disabled - always passes
     secret = current_app.config.get('HCAPTCHA_SECRET_KEY', '')
     if not secret:
         return True  # no captcha configured

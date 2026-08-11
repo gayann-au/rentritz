@@ -49,9 +49,6 @@
                 <a href="{{ url_for('auth.forgot_password') }}" class="forgot-link">Forgot password?</a>
             </div>
 
-            {% if hcaptcha_site_key %}
-            <div class="h-captcha" data-sitekey="{{ hcaptcha_site_key }}" style="margin-bottom:16px"></div>
-            {% endif %}
             <button type="submit" class="btn btn-primary btn-full">Sign in</button>
         </form>
 
@@ -78,9 +75,6 @@
 {% endblock %}
 
 {% block scripts %}
-{% if hcaptcha_site_key %}
-<script src="https://js.hcaptcha.com/1/api.js" async defer></script>
-{% endif %}
 <script>
 document.querySelectorAll('.pw-toggle').forEach(function(btn) {
     btn.addEventListener('click', function() {
