@@ -1,24 +1,75 @@
 import os
 import uuid
 import logging
+from logging.handlers import RotatingFileHandler
 from flask import Flask, abort, render_template, g, request
 from flask_login import LoginManager, current_user
 from flask_mail import Mail
 from flask_wtf.csrf import CSRFProtect
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
+from werkzeug.middleware.proxy_fix import ProxyFix
 from app.models import db, User
 from config.settings import config
 
 login_manager = LoginManager()
 mail          = Mail()
 csrf          = CSRFProtect()
+# Default limits are a blunt anti-abuse backstop, not a usage cap. The old
+# "200 per day; 100 per hour" tripped on ordinary browsing - one user clicking
+# through the wizard, dashboard and lawyer listing burns dozens of requests in
+# a minute. Sensitive endpoints keep their own tighter per-route limits.
 limiter       = Limiter(
     key_func=get_remote_address,
-    default_limits=["200 per day", "100 per hour"],
+    default_limits=["2000 per hour"],
     storage_uri="memory://",
 )
 logger        = logging.getLogger(__name__)
+
+
+def _configure_logging(app):
+    """
+    Send application logs to a rotating file as well as the console.
+
+    Mail failures, 5xx responses and payment errors were previously only
+    written to stderr, which is lost on Render between deploys. LOG_DIR can
+    override the location; logging degrades to console-only if the filesystem
+    is read-only rather than taking the app down.
+    """
+    level = logging.DEBUG if app.config.get('DEBUG') else logging.INFO
+    fmt   = logging.Formatter('%(asctime)s %(levelname)-8s [%(name)s] %(message)s')
+
+    root = logging.getLogger()
+    root.setLevel(level)
+
+    if not any(type(h) is logging.StreamHandler for h in root.handlers):
+        console = logging.StreamHandler()
+        console.setFormatter(fmt)
+        root.addHandler(console)
+
+    log_dir = app.config.get('LOG_DIR') or os.path.join(
+        os.path.dirname(os.path.dirname(__file__)), 'logs'
+    )
+    try:
+        os.makedirs(log_dir, exist_ok=True)
+        log_path = os.path.abspath(os.path.join(log_dir, 'rentritz.log'))
+        already = any(
+            isinstance(h, RotatingFileHandler) and
+            getattr(h, 'baseFilename', '') == log_path
+            for h in root.handlers
+        )
+        if not already:
+            file_handler = RotatingFileHandler(
+                log_path, maxBytes=5 * 1024 * 1024, backupCount=5, encoding='utf-8',
+            )
+            file_handler.setFormatter(fmt)
+            file_handler.setLevel(level)
+            root.addHandler(file_handler)
+        app.logger.info('File logging enabled at %s', log_path)
+    except OSError as e:
+        app.logger.warning('File logging unavailable (%s) - console only', e)
+
+    app.logger.setLevel(level)
 
 
 def create_app(env=None):
@@ -46,8 +97,19 @@ def create_app(env=None):
     app.config['TEMPLATES_AUTO_RELOAD'] = (env == 'development')
     app.config['PROPAGATE_EXCEPTIONS'] = (env == 'development')
 
-    # ── hCaptcha ─────────────────────────────────────────────────────────────
-    app.config['HCAPTCHA_SECRET_KEY'] = os.environ.get('HCAPTCHA_SECRET_KEY', '').strip()
+    _configure_logging(app)
+
+    # ── Reverse proxy awareness ──────────────────────────────────────────────
+    # Render (and any other PaaS load balancer) terminates TLS and forwards the
+    # request over plain HTTP. Without this, request.remote_addr is the proxy's
+    # address - so every visitor shares one rate-limit bucket - and
+    # url_for(..., _external=True) emits http:// links in verification and
+    # password-reset emails. Trusting exactly one hop is correct for Render;
+    # trusting more would let a client spoof X-Forwarded-For and evade limits.
+    if app.config.get('TRUST_PROXY', True):
+        app.wsgi_app = ProxyFix(
+            app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_port=1, x_prefix=1
+        )
 
     db.init_app(app)
     login_manager.init_app(app)
@@ -73,17 +135,15 @@ def create_app(env=None):
         response.headers['X-XSS-Protection']        = '1; mode=block'
         response.headers['Referrer-Policy']         = 'strict-origin-when-cross-origin'
         response.headers['Permissions-Policy']      = 'geolocation=(), microphone=(), camera=()'
+        # hCaptcha is disabled app-wide, so its origins are no longer allowed.
         response.headers['Content-Security-Policy'] = (
             "default-src 'self'; "
             "script-src 'self' 'unsafe-inline' fonts.googleapis.com "
-                "https://js.hcaptcha.com https://*.hcaptcha.com "
                 "https://cdn.jsdelivr.net https://esm.sh; "
-            "style-src 'self' 'unsafe-inline' fonts.googleapis.com fonts.gstatic.com "
-                "https://hcaptcha.com https://*.hcaptcha.com; "
+            "style-src 'self' 'unsafe-inline' fonts.googleapis.com fonts.gstatic.com; "
             "font-src fonts.gstatic.com; "
-            "img-src 'self' images.unsplash.com data: https://hcaptcha.com https://*.hcaptcha.com; "
-            "connect-src 'self' https://hcaptcha.com https://*.hcaptcha.com https://esm.sh; "
-            "frame-src https://hcaptcha.com https://*.hcaptcha.com"
+            "img-src 'self' images.unsplash.com data:; "
+            "connect-src 'self' https://esm.sh"
         )
         if not app.config.get('DEBUG'):
             response.headers['Strict-Transport-Security'] = 'max-age=31536000; includeSubDomains'
@@ -179,10 +239,21 @@ def create_app(env=None):
         )
         return render_template('errors/500.html'), 500
 
-    with app.app_context():
-        db.create_all()
-        _migrate_schema()
-        _seed_initial_data()
+    # ── Schema bootstrap (opt-in) ────────────────────────────────────────────
+    # This used to run db.create_all(), seven ALTER TABLEs and a data seed on
+    # EVERY boot, against production, on every Render restart and every worker.
+    # It is now explicit: set RUN_DB_BOOTSTRAP=true for a first deploy or after
+    # a schema change, then unset it. Leaving it off makes normal restarts a
+    # pure no-op against the database.
+    if os.environ.get('RUN_DB_BOOTSTRAP', '').strip().lower() in ('1', 'true', 'yes'):
+        with app.app_context():
+            app.logger.info('RUN_DB_BOOTSTRAP set - creating/migrating schema')
+            db.create_all()
+            _migrate_schema()
+            _seed_initial_data()
+            app.logger.info('Schema bootstrap complete')
+    else:
+        app.logger.info('RUN_DB_BOOTSTRAP not set - skipping schema bootstrap')
 
     return app
 
@@ -198,13 +269,24 @@ def _migrate_schema():
         'ALTER TABLE users ADD COLUMN IF NOT EXISTS failed_login_count INTEGER NOT NULL DEFAULT 0',
         'ALTER TABLE users ADD COLUMN IF NOT EXISTS failed_login_lockout TIMESTAMP',
         'ALTER TABLE users ADD COLUMN IF NOT EXISTS has_seen_onboarding BOOLEAN NOT NULL DEFAULT FALSE',
+        # users.is_active was nullable with no server default. A NULL there makes
+        # Flask-Login's login_user() fail silently (UserMixin.is_active is falsy),
+        # so the user is rejected with no error anywhere. Backfill, then make the
+        # column NOT NULL DEFAULT TRUE so a NULL can never reappear.
+        'UPDATE users SET is_active = TRUE WHERE is_active IS NULL',
+        'ALTER TABLE users ALTER COLUMN is_active SET DEFAULT TRUE',
+        'ALTER TABLE users ALTER COLUMN is_active SET NOT NULL',
+        'UPDATE users SET is_verified = FALSE WHERE is_verified IS NULL',
+        'ALTER TABLE users ALTER COLUMN is_verified SET DEFAULT FALSE',
+        'UPDATE users SET credits = 0 WHERE credits IS NULL',
     ]
     for stmt in stmts:
         try:
             db.session.execute(text(stmt))
             db.session.commit()
-        except Exception:
+        except Exception as e:
             db.session.rollback()
+            logger.warning('schema bootstrap statement failed: %s -- %s', stmt, e)
 
 
 def _seed_initial_data():
