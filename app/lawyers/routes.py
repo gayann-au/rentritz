@@ -1,12 +1,11 @@
-from datetime import datetime, timedelta
+from datetime import datetime
 import os
 
 from flask import (
     Blueprint, abort, current_app, flash, jsonify, redirect, render_template,
-    request, session, url_for,
+    request, url_for,
 )
 from flask_login import current_user, login_required, login_user
-from flask_mail import Message
 from sqlalchemy import text
 
 from app.models import (
@@ -14,7 +13,12 @@ from app.models import (
     LawyerSpecialisation, User, db,
 )
 from app.lawyers.forms import LawyerProfileForm
-from app import mail, storage as _storage, limiter
+from app import storage as _storage, limiter
+from app.emailer import send_async
+from app.security import (
+    clear_expired_lockout, clear_login_failures, is_locked_out,
+    register_failed_login,
+)
 
 lawyers_bp = Blueprint('lawyers', __name__, url_prefix='/lawyers')
 
@@ -47,16 +51,8 @@ def _populate_specialisation_choices(form):
 # ROUTE 0 - Lawyer login
 # ─────────────────────────────────────────────────────────────────────────────
 
-_COOLDOWN_THRESHOLD = 3
-_LOCKOUT_THRESHOLD  = 5
-_EXTENDED_THRESHOLD = 10
-_COOLDOWN_DURATION  = timedelta(seconds=30)
-_LOCKOUT_DURATION   = timedelta(minutes=15)
-_EXTENDED_DURATION  = timedelta(hours=1)
-
-
 @lawyers_bp.route('/login', methods=['GET', 'POST'])
-@limiter.limit("5 per minute; 20 per hour", methods=["POST"])
+@limiter.limit("20 per minute; 200 per hour", methods=["POST"])
 def login():
     if current_user.is_authenticated:
         if current_user.role == 'lawyer':
@@ -69,32 +65,30 @@ def login():
 
         user = User.query.filter_by(email=email).first()
 
+        # Role separation: clients belong on the client login page.
         if user and user.role in ('tenant', 'landlord'):
-            flash('This login is for lawyers only. Please use the client login page.', 'error')
-            return render_template('lawyers/login.html')
+            flash('This login is for lawyers only. Please use the client login page.',
+                  'error')
+            return redirect(url_for('auth.login'))
 
         if user and user.role != 'lawyer':
             flash('Incorrect email or password.', 'error')
             return render_template('lawyers/login.html')
 
-        # Lockout check
         if user:
-            now = datetime.utcnow()
-            if user.failed_login_lockout and now < user.failed_login_lockout:
-                flash('Incorrect email or password.', 'error')
+            clear_expired_lockout(user)
+            if is_locked_out(user):
+                db.session.commit()
+                flash('Too many failed attempts. Try again in a few minutes.', 'error')
                 return render_template('lawyers/login.html')
 
         if not user or not user.check_password(password):
             if user:
-                user.failed_login_count += 1
-                count = user.failed_login_count
-                now   = datetime.utcnow()
-                if count >= _EXTENDED_THRESHOLD:
-                    user.failed_login_lockout = now + _EXTENDED_DURATION
-                elif count >= _LOCKOUT_THRESHOLD:
-                    user.failed_login_lockout = now + _LOCKOUT_DURATION
-                elif count >= _COOLDOWN_THRESHOLD:
-                    user.failed_login_lockout = now + _COOLDOWN_DURATION
+                if register_failed_login(user):
+                    current_app.logger.warning(
+                        'lawyer account locked after repeated failures user_id=%s',
+                        user.id,
+                    )
                 db.session.commit()
             flash('Incorrect email or password.', 'error')
             return render_template('lawyers/login.html')
@@ -103,15 +97,21 @@ def login():
             flash('Your account has been deactivated. Please contact support.', 'error')
             return render_template('lawyers/login.html')
 
-        if not user.is_verified:
-            flash('Please verify your email before logging in.', 'error')
+        # Email verification is intentionally NOT required to sign in.
+
+        clear_login_failures(user)
+        user.last_login = datetime.utcnow()
+        db.session.commit()
+
+        if not login_user(user):
+            current_app.logger.error(
+                'login_user() refused lawyer user_id=%s email=%s is_active=%r',
+                user.id, user.email, user.is_active,
+            )
+            flash('We could not sign you in. Please contact support.', 'error')
             return render_template('lawyers/login.html')
 
-        user.failed_login_count   = 0
-        user.failed_login_lockout = None
-        user.last_login           = datetime.utcnow()
-        db.session.commit()
-        login_user(user)
+        current_app.logger.info('lawyer login ok user_id=%s', user.id)
         return redirect(url_for('lawyers.dashboard'))
 
     return render_template('lawyers/login.html')
@@ -252,7 +252,10 @@ def profile(lawyer_profile_id):
             ).filter(
                 LawyerBooking.status.in_(['contact_unlocked', 'completed'])
             ).first()
-            contact_unlocked = False
+            # This was hard-coded to False, so a client who had already spent
+            # credits unlocking this lawyer saw the "Unlock Contact" box again
+            # on every page load and never got the details they paid for.
+            contact_unlocked = unlocked_booking is not None
 
     # Review eligibility - only clients who have unlocked
     can_review      = False
@@ -397,6 +400,13 @@ def register():
         flash('The lawyer portal is for legal professionals only.', 'error')
         return redirect(url_for('core.dashboard'))
 
+    # Admins previously fell through to the form below. Submitting it runs
+    # `current_user.role = 'lawyer'`, which silently demoted the admin account
+    # and locked them out of /manage. Send them to their own dashboard instead.
+    if current_user.role == 'admin':
+        flash('Admin accounts cannot register a lawyer profile.', 'error')
+        return redirect(url_for('admin.dashboard'))
+
     if current_user.role == 'lawyer' and current_user.lawyer_profile:
         return redirect(url_for('lawyers.dashboard'))
 
@@ -475,53 +485,38 @@ def register():
             db.session.commit()
 
             # Notify admin of new lawyer registration
+            # Both notifications are queued on background threads: a slow SMTP
+            # server must not hold this request (or a Waitress worker) open
+            # after the profile has already been committed.
+            spec_names  = ', '.join(s.name for s in profile.specialisations)
             admin_email = current_app.config.get('ADMIN_EMAIL') or os.environ.get('ADMIN_EMAIL', '')
-            if admin_email:
-                try:
-                    spec_names = ', '.join(s.name for s in profile.specialisations) or 'None selected'
-                    profile_url = url_for('admin.lawyer_detail', profile_id=profile.id, _external=True)
-                    msg = Message(
-                        subject=f'New lawyer registration pending review - {current_user.full_name}',
-                        recipients=[admin_email],
-                        html=(
-                            f'<p>A new lawyer has registered on Rentritz and requires review.</p>'
-                            f'<ul>'
-                            f'<li><strong>Name:</strong> {current_user.full_name}</li>'
-                            f'<li><strong>Email:</strong> {current_user.email}</li>'
-                            f'<li><strong>Bar number:</strong> {profile.bar_number or "Not provided"}</li>'
-                            f'<li><strong>Issuing authority:</strong> {profile.bar_issuing_authority or "Not provided"}</li>'
-                            f'<li><strong>Specialisations:</strong> {spec_names}</li>'
-                            f'</ul>'
-                            f'<p><a href="{profile_url}">Review profile in admin panel</a></p>'
-                        ),
-                    )
-                    mail.send(msg)
-                except Exception as e:
-                    current_app.logger.error(
-                        'Failed to send admin notification for new lawyer %s: %s',
-                        current_user.email, e,
-                    )
 
-            # Confirm submission to the lawyer
-            try:
-                spec_names = ', '.join(s.name for s in profile.specialisations) or None
-                msg = Message(
-                    subject='Your Rentritz profile is under review',
-                    recipients=[current_user.email],
+            if admin_email:
+                profile_url = url_for('admin.lawyer_detail', profile_id=profile.id,
+                                      _external=True)
+                send_async(
+                    subject=f'New lawyer registration pending review - {current_user.full_name}',
+                    recipients=[admin_email],
                     html=render_template(
-                        'email/lawyer_submitted.html',
-                        name=profile.display_name or current_user.full_name.split()[0],
-                        bar_number=profile.bar_number,
-                        specialisations=spec_names,
-                        dashboard_url=url_for('lawyers.dashboard', _external=True),
+                        'email/lawyer_submitted_admin.html',
+                        lawyer=current_user,
+                        profile=profile,
+                        specialisations=spec_names or 'None selected',
+                        profile_url=profile_url,
                     ),
                 )
-                mail.send(msg)
-            except Exception as e:
-                current_app.logger.error(
-                    'Failed to send submission confirmation to %s: %s',
-                    current_user.email, e,
-                )
+
+            send_async(
+                subject='Your Rentritz profile is under review',
+                recipients=[current_user.email],
+                html=render_template(
+                    'email/lawyer_submitted.html',
+                    name=profile.display_name or current_user.full_name.split()[0],
+                    bar_number=profile.bar_number,
+                    specialisations=spec_names or None,
+                    dashboard_url=url_for('lawyers.dashboard', _external=True),
+                ),
+            )
 
             flash('Profile submitted. Our team will review and verify it shortly.', 'success')
             return redirect(url_for('lawyers.dashboard'))
@@ -543,8 +538,21 @@ def register():
 @lawyers_bp.route('/dashboard')
 @login_required
 def dashboard():
+    # Route each non-lawyer to its own home rather than bouncing everyone at
+    # lawyers.register. That endpoint redirects clients back to core.dashboard
+    # and admins back to admin.dashboard, so the old blanket redirect was one
+    # wasted hop for clients and, for admins, landed on a form that would
+    # demote their account.
+    if current_user.role == 'admin':
+        return redirect(url_for('admin.dashboard'))
+    if current_user.role in ('tenant', 'landlord'):
+        return redirect(url_for('core.dashboard'))
+
     profile = LawyerProfile.query.filter_by(user_id=current_user.id).first()
-    if current_user.role != 'lawyer' or not profile:
+    if not profile:
+        # A lawyer with no profile yet: registration is the correct next step,
+        # and lawyers.register renders the form for exactly this case, so this
+        # terminates rather than looping.
         return redirect(url_for('lawyers.register'))
 
     bookings = LawyerBooking.query.filter_by(

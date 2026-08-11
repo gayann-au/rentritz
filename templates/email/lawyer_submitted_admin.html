@@ -1,0 +1,18 @@
+{#
+  Admin notification: a new lawyer profile is awaiting review.
+
+  Previously this body was an f-string inside app/lawyers/routes.py, which
+  interpolated the lawyer's own name and email straight into HTML with no
+  escaping. Rendering it as a template gets Jinja autoescaping for free.
+#}
+<p>A new lawyer has registered on Rentritz and requires review.</p>
+
+<ul>
+  <li><strong>Name:</strong> {{ lawyer.full_name }}</li>
+  <li><strong>Email:</strong> {{ lawyer.email }}</li>
+  <li><strong>Bar number:</strong> {{ profile.bar_number or 'Not provided' }}</li>
+  <li><strong>Issuing authority:</strong> {{ profile.bar_issuing_authority or 'Not provided' }}</li>
+  <li><strong>Specialisations:</strong> {{ specialisations }}</li>
+</ul>
+
+<p><a href="{{ profile_url }}">Review profile in admin panel</a></p>
