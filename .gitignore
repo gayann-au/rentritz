@@ -77,6 +77,8 @@ backups/
 
 # ── Seed / utility scripts (contain local DB logic, not for production) ────────
 seed_*.py
+# ...except the alpha test-account seeder, which is a real deliverable.
+!scripts/seed_test_accounts.py
 update_scenarios_*.py
 check_content.py
 
