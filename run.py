@@ -6,18 +6,37 @@ import sys
 from dotenv import load_dotenv
 
 # ── Which env file? ──────────────────────────────────────────────────────────
-# Defaults to .env (production). Set ENV_FILE=.env.test to point the app at the
-# isolated test database instead:
+# Defaults to .env (local development). Set ENV_FILE=.env.test to point the app
+# at the isolated test database instead:
 #
 #     ENV_FILE=.env.test python run.py
 #
 # The file is loaded before anything imports config.settings, which reads
 # DATABASE_URL and SECRET_KEY at class-definition time.
+#
+# A missing file is NOT fatal: on Render -- and any other platform that injects
+# configuration straight into the process environment -- there is no .env on
+# disk and os.environ is already populated. What matters is that the required
+# variables are present afterwards, whatever supplied them, which is the check
+# below.
+REQUIRED_ENV_VARS = ('DATABASE_URL', 'SECRET_KEY', 'ADMIN_EMAIL', 'ADMIN_PASSWORD')
+
 ENV_FILE = os.environ.get('ENV_FILE', '.env')
-if not os.path.exists(ENV_FILE):
-    print(f'FATAL: env file {ENV_FILE!r} not found')
+if os.path.exists(ENV_FILE):
+    load_dotenv(ENV_FILE, override=True)
+else:
+    # flush: the long-running server below never returns, so a buffered pipe
+    # (Render's log collector) would otherwise sit on this line indefinitely.
+    print(
+        f'WARNING: env file {ENV_FILE!r} not found; '
+        'using the process environment instead',
+        flush=True,
+    )
+
+missing = [name for name in REQUIRED_ENV_VARS if not os.environ.get(name)]
+if missing:
+    print(f'FATAL: required environment variable(s) not set: {", ".join(missing)}')
     sys.exit(1)
-load_dotenv(ENV_FILE, override=True)
 
 # ── Global socket timeout ────────────────────────────────────────────────────
 # Flask-Mail gives no way to pass a timeout down to smtplib, so without this a
