@@ -9,6 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/tokens.css') }}">
 
 <style>
 /* ============================================================
@@ -16,23 +17,8 @@
    DM Sans only. Two-tone editorial + brass accent.
    ============================================================ */
 
-:root{
-  --paper:#f8f6f2;
-  --paper-2:#f0ece6;
-  --card:#ffffff;
-  --ink:#1c1916;
-  --ink-2:#0e0c0a;
-  --dark:#0a0807;
-  --dark-mid:#1c1916;
-  --amber:#c8820a;
-  --amber-soft:#e0a040;
-  --amber-2:#a86a08;
-  --muted:#6b6157;
-  --dim:#9a8f82;
-  --rule:rgba(58,53,48,0.12);
-  --rule-soft:rgba(58,53,48,0.06);
-  --ease:cubic-bezier(0.22,1,0.36,1);
-}
+/* Tokens moved to static/css/tokens.css (linked above), copied byte for
+   byte. Values are identical, so this page renders unchanged. */
 
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}

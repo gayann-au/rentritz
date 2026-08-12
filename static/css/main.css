@@ -1,54 +1,49 @@
+@import url("tokens.css");
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&display=swap');
 
 :root {
-  --white:      #ffffff;
-  --off-white:  #f8f6f2;
-  --cream:      #f2ede6;
-  --light-sand: #ebe4d8;
-  --warm-grey:  #9a8f82;
-  --mid-grey:   #6b6259;
-  --deep-grey:  #3a3530;
-  --charcoal:   #1c1916;
-  --black:      #0d0b09;
+  /* ── Legacy name → token map ───────────────────────────────
+     This block defines NO colour values. Every entry points at
+     static/css/tokens.css, which is the only file that may hold
+     a colour. Names are kept so existing rules and templates
+     keep resolving until Phase 2 rewrites them.
 
-  --amber:        #c8820a;
-  --amber-light:  #f5a623;
-  --amber-dark:   #b8720a;
-  --amber-glow:   rgba(200,130,10,0.12);
-  --amber-border: rgba(200,130,10,0.25);
+     Six entries change value — the approved collision winners
+     from the landing page. Marked [C#] against DESIGN_MIGRATION.md.
+     ────────────────────────────────────────────────────────── */
 
-  --bg:             var(--off-white);
-  --surface:        var(--white);
-  --surface-raised: var(--white);
-  --surface-sunken: var(--cream);
-  --card-bg:        var(--white);
+  --white:      var(--card);
+  --off-white:  var(--paper);
+  --cream:      var(--paper-2);   /* [C5]  #f2ede6 -> #f0ece6 */
+  --warm-grey:  var(--dim);
+  --mid-grey:   var(--muted);     /* [C10] #6b6259 -> #6b6157 */
+  --charcoal:   var(--ink);
+  --black:      var(--ink-2);     /* [C8]  #0d0b09 -> #0e0c0a */
 
-  --near-black:  #1c1916;
-  --dark-card:   var(--white);
-  --dark-line:   rgba(58,53,48,0.12);
+  --amber-light:  var(--amber-soft);  /* [C2] #f5a623 -> #e0a040 */
+  --amber-dark:   var(--amber-2);     /* [C3] #b8720a -> #a86a08 */
 
-  --text:           var(--charcoal);
-  --text-primary:   var(--charcoal);
-  --text-secondary: var(--mid-grey);
-  --text-muted:     var(--warm-grey);
-  --text-light:     var(--warm-grey);
+  --bg:             var(--paper);
+  --surface:        var(--card);
+  --surface-raised: var(--card);
+  --surface-sunken: var(--paper-2);
+  --card-bg:        var(--card);
 
-  --border:        rgba(58,53,48,0.12);
-  --border-strong: rgba(58,53,48,0.22);
+  /* [C9] role-corrected: --near-black was #1c1916, i.e. --ink.
+     It is a text colour, NOT landing's --dark (#0a0807). Unchanged. */
+  --near-black:  var(--ink);
+  --dark-card:   var(--card);
+  --dark-line:   var(--rule);
 
-  --error-bg:    #fef2f2;
-  --error-bd:    #fca5a5;
-  --error-text:  #991b1b;
-  --success-bg:  #f0fdf4;
-  --success-bd:  #86efac;
-  --success-text:#166534;
+  --text:           var(--ink);
+  --text-primary:   var(--ink);
+  --text-secondary: var(--muted);
+  --text-muted:     var(--dim);
+  --text-light:     var(--dim);
 
-  --shadow:       0 1px 3px rgba(28,25,22,0.08), 0 1px 2px rgba(28,25,22,0.06);
-  --shadow-sm:    0 1px 3px rgba(28,25,22,0.08), 0 1px 2px rgba(28,25,22,0.06);
-  --shadow-md:    0 4px 16px rgba(28,25,22,0.10), 0 2px 6px rgba(28,25,22,0.07);
-  --shadow-lg:    0 12px 40px rgba(28,25,22,0.14), 0 4px 12px rgba(28,25,22,0.08);
-  --shadow-amber: 0 4px 24px rgba(200,130,10,0.18);
+  --border:        var(--rule);
 
+  /* Non-colour tokens stay here; tokens.css owns colour only. */
   --radius:    12px;
   --radius-sm: 8px;
   --radius-lg: 20px;
