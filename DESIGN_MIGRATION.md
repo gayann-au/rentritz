@@ -345,6 +345,56 @@ token, and are carried into the Step 4 leftover report as candidate new tokens:
 | `--border-hover` | `rgba(200,130,10,0.35)` | 4 pages | nearest is `--amber-border` at **0.25** |
 | `--border-amber` | `rgba(245,158,11,0.35)` | credits | different hue *and* alpha |
 
+---
+
+## F8 — BLOCKING for Step 5. 92% of the leftovers are alpha variants of tokens.
+
+Surfaced while doing page 1. The "leave it and log" rule is producing a log that
+is not a pile of stray colours — it is **the same tokens at partial opacity**.
+
+Across all 26 in-scope pages plus `main.css`: **352 `rgba()` literals, 327 of
+them (92%) are an existing token's RGB at some alpha.** Only 25 are unrelated
+colours.
+
+| Underlying colour | Occurrences |
+|---|---|
+| `rgb(245,158,11)` — the **old admin amber**, not `--amber` | **89** |
+| `rgb(58,53,48)` — `--rule`/`--deep-grey` | 63 |
+| `rgb(255,255,255)` — white/`--card` | 56 |
+| `rgb(248,246,242)` — `--paper` | 40 |
+| `rgb(200,130,10)` — `--amber` | 34 |
+| black, `--ink`, `--dark`, `--ink-2`, `--amber-soft`, `--dim` | 45 |
+| genuinely unrelated (greens/blues — status colours) | 25 |
+
+**Why this decides Step 5.** A hex swap in `tokens.css` cannot reach any of
+these. Repaint the palette and the solid fills go crimson while **327
+translucent borders, shadows, hovers, glows and washes stay amber**. That is the
+half-migrated state the whole step ordering exists to prevent — and it is
+2.4× larger than the 134 solid literals I have logged so far.
+
+The 89 `rgb(245,158,11)` are worse than stale: that is the *admin* amber leaking
+into non-admin pages. They do not match `--amber` (`#c8820a`) today, so those
+pages are already off-palette before any crimson lands.
+
+**This cannot be fixed by "replace with `var()`"** — you cannot vary the alpha of
+a hex token. It needs a mechanism, and every option is a structural change I
+will not make unilaterally:
+
+- **(a) Channel tokens.** Add `--brand-rgb: 214,38,58` etc. alongside each hex,
+  then `rgba(var(--brand-rgb), .35)`. Widest browser support, no new *colours* —
+  the same values in a second notation. Costs one extra token per colour.
+- **(b) `color-mix()`.** `color-mix(in srgb, var(--brand) 35%, transparent)`.
+  No new tokens at all. Baseline in all current browsers; fails on Safari < 16.2.
+- **(c) Relative colour.** `rgb(from var(--brand) r g b / .35)`. Cleanest syntax,
+  narrowest support (no Firefox before 128).
+- **(d) Accept it.** 327 literals stay on the old palette permanently.
+
+Recommend **(a)** — it is the only one with no compatibility question, and adding
+a second notation for a colour already in the list is not inventing a colour.
+
+**Do not start Step 3 pages 2-26 until this is settled**, because the answer
+changes what "tokenise this page" means for roughly 12 literals per page.
+
 **F1 — CLOSED by Step 2, and my earlier recommendation was unnecessary.** I had
 said landing must keep its own font link because it loads no `main.css`. It does
 not need one: landing already `<link>`s `tokens.css` directly (line 12), so
@@ -403,11 +453,33 @@ configured outside this repo. Say the word and it goes in its own commit.
 
 Pause for review after every 3 ticked pages.
 
-### Per-page log
+### Per-page log (Step 3)
 
-| # | Page | Commit | What changed |
-|---|---|---|---|
-| — | — | — | *(none yet)* |
+| # | Page | Commit | Replaced | Left + logged |
+|---|---|---|---|---|
+| 1 | `templates/core/landing.html` | `a0f77f1` | 25 | 134 |
+| 2–26 | — | — | — | **HELD pending F8** |
+
+**Page 1 detail — `core/landing.html`.** No local `:root`; inherits `tokens.css`.
+Replaced, all value-identical: `#f8f6f2`→`var(--paper)` ×8, `#1c1916`→`var(--ink)` ×6,
+`#0a0807`→`var(--dark)` ×5, `#c8820a`→`var(--amber)` ×2, `#e0a040`→`var(--amber-soft)` ×2,
+`#0e0c0a`→`var(--ink-2)` ×1, `rgba(200,130,10,0.25)`→`var(--amber-border)` ×1.
+
+Left in place: 134. Grouped by what they style — `color` 52, `background` 33,
+`box-shadow` 15, gradient stops 14, borders 13, `background-image` 3, plus
+**4 `#fff` on lines 103–104 that are `mask` channels, not colours — never
+tokenise those.** `#fff`/`#000` are text-on-dark/amber and have no text token
+(`--card` is a surface); `#d68b0c` is the amber button hover, no token.
+
+Verified through Flask: all 7 tokens resolve to the original literals and
+`.on-dark .section-h` still computes `rgb(248,246,242)`. Page unchanged.
+
+> Method note for whoever resumes: my first contrast probe reported 215
+> "failures" on landing. It was wrong — it ignored `background-image`/gradients
+> and did not composite alpha, so it read the dark hero as white-on-paper. This
+> is the same false alarm that halted the previous session. For a
+> value-preserving swap, verify that each `var()` **resolves to the original
+> literal**; do not eyeball contrast heuristics.
 
 ---
 
