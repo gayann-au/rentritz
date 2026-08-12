@@ -297,7 +297,53 @@ cannot be repainted. Options:
   while the rest go crimson — the precise half-migrated state Step 3's ordering
   exists to prevent.
 
-Nothing done pending your answer.
+**DECIDED: option (a).** Delete each page's local `:root`; remap call sites by
+ROLE. The table below is the contract — apply it mechanically, do not re-derive.
+
+### F7 role map — the ONLY mapping Step 3 may use on those 11 pages
+
+Never map by name. `--white` and `--black` mean the opposite of what they say.
+
+| Page-local declaration | Value | Rewrite call sites to | Δ |
+|---|---|---|---|
+| `--white` | `#1c1916` | `var(--ink)` | exact |
+| `--black` | `#f8f6f2` | `var(--paper)` | exact |
+| `--near-black` | `#f0ece6` | `var(--paper-2)` | exact |
+| `--card` | `#ffffff` | `var(--card)` | exact |
+| `--dark-card` | `#ffffff` | `var(--card)` | exact |
+| `--dark-card-hover` | `#f0ece6` | `var(--paper-2)` | exact |
+| `--card-deep` | `#f0ece6` | `var(--paper-2)` | exact |
+| `--hero-bg` | `#f0ece6` | `var(--paper-2)` | exact |
+| `--border` | `rgba(58,53,48,0.12)` | `var(--rule)` | exact |
+| `--text-dim` | `#9a8f82` | `var(--dim)` | exact |
+| `--text-muted` | `#6b6157` *(credits)* | `var(--muted)` | exact |
+| `--text-muted` | `#6b6259` *(8 pages)* | `var(--muted)` | ≈ **[C10]** imperceptible |
+| `--amber` | `#c8820a` | `var(--amber)` | exact |
+| `--amber` | `#f59e0b` *(credits)* | `var(--amber)` | **[C1]** visible |
+| `--amber-dark` | `#b8720a` | `var(--amber-2)` | **[C3]** slightly deeper |
+| `--amber-dark` | `#d97706` *(credits)* | `var(--amber-2)` | **[C3]** visible |
+| `--ease-out` | `cubic-bezier(.22,1,.36,1)` | `var(--ease)` | exact |
+| `--ease` | `cubic-bezier(.4,0,.2,1)` | `var(--ease)` | **[C15]** visible |
+| `--radius` | `14px` | `var(--radius)` = `12px` | visible, approved under (a) |
+
+**Note the trap at `--text-muted`.** `main.css:40` aliases it to `var(--dim)`
+(#9a8f82, tertiary), but all 11 pages use it as *secondary* (#6b62xx). Deleting
+the local declaration and letting it inherit would therefore **wash the text out
+by one step**. Call sites must be rewritten to `var(--muted)` explicitly —
+inheritance is not safe for this one name.
+
+### F7 residue — 5 values with no token. Do NOT invent one.
+
+These stay as page-local declarations, renamed so they no longer shadow a global
+token, and are carried into the Step 4 leftover report as candidate new tokens:
+
+| Page-local | Value | Page(s) | Why it does not map |
+|---|---|---|---|
+| `--muted` | `rgba(58,53,48,0.5)` | answer, wizard | translucent; global `--muted` is opaque `#6b6157`. **Shadows a real token — must be renamed.** |
+| `--body-text` | `rgba(28,25,22,0.87)` | answer | 87% ink; no token |
+| `--subtle` | `rgba(28,25,22,0.7)` | wizard | 70% ink; no token |
+| `--border-hover` | `rgba(200,130,10,0.35)` | 4 pages | nearest is `--amber-border` at **0.25** |
+| `--border-amber` | `rgba(245,158,11,0.35)` | credits | different hue *and* alpha |
 
 **F1 — CLOSED by Step 2, and my earlier recommendation was unnecessary.** I had
 said landing must keep its own font link because it loads no `main.css`. It does
