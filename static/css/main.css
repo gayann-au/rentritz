@@ -48,7 +48,8 @@
   --radius-sm: 8px;
   --radius-lg: 20px;
 
-  --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  /* [C15] motion curve resolves to the landing page's --ease */
+  --transition: all 0.25s var(--ease);
 }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
