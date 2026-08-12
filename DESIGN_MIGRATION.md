@@ -6,13 +6,19 @@ Working checklist. **This file is the memory between sessions.**
 **Reference page:** `templates/core/landing.html` — all collisions resolve to its
 current values.
 
-**Status: Phase 1 COMPLETE. Two commits on branch `design-system-consolidation`.
-84/84 tests pass. Phase 2 NOT started.**
+> **Superseded 2026-08-12.** The consolidation brief above is history. The live
+> plan is the **R1 Crimson** migration, Steps 1–7. Palette and rules are in the
+> operator's brief; progress lives here.
 
-| Commit | Scope |
-|---|---|
-| `4280438` `style(tokens): create single colour source of truth` | tokens.css + landing link + main.css alias map |
-| `dfde279` `style(motion): adopt landing easing curve` | C15 only, 1 file — revertible alone per F3 |
+**Status: Step 1 = no-op (premise disproved). Step 2 = DONE, two commits.
+Step 3 = BLOCKED on the F7 decision below.**
+
+| Commit | Step | Scope |
+|---|---|---|
+| `4280438` `style(tokens): create single colour source of truth` | pre | tokens.css + landing link + main.css alias map |
+| `dfde279` `style(motion): adopt landing easing curve` | pre | C15 only — **see F7: overridden on 10 pages** |
+| `c054ed9` `style(fonts): collapse four DM Sans loads into one` | 2 | tokens.css §0 + main.css + base.html + landing + for_lawyers |
+| `91de61e` `style(fonts): drop the duplicate admin Inter load` | 2 | base_admin.html only; admin.css untouched |
 
 ### Decisions recorded
 - **F2 — admin exempt.** `admin.css` untouched, confirmed.
@@ -190,10 +196,30 @@ Worth noting: the dark greys `#2a2a2a`/`#1a1a1a`/`#0f0f0f`/`#111` in `main.css`
 are admin-style values sitting in the **light** stylesheet — likely dead
 dark-theme remnants. Not investigated; not touched.
 
-**F6 — 7 variables are referenced but never defined. Pre-existing, not caused by
-this work.** Verified against `HEAD` before my changes: all 7 were already
-undefined, so the refactor neither introduced nor fixed them. They silently
-resolve to nothing today:
+**F6 — WITHDRAWN 2026-08-12. The finding was wrong.** All 7 variables *are*
+defined, in the `:root` of each page's own `<style>` block, in every page that
+uses them. Nothing resolves to nothing; no transition is dead; no text is the
+wrong colour from this cause. **Step 1 is therefore a no-op — nothing to fix.**
+
+How it was disproved, so this is not re-litigated:
+
+1. Parsed every routed template for `--name:` definitions and `var(--name)`
+   uses, resolving against the real cascade
+   (`tokens.css` + `main.css` + `base.html` + the page's own `:root`).
+   Result: **zero** undefined variables anywhere in scope.
+2. The one way the definitions could still be dead is if the `<style>` block
+   never rendered. Checked: `base.html` declares blocks `title`, `styles`,
+   `body_class`, `content`, `scripts`, and **all 9 `<style>` blocks sit inside
+   `{% block content %}`**, which `base.html` emits at line 72. They render.
+   (A `<style>` in `<body>` still applies document-wide, and `:root` still
+   matches `<html>`.)
+
+Two of the 7 are genuinely unused and could be deleted as dead declarations —
+`--text-dim` in `core/history.html`, `--ease-out` in `lawyers/review.html`,
+plus `--dark-card-hover`/`--border-hover` in `lawyers/{dashboard,profile}.html`.
+Cosmetic only. Not touched.
+
+The original (wrong) F6 table, kept for the record:
 
 | Variable | Templates affected |
 |---|---|
@@ -205,17 +231,90 @@ resolve to nothing today:
 | `--border-amber` | 1 — `core/credits` |
 | `--card-deep` | 1 — `core/wizard` |
 
-These are Phase 2 fixes (page files). Flagged, not touched. Note `--ease-out`
-and `--text-dim` were names in the *original void brief* — suggesting a previous
-partial migration was abandoned mid-flight.
+Note `--ease-out` and `--text-dim` were names in the *original void brief* —
+suggesting a previous partial migration was abandoned mid-flight. F7 below
+shows what that abandoned migration actually did.
 
-**F1 — landing's font link.** Landing loads no `main.css`, so deleting its
-`<link>` would leave it with no webfont. Reaching literally one load requires
-landing to load `main.css`, which risks bleeding main.css rules into a page whose
-whole value is being self-contained — and it would change the reference page.
-**Recommend: leave landing's link, accept 2 loads in the served app** (one for
-the public app, one for landing) and treat "1 load" as satisfied for the
-`main.css` system. Confirm.
+---
+
+## F7 — BLOCKING. Eleven pages shadow the global tokens, so Step 5 will not reach them.
+
+This is the real defect F6 was groping at, and it changes what Step 3 has to do.
+
+**11 routed pages define their own `:root` inside their `<style>` block, and
+those definitions override `tokens.css` for that page.** 85 declarations
+conflict with the global value. Replacing a page's raw hex with `var(--token)`
+is *not enough*: the `var()` will resolve against the page's own `:root`, not
+against `tokens.css`. **Step 5a can repaint `tokens.css` and these 11 pages will
+not move.**
+
+Affected: `core/{answer,credits,dashboard,history,wizard}`,
+`lawyers/{browse,dashboard,edit_profile,profile,register,review}`.
+
+### The token names are inverted, not merely different
+
+These pages were originally a dark theme. Someone converted them to light by
+**flipping the values behind the names** instead of renaming:
+
+| Token | Global (`tokens.css`) | These 11 pages | Effect |
+|---|---|---|---|
+| `--white` | `#ffffff` (via `--card`) | **`#1c1916`** | "white" means the darkest ink |
+| `--black` | `#0e0c0a` (via `--ink-2`) | **`#f8f6f2`** | "black" means the page background |
+| `--dark-card` | `#ffffff` (via `--card`) | `#ffffff` | name says dark, value is white |
+| `--near-black` | `#1c1916` (via `--ink`) | **`#f0ece6`** | a near-white sunken surface |
+| `--dark-card-hover` | *(page-only)* | `#f0ece6` | light hover on a light card |
+
+So on these pages `color: var(--white)` renders **near-black text**, and
+`background: var(--black)` renders a **cream page**. Any mechanical
+name-based mapping in Step 3 would invert those pages.
+
+### It also silently reverted a shipped commit
+
+`--ease` is redefined locally as `cubic-bezier(0.4,0,0.2,1)` on **10** of the 11.
+Commit `dfde279` "adopt landing easing curve" therefore has **no effect** on
+those 10 pages. The easing change currently reaches only the pages with no local
+`:root`. Correcting the record: that commit is narrower than it claims.
+
+Also locally overridden: `--radius` (`14px` vs the global `12px`) on 9 pages,
+`--amber`/`--amber-dark` on 11, `--text-muted` on 9, `--border` on 11.
+
+### The decision I need
+
+Step 3 says "replace raw hex with `var()`". On these 11 pages that is
+cosmetically correct but functionally inert — it hands Step 5 a page that still
+cannot be repainted. Options:
+
+- **(a) Recommended — delete each page's local `:root` and let the page inherit
+  `tokens.css`, remapping the inverted names as I go** (`var(--white)` → `var(--ink)`,
+  `var(--black)` → `var(--paper)`, `var(--near-black)` → `var(--paper-2)`, and so on
+  by ROLE not by name). This is what makes Step 5 actually work. It is more than
+  a literal swap, so it needs your say-so. Visible change on those 11 pages:
+  radius 14px→12px, easing to the landing curve, amber to `#c8820a`.
+- **(b) Keep the local `:root` blocks and repaint each of them by hand with the
+  R1 values in Step 5.** Preserves per-page values exactly, but keeps 11 extra
+  colour sources forever and contradicts "one file defines colour".
+- **(c) Literals only, as written.** Step 5 then leaves 11 of 26 pages amber
+  while the rest go crimson — the precise half-migrated state Step 3's ordering
+  exists to prevent.
+
+Nothing done pending your answer.
+
+**F1 — CLOSED by Step 2, and my earlier recommendation was unnecessary.** I had
+said landing must keep its own font link because it loads no `main.css`. It does
+not need one: landing already `<link>`s `tokens.css` directly (line 12), so
+putting the single `@import` in `tokens.css` reaches landing, `base.html`'s 24
+children (via `main.css`), and `for_lawyers.html` alike. **One load, genuinely.**
+Verified live through Flask, not by inspection:
+
+| Route | `<link>` to fonts.googleapis in head | DM Sans active | Faces downloaded |
+|---|---|---|---|
+| `/` | none | yes | 300/400/500/600 + italics |
+| `/for-lawyers` | none | yes | **700 real cut present** |
+| `/terms` | none | yes | 400/600 |
+
+`/for-lawyers` previously loaded only 300–600 while setting `font-weight:700`,
+so its bold was browser-synthesised. `document.fonts.check('700 16px "DM Sans"')`
+now returns **true** on that route. That is the one intended visible change.
 
 **F2 — the exempt-admin amber.** B2 says all collisions resolve to landing's
 `#c8820a`, but admin is now a permanent exception with its own `#f59e0b`. Does
