@@ -38,23 +38,64 @@
    Copied byte for byte from templates/core/landing.html:19-35.
    The reference page. These values are the agreed collision winners.
    Do not edit without re-running the collision analysis.
+
+   CHANNEL FORM (F8). 92% of the rgba() literals in this repo are one of
+   these colours at partial opacity, and you cannot vary the alpha of a
+   hex. So each colour is declared ONCE as an "R,G,B" triplet, and the
+   hex token is derived from it with rgb().
+
+   That means ONE source of truth per colour, not two that can drift:
+
+       --paper-rgb : 248,246,242        <- edit here
+       --paper     : rgb(248,246,242)   <- follows automatically
+
+   Use the hex token normally. Reach for the -rgb form only when you need
+   an alpha:
+
+       solid       ...  color:  var(--ink);
+       12% opacity ...  border: 1px solid rgba(var(--ink-rgb),.12);
+
+   No colour is invented by this: every triplet below is the exact
+   decimal form of the hex it replaced.
+
+   Do NOT write a nested comment anywhere in this block. CSS comments do
+   not nest; an inner terminator ends the outer one and silently turns the
+   whole :root that follows into garbage. That exact mistake blanked every
+   token here once already.
    ──────────────────────────────────────────────────────────── */
 
 :root{
-  --paper:#f8f6f2;
-  --paper-2:#f0ece6;
-  --card:#ffffff;
-  --ink:#1c1916;
-  --ink-2:#0e0c0a;
-  --dark:#0a0807;
-  --dark-mid:#1c1916;
-  --amber:#c8820a;
-  --amber-soft:#e0a040;
-  --amber-2:#a86a08;
-  --muted:#6b6157;
-  --dim:#9a8f82;
-  --rule:rgba(58,53,48,0.12);
-  --rule-soft:rgba(58,53,48,0.06);
+  /* channels — the single source of truth */
+  --paper-rgb:      248,246,242;
+  --paper-2-rgb:    240,236,230;
+  --card-rgb:       255,255,255;
+  --ink-rgb:        28,25,22;
+  --ink-2-rgb:      14,12,10;
+  --dark-rgb:       10,8,7;
+  --amber-rgb:      200,130,10;
+  --amber-soft-rgb: 224,160,64;
+  --amber-2-rgb:    168,106,8;
+  --muted-rgb:      107,97,87;
+  --dim-rgb:        154,143,130;
+  --deep-grey-rgb:  58,53,48;
+
+  /* solid tokens, derived — do not hand-edit these */
+  --paper:      rgb(var(--paper-rgb));
+  --paper-2:    rgb(var(--paper-2-rgb));
+  --card:       rgb(var(--card-rgb));
+  --ink:        rgb(var(--ink-rgb));
+  --ink-2:      rgb(var(--ink-2-rgb));
+  --dark:       rgb(var(--dark-rgb));
+  --dark-mid:   rgb(var(--ink-rgb));      /* was #1c1916, i.e. --ink */
+  --amber:      rgb(var(--amber-rgb));
+  --amber-soft: rgb(var(--amber-soft-rgb));
+  --amber-2:    rgb(var(--amber-2-rgb));
+  --muted:      rgb(var(--muted-rgb));
+  --dim:        rgb(var(--dim-rgb));
+
+  --rule:       rgba(var(--deep-grey-rgb),0.12);
+  --rule-soft:  rgba(var(--deep-grey-rgb),0.06);
+
   --ease:cubic-bezier(0.22,1,0.36,1);
 }
 
@@ -69,15 +110,16 @@
 
 :root {
   /* neutrals with no landing counterpart */
-  --light-sand: #ebe4d8;
-  --deep-grey:  #3a3530;
+  --light-sand-rgb: 235,228,216;
+  --light-sand: rgb(var(--light-sand-rgb));
+  --deep-grey:  rgb(var(--deep-grey-rgb));   /* channel is in Section 1 */
 
-  /* amber washes — rgba forms of --amber (#c8820a) */
-  --amber-glow:   rgba(200,130,10,0.12);
-  --amber-border: rgba(200,130,10,0.25);
+  /* amber washes — rgba forms of --amber */
+  --amber-glow:   rgba(var(--amber-rgb),0.12);
+  --amber-border: rgba(var(--amber-rgb),0.25);
 
   /* stronger rule; --rule / --rule-soft are in Section 1 */
-  --border-strong: rgba(58,53,48,0.22);
+  --border-strong: rgba(var(--deep-grey-rgb),0.22);
 
   /* status colours */
   --error-bg:    #fef2f2;
@@ -87,10 +129,11 @@
   --success-bd:  #86efac;
   --success-text:#166534;
 
-  /* shadows — colour-bearing, so they belong here */
-  --shadow:       0 1px 3px rgba(28,25,22,0.08), 0 1px 2px rgba(28,25,22,0.06);
-  --shadow-sm:    0 1px 3px rgba(28,25,22,0.08), 0 1px 2px rgba(28,25,22,0.06);
-  --shadow-md:    0 4px 16px rgba(28,25,22,0.10), 0 2px 6px rgba(28,25,22,0.07);
-  --shadow-lg:    0 12px 40px rgba(28,25,22,0.14), 0 4px 12px rgba(28,25,22,0.08);
-  --shadow-amber: 0 4px 24px rgba(200,130,10,0.18);
+  /* shadows — colour-bearing, so they belong here. Geometry unchanged;
+     only the colour is routed through the channels. */
+  --shadow:       0 1px 3px rgba(var(--ink-rgb),0.08), 0 1px 2px rgba(var(--ink-rgb),0.06);
+  --shadow-sm:    0 1px 3px rgba(var(--ink-rgb),0.08), 0 1px 2px rgba(var(--ink-rgb),0.06);
+  --shadow-md:    0 4px 16px rgba(var(--ink-rgb),0.10), 0 2px 6px rgba(var(--ink-rgb),0.07);
+  --shadow-lg:    0 12px 40px rgba(var(--ink-rgb),0.14), 0 4px 12px rgba(var(--ink-rgb),0.08);
+  --shadow-amber: 0 4px 24px rgba(var(--amber-rgb),0.18);
 }
