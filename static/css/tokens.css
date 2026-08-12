@@ -13,6 +13,27 @@
    - rentritz-landing/, landing/ ... deferred, blocked on deploy config
    ============================================================ */
 
+/* ── Section 0 · the single webfont load ─────────────────────
+   THE only DM Sans request in the routed app. Replaces four
+   separate loads that previously fetched four different weight
+   sets (main.css, base.html, core/landing.html,
+   core/for_lawyers.html).
+
+   The URL is landing.html's former load, verbatim: it was already
+   the union — wght 300-700 plus ital 300-600. Nothing was invented
+   and no weight in use was dropped.
+
+   Every routed page reaches this file:
+     base.html + children   -> main.css -> @import tokens.css
+     core/for_lawyers.html  -> main.css -> @import tokens.css
+     core/landing.html      -> <link>  tokens.css
+
+   Must stay the first rule in the file; @import is only valid
+   before any other at-rule or style rule.
+   ──────────────────────────────────────────────────────────── */
+
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600&display=swap');
+
 /* ── Section 1 ───────────────────────────────────────────────
    Copied byte for byte from templates/core/landing.html:19-35.
    The reference page. These values are the agreed collision winners.

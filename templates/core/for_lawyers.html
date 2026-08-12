@@ -5,7 +5,9 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>For Lawyers - Rentritz Dubai</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<!-- DM Sans is loaded once, by tokens.css (Section 0), which main.css imports.
+     This page's former link requested only 300-600 while the page sets
+     font-weight:700, so bold was synthesised; it now gets the real cut. -->
 <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}

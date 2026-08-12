@@ -1,5 +1,4 @@
-@import url("tokens.css");
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&display=swap');
+@import url("tokens.css"); /* carries the single DM Sans load — see tokens.css Section 0 */
 
 :root {
   /* ── Legacy name → token map ───────────────────────────────
