@@ -395,6 +395,36 @@ a second notation for a colour already in the list is not inventing a colour.
 **Do not start Step 3 pages 2-26 until this is settled**, because the answer
 changes what "tokenise this page" means for roughly 12 literals per page.
 
+---
+
+## F9 — Step 5a as written deletes 22 tokens that are in use.
+
+"Replace every value in `tokens.css` with the R1 palette" is not a substitution:
+`tokens.css` defines **31** tokens, R1 names **14**. **22 have no R1 counterpart**
+and every one of them is referenced by live CSS.
+
+| Group | Tokens | R1 answer? |
+|---|---|---|
+| **Dark surfaces** | `--dark` `#0a0807`, `--dark-mid` | **none — see below** |
+| Accent ramp | `--amber`, `--amber-soft`, `--amber-2`, `--amber-glow`, `--amber-border` | `--brand`/`--brand-deep`/`--brand-soft` cover 3 of 5 |
+| Rules | `--rule-soft`, `--border-strong` | only `--rule` given |
+| Neutrals | `--light-sand`, `--deep-grey` | none |
+| Status | `--error-bg/-bd/-text`, `--success-bg/-bd/-text` | only flat `--error` and `--action` |
+| Shadows | `--shadow`, `-sm`, `-md`, `-lg`, `-amber` | none — brief forbids inventing a shadow |
+
+**The sharp one is `--dark`.** Landing is a two-tone page: cream sections
+alternating with near-black `#0a0807` sections, and it is the reference page.
+R1 is "light mode only" and offers no dark surface, so as written Step 5a leaves
+landing's dark sections with no colour. Its darkest value is `--ink-2 #0D0709`,
+a *text* colour. Using it as a section background is a role change, not a
+value swap.
+
+Three of these need your decision before 5a can run at all: what `--dark` and
+`--dark-mid` become; whether the shadows keep their current rgba (they are
+`rgba(28,25,22,…)` — an `--ink` alpha, so F8's answer covers them); and whether
+the 6 status tokens collapse into flat `--error`/`--action` or keep bg/border/text
+triplets. Not acting.
+
 **F1 — CLOSED by Step 2, and my earlier recommendation was unnecessary.** I had
 said landing must keep its own font link because it loads no `main.css`. It does
 not need one: landing already `<link>`s `tokens.css` directly (line 12), so
