@@ -94,6 +94,26 @@ function scanComments(src) {
 
 const lineOf = (src, index) => src.slice(0, index).split('\n').length;
 
+/**
+ * Blank comments but keep every offset intact.
+ *
+ * stripComments() shortens the text, so a line number computed on its output
+ * does not address the same line in the original. Anything that needs to report
+ * a position, or look back at the original line, must use this instead.
+ */
+function blankComments(src) {
+  let out = '';
+  let i = 0;
+  let inComment = false;
+  while (i < src.length) {
+    if (!inComment && src.slice(i, i + 2) === OPEN) { inComment = true; out += '  '; i += 2; continue; }
+    if (inComment && src.slice(i, i + 2) === CLOSE) { inComment = false; out += '  '; i += 2; continue; }
+    out += inComment ? (src[i] === '\n' ? '\n' : ' ') : src[i];
+    i += 1;
+  }
+  return out;
+}
+
 /** Remove comments so the remaining text can be checked structurally. */
 function stripComments(src) {
   let out = '';
@@ -249,7 +269,77 @@ for (const rel of CSS_FILES) {
   }
 }
 
-// 7. the channel tokens Step 5 depends on must still be declared
+// 7. ROLE DIRECTION. A surface token must not colour text, and a text token
+//    must not paint a surface.
+//
+//    This is the failure mode nothing else can see: mapping color: to
+//    --card-rgb was value-identical (both #ffffff), so no visual check, no
+//    contrast check and no literal scan would ever have flagged it. It stays
+//    invisible until Step 5 changes the token - at which point text silently
+//    takes a surface colour.
+//
+//    TWO-TONE EXEMPTION. On a dark surface the roles legitimately invert:
+//    "paper" becomes the text colour and "ink" becomes the background. That is
+//    landing's and for_lawyers' hero treatment, kept under D5. Those rules opt
+//    out explicitly with a marker comment on the same line, so every exemption
+//    is visible in the source rather than hidden inside this script:
+//
+//        color: var(--paper);   two-tone
+{
+  const SURFACE_TOKENS = ['--card', '--paper', '--paper-2'];
+  const TEXT_TOKENS = ['--ink', '--muted', '--dim'];
+  const EXEMPT = /two-tone/i;
+
+  // exact token match: var(--ink) must not also match var(--ink-2)/var(--ink-rgb)
+  const usesToken = (value, token) =>
+    new RegExp(`var\\(\\s*${token}\\s*\\)`).test(value);
+
+  const roleFiles = [join(ROOT, 'static/css/main.css'), join(ROOT, 'static/css/tokens.css')];
+  const walkTpl = (dir) => {
+    for (const entry of readdirSync(dir, { withFileTypes: true })) {
+      if (entry.isDirectory()) {
+        if (entry.name === 'admin' || entry.name === 'email') continue;
+        walkTpl(join(dir, entry.name));
+      } else if (entry.name.endsWith('.html')) roleFiles.push(join(dir, entry.name));
+    }
+  };
+  if (existsSync(join(ROOT, 'templates'))) walkTpl(join(ROOT, 'templates'));
+
+  for (const abs of roleFiles) {
+    if (!existsSync(abs)) continue;
+    const rel = abs.slice(ROOT.length + 1).replace(/\\/g, '/');
+    const raw = readFileSync(abs, 'utf8');
+    // length-preserving, so reported line numbers and the marker lookup both
+    // address the SAME coordinates as the original file
+    const src = blankComments(raw);
+    const rawLines = raw.split('\n');
+
+    const scan = (propRe, tokens, label, advice) => {
+      for (const m of src.matchAll(propRe)) {
+        const value = m[2];
+        const line = lineOf(src, m.index);
+        // the marker lives in a comment, so check the ORIGINAL line
+        if (EXEMPT.test(rawLines[line - 1] || '')) continue;
+        for (const t of tokens) {
+          if (!usesToken(value, t)) continue;
+          fail(rel,
+            `${label}: "${t}" on "${m[1]}" near line ${line}. ${advice} ` +
+            `If this is a dark surface where the roles genuinely invert, add a ` +
+            `two-tone marker comment on that line to opt out.`);
+        }
+      }
+    };
+
+    scan(/(?:^|[;{}\s"])(color)\s*:\s*([^;{}"]+)/g, SURFACE_TOKENS,
+      'surface token colouring text',
+      'Surfaces are for backgrounds; text should use --ink/--muted/--dim.');
+    scan(/(?:^|[;{}\s"])(background|background-color)\s*:\s*([^;{}"]+)/g, TEXT_TOKENS,
+      'text token painting a surface',
+      'Text tokens are for type; surfaces should use --card/--paper/--paper-2.');
+  }
+}
+
+// 8. the channel tokens Step 5 depends on must still be declared
 const tokensAbs = join(ROOT, 'static/css/tokens.css');
 if (existsSync(tokensAbs)) {
   const tokensSrc = stripComments(readFileSync(tokensAbs, 'utf8'));
