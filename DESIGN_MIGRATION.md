@@ -425,6 +425,44 @@ Three of these need your decision before 5a can run at all: what `--dark` and
 the 6 status tokens collapse into flat `--error`/`--action` or keep bg/border/text
 triplets. Not acting.
 
+**DECIDED for `--dark`:** keep `#0a0807` and `--dark-mid` through the swap
+unchanged, as a named exception alongside `admin.css`. Landing keeps its
+two-tone structure; the crimson lands on the accents.
+
+---
+
+## F10 — answers your Step 4 question about the dark greys, early.
+
+You asked whether `#2a2a2a / #1a1a1a / #0f0f0f / #111` in `main.css` are
+reachable from any template. **Mostly no — but the answer came with a surprise.**
+
+### `main.css`: 18 selectors carry a dark grey, 10 distinct classes. 9 are dead.
+
+| Reachable from a routed template | Not referenced by any routed template |
+|---|---|
+| `.nav-admin` — `base.html:47`, the dark admin strip shown when an admin browses the public app | `.admin-body`, `.admin-form-card`, `.admin-login-card`, `.admin-login-page`, `.admin-table-wrap`, `.stat-card`, `.tree-canvas`, `.tree-node`, `.tree-option` |
+
+The 9 are admin/tree-builder classes that live in **admin** templates, and those
+load `admin.css`, not `main.css`. So these are duplicated dead rules — a dark
+theme's remnants sitting in the light stylesheet, confirming the earlier hunch.
+**Recommend deleting the 9, keeping `.nav-admin`.** Not acted on; it is removal,
+not presentation, and Step 4 says report only.
+
+### The surprise: two in-scope pages are genuinely dark, today.
+
+`core/terms.html:7` and `core/privacy.html:7` set `body{background:#0a0a0a}` in
+their **own** `<style>`, overriding `main.css`'s `var(--bg)`. Verified live:
+`/terms` computes `bodyBg rgb(10,10,10)`, `bodyColor rgb(229,229,229)`.
+
+Pre-existing — neither file has been touched in this migration. But it means
+**"light mode only" is not the current state**, and R1 has no dark surface. Two
+of your 26 pages need a decision that Step 5 as written does not cover:
+
+- fold them into the light palette (a visible redesign of both pages), or
+- treat them like landing's dark sections and keep them dark on `--dark`.
+
+Not acting. Flagging under Blocked.
+
 **F1 — CLOSED by Step 2, and my earlier recommendation was unnecessary.** I had
 said landing must keep its own font link because it loads no `main.css`. It does
 not need one: landing already `<link>`s `tokens.css` directly (line 12), so
