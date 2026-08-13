@@ -5,9 +5,9 @@
 {% block content %}
 <style>
 /* Tokens come from static/css/tokens.css. This page's own :root was
-   removed: it shadowed the global tokens and inverted them (--white was
-   #1c1916, --black was #f8f6f2), which made the page immune to any
-   palette change. Call sites below are mapped by ROLE. See F7. */
+   removed: it shadowed the global tokens and inverted them, naming the
+   darkest ink "white" and the page background "black", which made the page
+   immune to any palette change. Call sites below are mapped by ROLE. See F7. */
 
 /* ============================================================
    SCROLL REVEAL
@@ -207,7 +207,7 @@
   background: var(--paper-2);
   border-color: rgba(var(--amber-rgb),0.35);
   transform: translateY(-3px);
-  box-shadow: 0 12px 40px rgba(0,0,0,0.12), 0 0 0 1px rgba(var(--amber-rgb),0.1);
+  box-shadow: 0 12px 40px rgba(var(--ink-rgb),0.12), 0 0 0 1px rgba(var(--amber-rgb),0.1);
 }
 .db-card:hover::before { opacity: 1; }
 .db-card::after{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;
@@ -402,9 +402,9 @@
 }
 
 .db-badge-answered {
-  color: #4ade80;
-  background: rgba(74, 222, 128, 0.1);
-  border: 1px solid rgba(74, 222, 128, 0.2);
+  color: var(--success-text);
+  background: rgba(var(--success-rgb),0.1);
+  border: 1px solid rgba(var(--success-rgb),0.2);
 }
 
 .db-badge-incomplete {
@@ -621,7 +621,7 @@
             {% endif %}
           </div>
           <div style="display:flex;align-items:center;gap:20px;flex-shrink:0;">
-            <span style="font-size:0.9rem;font-weight:600;color:{% if entry.amount >= 0 %}#4ade80{% else %}#f87171{% endif %};">
+            <span style="font-size:0.9rem;font-weight:600;color:{% if entry.amount >= 0 %}var(--success-text){% else %}var(--error-text){% endif %};">
               {% if entry.amount >= 0 %}+{% endif %}{{ entry.amount }}
             </span>
             <span style="font-size:0.75rem;color:var(--dim);">{{ entry.created_at.strftime('%d %b %Y') }}</span>

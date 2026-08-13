@@ -180,8 +180,8 @@
 
 .hist-badge-answered {
   color: var(--success-text);
-  background: rgba(74, 222, 128, 0.1);
-  border: 1px solid rgba(74, 222, 128, 0.2);
+  background: rgba(var(--success-rgb),0.1);
+  border: 1px solid rgba(var(--success-rgb),0.2);
 }
 
 .hist-badge-generic {
@@ -294,8 +294,8 @@
 
     {% if reviewable_bookings %}
     <div style="margin-bottom:1.5rem; padding:1rem 1.25rem;
-         border:1px solid rgba(74,222,128,0.2); border-radius:10px;
-         background:rgba(74,222,128,0.03);">
+         border:1px solid rgba(var(--success-rgb),0.2); border-radius:10px;
+         background:rgba(var(--success-rgb),0.03);">
       <p style="margin:0 0 0.75rem; font-size:0.9rem; font-weight:600;">
         Leave a review
       </p>
@@ -307,7 +307,7 @@
         </span>
         <a href="{{ url_for('lawyers.review_form', booking_id=b.id) }}"
            style="font-size:0.8rem; padding:4px 12px;
-                  border:1px solid rgba(74,222,128,0.3); border-radius:6px;
+                  border:1px solid rgba(var(--success-rgb),0.3); border-radius:6px;
                   color:var(--success-text); text-decoration:none;">
           Write a review →
         </a>
