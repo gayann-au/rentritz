@@ -286,7 +286,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   right: -10%;
   width: 600px;
   height: 600px;
-  background: radial-gradient(circle, rgba(245,158,11,0.08) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(var(--amber-rgb),0.08) 0%, transparent 70%);
   pointer-events: none;
 }
 
@@ -297,7 +297,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   left: 0;
   right: 0;
   height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(245,158,11,0.3), transparent);
+  background: linear-gradient(90deg, transparent, rgba(var(--amber-rgb),0.3), transparent);
 }
 
 .hero-inner {
@@ -402,7 +402,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 .scroll-line {
   width: 1px;
   height: 40px;
-  background: linear-gradient(to bottom, rgba(255,255,255,0.2), transparent);
+  background: linear-gradient(to bottom, rgba(var(--card-rgb),0.2), transparent);
   animation: scrollPulse 2s ease infinite;
 }
 
@@ -501,7 +501,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   height: 20px;
   min-width: 20px;
   background: var(--amber-glow);
-  border: 1px solid rgba(245,158,11,0.3);
+  border: 1px solid rgba(var(--amber-rgb),0.3);
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -526,7 +526,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   right: -20%;
   width: 300px;
   height: 300px;
-  background: radial-gradient(circle, rgba(245,158,11,0.1), transparent 70%);
+  background: radial-gradient(circle, rgba(var(--amber-rgb),0.1), transparent 70%);
 }
 
 .vs-grid {
@@ -546,7 +546,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 .vs-col.vs-them h4 { color: rgba(255,255,255,0.3); }
 .vs-col.vs-us h4   { color: var(--amber); }
 
-.vs-divider { background: rgba(255,255,255,0.08); }
+.vs-divider { background: rgba(var(--card-rgb),0.08); }
 
 .vs-item {
   display: flex;
@@ -601,7 +601,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   font-size: 3.5rem;
   font-weight: 300;
-  color: rgba(0,0,0,0.06);
+  color: rgba(var(--ink-rgb),0.06);
   line-height: 1;
   margin-bottom: 16px;
 }
@@ -668,7 +668,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 .footer {
   background: var(--charcoal);
   padding: 40px 24px;
-  border-top: 1px solid rgba(255,255,255,0.06);
+  border-top: 1px solid rgba(var(--card-rgb),0.06);
 }
 
 .footer-inner {
@@ -702,7 +702,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 
 .footer-legal {
   font-size: 0.75rem;
-  color: rgba(154,143,130,0.5);
+  color: rgba(var(--dim-rgb),0.5);
   max-width: 400px;
   line-height: 1.5;
   text-align: right;
