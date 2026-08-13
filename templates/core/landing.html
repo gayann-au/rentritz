@@ -61,13 +61,13 @@ button{font:inherit;cursor:pointer;border:none;background:none;color:inherit}
 
 .amber-btn{
   display:inline-flex;align-items:center;gap:0.6rem;
-  background:var(--brand);color:#000;
+  background:var(--brand);color:#fff;
   font-weight:600;font-size:0.92rem;letter-spacing:0.01em;
   padding:0.85rem 1.5rem;border-radius:999px;
   box-shadow:0 4px 18px rgba(200,130,10,0.22);
   transition:transform .25s var(--ease),box-shadow .3s var(--ease),background .3s var(--ease);
 }
-.amber-btn:hover{transform:translateY(-1px);background:#d68b0c;box-shadow:0 8px 24px rgba(200,130,10,0.35)}
+.amber-btn:hover{transform:translateY(-1px);background:var(--brand-deep);box-shadow:0 8px 24px rgba(200,130,10,0.35)}
 .amber-btn:active{transform:translateY(0)}
 
 .dark-btn{
@@ -168,11 +168,11 @@ a:hover .arrow,button:hover .arrow{transform:translateX(4px)}
 .nav-r .sep{width:1px;height:18px;background:rgba(255,255,255,0.18);margin:0 0.2rem}
 .nav.scrolled .nav-r .sep{background:rgba(28,25,22,0.12)}
 .nav-r .cta{
-  background:var(--brand);color:#000;
+  background:var(--brand);color:#fff;
   padding:0.55rem 1.05rem;font-weight:600;
   box-shadow:0 4px 14px rgba(200,130,10,0.30);
 }
-.nav-r .cta:hover{background:#d68b0c;color:#000;transform:translateY(-1px)}
+.nav-r .cta:hover{background:var(--brand-deep);color:#fff;transform:translateY(-1px)}
 
 .burger{display:flex;align-items:center;justify-content:center;width:44px;height:44px;border-radius:999px;background:rgba(255,255,255,0.08);color:#fff;position:relative;backdrop-filter:blur(8px)}
 .nav.scrolled .burger{background:rgba(28,25,22,0.05);color:var(--ink)}
@@ -211,7 +211,7 @@ a:hover .arrow,button:hover .arrow{transform:translateX(4px)}
 .drawer.open a:nth-child(6){transition-delay:0.38s}
 .drawer a:hover{color:var(--brand-deep)}
 .drawer .cta{
-  display:inline-flex;background:var(--brand);color:#000;
+  display:inline-flex;background:var(--brand);color:#fff;
   padding:0.7rem 1.2rem;border-radius:999px;
   margin-top:0.6rem;border-bottom:none;font-weight:600;
 }
@@ -289,7 +289,7 @@ a:hover .arrow,button:hover .arrow{transform:translateX(4px)}
   color:rgba(255,255,255,0.75);font-weight:500;
   transition:all .35s var(--ease);
 }
-.role-toggle button.on{background:var(--brand);color:#000;font-weight:600;box-shadow:0 3px 14px rgba(200,130,10,0.35)}
+.role-toggle button.on{background:var(--brand);color:#fff;font-weight:600;box-shadow:0 3px 14px rgba(200,130,10,0.35)}
 
 .hero-h{
   font-size:clamp(2.8rem,6vw,5.5rem);

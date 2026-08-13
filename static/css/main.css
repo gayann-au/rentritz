@@ -1384,7 +1384,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   left: 50%;
   transform: translateX(-50%);
   background: var(--brand);
-  color: var(--black);
+  color: #fff;
   font-size: 0.7rem;
   font-weight: 600;
   padding: 3px 12px;
