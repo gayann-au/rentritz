@@ -566,6 +566,38 @@ revertible page. Treated as a phase in its own right:
 - Expect it to take longer than any single page. It holds the largest remaining
   block of untouched literals.
 
+### Phase 3b progress — 107 literals at the start
+
+| Commit | Section | Lines | Done | Left |
+|---|---|---|---|---|
+| `39395c0` | BUTTONS + NAV | 86–223 | 7 | 1 (`color:#fff`) |
+| `675fd41` | LANDING PAGE | 271–711 | 9 | 6 (5 white text, 1 `#eee`) |
+| — | DASHBOARD / ANSWER / CREDITS | 862–1409 | | 10 |
+| — | BADGES + UTILITIES | 1410–1463 | | 13 |
+| — | ADMIN / ADMIN LOGIN / TREE BUILDER | 1464–1661 | | **42 — mostly DEAD, see below** |
+| — | RESPONSIVE | 1662–1887 | | 4 |
+
+**The three ADMIN sections hold 42 of the 107 literals and are almost entirely
+dead** (F10: 9 of 10 classes unreachable, their templates load `admin.css` not
+`main.css`). Only `.nav-admin` is live, at `base.html:47`. Tokenise `.nav-admin`
+only; leave the rest for the post-merge cleanup chore under D3.
+
+**Lines 1–75 need nothing.** The 12 literals a scanner reports there are all
+inside the alias map's own `[C5]`/`[C10]`/`[C8]` comments.
+
+### Method note for the remaining sections
+
+**Detect the property per declaration, not per line.** A line-start regex misses
+single-line rules like `.vs-col h4 { color: rgba(...); }` and will map text to a
+surface token. That happened in `675fd41` and was caught and reverted inside the
+same commit. Value-identical so nothing rendered wrong, but it is the exact role
+error the page-16 lesson warns about — and in `main.css` the cost of that error
+is 24 pages, not one.
+
+**`main.css` also carries a lot of dead CSS.** `landing.html` does not load it,
+so 27 of the LANDING PAGE section's 39 classes are unreachable. Expect the same
+elsewhere. Log it; do not delete — that is the post-merge chore.
+
 ---
 
 ## F14 — CRITICAL FOR STEP 7. Flask caches compiled templates.
