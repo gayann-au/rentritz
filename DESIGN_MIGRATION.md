@@ -536,7 +536,28 @@ Pause for review after every 3 ticked pages.
 | 7 | `auth/login.html` + `register.html` | `6af6a04` | 7 lit | **0 — fully clean** |
 | 8 | `templates/core/credits.html` | `dd97a87` | 41 var + 12 lit | 5 |
 | 9 | `templates/core/history.html` | `f81319f` | 18 var + 10 lit | 6 |
-| 10–26 | — | — | — | not started |
+| 10 | `templates/core/for_lawyers.html` | `f6e913b` | 47 lit | 12 |
+| 11 | `templates/lawyers/dashboard.html` | `da2a6e0` | 62 var + 32 lit | 1 |
+| 12 | `templates/lawyers/edit_profile.html` | `829b7f7` | 20 var + 6 lit | 1 |
+| — | status sweep, pages 2/5/6/9 | `a795663` | 24 lit | — |
+| 13–26 | — | — | — | not started |
+
+**Next up:** 13 `lawyers/register` + `lawyers/login`, 14 `lawyers/review`,
+15 `auth/forgot_password` + `reset_password`.
+
+**F12 fully closed.** Pages 2, 5, 6 and 9 were done before the channels
+existed; `a795663` swept them. Only `lawyers/register.html` still holds raw
+status literals (2 × `#f87171`) and it gets them in its own commit at page 13.
+
+**Two greens converged.** `#4ade80` and `#10b981` were both doing
+success/verified duty and now resolve to one token, per D7.
+
+### Still to do at Step 5 — the `--deep-grey` rebase
+
+Every page now writes `rgba(var(--deep-grey-rgb), a)` for rules and borders.
+`--deep-grey` dissolves into the ink channel, so this is **one uniform
+find-and-replace** of `--deep-grey-rgb` → `--ink-rgb` across the tree, plus
+deleting the token. Not per-site work.
 
 **Next up:** 10 `core/for_lawyers`, 11 `lawyers/dashboard`, 12 `lawyers/edit_profile`.
 

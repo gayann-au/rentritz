@@ -40,6 +40,9 @@ Look at these first. They are the only intentional departures so far.
 | `core/credits.html` | `/credits` | `:root` removed, 41 vars + 12 literals remapped | **Biggest amber shift of any page** — this page's `:root` carried the *admin* amber (`#f59e0b`/`#d97706`), so 9 accent call sites plus 3 washes all move to `#c8820a` **[C1]** and 3 hovers to `#a86a08` **[C3]**. Look at the pricing cards and the buy buttons. **Also: the credit ledger amounts.** Positive was light green `#4ade80`, negative light red `#f87171`; both are now the darker status tokens. Check they still read as clearly positive/negative. Corners 14px → 12px, easing **[C15]**. |
 | `core/history.html` | `/history` | `:root` removed, 18 vars + 10 literals remapped | Amber **[C1]**, hover **[C3]**, corners 14px → **12px**, easing **[C15]**. **Known gap:** the completed-status pills keep a light-green *background* while their text moved to the darker success token — the pill may look washed out until the success-channel question is settled. Not a bug, a logged stop. |
 
+| `lawyers/dashboard.html` | `/lawyers/dashboard` | `:root` removed, 62 vars + 32 literals remapped | Amber **[C1]**, hover **[C3]**, corners 14px → **12px**, easing **[C15]**. **Booking status pills** are the thing to look at — their backgrounds were light green/red/blue washes under dark text and now derive from the darker status tokens, so pill and label finally share a hue. Info blue is value-identical, so it should look untouched. |
+| `lawyers/edit_profile.html` | `/lawyers/edit-profile` | `:root` removed, 20 vars + 6 literals remapped | Amber **[C1]**, hover **[C3]**. The two **required-field markers** move from light `#f87171` to the darker `--error-text`, matching profile.html. |
+
 ---
 
 ## Public pages — I screenshot these
@@ -47,7 +50,7 @@ Look at these first. They are the only intentional departures so far.
 | Page | Route | Changed | Status |
 |---|---|---|---|
 | `core/landing.html` | `/` | 25 literals → tokens, all value-identical | Verified live: every token resolves to its original value, `.on-dark .section-h` still computes `rgb(248,246,242)`. **Expect zero visible change.** Still to do at Step 7: check the Burj Khalifa hero against the new red once Step 5 lands. |
-| `core/for_lawyers.html` | `/for-lawyers` | Font load only | Bold text is now the **real** DM Sans 700 cut instead of browser-synthesised faux-bold. Look at headings and any bold run — they should look cleaner, slightly narrower. |
+| `core/for_lawyers.html` | `/for-lawyers` | Font load + 47 literals tokenised | Two things. **(1)** Bold text is now the **real** DM Sans 700 cut, not synthesised faux-bold — headings should look cleaner. **(2)** This page carried more stale values than any other: nav/logo accent `#f5a623` → `#e0a040` **[C2]**, hovers **[C3]**, the "why" band `#f2ede6` → `#f0ece6` **[C5]**. The dark hero stays dark (D5) but its overlay moved from pure black to warm ink — check the hero photo still reads well through it. |
 | `core/terms.html` | `/terms` | See **P1** | Not yet done |
 | `core/privacy.html` | `/privacy` | See **P2** | Not yet done |
 | 4 auth pages | `/login` etc. | — | Not yet done |
