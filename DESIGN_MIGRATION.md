@@ -846,8 +846,13 @@ Public routes verified live so far: `/`, `/terms`, `/for-lawyers`.
 
 ### D5 — THE DARK SURFACE RULE. Apply this, do not decide case by case.
 
-> **A dark surface is allowed ONLY when it is a hero, or a full-bleed section
-> behind a headline. Everywhere else is light.**
+> **Dark surfaces are allowed for heroes, full-bleed sections behind a headline,
+> and admin chrome, which is exempt from the customer palette entirely.
+> Everywhere else is light.**
+>
+> *(Amended. The original said "heroes only", which made the rule
+> self-contradictory against the standing admin exemption — someone would have
+> read it in six months and converted `.nav-admin`.)*
 
 | Surface | Hero? | Ruling |
 |---|---|---|
@@ -855,6 +860,7 @@ Public routes verified live so far: `/`, `/terms`, `/for-lawyers`.
 | `answer.html` `.ans-hero` | **yes** — hero | **stays dark** |
 | `terms.html` / `privacy.html` `body` | **no** — a full page of reading text | **convert to light**, page 16 |
 | `dashboard.html` onboarding modal | **no** — a panel | converted, `885f979` |
+| `.nav-admin` strip, `base.html:47` | **admin chrome** | **stays dark.** `#1a1a1a`/`#2a2a2a` have no token equivalent and admin is exempt from the customer palette. The one live dark surface outside a hero. |
 
 Every remaining dark surface is decided against this rule. Open item still to
 be judged: `answer.html` `.btn-rera` (black CTA, hovers `#1a1a1a`) — a button,

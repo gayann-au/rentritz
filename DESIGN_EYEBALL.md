@@ -134,6 +134,16 @@ working as intended, not a page that failed to migrate.
 `terms` and `privacy` were dark and are being converted, because a page of
 reading text is not a hero.
 
+## Check the progress tracks
+
+`.read-progress-bar` (the reading-progress strip on `/answer/<id>`) and
+`.progress-seg` now use `--rule` as a solid fill instead of an opaque grey.
+
+**The track must be visible but clearly quieter than the filled portion.** At 12%
+ink over warm white it should read as a faint recessed line. If it looks too
+faint to register as a track, that is a one-number adjustment at Step 6 — not a
+new token.
+
 ## Not to be alarmed by
 
 - **Status colours are partly migrated.** Solid greens/reds now use
