@@ -1,5 +1,19 @@
 # DESIGN_EYEBALL.md
 
+> # ⚠️ HARD-RELOAD EVERY PAGE BEFORE YOU JUDGE IT
+>
+> **Ctrl+Shift+R (or Cmd+Shift+R). Every page, every time.**
+>
+> The browser has served a stale stylesheet **twice** during this migration
+> while the file on disk and the file on the server were both correct. A soft
+> reload is not enough — CSS is cached aggressively and you will be looking at
+> the old palette.
+>
+> **A stale page makes your review worthless**, and worse, it produces
+> confident wrong conclusions: you would report bugs that do not exist and miss
+> ones that do. If anything looks unchanged when this file says it changed,
+> hard-reload before reporting it.
+
 **The Step 7 review list.** Built as each page is tokenised, while the changes
 are fresh — not written up at the end.
 
@@ -22,6 +36,18 @@ Look at these first. They are the only intentional departures so far.
 
 | # | Page | Route | What changed | What to look for |
 |---|---|---|---|---|
+### ⚠️ P1/P2 are the largest visual change in the project — read before reviewing them
+
+Dark-to-light breaks things a colour swap does not. Specifically checked when
+those pages are done:
+
+- **Every `color:#fff` / `color:white` must become `--ink`.** Miss one and that
+  text is invisible on the new light background. This is the failure mode — not
+  "looks a bit off", but *gone*.
+- **Borders and dividers were built to show against near-black.** On light they
+  either vanish or read far too heavy. Each one checked individually.
+- Own commit, first item here.
+
 | P1 | `core/terms.html` | `/terms` | **Was a near-black page.** `body{background:#0a0a0a}` → light R1 surfaces, `--paper` background, `--ink` text | Whole page flips from near-black to warm white. Confirm the legal text is comfortably readable, headings still separate from body, and no element kept a dark background it now sits alone on. **Not yet done — page 16.** |
 | P2 | `core/privacy.html` | `/privacy` | Same as P1 | Same as P1. Should end up visually identical in treatment to `/terms`. **Not yet done — page 16.** |
 | P3 | `core/dashboard.html` onboarding modal | `/dashboard`, new users only | **Was a dark panel.** `#111111` → `var(--card)`; backdrop `rgba(0,0,0,0.92)` → `rgba(var(--ink-rgb),0.55)`; text `#ffffff`/`#888888`/`#555555` → `--ink`/`--muted`/`--dim` | Modal is now a white card on a dimmed page. **Judge the scrim specifically** — 55% ink is my number, not a palette value. Too light and the modal stops feeling modal; too heavy and it reads as a takeover. Also confirm the three text levels still rank: heading darkest, then secondary, then the faintest label. Trigger it with a new account. |

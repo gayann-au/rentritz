@@ -802,6 +802,24 @@ to assert `--paper-rgb` is in what the browser actually receives. Needs the app
 running; `--skip-http` for static only. Every check was proven to fire against a
 deliberately broken file.
 
+### PAGE 16 PROCEDURE — terms + privacy, the D1 dark-to-light conversion
+
+The largest single visual change in the project. Dark-to-light breaks things a
+colour swap does not, so this page does **not** follow the standard recipe alone.
+
+1. **Find every `color:#fff` / `color:white` / `rgba(255,255,255,a)` FIRST** and
+   convert to `--ink` (or `--muted`/`--dim` by hierarchy). **Miss one and that
+   text renders invisible on the new light background.** This is the single
+   biggest risk on the page and it fails silently — the text is still in the
+   DOM, just unreadable.
+2. **Audit every border and divider individually.** They were tuned to show
+   against near-black; on light they either vanish or read far too heavy.
+   Do not bulk-convert them.
+3. `body{background:#0a0a0a}` → `--paper`; sunken panels → `--paper-2`.
+4. The achromatic exception does **not** apply here. On a dark page `color:#fff`
+   was body text, not a button label.
+5. **Own commit**, one for each page. First item in `DESIGN_EYEBALL.md`.
+
 **Standing per-page recipe** (pages 4–26), so this is not re-derived:
 1. Inventory the local `:root` and every `var()` and literal. Strip `&#nnnn;`
    HTML entities first — `&#8594;` and `&#128196;` look like hex colours and are not.

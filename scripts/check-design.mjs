@@ -20,7 +20,7 @@
  * Exit code 0 = pass, 1 = at least one failure.
  */
 
-import { readFileSync, existsSync } from 'node:fs';
+import { readFileSync, existsSync, readdirSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -207,7 +207,49 @@ for (const rel of CSS_FILES) {
   }
 }
 
-// 6. the channel tokens Step 5 depends on must still be declared
+// 6. achromatic literals used as a SURFACE.
+//
+//    #fff / #000 on a background is a surface and must be a token. On color:
+//    they stay literal — that is the named achromatic exception for button
+//    labels, where no white/black TEXT token exists.
+//
+//    This exists because the distinction was nearly missed by eye on
+//    for_lawyers.html: four background:#fff were read as "button labels" when
+//    they were card surfaces. Same error class as F13 — inferring role from
+//    appearance instead of from the property. The property decides.
+{
+  const templateFiles = [];
+  const walk = (dir) => {
+    for (const entry of readdirSync(dir, { withFileTypes: true })) {
+      if (entry.isDirectory()) {
+        if (entry.name === 'admin' || entry.name === 'email') continue; // exempt
+        walk(join(dir, entry.name));
+      } else if (entry.name.endsWith('.html')) {
+        templateFiles.push(join(dir, entry.name));
+      }
+    }
+  };
+  const tplRoot = join(ROOT, 'templates');
+  if (existsSync(tplRoot)) walk(tplRoot);
+
+  const SURFACE_LITERAL =
+    /background(?:-color)?\s*:\s*[^;{}]*?(#fff\b|#ffffff\b|#000\b|#000000\b)/gi;
+
+  for (const abs of [...templateFiles, join(ROOT, 'static/css/main.css')]) {
+    if (!existsSync(abs)) continue;
+    const rel = abs.slice(ROOT.length + 1).replace(/\\/g, '/');
+    const src = stripComments(readFileSync(abs, 'utf8'));
+    for (const m of src.matchAll(SURFACE_LITERAL)) {
+      fail(rel,
+        `"${m[1]}" is used as a SURFACE near line ${lineOf(src, m.index)} ` +
+        `(${m[0].trim().slice(0, 60)}). Backgrounds must be tokens — use ` +
+        `var(--card) for white, var(--ink-2) for black. On color: they may ` +
+        `stay literal (the achromatic label exception).`);
+    }
+  }
+}
+
+// 7. the channel tokens Step 5 depends on must still be declared
 const tokensAbs = join(ROOT, 'static/css/tokens.css');
 if (existsSync(tokensAbs)) {
   const tokensSrc = stripComments(readFileSync(tokensAbs, 'utf8'));
