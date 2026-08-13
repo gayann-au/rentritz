@@ -661,6 +661,52 @@ Pages currently carrying raw status literals to be repointed at Step 5:
 already routed to `--error-text` in `profile.html`, `d8af096`), `#10b981`
 (success/verified), `#60a5fa` / `rgba(96,165,250,a)` (info — leave).
 
+### F13 — BLOCKING and the biggest finding for Step 5: the accent ramp is mostly TEXT
+
+R1 is explicit: `--brand` is **FILLS ONLY**, never text on light; `--brand-deep`
+is the token for red text and links. But the accent this replaces is used as
+text more than as fill:
+
+| Token | `color:` | fills (`background`) | borders / other |
+|---|---|---|---|
+| `--amber` `#c8820a` | **107** | 62 | 32 |
+| `--amber-soft` `#e0a040` | **17** | 4 | 2 |
+| `--amber-2` `#a86a08` | 5 | 12 | 2 |
+
+**A 1:1 swap of `--amber` → `--brand` would put `#D6263A` on light backgrounds
+as text in 107 places**, breaking the rule you wrote, at the very ratio you
+flagged as thin (~4.9:1).
+
+The ramp cannot map token-to-token. It has to split **by property**:
+`color:` → `--brand-deep`, fills → `--brand`. That is ~124 call sites across
+the app and it cannot be done by find-and-replace on the token name — every
+site needs its property inspected, exactly like the F7 role map.
+
+**Not started. Needs your ruling before Step 5a.**
+
+### Orphan report — the tokens still needing a decision
+
+Everything else in F9 is now settled: shadows D6, status values D7, `--dark` /
+`--dark-mid` D5. These remain:
+
+| Token | Value | Styles | R1 problem |
+|---|---|---|---|
+| `--amber` | `#c8820a` | accent, 201 sites | see **F13** — splits by property |
+| `--amber-soft` | `#e0a040` | gradient partner to `--amber`; 17 text sites | R1's `--brand-soft` `#F5D5D9` is a pale tint, **not** a gradient partner. No equivalent. |
+| `--amber-2` | `#a86a08` | hover / deeper accent | maps to `--brand-deep` cleanly |
+| `--amber-glow` | `rgba(amber,.12)` | washes | derives from the brand channel, mechanical |
+| `--amber-border` | `rgba(amber,.25)` | accent borders | derives from the brand channel, mechanical |
+| `--rule-soft` | `rgba(58,53,48,.06)` | faint dividers | R1's `--rule` is `rgba(26,18,20,.12)` — **ink**-based, not deep-grey. Rebase? |
+| `--border-strong` | `rgba(58,53,48,.22)` | emphasised dividers | same rebase question |
+| `--light-sand` | `#ebe4d8` | warm neutral fill | no R1 counterpart |
+| `--deep-grey` | `#3a3530` | the base of every rule/border | no R1 counterpart, and R1 implies rules move to ink |
+| status channels | — | 9 washes | **F12** — no `--success-rgb` etc., so pill backgrounds cannot follow D7 |
+
+Page-level literals with no token, for the same decision:
+`#000` / `#fff` button labels (56 sites), `rgba(0,0,0,a)` shadows and scrims
+(~20), `#0d0d0d` + `#1a1a1a` (answer hero and CTA, kept dark under D5),
+`#d68b0c` (landing's amber button hover), `#2a2018` (for_lawyers).
+
 ### Post-merge cleanup — one chore, AFTER the PR merges, never during
 
 Dead CSS in `main.css`, unreachable from any routed template (see F10). Removal,

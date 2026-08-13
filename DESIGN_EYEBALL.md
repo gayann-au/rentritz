@@ -87,8 +87,9 @@ reading text is not a hero.
 
 ## Not to be alarmed by
 
-- **Status colours are deliberately untouched** — greens (`#4ade80`), reds
-  (`#f87171`) and their washes have no token and were left as literals by the
-  "leave it and log" rule. They will still look un-migrated after Step 5.
+- **Status colours are partly migrated.** Solid greens/reds now use
+  `--success-text` / `--error-text` and will follow D7. Their **washes**
+  (`rgba(74,222,128,a)` etc.) cannot — no channel token exists — so pill
+  backgrounds will still look un-migrated after Step 5. Logged as F12.
 - **Button label text** stays `#fff` / `#000000`. There is no white or black
   *text* token; `--card` is a surface. Logged, not an oversight.
