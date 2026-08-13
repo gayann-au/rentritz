@@ -585,6 +585,59 @@ only; leave the rest for the post-merge cleanup chore under D3.
 **Lines 1–75 need nothing.** The 12 literals a scanner reports there are all
 inside the alias map's own `[C5]`/`[C10]`/`[C8]` comments.
 
+### PHASE 3b CLOSED — 74 literals remain in `main.css`. READ THIS.
+
+Started at 107. **74 remain.**
+
+| | count |
+|---|---|
+| in **DEAD** rules (unreachable) | **60** |
+| in **LIVE** rules | **10** |
+| in element / no-class rules (live) | **4** |
+
+> ### ⚠️ AFTER STEP 5 EVERY ONE OF THESE 74 STILL HOLDS THE OLD AMBER-ERA PALETTE.
+>
+> For the 60 in dead rules that is harmless — nothing renders them. **But it
+> becomes an instant bug the moment anyone revives one of those classes.** A
+> developer un-commenting `.difference-section` or reusing `.admin-table-wrap`
+> in 2027 gets amber-era greys dropped into a crimson app, with no warning and
+> nothing to tell them why.
+>
+> The 60 are covered by the **D3 post-merge cleanup**, which deletes them. Until
+> that chore is done, this hazard is live.
+
+**CORRECTION to the expectation: not all leftovers are dead.** 14 sit in rules
+that render today:
+
+| Value | Where | Why it stayed |
+|---|---|---|
+| `#1a1a1a`, `#2a2a2a` | `.nav-admin` — the dark admin strip, `base.html:47` | no token equivalent; `--ink-2` is `#0e0c0a` |
+| `#fff`, `rgba(255,255,255,.4)`, `rgba(255,255,255,.55)` | white text on dark | achromatic exception, no white TEXT token |
+| `#e5e5e5`, `#d0cdc8`, `#ddd`, `#f0f0f0`, `#fafafa` | borders and light fills | **neutral greys with no token at all** |
+
+**The five neutral greys are the real open item.** They are live, they will not
+move at Step 5, and they are *neutral* against a palette that is deliberately
+*warm*. `#fafafa` and `#e5e5e5` beside `--paper #FFFBFA` may read as a faint
+cold cast. Not a bug today; worth a decision at Step 4.
+
+### `.nav-admin` was a no-op
+
+The approved plan was "tokenise `.nav-admin` only". On inspection its values are
+`#1a1a1a` and `#2a2a2a`, which map to nothing. Nothing changed. The one live
+thing in 197 lines of admin CSS needed no work.
+
+### GAP — the alias map can hide role errors from the guard
+
+`.nav-admin .nav-links a:hover` uses `color: var(--white)`. `--white` is
+`main.css`'s legacy alias for `var(--card)` — **a surface token colouring text**,
+exactly what check 7 exists to catch. The guard misses it because it matches
+`var(--card)`, not the alias.
+
+Every alias in the `main.css` map is a hole of this shape: `--white`, `--black`,
+`--near-black`, `--dark-card`, `--off-white`, `--cream`, `--surface`, `--bg`,
+`--text`, `--text-primary` and the rest. **Not fixed** — resolving aliases in the
+guard is a real change and this is the wrong moment. Logged for Step 4.
+
 ### Method note for the remaining sections
 
 **Detect the property per declaration, not per line.** A line-start regex misses
