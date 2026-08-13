@@ -707,6 +707,56 @@ Page-level literals with no token, for the same decision:
 (~20), `#0d0d0d` + `#1a1a1a` (answer hero and CTA, kept dark under D5),
 `#d68b0c` (landing's amber button hover), `#2a2018` (for_lawyers).
 
+### STEP 5 PROPERTY MAP — F13 resolved. Mechanical, not per-site.
+
+**This was missing from the original Step 5 plan.** The accent ramp cannot map
+token-to-token, because `--amber` is used as text (107) more than as fill (62).
+The **CSS property name decides it**, with no judgement per site:
+
+| Property | Becomes |
+|---|---|
+| `color:` | `--brand-deep` |
+| `background`, `background-color`, `fill`, gradient stops | `--brand` |
+| `border-color`, `border` shorthand, `outline` | `--brand` |
+| `box-shadow` | `--brand` |
+| SVG `stroke` on an icon beside text | `--brand-deep` |
+
+**Do NOT perform 124 manual inspections.** Write a script for this pass.
+
+**Then exactly one manual exception review:** `color: var(--amber)` occurring
+inside a **dark-surface** selector — the landing hero and `answer.html`'s
+`.ans-hero`. Deep crimson on near-black is too dark; those sites need `--brand`
+or lighter. Small set, not 124.
+
+**Contrast context (see `DESIGN_AUDIT.md`):** `#c8820a` on paper is **2.92:1**
+and already fails AA today. `#D6263A` is 4.87:1, `#9B1B2B` is 7.90:1. Routing
+text to `--brand-deep` takes those 107 sites from failing to ~8:1. Crimson is a
+fix here, not a risk.
+
+### Orphans — RESOLVED. No open token decisions remain.
+
+| Token / literal | Resolution |
+|---|---|
+| `--amber` | splits by property, see the map above |
+| `--amber-soft` *(17 text sites)* | `--brand-deep` |
+| `--amber-soft` *(gradient role)* | **NEW `--brand-light` `#E8546A`** — an **invented value**, the only one in this migration. **Fill and gradient ONLY, never text.** Contrast-check in Step 6 if white text ever sits on it. |
+| `--amber-2` | `--brand-deep` |
+| `--amber-glow`, `--amber-border` | derive from the brand channel, mechanical |
+| `--rule-soft` | `rgba(var(--ink-rgb), .06)` |
+| `--border-strong` | `rgba(var(--ink-rgb), .22)` |
+| `--deep-grey` | **dissolves** — rebase every user onto the ink channel |
+| `--light-sand` `#ebe4d8` | `--paper-2` — same role, warm sunken fill |
+| `#d68b0c` landing button hover | `--brand-deep` (hover on a fill) |
+| `rgba(0,0,0,a)` shadows and scrims | `rgba(var(--ink-rgb), a)`, **same opacities**, consistent with D6 |
+| `#000` / `#fff` labels, 56 sites | **leave as literals.** Achromatic, no token needed. **Permanent named exception** — logged here so no future pass "fixes" them. |
+| `#2a2018` in `for_lawyers` | decide by role at page 10 |
+| status washes | closed by F12, `b12a409` |
+
+**Note on `--deep-grey` dissolving:** every page done so far writes
+`rgba(var(--deep-grey-rgb), a)` for rules and borders. At Step 5 that becomes a
+single find-and-replace to `--ink-rgb` across the tree, because the channel name
+is uniform. That uniformity is the whole reason the F8 refactor was worth doing.
+
 ### Post-merge cleanup — one chore, AFTER the PR merges, never during
 
 Dead CSS in `main.css`, unreachable from any routed template (see F10). Removal,
