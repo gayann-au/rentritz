@@ -589,6 +589,53 @@ Public routes verified live so far: `/`, `/terms`, `/for-lawyers`.
 | **D3** | The 9 dead dark-grey classes **stay**. Unreachable, so they render nothing, and deleting is removal not presentation. Logged under *post-merge cleanup* below. `.nav-admin` **is** reachable → tokenise it normally. |
 | **D4** | **Step 7 auth is settled.** Never ask for or accept credentials. I screenshot public routes only: `/`, `/for-lawyers`, `/terms`, `/privacy`, 4 auth, 6 error. Every authenticated page gets a written checklist instead — `DESIGN_EYEBALL.md`, updated **after every page**, not at the end. |
 
+### D5 — THE DARK SURFACE RULE. Apply this, do not decide case by case.
+
+> **A dark surface is allowed ONLY when it is a hero, or a full-bleed section
+> behind a headline. Everywhere else is light.**
+
+| Surface | Hero? | Ruling |
+|---|---|---|
+| `landing.html` dark sections | **yes** — hero / full-bleed behind headlines | **stays dark** |
+| `answer.html` `.ans-hero` | **yes** — hero | **stays dark** |
+| `terms.html` / `privacy.html` `body` | **no** — a full page of reading text | **convert to light**, page 16 |
+| `dashboard.html` onboarding modal | **no** — a panel | converted, `885f979` |
+
+Every remaining dark surface is decided against this rule. Open item still to
+be judged: `answer.html` `.btn-rera` (black CTA, hovers `#1a1a1a`) — a button,
+not a hero, but also not a *surface*; treated as a high-contrast control and
+left, flag if you disagree.
+
+**The intended consequence, stated plainly so nobody "fixes" it later:**
+after Step 5 the two heroes stay near-black while the rest of the app is warm
+white. **That is deliberate two-tone, not drift.**
+
+### D6 — the five shadows are not orphans
+
+They are `--ink` at various opacities. R1 moves ink `#1c1916` → `#1A1214`, so
+each shadow is **recomputed from the new ink triplet at its existing opacity**.
+Structure, geometry and alpha unchanged; nothing invented.
+
+Already mechanical: `6e206fc` routed all five through `rgba(var(--ink-rgb),a)`,
+so Step 5 updates `--ink-rgb` and every shadow follows on its own. **No action
+needed at Step 5 beyond editing the triplet.**
+
+### D7 — status colours are signals, never brand
+
+| Signal | Becomes | Rule |
+|---|---|---|
+| success | `--action` `#1F6B45` | |
+| error **and warning** | `--error` `#B45309` | |
+| info | existing blue, **unchanged** | |
+
+> **Status colours must NEVER become crimson.** Red is the brand now; a red
+> error would be indistinguishable from a brand element.
+
+Pages currently carrying raw status literals to be repointed at Step 5:
+`#4ade80` / `rgba(74,222,128,a)` and `#16a34a` (success), `#f87171` (error —
+already routed to `--error-text` in `profile.html`, `d8af096`), `#10b981`
+(success/verified), `#60a5fa` / `rgba(96,165,250,a)` (info — leave).
+
 ### Post-merge cleanup — one chore, AFTER the PR merges, never during
 
 Dead CSS in `main.css`, unreachable from any routed template (see F10). Removal,

@@ -61,23 +61,27 @@ Look at these first. They are the only intentional departures so far.
 - **No dark mode.** No `prefers-color-scheme` block was added anywhere.
 - **Admin is exempt** and stays dark on Inter. `/admin/*` is out of scope.
 
-## Known gap — the star rating will not follow the palette
+## Closed — the star rating now follows the palette
 
-`lawyers/profile.html` sets its star colours from **JavaScript**, not CSS:
+Was a gap; fixed in `d8af096`. The rating script's colour strings are tokens
+now, so the stars will go crimson with everything else at Step 5.
 
-```js
-l.style.color = i <= idx ? '#f59e0b' : '#555';   // lines 523, 528, 533
-```
+**One real change to look at on `/lawyers/<id>`:** the required-field asterisk
+and the "not enough credits" message were `#f87171`, a light red, on a light
+card. They are now `--error-text` `#991b1b` — **noticeably darker**. Contrast is
+better, but judge whether it reads as too heavy for a small inline marker.
 
-Those are string literals in a `<script>`. Editing them is a code change, and
-the standing rule is presentation only, so I left them.
+Unlit stars moved `#555` → `--dim`, matching the onboarding modal's tertiary
+text. Slightly lighter and warmer than before.
 
-**Consequence:** after Step 5 the stars will still light up **amber** while the
-rest of the page goes crimson. It will look like a bug. It is not — it is a
-logged, deliberate stop.
+## The two-tone is deliberate
 
-The fix is one token per line — `l.style.color = 'var(--amber)'` works on inline
-styles — but it needs your go-ahead. Same applies to a `#f87171` in that script.
+After Step 5, **the landing hero and the answer-page hero stay near-black**
+while the rest of the app is warm white. That is the dark-surface rule (D5)
+working as intended, not a page that failed to migrate.
+
+`terms` and `privacy` were dark and are being converted, because a page of
+reading text is not a hero.
 
 ## Not to be alarmed by
 
