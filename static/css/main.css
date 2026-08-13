@@ -1275,7 +1275,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   font-size: 0.78rem;
   color: var(--text-muted);
   background: var(--off-white);
-  border: 1px solid #e5e5e5;
+  border: 1px solid var(--rule);
   padding: 5px 12px;
   border-radius: 4px;
 }
@@ -1302,7 +1302,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   align-items: center;
   gap: 8px;
   padding: 10px 20px;
-  border: 1.5px solid #ddd;
+  border: 1.5px solid var(--rule);
   border-radius: var(--radius-sm);
   font-size: 0.85rem;
   font-weight: 500;
@@ -1360,7 +1360,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 
 .credit-pack {
   background: var(--white);
-  border: 2px solid #e5e5e5;
+  border: 2px solid var(--rule);
   border-radius: var(--radius);
   padding: 28px 20px;
   text-align: center;
@@ -1430,7 +1430,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 .table-wrap {
   overflow-x: auto;
   border-radius: var(--radius-sm);
-  border: 1px solid #e5e5e5;
+  border: 1px solid var(--rule);
   background: var(--white);
 }
 
@@ -1446,12 +1446,12 @@ th {
   letter-spacing: 0.05em;
   text-transform: uppercase;
   color: var(--text-muted);
-  border-bottom: 1px solid #e5e5e5;
-  background: #fafafa;
+  border-bottom: 1px solid var(--rule);
+  background: var(--paper-2);
 }
-td { border-bottom: 1px solid #f0f0f0; color: var(--text); }
+td { border-bottom: 1px solid var(--rule); color: var(--text); }
 tr:last-child td { border-bottom: none; }
-tbody tr:hover { background: #fafafa; }
+tbody tr:hover { background: var(--paper-2); }
 
 .empty-state {
   text-align: center;
@@ -1699,7 +1699,7 @@ tbody tr:hover { background: #fafafa; }
 .cat-pill {
   display: inline-block;
   padding: 10px 20px;
-  border: 1px solid #d0cdc8;
+  border: 1px solid var(--rule);
   border-radius: 100px;
   font-size: 0.88rem;
   font-weight: 500;
@@ -1790,7 +1790,7 @@ tbody tr:hover { background: #fafafa; }
   font-size: 0.78rem;
   padding: 6px 12px;
   border-radius: 20px;
-  border: 1px solid #d0cdc8;
+  border: 1px solid var(--rule);
   background: white;
   color: var(--near-black);
   cursor: pointer;
