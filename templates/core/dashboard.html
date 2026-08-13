@@ -692,7 +692,7 @@
 #ob-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.92);
+  background: rgba(var(--ink-rgb),0.55);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   z-index: 1000;
@@ -714,7 +714,7 @@
 #ob-panel {
   width: 100%;
   max-width: 560px;
-  background: #111111;
+  background: var(--card);
   border: 1px solid rgba(var(--deep-grey-rgb),0.1);
   border-radius: 20px;
   padding: 56px 48px;
@@ -750,7 +750,7 @@
   font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   font-size: 2rem;
   font-weight: 700;
-  color: #ffffff;
+  color: var(--ink);
   line-height: 1.15;
   letter-spacing: -0.025em;
   margin: 0 0 16px;
@@ -759,7 +759,7 @@
 .ob-subtitle {
   font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   font-size: 0.95rem;
-  color: #888888;
+  color: var(--muted);
   line-height: 1.7;
   margin: 0 0 32px;
 }
@@ -819,14 +819,14 @@
   font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   font-size: 0.95rem;
   font-weight: 600;
-  color: #ffffff;
+  color: var(--ink);
   margin: 0 0 4px;
 }
 
 .ob-point-desc {
   font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   font-size: 0.85rem;
-  color: #888888;
+  color: var(--muted);
   line-height: 1.6;
   margin: 0;
 }
@@ -861,7 +861,7 @@
 .ob-footer-note {
   font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   font-size: 0.78rem;
-  color: #555555;
+  color: var(--dim);
   text-align: center;
   margin: 0;
 }
