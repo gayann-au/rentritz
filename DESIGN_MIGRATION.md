@@ -548,6 +548,39 @@ token-alpha literal is left un-channelled. **Visual confirmation of every
 authenticated page is deferred to Step 7 and needs a logged-in session from you.**
 Public routes verified live so far: `/`, `/terms`, `/for-lawyers`.
 
+### Decisions settled 2026-08-13 — do not re-litigate
+
+| # | Decision |
+|---|---|
+| **D1** | `terms.html` + `privacy.html` `body{background:#0a0a0a}` is **drift, not design**. Convert both to R1 light: `--paper` background, `--ink` text. They stay in the normal 26 (page 16). Large visible change → **top of the eyeball list**. |
+| **D2** | Dashboard onboarding modal → **light**. `--card` panel on a dimmed backdrop. **No dark overlay token.** Done in `885f979`. |
+| **D3** | The 9 dead dark-grey classes **stay**. Unreachable, so they render nothing, and deleting is removal not presentation. Logged under *post-merge cleanup* below. `.nav-admin` **is** reachable → tokenise it normally. |
+| **D4** | **Step 7 auth is settled.** Never ask for or accept credentials. I screenshot public routes only: `/`, `/for-lawyers`, `/terms`, `/privacy`, 4 auth, 6 error. Every authenticated page gets a written checklist instead — `DESIGN_EYEBALL.md`, updated **after every page**, not at the end. |
+
+### Post-merge cleanup — one chore, AFTER the PR merges, never during
+
+Dead CSS in `main.css`, unreachable from any routed template (see F10). Removal,
+not presentation, so it does not belong in this PR:
+
+`.admin-body`, `.admin-form-card`, `.admin-login-card`, `.admin-login-page`,
+`.admin-table-wrap`, `.stat-card`, `.tree-canvas`, `.tree-node`, `.tree-option`
+— 18 selectors carrying dark greys. **Keep `.nav-admin`**, it is live at
+`base.html:47`.
+
+### The guard — run after EVERY page commit
+
+```
+node scripts/check-design.mjs
+```
+
+Added in `356cf22` because the nested-comment failure was silent — no console
+error, no build error, no test failure. Checks nested comments, unterminated
+comments, real delimiter counts, brace balance, stray top-level declarations,
+the 12 channel tokens, and finally **fetches `/static/css/tokens.css` over HTTP**
+to assert `--paper-rgb` is in what the browser actually receives. Needs the app
+running; `--skip-http` for static only. Every check was proven to fire against a
+deliberately broken file.
+
 **Standing per-page recipe** (pages 4–26), so this is not re-derived:
 1. Inventory the local `:root` and every `var()` and literal. Strip `&#nnnn;`
    HTML entities first — `&#8594;` and `&#128196;` look like hex colours and are not.
@@ -558,7 +591,8 @@ Public routes verified live so far: `/`, `/terms`, `/for-lawyers`.
    dark-panel greys.
 5. Check braces and comments balance per `<style>` block; confirm every
    remaining token name is globally defined.
-6. One commit per page. Update this table.
+6. One commit per page. Update this table AND DESIGN_EYEBALL.md.
+7. Run node scripts/check-design.mjs after the commit.
 
 **Page 1 detail — `core/landing.html`.** No local `:root`; inherits `tokens.css`.
 Replaced, all value-identical: `#f8f6f2`→`var(--paper)` ×8, `#1c1916`→`var(--ink)` ×6,
