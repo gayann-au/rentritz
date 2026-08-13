@@ -584,6 +584,34 @@ fine; one edited *after* it has been rendered serves stale until restart. That
 is why `/auth/login` verified correctly earlier in the same session and `/terms`
 did not.
 
+### ALL PRE-STEP-7 VISUAL CONFIRMATIONS ARE SUPERSEDED
+
+Neither of us recorded which templates were edited after their first render in a
+session. **Every visual claim made across all 17 page units is therefore of
+unknown value** — not merely the landing one I first flagged. Any of them may
+have been read off cached markup.
+
+**Step 7 is the only visual verification that counts. Do not cite any earlier
+one as evidence.** Not in the PR, not in review, not here. Where an earlier
+commit message says "verified live", read it as "verified live, superseded by
+F14".
+
+**What is NOT devalued:** the CSS substitutions themselves. They were
+value-preserving by construction — decimal forms of the same hex, or an approved
+collision — and the guard checks the served stylesheet over HTTP, which is a
+static file Jinja never caches. The token layer is sound. It is the *visual*
+claims that are void.
+
+### ROOT CAUSE FIXED — `134a45f`
+
+`run.py --dev` selects `DevelopmentConfig`, which enables
+`TEMPLATES_AUTO_RELOAD`. Production default deliberately unchanged, because
+`run.py` is what Render runs. `.claude/launch.json` passes `--dev`.
+
+Proven, not assumed: `/terms` was requested to force it into the template
+cache, the template was edited, and re-requesting **without a restart** returned
+the new markup. The same test failed before the fix.
+
 ### Consequences
 
 - **Step 7 must run against a freshly restarted server.** Otherwise you review

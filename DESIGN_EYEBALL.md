@@ -9,9 +9,21 @@
 > reload is not enough — CSS is cached aggressively and you will be looking at
 > the old palette.
 >
-> **And restart the server first.** Flask caches compiled templates in
-> production mode, so a template edit is invisible until the process restarts —
-> a hard reload alone will not save you. See F14.
+> ## AND START THE SERVER WITH `--dev`
+>
+> ```
+> python run.py --dev
+> ```
+>
+> **Step 7 MUST run against a freshly restarted server.** A hard browser reload
+> does **NOT** defeat Jinja's template cache — that staleness is server-side.
+> Without `--dev`, Flask compiles each template once and serves that copy for
+> the life of the process, so template edits are invisible no matter what the
+> browser does. Startup prints `DEV MODE: template auto-reload ON`; if you do
+> not see that line, stop and restart.
+>
+> **Every visual check made before Step 7 is superseded** and none is cited as
+> evidence anywhere. This review is the only one that counts.
 >
 > **A stale page makes your review worthless**, and worse, it produces
 > confident wrong conclusions: you would report bugs that do not exist and miss
