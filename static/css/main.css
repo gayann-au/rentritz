@@ -114,7 +114,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   font-weight: 600;
   box-shadow: var(--shadow-amber);
 }
-.btn-amber:hover { background: var(--amber-dark); transform: translateY(-1px); box-shadow: 0 6px 28px rgba(200,130,10,0.28); }
+.btn-amber:hover { background: var(--amber-dark); transform: translateY(-1px); box-shadow: 0 6px 28px rgba(var(--amber-rgb),0.28); }
 
 .btn-outline {
   background: transparent;
@@ -126,9 +126,9 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 .btn-outline-white {
   background: transparent;
   color: var(--white);
-  border: 1.5px solid rgba(255,255,255,0.3);
+  border: 1.5px solid rgba(var(--card-rgb),0.3);
 }
-.btn-outline-white:hover { border-color: rgba(255,255,255,0.7); background: rgba(255,255,255,0.05); }
+.btn-outline-white:hover { border-color: rgba(var(--card-rgb),0.7); background: rgba(var(--card-rgb),0.05); }
 
 .btn-lg { padding: 15px 32px; font-size: 1rem; }
 .btn-sm { padding: 8px 16px; font-size: 0.82rem; }
@@ -139,7 +139,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   cursor: not-allowed;
   transform: none !important;
 }
-.btn.ready { box-shadow: 0 4px 20px rgba(245,158,11,0.3); }
+.btn.ready { box-shadow: 0 4px 20px rgba(var(--amber-rgb),0.3); }
 
 
 /* ── NAV ────────────────────────────────────────────────────────────────────── */
@@ -148,7 +148,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   position: sticky;
   top: 0;
   z-index: 100;
-  background: rgba(248,246,242,0.94);
+  background: rgba(var(--paper-rgb),0.94);
   border-bottom: 1px solid var(--border);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
@@ -157,7 +157,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 }
 
 .nav.scrolled {
-  background: rgba(248,246,242,0.98);
+  background: rgba(var(--paper-rgb),0.98);
   box-shadow: var(--shadow-md);
 }
 
