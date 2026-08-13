@@ -34,6 +34,44 @@ value.
 
 Out of scope but not excluded — pending the deletion decision below: `rentritz-landing/index.html` (58 hex), `landing/App.jsx` (9), `static/manifest.json` (2). These 69 make up the difference between 398 and 467.
 
+### ⚠️ Accepted trade-off — landing is no longer self-contained
+
+Extracting landing's `:root` into `static/css/tokens.css` **removed the landing
+page's self-containment**. Before, `templates/core/landing.html` carried its own
+tokens inline and rendered correctly from any context, including opening the file
+straight off disk. Now it depends on an external stylesheet.
+
+**Failure mode:** if `tokens.css` fails to load in production, landing does not
+degrade gracefully — every `var()` reference becomes invalid, colour declarations
+are dropped, and text falls back to initial black. Over the dark photographic
+hero that means **dark-on-dark and unreadable**, not merely unstyled.
+
+**This was accepted deliberately**, to avoid two token systems drifting apart —
+the exact duplication this refactor exists to remove. Recorded here so nobody is
+surprised later.
+
+**Known benign trigger:** opening `templates/core/landing.html` directly from
+disk (`file://`) always reproduces the unreadable state, because
+`{{ url_for(...) }}` is Jinja and only resolves when Flask renders the template.
+Off disk the `href` stays a literal `{{ ... }}` string, the stylesheet 404s, and
+the page looks broken. **Always verify landing through Flask, never via `file://`.**
+
+#### Verification through Flask — 2026-08-12, commit `fda47e1`
+
+| Check | Result |
+|---|---|
+| `GET /` | **200** |
+| `GET /static/css/tokens.css` | **200**, correct content |
+| `<link>` before `<style>` in `<head>` | **Yes** — link line 12, `<style>` line 14 |
+| `url_for` output | resolves to `/static/css/tokens.css`, served by Flask's static handler |
+| Loaded stylesheets (browser) | DM Sans, `http://localhost:5055/static/css/tokens.css`, inline |
+| Token resolution (computed) | `--paper #f8f6f2`, `--ink #1c1916`, `--amber #c8820a`, `--amber-soft #e0a040`, `--muted #6b6157`, `--ease cubic-bezier(0.22,1,0.36,1)` — all resolve |
+| `body` background (computed) | `rgb(248, 246, 242)` = `--paper` ✅ |
+| Hero heading legibility | **Readable** — light heading over the dark hero photo, amber italic accent intact |
+
+**Verdict: landing is not broken.** The dark-on-dark screenshot was a `file://`
+testing artifact, exactly as predicted. No revert required; `4280438` stands.
+
 ### Resolved blockers
 
 - **B1 — resolved.** Consolidate, do not adopt a new system.
