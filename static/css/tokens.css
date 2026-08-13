@@ -32,7 +32,32 @@
    before any other at-rule or style rule.
    ──────────────────────────────────────────────────────────── */
 
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600&display=swap');
+
+/* ── Section 0b · type roles ─────────────────────────────────
+   Bricolage Grotesque is a VARIABLE font on the optical-size axis, so the
+   12..96 range is requested once and each heading picks the cut that suits
+   its rendered size. Weights 600/700/800 per the brief.
+
+   One request, not two: Bricolage is added to the SAME Google Fonts URL as
+   DM Sans above rather than a second @import. Two @import rules would mean
+   two round trips.
+   ──────────────────────────────────────────────────────────── */
+
+:root{
+  --font-display: 'Bricolage Grotesque', 'DM Sans', -apple-system,
+                  BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-body:    'DM Sans', -apple-system, BlinkMacSystemFont,
+                  'Segoe UI', sans-serif;
+}
+
+/* h1-h4 only. Body, UI and everything else stay on DM Sans.
+   DM Sans is the first fallback, so if Bricolage fails to load the headings
+   land on the face they use today rather than on a system serif. */
+h1, h2, h3, h4 {
+  font-family: var(--font-display);
+  font-optical-sizing: auto;
+}
 
 /* ── Section 1 ───────────────────────────────────────────────
    Copied byte for byte from templates/core/landing.html:19-35.
