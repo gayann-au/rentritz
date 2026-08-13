@@ -49,11 +49,35 @@ socket.setdefaulttimeout(10)
 from waitress import serve          # noqa: E402
 from app import create_app          # noqa: E402
 
-app = create_app(os.environ.get('FLASK_ENV', 'production'))
+# ── Which mode? ──────────────────────────────────────────────────────────────
+# Production stays the default, because this same module is what Render runs.
+# Pass --dev for a local run:
+#
+#     python run.py --dev
+#
+# That selects DevelopmentConfig, which enables TEMPLATES_AUTO_RELOAD
+# (app/__init__.py) and relaxes SESSION_COOKIE_SECURE so sessions survive over
+# plain http on localhost. It does NOT switch on Flask's debugger -- DEBUG is
+# still read from the DEBUG env var and defaults to false.
+#
+# Why the flag exists: without TEMPLATES_AUTO_RELOAD, Jinja compiles each
+# template once, on first render, and caches it for the life of the process.
+# Editing a template then changes nothing the server returns, and no amount of
+# browser hard-reloading helps, because the staleness is server-side. That
+# silently invalidated a run of visual checks during the design migration
+# (F14 in DESIGN_MIGRATION.md). Explicit flag, so production is never switched
+# on by accident.
+DEV_MODE = '--dev' in sys.argv
+DEFAULT_ENV = 'development' if DEV_MODE else 'production'
+
+app = create_app(os.environ.get('FLASK_ENV', DEFAULT_ENV))
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
     logging.getLogger(__name__).info(
-        'Rentritz Dubai starting on port %s (env file: %s)', port, ENV_FILE
+        'Rentritz Dubai starting on port %s (env file: %s, mode: %s)',
+        port, ENV_FILE, 'development' if DEV_MODE else 'production'
     )
+    if DEV_MODE:
+        print('DEV MODE: template auto-reload ON', flush=True)
     serve(app, host='0.0.0.0', port=port, threads=8)
