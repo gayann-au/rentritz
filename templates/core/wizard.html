@@ -4,20 +4,13 @@
 
 {% block content %}
 <style>
-  :root {
-    --black:      #f8f6f2;
-    --card:       #ffffff;
-    --card-deep:  #f0ece6;
-    --amber:      #c8820a;
-    --amber-dark: #b8720a;
-    --white:      #1c1916;
-    --border:     rgba(58,53,48,0.12);
-    --muted:      rgba(58,53,48,0.5);
-    --subtle:     rgba(28,25,22,0.7);
-  }
+  /* Tokens come from static/css/tokens.css. This page's own :root was
+     removed: it shadowed and inverted the global tokens (--white was
+     #1c1916, --black was #f8f6f2). Call sites are mapped by ROLE. See F7.
+     --subtle (rgba(28,25,22,0.7)) went with it: declared, never used. */
 
   .wz-page {
-    background: var(--black);
+    background: var(--paper);
     min-height: 100vh;
     padding-bottom: 80px;
   }
@@ -39,12 +32,12 @@
     gap: 6px;
     font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     font-size: 0.85rem;
-    color: var(--muted);
+    color: rgba(var(--deep-grey-rgb),0.5);
     text-decoration: none;
     transition: color 0.2s;
     flex-shrink: 0;
   }
-  .wz-back:hover { color: var(--white); }
+  .wz-back:hover { color: var(--ink); }
   .wz-back svg { width: 14px; height: 14px; }
 
   .wz-category {
@@ -61,7 +54,7 @@
   .wz-step-badge {
     font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     font-size: 0.8rem;
-    color: var(--muted);
+    color: rgba(var(--deep-grey-rgb),0.5);
     flex-shrink: 0;
     text-align: right;
     min-width: 56px;
@@ -81,12 +74,12 @@
     width: 6px;
     height: 6px;
     border-radius: 50%;
-    background: rgba(58,53,48,0.15);
+    background: rgba(var(--deep-grey-rgb),0.15);
     transition: background 0.3s;
     flex-shrink: 0;
   }
   .wz-dot.done {
-    background: var(--amber-dark);
+    background: var(--amber-2);
   }
   .wz-dot.current {
     width: 22px;
@@ -96,7 +89,7 @@
   .wz-progress-line {
     flex: 1;
     height: 1px;
-    background: var(--border);
+    background: var(--rule);
   }
 
   /* ── Main content area ── */
@@ -113,7 +106,7 @@
 
   .wz-trail-item {
     padding: 12px 0;
-    border-bottom: 1px solid var(--border);
+    border-bottom: 1px solid var(--rule);
   }
   .wz-trail-item:last-child {
     border-bottom: none;
@@ -126,7 +119,7 @@
   .wz-trail-q {
     font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     font-size: 0.78rem;
-    color: var(--muted);
+    color: rgba(var(--deep-grey-rgb),0.5);
     margin-bottom: 4px;
     line-height: 1.4;
   }
@@ -135,7 +128,7 @@
     font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     font-size: 0.9rem;
     font-weight: 600;
-    color: var(--white);
+    color: var(--ink);
     display: flex;
     align-items: center;
     gap: 8px;
@@ -153,7 +146,7 @@
   /* ── Question card ── */
   .wz-card {
     background: var(--card);
-    border: 1px solid var(--border);
+    border: 1px solid var(--rule);
     border-radius: 16px;
     padding: 40px;
     transition: opacity 0.25s;
@@ -185,7 +178,7 @@
     font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     font-size: clamp(1.6rem, 3vw, 2.2rem);
     font-weight: 600;
-    color: var(--white);
+    color: var(--ink);
     line-height: 1.35;
     margin: 0 0 32px;
   }
@@ -221,8 +214,8 @@
     align-items: center;
     justify-content: space-between;
     gap: 12px;
-    background: var(--card-deep);
-    border: 1px solid var(--border);
+    background: var(--paper-2);
+    border: 1px solid var(--rule);
     border-radius: 10px;
     padding: 16px 20px;
     transition: border-color 0.2s, background 0.2s, border-left-width 0.15s;
@@ -232,7 +225,7 @@
   .wz-option-text {
     font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     font-size: 0.95rem;
-    color: #3a3530;
+    color: var(--deep-grey);
     line-height: 1.5;
     transition: color 0.2s;
   }
@@ -241,7 +234,7 @@
     width: 18px;
     height: 18px;
     border-radius: 50%;
-    border: 2px solid rgba(58,53,48,0.25);
+    border: 2px solid rgba(var(--deep-grey-rgb),0.25);
     flex-shrink: 0;
     transition: border-color 0.2s, background 0.2s;
     display: flex;
@@ -259,17 +252,17 @@
   }
 
   .wz-option:hover .wz-option-inner {
-    border-color: rgba(58,53,48,0.2);
-    border-left-color: rgba(200,130,10,0.4);
+    border-color: rgba(var(--deep-grey-rgb),0.2);
+    border-left-color: rgba(var(--amber-rgb),0.4);
   }
-  .wz-option:hover .wz-option-text { color: var(--white); }
+  .wz-option:hover .wz-option-text { color: var(--ink); }
 
   .wz-option.selected .wz-option-inner {
-    border-color: rgba(245,158,11,0.3);
+    border-color: rgba(var(--amber-rgb),0.3);
     border-left-color: var(--amber);
-    background: rgba(245,158,11,0.06);
+    background: rgba(var(--amber-rgb),0.06);
   }
-  .wz-option.selected .wz-option-text { color: var(--white); }
+  .wz-option.selected .wz-option-text { color: var(--ink); }
   .wz-option.selected .wz-option-dot {
     border-color: var(--amber);
   }
@@ -295,7 +288,7 @@
     transition: background 0.2s, transform 0.15s, opacity 0.2s;
   }
   .wz-submit:hover:not(:disabled) {
-    background: var(--amber-dark);
+    background: var(--amber-2);
     transform: translateY(-1px);
   }
   .wz-submit:active:not(:disabled) { transform: translateY(0); }
@@ -313,7 +306,7 @@
     margin-top: 20px;
     font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     font-size: 0.78rem;
-    color: var(--muted);
+    color: rgba(var(--deep-grey-rgb),0.5);
     text-align: center;
     line-height: 1.5;
   }
