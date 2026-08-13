@@ -528,7 +528,39 @@ Pause for review after every 3 ticked pages.
 | 1 | `templates/core/landing.html` | `a0f77f1` | 25 | 134 |
 | 2 | `templates/core/dashboard.html` | `f4f764c` | 26 var + 26 lit | 13 |
 | 3 | `templates/core/wizard.html` | `4e46bb0` | 17 var + 7 lit | 1 |
-| 4–26 | — | — | — | not started |
+| — | `core/dashboard.html` onboarding modal | `885f979` | 7 (D2, to light) | 1 |
+| 4 | `templates/core/answer.html` | `17c087d` | 14 var + 24 lit | 13 |
+| 5 | `templates/lawyers/browse.html` | `c743d92` | 38 var + 19 lit | 4 |
+| 6 | `templates/lawyers/profile.html` | `76331b4` | 59 var + 11 lit | 8 |
+| 7–26 | — | — | — | not started |
+
+**Next up:** 7 `auth/login` + `register`, 8 `core/credits`, 9 `core/history`.
+
+### F11 — colour literals inside `<script>` blocks. Reported, not acted on.
+
+`lawyers/profile.html` sets star-rating colours from JS
+(`l.style.color = i<=idx ? '#f59e0b' : '#555'`, lines 523/528/533, plus one
+`#f87171`). Those are string literals in a script, not CSS rule bodies, so
+editing them is a code change and the presentation-only rule stops me.
+
+**After Step 5 the stars stay amber while the page goes crimson.** Logged in
+`DESIGN_EYEBALL.md` so it is not mistaken for a bug. One-token fix per line
+(`'var(--amber)'` works on inline styles) once approved.
+
+Audited all six done pages for this hazard: only `landing.html` else has colour
+in a script, and it was already `var(--ink)`/`var(--ease)` before my commit.
+
+**Do remap `var()` NAMES inside scripts** — `profile` and `dashboard` both emit
+inline styles referencing `--text-dim`, which would break when the local `:root`
+is deleted. Renaming a token reference is not a logic change.
+
+### Two traps hit while doing pages 4–6
+
+1. **Do not put a hex in the explanatory comment you insert.** On `browse.html`
+   the literal pass rewrote my own comment, turning "--white was #1c1916" into
+   "--white was var(--ink)". Describe the inversion in prose instead.
+2. **Strip `&#nnnn;` before inventorying literals.** `&#8594;` (→) and
+   `&#128196;` (📄) look exactly like hex colours and will pollute the count.
 
 **F8 resolved most of the F7 residue.** With channel tokens available,
 `rgba(58,53,48,.5)`, `rgba(28,25,22,.87)`, `rgba(28,25,22,.7)` and

@@ -34,6 +34,9 @@ Look at these first. They are the only intentional departures so far.
 |---|---|---|---|
 | `core/dashboard.html` | `/dashboard` | `:root` removed, 26 vars + 26 literals remapped | Amber accents shift from `#f59e0b` to `#c8820a` — slightly deeper, less yellow **[C1]**. Hover amber deeper **[C3]**. Card corners 14px → **12px**, subtle; check cards and buttons. Transitions pick up the springier landing easing **[C15]**. Secondary text `#6b6259` → `#6b6157`, should be imperceptible. Status pills (green/red) deliberately unchanged. |
 | `core/wizard.html` | `/consult/<slug>` | `:root` removed, 17 vars + 7 literals remapped | Same amber shift **[C1]** and deeper hover **[C3]**. The two `#f59e0b` washes behind step indicators become `#c8820a`. Submit button label stays white on amber. Page background unchanged. |
+| `core/answer.html` | `/answer/<id>` | `:root` removed, 14 vars + 24 literals remapped | **The dark hero is meant to stay dark** — `.ans-hero` is a radial gradient onto `#0d0d0d` with white text, same two-tone pattern as landing. So is the black `.btn-rera` CTA. If either has gone light, that is a bug. Otherwise: 19 amber washes shift `#f59e0b` → `#c8820a` **[C1]**, hover deeper **[C3]**. Body text was `rgba(28,25,22,.87)` and is unchanged in value. Green `#16a34a` "copied" state deliberately untouched. |
+| `lawyers/browse.html` | `/lawyers/` | `:root` removed, 38 vars + 19 literals remapped | Amber **[C1]**, hover **[C3]**, corners 14px → **12px**, easing **[C15]**. Filter and search **input fields** were raw `#ffffff`/`#1c1916` and are now `--card`/`--ink` — same values, but check the inputs specifically since they were the only elements styled outside the token system. Green "verified" badge unchanged. |
+| `lawyers/profile.html` | `/lawyers/<id>` | `:root` removed, 59 vars + 11 literals remapped | Amber **[C1]**, hover **[C3]**, corners 14px → **12px**, easing **[C15]**. Largest var remap so far (59), so give the whole page a general look. **Star rating: see the warning below.** Status colours (green/red/blue/teal) deliberately untouched. |
 
 ---
 
@@ -57,6 +60,24 @@ Look at these first. They are the only intentional departures so far.
   regression. Verified live on `/`, `/terms`, `/for-lawyers`.
 - **No dark mode.** No `prefers-color-scheme` block was added anywhere.
 - **Admin is exempt** and stays dark on Inter. `/admin/*` is out of scope.
+
+## Known gap — the star rating will not follow the palette
+
+`lawyers/profile.html` sets its star colours from **JavaScript**, not CSS:
+
+```js
+l.style.color = i <= idx ? '#f59e0b' : '#555';   // lines 523, 528, 533
+```
+
+Those are string literals in a `<script>`. Editing them is a code change, and
+the standing rule is presentation only, so I left them.
+
+**Consequence:** after Step 5 the stars will still light up **amber** while the
+rest of the page goes crimson. It will look like a bug. It is not — it is a
+logged, deliberate stop.
+
+The fix is one token per line — `l.style.color = 'var(--amber)'` works on inline
+styles — but it needs your go-ahead. Same applies to a `#f87171` in that script.
 
 ## Not to be alarmed by
 
