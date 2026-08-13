@@ -9,6 +9,10 @@
 > reload is not enough — CSS is cached aggressively and you will be looking at
 > the old palette.
 >
+> **And restart the server first.** Flask caches compiled templates in
+> production mode, so a template edit is invisible until the process restarts —
+> a hard reload alone will not save you. See F14.
+>
 > **A stale page makes your review worthless**, and worse, it produces
 > confident wrong conclusions: you would report bugs that do not exist and miss
 > ones that do. If anything looks unchanged when this file says it changed,
@@ -48,8 +52,8 @@ those pages are done:
   either vanish or read far too heavy. Each one checked individually.
 - Own commit, first item here.
 
-| P1 | `core/terms.html` | `/terms` | **Was a near-black page.** `body{background:#0a0a0a}` → light R1 surfaces, `--paper` background, `--ink` text | Whole page flips from near-black to warm white. Confirm the legal text is comfortably readable, headings still separate from body, and no element kept a dark background it now sits alone on. **Not yet done — page 16.** |
-| P2 | `core/privacy.html` | `/privacy` | Same as P1 | Same as P1. Should end up visually identical in treatment to `/terms`. **Not yet done — page 16.** |
+| P1 | `core/terms.html` | `/terms` | **DONE — was a near-black page.** `body{background:#0a0a0a}` → light R1 surfaces, `--paper` background, `--ink` text | Whole page flips from near-black to warm white. Confirm the legal text is comfortably readable, headings still separate from body, and no element kept a dark background it now sits alone on. **Done, `65c501e`.** Headings now 18.09:1, paragraphs 5.60:1. No invisible text — swept for elements whose colour equals the background, found none. **Two things to judge:** the 13px meta and footer lines are `--dim` at only **2.94:1** and fail AA (they failed on dark too, at 2.66 and 2.03), and the dividers are now `rgba(58,53,48,.12)` — confirm they read as separators and not as smudges. |
+| P2 | `core/privacy.html` | `/privacy` | Same as P1 | Same as P1. Should end up visually identical in treatment to `/terms`. **Done, `65c501e`.** Headings now 18.09:1, paragraphs 5.60:1. No invisible text — swept for elements whose colour equals the background, found none. **Two things to judge:** the 13px meta and footer lines are `--dim` at only **2.94:1** and fail AA (they failed on dark too, at 2.66 and 2.03), and the dividers are now `rgba(58,53,48,.12)` — confirm they read as separators and not as smudges. |
 | P3 | `core/dashboard.html` onboarding modal | `/dashboard`, new users only | **Was a dark panel.** `#111111` → `var(--card)`; backdrop `rgba(0,0,0,0.92)` → `rgba(var(--ink-rgb),0.55)`; text `#ffffff`/`#888888`/`#555555` → `--ink`/`--muted`/`--dim` | Modal is now a white card on a dimmed page. **Judge the scrim specifically** — 55% ink is my number, not a palette value. Too light and the modal stops feeling modal; too heavy and it reads as a takeover. Also confirm the three text levels still rank: heading darkest, then secondary, then the faintest label. Trigger it with a new account. |
 
 ---

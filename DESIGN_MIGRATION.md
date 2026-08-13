@@ -544,7 +544,58 @@ Pause for review after every 3 ticked pages.
 | 13 | `lawyers/register.html` + `login.html` | `8be89a4` | 22 var + 15 lit | 1 |
 | 14 | `templates/lawyers/review.html` | `4438ac5` | 19 var + 10 lit | 1 |
 | 15 | `auth/forgot_password` + `reset_password` | `1573810` | 2 lit | **0 — both clean** |
-| 16–26 | — | — | — | not started |
+| 16 | `core/terms.html` + `privacy.html` | `65c501e` | 44 lit (D1 dark→light) | **0 — both clean** |
+| 17 | `templates/errors/*.html` ×6 | — verify only | 0 | **0 — already clean** |
+| **3b** | `static/css/main.css` | — | — | **its own PHASE, see below** |
+
+**Error pages verified, no commit needed.** All six carry no `:root` and no
+colour literal; each uses exactly one `var(--amber)`. They inherit everything
+from `base.html` + `main.css` and will follow the Step 5 swap automatically.
+`/no-such-page` renders 404 on `--paper` with the amber heading resolving to
+`rgb(200,130,10)`.
+
+---
+
+## PHASE 3b — `static/css/main.css`. NOT a page.
+
+Shared by 24 pages, so an error there breaks everything at once instead of one
+revertible page. Treated as a phase in its own right:
+
+- **Split into several commits by section.** Never one large commit.
+- **Run `check-design.mjs` AND load a public page after every commit.**
+- Expect it to take longer than any single page. It holds the largest remaining
+  block of untouched literals.
+
+---
+
+## F14 — CRITICAL FOR STEP 7. Flask caches compiled templates.
+
+`run.py` defaults to `FLASK_ENV=production`, so Jinja compiles each template
+**once, on first render, and caches it**. Editing a template does **not** change
+what the server returns until the process restarts.
+
+Caught on page 16: the file on disk read `background: var(--paper)` while
+`curl` showed the server still returning `#0a0a0a`. It survived a forced
+navigation **and** a `?cachebust=` query string, because it was never a browser
+cache — it was the server.
+
+**Why it bites unevenly:** a template edited *before* its first render picks up
+fine; one edited *after* it has been rendered serves stale until restart. That
+is why `/auth/login` verified correctly earlier in the same session and `/terms`
+did not.
+
+### Consequences
+
+- **Step 7 must run against a freshly restarted server.** Otherwise you review
+  cached markup and reach confident wrong conclusions — the exact hazard the
+  hard-reload banner warns about, one layer deeper.
+- **Restart after editing a template, before verifying it.** A hard reload is
+  necessary but *not sufficient*.
+- **One earlier claim was weaker than stated.** The landing verification
+  (`a0f77f1`) ran against a page rendered before the edit. Its substitutions
+  were value-identical by construction and the tokens resolved, so the
+  conclusion stands — but it was not the independent confirmation it was
+  presented as. Re-check landing at Step 7 on a fresh server.
 
 **Next up:** 16 `core/terms` + `privacy` — **the D1 dark-to-light conversion.
 Read the PAGE 16 PROCEDURE above before starting it.** Then 17 the 6 error
