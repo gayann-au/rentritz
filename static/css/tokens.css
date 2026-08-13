@@ -115,17 +115,6 @@
   --action:      rgb(var(--action-rgb));
   --error:       rgb(var(--error-rgb));
 
-  /* TEMPORARY, deleted in the very next commit. The amber ramp still has 374
-     call sites at this commit; apply-brand-map.mjs rewrites them next. These
-     aliases keep the app rendering in between. --deep-grey-rgb likewise: it
-     dissolves into the ink channel. */
-  --amber-rgb:      var(--brand-rgb);
-  --amber-soft-rgb: var(--brand-light-rgb);
-  --amber-2-rgb:    var(--brand-deep-rgb);
-  --amber:          var(--brand);
-  --amber-soft:     var(--brand-light);
-  --amber-2:        var(--brand-deep);
-  --deep-grey-rgb:  var(--ink-rgb);
 
   --rule:       rgba(var(--ink-rgb),0.12);
   --rule-soft:  rgba(var(--deep-grey-rgb),0.06);
@@ -151,8 +140,8 @@
   --deep-grey:  rgb(var(--ink-rgb));
 
   /* brand washes — rgba forms of --brand */
-  --amber-glow:   rgba(var(--brand-rgb),0.12);
-  --amber-border: rgba(var(--brand-rgb),0.25);
+  --brand-glow:   rgba(var(--brand-rgb),0.12);
+  --brand-border: rgba(var(--brand-rgb),0.25);
 
   /* stronger rule; --rule / --rule-soft are in Section 1 */
   --border-strong: rgba(var(--ink-rgb),0.22);

@@ -53,20 +53,35 @@ const FILL_PROPS = new Set([
 const URL_SCHEMES = new Set(['mailto', 'tel', 'http', 'https', 'data', 'url']);
 
 /**
- * Selectors that paint a dark surface. A color: inside one of these must NOT
- * become --brand-deep: deep crimson on near-black is unreadable. Built from the
- * D5 dark surfaces plus every rule carrying a two-tone marker.
+ * The SOURCE TOKEN carries the light/dark signal. This is the important bit.
+ *
+ * A selector-name heuristic was tried first and was worse than useless: it
+ * reported ZERO dark-context sites, because the amber text on dark heroes sits
+ * on child classes (.fl-tag, .lf-brand span, .hero-h em), not on the container
+ * it looked for. Zero review items read as "all clear" while 50 sites were at
+ * risk of becoming unreadable.
+ *
+ * The codebase already encodes the distinction, consistently:
+ *
+ *     .eyebrow                { color: var(--amber)      }   on LIGHT
+ *     .on-dark .eyebrow       { color: var(--amber-soft) }   on DARK
+ *     .section-h em           { color: var(--amber)      }
+ *     .on-dark .section-h em  { color: var(--amber-soft) }
+ *
+ * --amber and --amber-2 are the on-light accents; --amber-soft is the on-dark
+ * accent. So for TEXT the source token decides, with no selector parsing and no
+ * DOM knowledge:
+ *
+ *     color: --amber / --amber-2  ->  --brand-deep   #9B1B2B   on light
+ *     color: --amber-soft         ->  --brand-light  #E8546A   on dark
+ *
+ * --brand-deep on near-black would be unreadable, which is exactly what this
+ * prevents. Fills are unaffected: every ramp token maps to --brand there.
  */
-const DARK_CONTEXT = [
-  'on-dark', 'hero', 'fl-hero', 'ans-hero', 'answer-hero', 'footer', 'lf',
-  'trust-section', 'difference-visual', 'nav-admin', 'dark-btn', 'ob-panel',
-  'vs-col', 'areas', 'wizard-q', 'cta-band', 'for-counsel',
-];
-const inDarkContext = (selector) =>
-  DARK_CONTEXT.some((c) => new RegExp(`\.${c}\b`).test(selector));
-
-const destinationFor = (prop) => {
-  if (TEXT_PROPS.has(prop)) return '--brand-deep';
+const destinationFor = (prop, sourceToken) => {
+  if (TEXT_PROPS.has(prop)) {
+    return sourceToken === '--amber-soft' ? '--brand-light' : '--brand-deep';
+  }
   if (FILL_PROPS.has(prop)) return '--brand';
   return null; // unknown property: never guess
 };
@@ -98,7 +113,11 @@ function rewrite(src) {
     const isTwoTone = /two-tone/i.test(line);
 
     return line.replace(
-      /([a-zA-Z-]+)\s*:\s*([^;{}]+)/g,
+      // value must NOT cross a quote. Without that, an href="mailto:..." runs
+      // greedily past the closing quote into the style="color:var(--amber)"
+      // beside it, the match is skipped as a URL scheme, and the real
+      // declaration never gets its own turn. That silently missed 7 sites.
+      /([a-zA-Z-]+)\s*:\s*([^;{}"']+)/g,
       (whole, rawProp, value) => {
         const prop = rawProp.toLowerCase();
         // "mailto:", "tel:", "https:" look like declarations. Skipping them
@@ -107,32 +126,31 @@ function rewrite(src) {
         // the alias map's own definitions are retired deliberately at Step 5,
         // not by this pass
         if (rawProp.startsWith('--')) return whole;
-        const dest = destinationFor(prop);
-        const touches = RAMP.some((t) =>
+        // which ramp tokens does this declaration actually mention?
+        const present = RAMP.filter((t) =>
           new RegExp(`var\\(\\s*${t}\\s*\\)`).test(value) ||
           new RegExp(`var\\(\\s*${t}-rgb\\s*\\)`).test(value));
-        if (!touches) return whole;
+        if (!present.length) return whole;
 
-        // text on a dark surface is the one case the property rule gets wrong
-        if (isTwoTone || (TEXT_PROPS.has(prop) && inDarkContext(selector))) {
-          review.push({
-            line: idx + 1, prop,
-            reason: isTwoTone ? 'two-tone marker' : `dark context: ${selector.slice(0, 40)}`,
-            text: line.trim(),
-          });
+        if (isTwoTone) {
+          review.push({ line: idx + 1, prop, reason: 'two-tone marker', text: line.trim() });
           return whole;
         }
-        if (!dest) {
+        if (!destinationFor(prop, present[0])) {
           review.push({ line: idx + 1, prop, reason: 'unmapped property', text: line.trim() });
           return whole;
         }
 
+        // each source token gets its OWN destination, so a gradient mixing
+        // --amber and --amber-soft resolves both correctly
         let v = value;
-        for (const t of RAMP) {
+        for (const t of present) {
+          const dest = destinationFor(prop, t);
+          const before = v;
           v = v.replace(new RegExp(`var\\(\\s*${t}\\s*\\)`, 'g'), `var(${dest})`);
           v = v.replace(new RegExp(`var\\(\\s*${t}-rgb\\s*\\)`, 'g'), `var(${dest}-rgb)`);
+          if (v !== before) edits.push({ line: idx + 1, prop, dest, src: t, text: line.trim() });
         }
-        if (v !== value) edits.push({ line: idx + 1, prop, dest, text: line.trim() });
         return whole.replace(value, v);
       });
   });
@@ -155,7 +173,7 @@ if (SELF_TEST) {
   ];
   let bad = 0;
   for (const [prop, want] of cases) {
-    const got = destinationFor(prop);
+    const got = destinationFor(prop, '--amber');
     const ok = got === want;
     if (!ok) bad += 1;
     console.log(`  ${ok ? 'ok  ' : 'FAIL'} ${prop.padEnd(22)} -> ${String(got)}`);
@@ -169,6 +187,9 @@ if (SELF_TEST) {
     '.e { background: linear-gradient(90deg,var(--amber) 0%,var(--amber-soft) 100%); }',
     '.f { color: var(--amber); } /* two-tone */',
     '.g { font-size: 1rem; }',
+    '.h { color: var(--amber-soft); }',
+    '.i { background: var(--amber-soft); }',
+    '.j { background: linear-gradient(90deg,var(--amber),var(--amber-soft)); }',
   ].join('\n');
   const { text, edits, review } = rewrite(sample);
   console.log('\n  sample rewrite, using TODAY\'s token names:');
@@ -182,6 +203,9 @@ if (SELF_TEST) {
     ['rgba(var(--brand-rgb),.3)', 'channel form remapped'],
     ['linear-gradient(90deg,var(--brand) 0%,var(--brand) 100%)', 'gradient stops -> --brand'],
     ['.f { color: var(--amber); }', 'two-tone line left untouched'],
+    ['.h { color: var(--brand-light); }', 'amber-soft as TEXT -> --brand-light (on dark)'],
+    ['.i { background: var(--brand); }', 'amber-soft as FILL -> --brand'],
+    ['.j { background: linear-gradient(90deg,var(--brand),var(--brand)); }', 'mixed gradient -> --brand'],
   ];
   for (const [needle, what] of must) {
     if (!text.includes(needle)) { console.error(`  FAIL: ${what}`); bad += 1; }

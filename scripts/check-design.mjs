@@ -31,8 +31,12 @@ const CSS_FILES = ['static/css/tokens.css', 'static/css/main.css'];
 /** Channel tokens Step 5 will edit. If these vanish, the palette is dead. */
 const REQUIRED_TOKENS = [
   '--paper-rgb', '--paper-2-rgb', '--card-rgb', '--ink-rgb', '--ink-2-rgb',
-  '--dark-rgb', '--amber-rgb', '--amber-soft-rgb', '--amber-2-rgb',
-  '--muted-rgb', '--dim-rgb', '--deep-grey-rgb',
+  '--dark-rgb', '--muted-rgb', '--dim-rgb',
+  // R1 brand ramp. --amber-rgb / --amber-soft-rgb / --amber-2-rgb and
+  // --deep-grey-rgb were retired at Step 5a: the ramp collapsed by property
+  // into brand / brand-deep / brand-light, and deep-grey dissolved into ink.
+  '--brand-rgb', '--brand-deep-rgb', '--brand-soft-rgb', '--brand-light-rgb',
+  '--action-rgb', '--error-rgb',
 ];
 
 /** The token the HTTP check asserts on, per the brief. */

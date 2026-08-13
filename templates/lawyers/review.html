@@ -29,13 +29,13 @@
   font-weight: 600;
   letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: var(--amber);
+  color: var(--brand-deep);
   display: flex;
   align-items: center;
   gap: 10px;
   margin-bottom: 12px;
 }
-.rv-eyebrow::before { content:''; width:22px; height:1px; background:var(--amber); }
+.rv-eyebrow::before { content:''; width:22px; height:1px; background:var(--brand); }
 
 .rv-heading {
   font-size: clamp(1.8rem, 4vw, 2.6rem);
@@ -59,9 +59,9 @@
   font-size: 0.72rem;
   padding: 2px 7px;
   border-radius: 4px;
-  background: rgba(var(--amber-rgb),0.1);
-  border: 1px solid rgba(var(--amber-rgb),0.2);
-  color: var(--amber);
+  background: rgba(var(--brand-rgb),0.1);
+  border: 1px solid rgba(var(--brand-rgb),0.2);
+  color: var(--brand-deep);
   margin-left: 6px;
   vertical-align: middle;
 }
@@ -94,20 +94,20 @@
 .rv-star {
   font-size: 2rem;
   cursor: pointer;
-  color: rgba(var(--deep-grey-rgb),0.22);
+  color: rgba(var(--ink-rgb),0.22);
   transition: color 0.12s, transform 0.1s;
   user-select: none;
   line-height: 1;
 }
 .rv-star:hover,
 .rv-star.hovered,
-.rv-star.selected { color: var(--amber); }
+.rv-star.selected { color: var(--brand-deep); }
 .rv-star:active   { transform: scale(0.9); }
 
 /* ── Textarea ────────────────────────────────────────────────── */
 .rv-textarea {
   width: 100%;
-  background: rgba(var(--deep-grey-rgb),0.03);
+  background: rgba(var(--ink-rgb),0.03);
   border: 1px solid var(--rule);
   border-radius: 8px;
   color: var(--ink);
@@ -122,7 +122,7 @@
 .rv-textarea::placeholder { color: var(--dim); }
 .rv-textarea:focus {
   outline: none;
-  border-color: rgba(var(--amber-rgb),0.4);
+  border-color: rgba(var(--brand-rgb),0.4);
 }
 .rv-char-count {
   font-size: 0.72rem;
@@ -149,11 +149,11 @@
   color: var(--muted);
   transition: all 0.15s;
 }
-.rv-radio-label:hover { border-color: rgba(var(--amber-rgb),0.3); color: var(--ink); }
-.rv-radio-label input[type="radio"] { accent-color: var(--amber); }
+.rv-radio-label:hover { border-color: rgba(var(--brand-rgb),0.3); color: var(--ink); }
+.rv-radio-label input[type="radio"] { accent-color: var(--brand); }
 .rv-radio-label:has(input:checked) {
-  border-color: rgba(var(--amber-rgb),0.4);
-  background: rgba(var(--amber-rgb),0.05);
+  border-color: rgba(var(--brand-rgb),0.4);
+  background: rgba(var(--brand-rgb),0.05);
   color: var(--ink);
 }
 
@@ -166,7 +166,7 @@
 }
 .rv-btn-submit {
   flex: 1;
-  background: var(--amber);
+  background: var(--brand);
   color: #000;
   border: none;
   border-radius: 9px;
@@ -176,7 +176,7 @@
   cursor: pointer;
   transition: background 0.2s;
 }
-.rv-btn-submit:hover { background: var(--amber-2); }
+.rv-btn-submit:hover { background: var(--brand); }
 .rv-btn-cancel {
   font-size: 0.85rem;
   color: var(--muted);

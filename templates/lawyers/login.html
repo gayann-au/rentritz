@@ -11,12 +11,12 @@
     background: none; border: none; cursor: pointer; color: var(--dim);
     padding: 4px; display: flex; align-items: center; line-height: 1;
 }
-.pw-toggle:hover { color: var(--amber); }
+.pw-toggle:hover { color: var(--brand-deep); }
 .pw-toggle svg { display: block; }
 .auth-portal-badge {
     display: inline-flex; align-items: center; gap: 6px;
     font-size: 0.7rem; font-weight: 600; letter-spacing: 0.15em; text-transform: uppercase;
-    color: var(--amber); background: rgba(var(--amber-rgb),0.1); border: 1px solid rgba(var(--amber-rgb),0.25);
+    color: var(--brand-deep); background: rgba(var(--brand-rgb),0.1); border: 1px solid rgba(var(--brand-rgb),0.25);
     border-radius: 6px; padding: 4px 10px; margin-bottom: 16px;
 }
 </style>
@@ -56,7 +56,7 @@
             Not registered yet? <a href="{{ url_for('lawyers.register') }}">Apply to join</a>
         </div>
 
-        <div class="auth-footer" style="margin-top:12px; border-top:1px solid rgba(var(--deep-grey-rgb),0.1); padding-top:16px; font-size:0.8rem; color:var(--dim);">
+        <div class="auth-footer" style="margin-top:12px; border-top:1px solid rgba(var(--ink-rgb),0.1); padding-top:16px; font-size:0.8rem; color:var(--dim);">
             Are you a client? <a href="{{ url_for('auth.login') }}">Sign in here</a>
         </div>
     </div>

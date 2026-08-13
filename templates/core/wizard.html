@@ -32,7 +32,7 @@
     gap: 6px;
     font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     font-size: 0.85rem;
-    color: rgba(var(--deep-grey-rgb),0.5);
+    color: rgba(var(--ink-rgb),0.5);
     text-decoration: none;
     transition: color 0.2s;
     flex-shrink: 0;
@@ -46,7 +46,7 @@
     font-weight: 600;
     letter-spacing: 0.1em;
     text-transform: uppercase;
-    color: var(--amber);
+    color: var(--brand-deep);
     text-align: center;
     flex: 1;
   }
@@ -54,7 +54,7 @@
   .wz-step-badge {
     font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     font-size: 0.8rem;
-    color: rgba(var(--deep-grey-rgb),0.5);
+    color: rgba(var(--ink-rgb),0.5);
     flex-shrink: 0;
     text-align: right;
     min-width: 56px;
@@ -74,17 +74,17 @@
     width: 6px;
     height: 6px;
     border-radius: 50%;
-    background: rgba(var(--deep-grey-rgb),0.15);
+    background: rgba(var(--ink-rgb),0.15);
     transition: background 0.3s;
     flex-shrink: 0;
   }
   .wz-dot.done {
-    background: var(--amber-2);
+    background: var(--brand);
   }
   .wz-dot.current {
     width: 22px;
     border-radius: 3px;
-    background: var(--amber);
+    background: var(--brand);
   }
   .wz-progress-line {
     flex: 1;
@@ -119,7 +119,7 @@
   .wz-trail-q {
     font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     font-size: 0.78rem;
-    color: rgba(var(--deep-grey-rgb),0.5);
+    color: rgba(var(--ink-rgb),0.5);
     margin-bottom: 4px;
     line-height: 1.4;
   }
@@ -139,7 +139,7 @@
     width: 8px;
     height: 8px;
     border-radius: 50%;
-    background: var(--amber);
+    background: var(--brand);
     flex-shrink: 0;
   }
 
@@ -162,7 +162,7 @@
     font-weight: 700;
     letter-spacing: 0.14em;
     text-transform: uppercase;
-    color: var(--amber);
+    color: var(--brand-deep);
     margin-bottom: 16px;
   }
   .wz-q-label::before {
@@ -170,7 +170,7 @@
     display: block;
     width: 24px;
     height: 2px;
-    background: var(--amber);
+    background: var(--brand);
     border-radius: 2px;
   }
 
@@ -234,7 +234,7 @@
     width: 18px;
     height: 18px;
     border-radius: 50%;
-    border: 2px solid rgba(var(--deep-grey-rgb),0.25);
+    border: 2px solid rgba(var(--ink-rgb),0.25);
     flex-shrink: 0;
     transition: border-color 0.2s, background 0.2s;
     display: flex;
@@ -246,25 +246,25 @@
     width: 8px;
     height: 8px;
     border-radius: 50%;
-    background: var(--amber);
+    background: var(--brand);
     opacity: 0;
     transition: opacity 0.2s;
   }
 
   .wz-option:hover .wz-option-inner {
-    border-color: rgba(var(--deep-grey-rgb),0.2);
-    border-left-color: rgba(var(--amber-rgb),0.4);
+    border-color: rgba(var(--ink-rgb),0.2);
+    border-left-color: rgba(var(--brand-rgb),0.4);
   }
   .wz-option:hover .wz-option-text { color: var(--ink); }
 
   .wz-option.selected .wz-option-inner {
-    border-color: rgba(var(--amber-rgb),0.3);
-    border-left-color: var(--amber);
-    background: rgba(var(--amber-rgb),0.06);
+    border-color: rgba(var(--brand-rgb),0.3);
+    border-left-color: var(--brand);
+    background: rgba(var(--brand-rgb),0.06);
   }
   .wz-option.selected .wz-option-text { color: var(--ink); }
   .wz-option.selected .wz-option-dot {
-    border-color: var(--amber);
+    border-color: var(--brand);
   }
   .wz-option.selected .wz-option-dot::after { opacity: 1; }
 
@@ -276,7 +276,7 @@
   .wz-submit {
     width: 100%;
     padding: 15px 28px;
-    background: var(--amber);
+    background: var(--brand);
     color: #fff;
     font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     font-size: 0.95rem;
@@ -288,7 +288,7 @@
     transition: background 0.2s, transform 0.15s, opacity 0.2s;
   }
   .wz-submit:hover:not(:disabled) {
-    background: var(--amber-2);
+    background: var(--brand);
     transform: translateY(-1px);
   }
   .wz-submit:active:not(:disabled) { transform: translateY(0); }
@@ -306,7 +306,7 @@
     margin-top: 20px;
     font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     font-size: 0.78rem;
-    color: rgba(var(--deep-grey-rgb),0.5);
+    color: rgba(var(--ink-rgb),0.5);
     text-align: center;
     line-height: 1.5;
   }

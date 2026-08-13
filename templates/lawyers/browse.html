@@ -20,15 +20,15 @@
 .lw-header { margin-bottom:40px; }
 .lw-eyebrow {
   font-size:0.67rem; font-weight:600; letter-spacing:0.2em; text-transform:uppercase;
-  color:var(--amber); display:flex; align-items:center; gap:10px; margin-bottom:14px;
+  color:var(--brand-deep); display:flex; align-items:center; gap:10px; margin-bottom:14px;
 }
-.lw-eyebrow::before { content:''; width:22px; height:1px; background:var(--amber); }
+.lw-eyebrow::before { content:''; width:22px; height:1px; background:var(--brand); }
 .lw-header h1 {
   font-size:clamp(2rem,4vw,3rem); font-weight:400; color:var(--ink);
   letter-spacing:-0.02em; margin:0 0 10px;
 }
 .lw-header p { font-size:1rem; color:var(--muted); margin:0; }
-.lw-header h1::after{content:"";display:block;width:40px;height:2px;background:var(--amber);margin-top:14px;}
+.lw-header h1::after{content:"";display:block;width:40px;height:2px;background:var(--brand);margin-top:14px;}
 
 /* Sidebar */
 .lw-sidebar {
@@ -46,17 +46,17 @@
   margin-bottom:10px; display:block;
 }
 .lw-spec-checkbox { display:flex; align-items:center; gap:8px; margin-bottom:8px; cursor:pointer; }
-.lw-spec-checkbox input { accent-color:var(--amber); cursor:pointer; }
+.lw-spec-checkbox input { accent-color:var(--brand); cursor:pointer; }
 .lw-spec-checkbox span { font-size:0.82rem; color:var(--muted); }
 .lw-spec-checkbox:hover span { color:var(--ink); }
 
 .lw-filter-input {
-  width:100%; background:var(--card); border:1px solid rgba(var(--deep-grey-rgb),0.15);
+  width:100%; background:var(--card); border:1px solid rgba(var(--ink-rgb),0.15);
   border-radius:8px; padding:8px 12px; font-size:0.82rem;
   color:var(--ink); outline:none; transition:border-color 0.2s var(--ease);
   box-sizing:border-box;
 }
-.lw-filter-input:focus { border-color:rgba(var(--amber-rgb),0.4); }
+.lw-filter-input:focus { border-color:rgba(var(--brand-rgb),0.4); }
 .lw-filter-input::placeholder { color:var(--dim); }
 
 .lw-price-row { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
@@ -67,7 +67,7 @@
 }
 .lw-toggle-label span { font-size:0.82rem; color:var(--muted); }
 .lw-toggle-switch {
-  width:36px; height:20px; background:rgba(var(--deep-grey-rgb),0.12);
+  width:36px; height:20px; background:rgba(var(--ink-rgb),0.12);
   border-radius:10px; position:relative; transition:background 0.2s;
   flex-shrink:0;
 }
@@ -76,21 +76,21 @@
   width:14px; height:14px; border-radius:50%;
   background:var(--card); transition:transform 0.2s;
 }
-input:checked + .lw-toggle-switch { background:var(--amber); }
+input:checked + .lw-toggle-switch { background:var(--brand); }
 input:checked + .lw-toggle-switch::after { transform:translateX(16px); }
 .lw-toggle-hidden { position:absolute; opacity:0; width:0; height:0; }
 
 .lw-sidebar-apply {
-  width:100%; background:var(--amber); color:#000; border:none;
+  width:100%; background:var(--brand); color:#000; border:none;
   border-radius:8px; padding:9px; font-size:0.82rem; font-weight:600;
   cursor:pointer; transition:background 0.2s; margin-top:4px;
 }
-.lw-sidebar-apply:hover { background:var(--amber-2); }
+.lw-sidebar-apply:hover { background:var(--brand); }
 .lw-clear-filters {
   display:block; text-align:center; margin-top:10px;
   font-size:0.78rem; color:var(--dim); text-decoration:none;
 }
-.lw-clear-filters:hover { color:var(--amber); }
+.lw-clear-filters:hover { color:var(--brand-deep); }
 
 /* Main results */
 .lw-results-header {
@@ -104,18 +104,18 @@ input:checked + .lw-toggle-switch::after { transform:translateX(16px); }
 }
 .lw-search {
   flex:1;
-  background:var(--card); border:1px solid rgba(var(--deep-grey-rgb),0.15);
+  background:var(--card); border:1px solid rgba(var(--ink-rgb),0.15);
   border-radius:8px; padding:9px 14px; font-size:0.875rem;
   color:var(--ink); outline:none; transition:border-color 0.2s var(--ease);
 }
-.lw-search:focus { border-color:rgba(var(--amber-rgb),0.4); }
+.lw-search:focus { border-color:rgba(var(--brand-rgb),0.4); }
 .lw-search::placeholder { color:var(--dim); }
 .lw-search-btn {
-  background:var(--amber); color:#000; border:none; border-radius:8px;
+  background:var(--brand); color:#000; border:none; border-radius:8px;
   padding:9px 18px; font-size:0.82rem; font-weight:600; cursor:pointer;
   transition:background 0.2s;
 }
-.lw-search-btn:hover { background:var(--amber-2); box-shadow:0 0 16px rgba(var(--amber-rgb),.3); }
+.lw-search-btn:hover { background:var(--brand); box-shadow:0 0 16px rgba(var(--brand-rgb),.3); }
 
 /* Grid */
 .lw-grid {
@@ -132,21 +132,21 @@ input:checked + .lw-toggle-switch::after { transform:translateX(16px); }
   position:relative; overflow:hidden;
 }
 .lw-card:hover {
-  background:var(--paper-2); border-color:rgba(var(--amber-rgb),0.35);
-  border-left-color:var(--amber);
+  background:var(--paper-2); border-color:rgba(var(--brand-rgb),0.35);
+  border-left-color:var(--brand);
   transform:translateY(-3px);
 }
 
 .lw-featured-badge {
   position:absolute; top:16px; right:16px;
   font-size:0.65rem; font-weight:700; letter-spacing:0.1em; text-transform:uppercase;
-  color:var(--amber); background:rgba(var(--amber-rgb),0.12);
-  border:1px solid rgba(var(--amber-rgb),0.3); border-radius:6px; padding:3px 8px;
+  color:var(--brand-deep); background:rgba(var(--brand-rgb),0.12);
+  border:1px solid rgba(var(--brand-rgb),0.3); border-radius:6px; padding:3px 8px;
 }
 
 .lw-card-photo {
   width:56px; height:56px; border-radius:50%; overflow:hidden;
-  background:rgba(var(--deep-grey-rgb),0.04); border:2px solid var(--rule);
+  background:rgba(var(--ink-rgb),0.04); border:2px solid var(--rule);
   flex-shrink:0; margin-bottom:14px;
 }
 .lw-card-photo img { width:100%; height:100%; object-fit:cover; }
@@ -162,14 +162,14 @@ input:checked + .lw-toggle-switch::after { transform:translateX(16px); }
 .lw-tags { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:12px; }
 .lw-tag {
   font-size:0.7rem; font-weight:500; color:var(--muted);
-  background:rgba(var(--deep-grey-rgb),0.03); border:1px solid var(--rule);
+  background:rgba(var(--ink-rgb),0.03); border:1px solid var(--rule);
   border-radius:6px; padding:3px 8px;
 }
-.lw-tag-more { color:var(--amber); border-color:rgba(var(--amber-rgb),0.3); background:rgba(var(--amber-rgb),0.06); }
+.lw-tag-more { color:var(--brand-deep); border-color:rgba(var(--brand-rgb),0.3); background:rgba(var(--brand-rgb),0.06); }
 
 .lw-card-meta { display:flex; flex-wrap:wrap; align-items:center; gap:10px; margin-bottom:14px; }
 .lw-meta-item { font-size:0.75rem; color:var(--muted); display:flex; align-items:center; gap:4px; }
-.lw-stars { color:var(--amber); letter-spacing:1px; font-size:0.72rem; }
+.lw-stars { color:var(--brand-deep); letter-spacing:1px; font-size:0.72rem; }
 .lw-free-badge {
   font-size:0.68rem; font-weight:600; letter-spacing:0.05em;
   color:var(--success-text); background:rgba(var(--success-rgb),0.1);
@@ -180,9 +180,9 @@ input:checked + .lw-toggle-switch::after { transform:translateX(16px); }
   margin-top:auto; padding-top:14px; border-top:1px solid var(--rule);
   display:flex; align-items:center; justify-content:space-between;
 }
-.lw-rate { font-size:0.82rem; font-weight:500; color:var(--amber); }
+.lw-rate { font-size:0.82rem; font-weight:500; color:var(--brand-deep); }
 .lw-view-btn {
-  font-size:0.75rem; font-weight:600; color:var(--amber);
+  font-size:0.75rem; font-weight:600; color:var(--brand-deep);
   opacity:0.6; transition:opacity 0.2s;
 }
 .lw-card:hover .lw-view-btn { opacity:1; }
@@ -203,8 +203,8 @@ input:checked + .lw-toggle-switch::after { transform:translateX(16px); }
   background:transparent; transition:all 0.2s var(--ease);
 }
 .lw-page-btn:hover, .lw-page-btn.current {
-  color:var(--amber); border-color:rgba(var(--amber-rgb),0.4);
-  background:rgba(var(--amber-rgb),0.06);
+  color:var(--brand-deep); border-color:rgba(var(--brand-rgb),0.4);
+  background:rgba(var(--brand-rgb),0.06);
 }
 .lw-page-btn[disabled] { opacity:0.3; pointer-events:none; }
 
@@ -388,7 +388,7 @@ input:checked + .lw-toggle-switch::after { transform:translateX(16px); }
           {% else %}
           <div class="lw-empty">
             <p>No lawyers found matching your filters.</p>
-            <p><a href="{{ url_for('lawyers.browse') }}" style="color:var(--amber)">Clear all filters</a></p>
+            <p><a href="{{ url_for('lawyers.browse') }}" style="color:var(--brand-deep)">Clear all filters</a></p>
           </div>
           {% endfor %}
         </div>
