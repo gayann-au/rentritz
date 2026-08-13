@@ -1207,7 +1207,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 .path-chip {
   font-size: 0.75rem;
   color: rgba(255,255,255,0.4);
-  background: rgba(255,255,255,0.06);
+  background: rgba(var(--card-rgb),0.06);
   padding: 4px 10px;
   border-radius: 4px;
 }
@@ -1223,7 +1223,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   border-radius: var(--radius);
   padding: 32px;
   margin-bottom: 20px;
-  border: 1px solid rgba(0,0,0,0.05);
+  border: 1px solid rgba(var(--ink-rgb),0.05);
 }
 
 .answer-section-title {
@@ -1371,7 +1371,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 
 .credit-pack:hover {
   border-color: var(--amber);
-  box-shadow: 0 8px 32px rgba(245,158,11,0.12);
+  box-shadow: 0 8px 32px rgba(var(--amber-rgb),0.12);
   transform: translateY(-3px);
 }
 
@@ -1416,10 +1416,10 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   padding: 3px 10px;
   border-radius: 100px;
 }
-.badge-active   { background: #dcfce7; color: #166534; }
+.badge-active   { background: #dcfce7; color: var(--success-text); }
 .badge-inactive { background: #f5f5f5; color: #888; }
 .badge-pending  { background: #fef9c3; color: #854d0e; }
-.badge-failed   { background: #fee2e2; color: #991b1b; }
+.badge-failed   { background: #fee2e2; color: var(--error-text); }
 
 
 /* ── UTILITIES ───────────────────────────────────────────────────────────────── */
