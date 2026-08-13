@@ -540,7 +540,32 @@ Pause for review after every 3 ticked pages.
 | 11 | `templates/lawyers/dashboard.html` | `da2a6e0` | 62 var + 32 lit | 1 |
 | 12 | `templates/lawyers/edit_profile.html` | `829b7f7` | 20 var + 6 lit | 1 |
 | — | status sweep, pages 2/5/6/9 | `a795663` | 24 lit | — |
-| 13–26 | — | — | — | not started |
+| — | `core/answer.html` black surfaces | `553548d` | 2 lit | — |
+| 13 | `lawyers/register.html` + `login.html` | `8be89a4` | 22 var + 15 lit | 1 |
+| 14 | `templates/lawyers/review.html` | `4438ac5` | 19 var + 10 lit | 1 |
+| 15 | `auth/forgot_password` + `reset_password` | `1573810` | 2 lit | **0 — both clean** |
+| 16–26 | — | — | — | not started |
+
+**Next up:** 16 `core/terms` + `privacy` — **the D1 dark-to-light conversion.
+Read the PAGE 16 PROCEDURE above before starting it.** Then 17 the 6 error
+pages (verify only), then `static/css/main.css`, which still holds the bulk of
+the untouched literals.
+
+**Status literals fully closed.** `register.html`'s two `#f87171` were the last;
+`review.html` added a third red (`#ef4444`) which also converged on
+`--error-text`. One signal, one token.
+
+**`forgot_password.html` needed nothing** — the only page in the migration that
+was already correct.
+
+### Guard now has 7 checks
+
+`9b58c20` added the surface-literal rule: `#fff`/`#000` on `background` or
+`background-color` fails, on `color:` it is allowed. Scope is every template
+outside `admin/` and `email/`, plus `main.css`. Comments stripped first.
+
+Two real offenders existed and were fixed first (`553548d`, `answer.html`'s
+`.btn-rera` and a title rule → `--ink-2`), so the rule went in green.
 
 **Next up:** 13 `lawyers/register` + `lawyers/login`, 14 `lawyers/review`,
 15 `auth/forgot_password` + `reset_password`.

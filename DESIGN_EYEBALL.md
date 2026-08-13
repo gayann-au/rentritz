@@ -67,6 +67,9 @@ those pages are done:
 | `core/history.html` | `/history` | `:root` removed, 18 vars + 10 literals remapped | Amber **[C1]**, hover **[C3]**, corners 14px → **12px**, easing **[C15]**. **Known gap:** the completed-status pills keep a light-green *background* while their text moved to the darker success token — the pill may look washed out until the success-channel question is settled. Not a bug, a logged stop. |
 
 | `lawyers/dashboard.html` | `/lawyers/dashboard` | `:root` removed, 62 vars + 32 literals remapped | Amber **[C1]**, hover **[C3]**, corners 14px → **12px**, easing **[C15]**. **Booking status pills** are the thing to look at — their backgrounds were light green/red/blue washes under dark text and now derive from the darker status tokens, so pill and label finally share a hue. Info blue is value-identical, so it should look untouched. |
+| `lawyers/register.html` | `/lawyers/register` | `:root` removed, 22 vars + 15 literals remapped | Amber **[C1]**, hover **[C3]**, corners 14px → **12px**. The two **required-field markers** move from light `#f87171` to the darker `--error-text`. |
+| `lawyers/review.html` | `/lawyers/review/<id>` | `:root` removed, 19 vars + 10 literals remapped | Amber **[C1]**, hover **[C3]**. **Two things to trigger:** the required-rating asterisk, and submitting with no rating — the validation outline was `#ef4444` and is now `--error-text`, noticeably darker. |
+| `core/answer.html` (follow-up) | `/answer/<id>` | 2 black surfaces tokenised | The `.btn-rera` CTA and the rule above the RERA section moved from pure `#000` to `--ink-2` (`#0e0c0a`). Warm near-black instead of true black — subtle, but check the CTA still reads as deliberately heavy. |
 | `lawyers/edit_profile.html` | `/lawyers/edit-profile` | `:root` removed, 20 vars + 6 literals remapped | Amber **[C1]**, hover **[C3]**. The two **required-field markers** move from light `#f87171` to the darker `--error-text`, matching profile.html. |
 
 ---
@@ -79,7 +82,8 @@ those pages are done:
 | `core/for_lawyers.html` | `/for-lawyers` | Font load + 47 literals tokenised | Two things. **(1)** Bold text is now the **real** DM Sans 700 cut, not synthesised faux-bold — headings should look cleaner. **(2)** This page carried more stale values than any other: nav/logo accent `#f5a623` → `#e0a040` **[C2]**, hovers **[C3]**, the "why" band `#f2ede6` → `#f0ece6` **[C5]**. The dark hero stays dark (D5) but its overlay moved from pure black to warm ink — check the hero photo still reads well through it. |
 | `core/terms.html` | `/terms` | See **P1** | Not yet done |
 | `core/privacy.html` | `/privacy` | See **P2** | Not yet done |
-| 4 auth pages | `/login` etc. | — | Not yet done |
+| 4 auth pages | `/auth/login`, `/auth/register`, `/auth/forgot-password`, `/auth/reset-password/<token>` | password-toggle `#555` → `--dim`, hover `#f59e0b` → `--amber` | **Done.** `login` and `reset_password` fully tokenised; `forgot_password` needed nothing. Verified live with a hard reload. Only change: the show/hide toggle is slightly lighter and its hover slightly deeper. |
+| `lawyers/login.html` | `/lawyers/login` | fully tokenised, zero literals | Same toggle change as the auth pages. |
 | 6 error pages | — | — | Not yet done |
 
 ---
