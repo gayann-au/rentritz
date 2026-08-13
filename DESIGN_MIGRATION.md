@@ -585,15 +585,34 @@ only; leave the rest for the post-merge cleanup chore under D3.
 **Lines 1–75 need nothing.** The 12 literals a scanner reports there are all
 inside the alias map's own `[C5]`/`[C10]`/`[C8]` comments.
 
-### PHASE 3b CLOSED — 74 literals remain in `main.css`. READ THIS.
+### STANDING METHOD FOR EXCEPTIONS — use this every time
 
-Started at 107. **74 remain.**
+When a guard rule is right in general but wrong for a handful of real sites:
+
+> **Keep the rule strict. Mark each exception in the source, individually
+> verified.** Never weaken the script.
+
+A weakened rule is invisible and permanent. A permanently-red guard is worse —
+nobody reads it. A per-site marker is auditable, cannot be inherited by accident,
+and shows up in a diff.
+
+In use: `/* two-tone: dark surface, roles invert */` on the 18 sites where
+"paper" is legitimately text and "ink" is legitimately a background. Each was
+checked before marking.
+
+### PHASE 3b CLOSED — 71 literals remain in `main.css`. READ THIS.
+
+Started at 107. **71 remain**, after the alias fix (`95a9cb5`) and the neutral
+greys (`095e27c`).
 
 | | count |
 |---|---|
-| in **DEAD** rules (unreachable) | **60** |
-| in **LIVE** rules | **10** |
-| in element / no-class rules (live) | **4** |
+| in **DEAD** rules (unreachable) | **62** |
+| in **LIVE** rules | **9** |
+
+The 9 live ones are `#1a1a1a`/`#2a2a2a` (`.nav-admin`, no token equivalent),
+`#fff` + two `rgba(255,255,255,a)` (achromatic text exception), and one
+`#e5e5e5` — the `.read-progress-bar` track, open below.
 
 > ### ⚠️ AFTER STEP 5 EVERY ONE OF THESE 74 STILL HOLDS THE OLD AMBER-ERA PALETTE.
 >
@@ -615,10 +634,11 @@ that render today:
 | `#fff`, `rgba(255,255,255,.4)`, `rgba(255,255,255,.55)` | white text on dark | achromatic exception, no white TEXT token |
 | `#e5e5e5`, `#d0cdc8`, `#ddd`, `#f0f0f0`, `#fafafa` | borders and light fills | **neutral greys with no token at all** |
 
-**The five neutral greys are the real open item.** They are live, they will not
-move at Step 5, and they are *neutral* against a palette that is deliberately
-*warm*. `#fafafa` and `#e5e5e5` beside `--paper #FFFBFA` may read as a faint
-cold cast. Not a bug today; worth a decision at Step 4.
+**The neutral greys are DONE** (`095e27c`): 8 borders → `--rule`, 2 faint
+surfaces → `--paper-2`. The cold cast is gone from every site that had a role.
+
+**Three did not fit the map and were reported, not guessed** — see the Step 4
+report below.
 
 ### `.nav-admin` was a no-op
 
@@ -633,10 +653,10 @@ thing in 197 lines of admin CSS needed no work.
 exactly what check 7 exists to catch. The guard misses it because it matches
 `var(--card)`, not the alias.
 
-Every alias in the `main.css` map is a hole of this shape: `--white`, `--black`,
-`--near-black`, `--dark-card`, `--off-white`, `--cream`, `--surface`, `--bg`,
-`--text`, `--text-primary` and the rest. **Not fixed** — resolving aliases in the
-guard is a real change and this is the wrong moment. Logged for Step 4.
+**CLOSED in `95a9cb5`.** Check 7 now parses the 23-entry alias map, resolves
+transitively, and compares the resolved token. That exposed **11 real sites**,
+none of them false alarms: 7 `color: var(--white)` became `#fff`, and 4
+`background: var(--charcoal)` became `var(--ink)` plus a two-tone marker.
 
 ### Method note for the remaining sections
 
