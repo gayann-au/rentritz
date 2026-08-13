@@ -103,14 +103,14 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 
 .btn-primary {
   background: var(--amber);
-  color: var(--white);
+  color: #fff;
   box-shadow: var(--shadow-amber);
 }
 .btn-primary:hover { background: var(--amber-dark); transform: translateY(-1px); }
 
 .btn-amber {
   background: var(--amber);
-  color: var(--white);
+  color: #fff;
   font-weight: 600;
   box-shadow: var(--shadow-amber);
 }
@@ -125,7 +125,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 
 .btn-outline-white {
   background: transparent;
-  color: var(--white);
+  color: #fff;
   border: 1.5px solid rgba(var(--card-rgb),0.3);
 }
 .btn-outline-white:hover { border-color: rgba(var(--card-rgb),0.7); background: rgba(var(--card-rgb),0.05); }
@@ -333,7 +333,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   font-size: clamp(3rem, 7vw, 6rem);
   font-weight: 300;
   line-height: 1.05;
-  color: var(--white);
+  color: #fff;
   letter-spacing: -0.02em;
   margin-bottom: 32px;
   max-width: 800px;
@@ -512,7 +512,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 }
 
 .difference-visual {
-  background: var(--charcoal);
+  background: var(--ink); /* two-tone: dark section, roles invert */
   border-radius: 16px;
   padding: 40px;
   position: relative;
@@ -621,7 +621,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 
 .trust-section {
   padding: 100px 24px;
-  background: var(--charcoal);
+  background: var(--ink); /* two-tone: dark section, roles invert */
   text-align: center;
 }
 
@@ -631,7 +631,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   font-size: clamp(2rem, 4vw, 3.2rem);
   font-weight: 600;
-  color: var(--white);
+  color: #fff;
   letter-spacing: -0.02em;
   margin: 16px 0 20px;
   max-width: 600px;
@@ -666,7 +666,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 }
 
 .footer {
-  background: var(--charcoal);
+  background: var(--ink); /* two-tone: dark section, roles invert */
   padding: 40px 24px;
   border-top: 1px solid rgba(var(--card-rgb),0.06);
 }
@@ -1169,7 +1169,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 .answer-page { background: var(--off-white); }
 
 .answer-hero {
-  background: var(--charcoal);
+  background: var(--ink); /* two-tone: dark section, roles invert */
   padding: 80px 24px;
 }
 
@@ -1192,7 +1192,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   font-family: 'Playfair Display', Georgia, serif;
   font-size: clamp(1.8rem, 4vw, 2.8rem);
   font-weight: 600;
-  color: var(--white);
+  color: #fff;
   line-height: 1.2;
   letter-spacing: -0.02em;
   margin-bottom: 24px;
@@ -1479,7 +1479,7 @@ tbody tr:hover { background: #fafafa; }
 
 .nav-admin .nav-logo { color: #fff; }
 .nav-admin .nav-links a { color: rgba(255,255,255,0.55); }
-.nav-admin .nav-links a:hover { color: var(--white); }
+.nav-admin .nav-links a:hover { color: #fff; }
 
 .admin-container {
   max-width: 1200px;

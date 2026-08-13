@@ -290,9 +290,34 @@ for (const rel of CSS_FILES) {
   const TEXT_TOKENS = ['--ink', '--muted', '--dim'];
   const EXEMPT = /two-tone/i;
 
-  // exact token match: var(--ink) must not also match var(--ink-2)/var(--ink-rgb)
-  const usesToken = (value, token) =>
-    new RegExp(`var\\(\\s*${token}\\s*\\)`).test(value);
+  // ALIAS RESOLUTION. main.css keeps a legacy name map (--white: var(--card),
+  // --charcoal: var(--ink), ...). Without expanding it, "color: var(--white)"
+  // reads as an unknown token and sails past - a surface colouring text,
+  // through an alias, which is the exact error this check exists to stop.
+  // 23 aliases, and expanding them exposed 11 sites the check could not see.
+  const aliasMap = new Map();
+  for (const f of ['static/css/main.css', 'static/css/tokens.css']) {
+    const abs = join(ROOT, f);
+    if (!existsSync(abs)) continue;
+    const bare = stripComments(readFileSync(abs, 'utf8'));
+    for (const m of bare.matchAll(/(--[\w-]+)\s*:\s*var\(\s*(--[\w-]+)\s*\)\s*;/g)) {
+      aliasMap.set(m[1], m[2]);
+    }
+  }
+  const resolveToken = (t) => {
+    const seen = new Set();
+    while (aliasMap.has(t) && !seen.has(t)) { seen.add(t); t = aliasMap.get(t); }
+    return t;
+  };
+
+  // exact token match, alias-aware: var(--ink) must not also match
+  // var(--ink-2) or var(--ink-rgb), but var(--charcoal) MUST match --ink.
+  const usesToken = (value, token) => {
+    for (const m of value.matchAll(/var\(\s*(--[\w-]+)\s*\)/g)) {
+      if (resolveToken(m[1]) === token) return true;
+    }
+    return false;
+  };
 
   const roleFiles = [join(ROOT, 'static/css/main.css'), join(ROOT, 'static/css/tokens.css')];
   const walkTpl = (dir) => {
