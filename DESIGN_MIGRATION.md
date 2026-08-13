@@ -532,7 +532,32 @@ Pause for review after every 3 ticked pages.
 | 4 | `templates/core/answer.html` | `17c087d` | 14 var + 24 lit | 13 |
 | 5 | `templates/lawyers/browse.html` | `c743d92` | 38 var + 19 lit | 4 |
 | 6 | `templates/lawyers/profile.html` | `76331b4` | 59 var + 11 lit | 8 |
-| 7–26 | — | — | — | not started |
+| — | `lawyers/profile.html` rating script | `d8af096` | 9 (F11 closed) | 0 |
+| 7 | `auth/login.html` + `register.html` | `6af6a04` | 7 lit | **0 — fully clean** |
+| 8 | `templates/core/credits.html` | `dd97a87` | 41 var + 12 lit | 5 |
+| 9 | `templates/core/history.html` | `f81319f` | 18 var + 10 lit | 6 |
+| 10–26 | — | — | — | not started |
+
+**Next up:** 10 `core/for_lawyers`, 11 `lawyers/dashboard`, 12 `lawyers/edit_profile`.
+
+### F12 — the status family has no channel tokens. BLOCKING for Step 5.
+
+D7 fixes the status *values*. It does not solve their *alpha variants*, which is
+the F8 problem again, unsolved for this family:
+
+| Wash | Count | Where | Signal |
+|---|---|---|---|
+| `rgba(74,222,128,a)` | 5 | `history` pills, `profile` | success |
+| `rgba(16,185,129,a)` | 2 | `profile`, `browse` | success / verified |
+| `rgba(96,165,250,a)` | 2 | `profile` | info |
+
+Solid values are routed to `--success-text` / `--error-text` and will follow D7.
+**The washes cannot**, because you cannot vary the alpha of a hex.
+
+Consequence if left: after Step 5 status *text* migrates while the pill
+*backgrounds* behind it stay the old light green/blue. I have not invented
+`--success-rgb` etc. to fix it — that is a token decision, so it is in the
+orphan report.
 
 **Next up:** 7 `auth/login` + `register`, 8 `core/credits`, 9 `core/history`.
 
