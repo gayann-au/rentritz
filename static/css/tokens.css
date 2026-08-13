@@ -9,7 +9,7 @@
 
    Documented exceptions (see DESIGN_AUDIT.md):
    - static/css/admin.css .......... dark admin panel, permanent exception
-   - templates/email/*.html ........ email clients lack custom-property support
+   - templates/email/ all .html .... email clients lack custom-property support
    - rentritz-landing/, landing/ ... deferred, blocked on deploy config
    ============================================================ */
 
