@@ -121,13 +121,26 @@
   /* stronger rule; --rule / --rule-soft are in Section 1 */
   --border-strong: rgba(var(--deep-grey-rgb),0.22);
 
-  /* status colours */
+  /* status colours — signals, NOT brand. See D7.
+     Red is the brand now, so a red error would be indistinguishable from a
+     brand element. These must never become crimson.
+
+     Channel form per F12, same pattern as Section 1: the triplet is the
+     source, the solid derives from it, and washes use rgba(var(--x-rgb), a)
+     so a pill background always tracks its own text colour. */
+  --success-rgb: 22,101,52;
+  --error-rgb:   153,27,27;
+  --info-rgb:    96,165,250;
+
+  --success-text: rgb(var(--success-rgb));
+  --error-text:   rgb(var(--error-rgb));
+  --info-text:    rgb(var(--info-rgb));
+
+  /* light tints; distinct colours, not alphas of the above */
   --error-bg:    #fef2f2;
   --error-bd:    #fca5a5;
-  --error-text:  #991b1b;
   --success-bg:  #f0fdf4;
   --success-bd:  #86efac;
-  --success-text:#166534;
 
   /* shadows — colour-bearing, so they belong here. Geometry unchanged;
      only the colour is routed through the channels. */
