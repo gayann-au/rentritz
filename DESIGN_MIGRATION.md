@@ -526,7 +526,39 @@ Pause for review after every 3 ticked pages.
 | # | Page | Commit | Replaced | Left + logged |
 |---|---|---|---|---|
 | 1 | `templates/core/landing.html` | `a0f77f1` | 25 | 134 |
-| 2–26 | — | — | — | **HELD pending F8** |
+| 2 | `templates/core/dashboard.html` | `f4f764c` | 26 var + 26 lit | 13 |
+| 3 | `templates/core/wizard.html` | `4e46bb0` | 17 var + 7 lit | 1 |
+| 4–26 | — | — | — | not started |
+
+**F8 resolved most of the F7 residue.** With channel tokens available,
+`rgba(58,53,48,.5)`, `rgba(28,25,22,.87)`, `rgba(28,25,22,.7)` and
+`rgba(200,130,10,.35)` all became expressible, so they are no longer leftovers.
+Only `--border-amber` (`rgba(245,158,11,.35)`, credits) still needs the [C1] hue
+call, and it gets the same treatment as every other `#f59e0b` wash.
+
+**Enabling commit:** `6e206fc` `refactor(tokens)` — every colour now derives from
+an `R,G,B` channel triplet, so Step 5 edits triplets only. **Do not hand-edit the
+derived hex tokens.** A nested CSS comment blanked the whole file once during
+that change; the warning is in `tokens.css`.
+
+**Verification available per page.** Pages 2+ are behind a login. I will not
+enter credentials, so those get mechanical verification only — every remaining
+token name resolves globally, `<style>` braces and comments balance, and no
+token-alpha literal is left un-channelled. **Visual confirmation of every
+authenticated page is deferred to Step 7 and needs a logged-in session from you.**
+Public routes verified live so far: `/`, `/terms`, `/for-lawyers`.
+
+**Standing per-page recipe** (pages 4–26), so this is not re-derived:
+1. Inventory the local `:root` and every `var()` and literal. Strip `&#nnnn;`
+   HTML entities first — `&#8594;` and `&#128196;` look like hex colours and are not.
+2. Delete the local `:root`; remap call sites via the F7 table, **by role**.
+3. Literals: exact → token; token-at-alpha → `rgba(var(--x-rgb),a)`;
+   `#f59e0b`/`rgba(245,158,11,a)` → `--amber`/`--amber-rgb` under [C1].
+4. Leave and log anything else — status greens/reds, pure black/white text,
+   dark-panel greys.
+5. Check braces and comments balance per `<style>` block; confirm every
+   remaining token name is globally defined.
+6. One commit per page. Update this table.
 
 **Page 1 detail — `core/landing.html`.** No local `:root`; inherits `tokens.css`.
 Replaced, all value-identical: `#f8f6f2`→`var(--paper)` ×8, `#1c1916`→`var(--ink)` ×6,
