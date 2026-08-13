@@ -4,51 +4,48 @@
 
 {% block content %}
 <style>
-:root{
-  --black:#f8f6f2;--dark-card:#ffffff;--amber:#c8820a;--amber-dark:#b8720a;
-  --white:#1c1916;--text-muted:#6b6259;--text-dim:#9a8f82;
-  --border:rgba(58,53,48,0.12);--radius:14px;
-  --ease:cubic-bezier(0.4,0,0.2,1);--ease-out:cubic-bezier(0.22,1,0.36,1);
-}
-.sr{opacity:0;transform:translateY(24px);transition:opacity 0.6s var(--ease-out),transform 0.6s var(--ease-out);}
+/* Tokens come from static/css/tokens.css. This page's own :root was removed:
+   it shadowed and inverted the globals, naming the darkest ink "white" and
+   the page background "black". Call sites are mapped by ROLE. See F7. */
+.sr{opacity:0;transform:translateY(24px);transition:opacity 0.6s var(--ease),transform 0.6s var(--ease);}
 .sr.in{opacity:1;transform:translateY(0);}
 
-.lr-page{min-height:100vh;background:var(--black);padding:56px 0 100px;}
+.lr-page{min-height:100vh;background:var(--paper);padding:56px 0 100px;}
 .lr-container{width:100%;max-width:800px;margin:0 auto;padding:0 32px;}
 
 .lr-header{margin-bottom:40px;}
 .lr-eyebrow{font-size:0.67rem;font-weight:600;letter-spacing:0.2em;text-transform:uppercase;color:var(--amber);display:flex;align-items:center;gap:10px;margin-bottom:14px;}
 .lr-eyebrow::before{content:'';width:22px;height:1px;background:var(--amber);}
-.lr-header h1{font-size:clamp(1.8rem,4vw,2.8rem);font-weight:400;color:var(--white);letter-spacing:-0.02em;margin:0 0 10px;}
-.lr-header p{font-size:0.95rem;color:var(--text-muted);margin:0;line-height:1.6;}
+.lr-header h1{font-size:clamp(1.8rem,4vw,2.8rem);font-weight:400;color:var(--ink);letter-spacing:-0.02em;margin:0 0 10px;}
+.lr-header p{font-size:0.95rem;color:var(--muted);margin:0;line-height:1.6;}
 
 .lr-privacy-note{
-  background:rgba(245,158,11,0.06);border:1px solid rgba(245,158,11,0.2);
-  border-radius:10px;padding:14px 18px;font-size:0.85rem;color:var(--text-muted);
+  background:rgba(var(--amber-rgb),0.06);border:1px solid rgba(var(--amber-rgb),0.2);
+  border-radius:10px;padding:14px 18px;font-size:0.85rem;color:var(--muted);
   margin-bottom:32px;line-height:1.6;
 }
 .lr-privacy-note strong{color:var(--amber);}
 
 /* Sections */
-.lr-section{background:var(--dark-card);border:1px solid var(--border);border-radius:var(--radius);padding:28px;margin-bottom:20px;}
-.lr-section-title{font-size:0.67rem;font-weight:600;letter-spacing:0.2em;text-transform:uppercase;color:var(--text-dim);margin:0 0 20px;padding-bottom:12px;border-bottom:1px solid var(--border);}
+.lr-section{background:var(--card);border:1px solid var(--rule);border-radius:var(--radius);padding:28px;margin-bottom:20px;}
+.lr-section-title{font-size:0.67rem;font-weight:600;letter-spacing:0.2em;text-transform:uppercase;color:var(--dim);margin:0 0 20px;padding-bottom:12px;border-bottom:1px solid var(--rule);}
 
 /* Form fields */
 .lr-field{margin-bottom:20px;}
 .lr-field:last-child{margin-bottom:0;}
-.lr-label{display:block;font-size:0.8rem;font-weight:500;color:var(--white);margin-bottom:6px;}
-.lr-label-opt{font-size:0.72rem;color:var(--text-dim);font-weight:400;margin-left:6px;}
-.lr-hint{font-size:0.75rem;color:var(--text-dim);margin-top:5px;line-height:1.5;}
-.lr-error{font-size:0.75rem;color:#f87171;margin-top:5px;}
+.lr-label{display:block;font-size:0.8rem;font-weight:500;color:var(--ink);margin-bottom:6px;}
+.lr-label-opt{font-size:0.72rem;color:var(--dim);font-weight:400;margin-left:6px;}
+.lr-hint{font-size:0.75rem;color:var(--dim);margin-top:5px;line-height:1.5;}
+.lr-error{font-size:0.75rem;color:var(--error-text);margin-top:5px;}
 
 .lr-input,.lr-textarea,.lr-select{
   display:block;width:100%;box-sizing:border-box;
-  background:rgba(58,53,48,0.03);border:1px solid var(--border);
-  border-radius:8px;padding:10px 14px;font-size:0.875rem;color:var(--white);
+  background:rgba(var(--deep-grey-rgb),0.03);border:1px solid var(--rule);
+  border-radius:8px;padding:10px 14px;font-size:0.875rem;color:var(--ink);
   outline:none;transition:border-color 0.2s var(--ease);font-family:inherit;
 }
-.lr-input:focus,.lr-textarea:focus{border-color:rgba(245,158,11,0.4);}
-.lr-input::placeholder,.lr-textarea::placeholder{color:var(--text-dim);}
+.lr-input:focus,.lr-textarea:focus{border-color:rgba(var(--amber-rgb),0.4);}
+.lr-input::placeholder,.lr-textarea::placeholder{color:var(--dim);}
 .lr-textarea{resize:vertical;min-height:100px;}
 
 .lr-grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
@@ -60,18 +57,18 @@
 .lr-check-item input[type="checkbox"]{
   width:16px;height:16px;accent-color:var(--amber);cursor:pointer;flex-shrink:0;
 }
-.lr-check-item span{font-size:0.875rem;color:var(--white);}
+.lr-check-item span{font-size:0.875rem;color:var(--ink);}
 
 /* File input */
 .lr-file-label{
   display:inline-flex;align-items:center;gap:8px;
-  padding:9px 16px;background:rgba(58,53,48,0.03);border:1px solid var(--border);
-  border-radius:8px;cursor:pointer;font-size:0.85rem;color:var(--text-muted);
+  padding:9px 16px;background:rgba(var(--deep-grey-rgb),0.03);border:1px solid var(--rule);
+  border-radius:8px;cursor:pointer;font-size:0.85rem;color:var(--muted);
   transition:border-color 0.2s,color 0.2s;
 }
-.lr-file-label:hover{border-color:rgba(245,158,11,0.4);color:var(--amber);}
+.lr-file-label:hover{border-color:rgba(var(--amber-rgb),0.4);color:var(--amber);}
 input[type="file"]{display:none;}
-.lr-file-name{font-size:0.8rem;color:var(--text-dim);margin-top:6px;}
+.lr-file-name{font-size:0.8rem;color:var(--dim);margin-top:6px;}
 
 /* Submit */
 .lr-submit-row{display:flex;justify-content:flex-end;margin-top:32px;}
@@ -80,7 +77,7 @@ input[type="file"]{display:none;}
   padding:14px 32px;font-size:0.95rem;font-weight:600;cursor:pointer;
   transition:background 0.2s var(--ease),transform 0.15s;
 }
-.lr-submit-btn:hover{background:var(--amber-dark);transform:translateY(-1px);}
+.lr-submit-btn:hover{background:var(--amber-2);transform:translateY(-1px);}
 </style>
 
 <div class="lr-page">
@@ -279,7 +276,7 @@ input[type="file"]{display:none;}
         <div class="lr-section-title">Bio &amp; presentation</div>
 
         <div class="lr-field">
-          <label class="lr-label" for="{{ form.bio.id }}">Professional Bio <span style="color:#f87171;">*</span></label>
+          <label class="lr-label" for="{{ form.bio.id }}">Professional Bio <span style="color:var(--error-text);">*</span></label>
           {{ form.bio(class='lr-textarea', rows=6, placeholder='Describe your background, approach, and what makes you the right choice for clients with Dubai property issues. Minimum 50 characters.') }}
           {% if form.bio.errors %}<div class="lr-error">{{ form.bio.errors[0] }}</div>{% endif %}
         </div>
@@ -314,7 +311,7 @@ input[type="file"]{display:none;}
       <div class="lr-section sr">
         <div class="lr-section-title">Contact information <span style="font-size:0.72rem;font-weight:400;color:var(--amber);text-transform:none;letter-spacing:0;">- private, only shown after unlock</span></div>
         <div class="lr-hint" style="margin-bottom:20px;font-size:0.85rem;">
-          This information is <strong style="color:var(--white);">never shown publicly</strong>. It is only revealed to a client after they pay the credit unlock fee.
+          This information is <strong style="color:var(--ink);">never shown publicly</strong>. It is only revealed to a client after they pay the credit unlock fee.
         </div>
 
         <div class="lr-grid2">
