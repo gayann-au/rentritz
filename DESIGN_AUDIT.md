@@ -72,6 +72,27 @@ the page looks broken. **Always verify landing through Flask, never via `file://
 **Verdict: landing is not broken.** The dark-on-dark screenshot was a `file://`
 testing artifact, exactly as predicted. No revert required; `4280438` stands.
 
+### Contrast — the current amber already fails AA. Crimson is a fix, not a risk.
+
+Operator-supplied, independently recomputed here from the WCAG 2.x relative
+luminance formula. Both agree:
+
+| Foreground | Background | Ratio | AA normal text (4.5:1) |
+|---|---|---|---|
+| `#c8820a` amber | `#f8f6f2` paper | **2.92:1** | **FAILS** — current state |
+| `#D6263A` crimson | `#FFFBFA` paper | **4.87:1** | passes |
+| `#9B1B2B` brand-deep | `#FFFBFA` paper | **7.90:1** | passes comfortably |
+
+**This reframes F13 entirely.** All 107 `color: var(--amber)` sites are *already*
+below the accessibility minimum and have been since the design was written. The
+R1 migration does not introduce a contrast risk on those sites — it **removes**
+one that already exists. Even the tightest R1 pair clears AA, and routing text to
+`--brand-deep` per the F13 property map puts it near 8:1.
+
+Consequence for review: do not treat "crimson text on paper" as the thing to
+scrutinise. The thing to scrutinise is any site the property map sends to
+`--brand` (a fill token) that is actually rendering text.
+
 ### Resolved blockers
 
 - **B1 — resolved.** Consolidate, do not adopt a new system.
