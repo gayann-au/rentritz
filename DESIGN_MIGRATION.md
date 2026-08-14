@@ -993,6 +993,45 @@ fix here, not a risk.
 single find-and-replace to `--ink-rgb` across the tree, because the channel name
 is uniform. That uniformity is the whole reason the F8 refactor was worth doing.
 
+### Step 6 — contrast. `scripts/check-contrast.mjs`, 28 pairs, 0 failing.
+
+Reads the channel triplets straight out of `tokens.css`, so it cannot drift
+from the palette: change a triplet and it recomputes.
+
+Two things it caught:
+
+- **`--dim` failed AA on every light surface** — `#9A8A8E` was 3.19 / 2.94 /
+  3.28 against paper, sunken and card, across 72 call sites. **Not a
+  regression:** the old `#9a8f82` was 2.94 on the old paper too. Raised to
+  `#78696D` (5.06 / 4.66 / 5.20) in `4913c3e`. Chosen as the *lightest* value
+  clearing 4.5 everywhere, so the `--muted` / `--dim` hierarchy survives.
+- **`--rule-soft` was resolving to nothing**, pointing at the `--deep-grey-rgb`
+  channel deleted in Step 5a. 2 live call sites. Rebased onto ink.
+
+**`--brand-soft #F5D5D9` is INFORMATIONAL, not a failure.** It is a decorative
+background tint, not a UI state indicator, so WCAG's 3:1 UI rule does not apply
+to it. What matters is the contrast of the TEXT placed on it — and that pair
+cannot be computed yet:
+
+> **`--brand-soft` has ZERO call sites.** R1 specifies it, nothing consumes it.
+> **Whoever first uses it must contrast-check the text placed on it** and add
+> that pair to `check-contrast.mjs`. Its 1.33:1 against paper is expected and
+> fine for a tint; it says nothing about legibility.
+
+**`--brand-light #E8546A` verified against the real hero backgrounds**, not
+against paper: 5.62 on `--dark`, 5.18 on `--ink`, 5.62 on `--ink-2`. All pass.
+Against paper it would be 3.46 and fail, which is exactly why it is
+fill-and-dark-only — and why testing it against paper would have been the wrong
+test.
+
+### Known guard gap, not closed
+
+`check-design.mjs` check 8 asserts the channel tokens **exist**. It does not
+assert that every `var()` reference still **resolves**. That is why
+`--rule-soft` pointed at a deleted channel for several commits without
+complaint; it was found by reading the file. Worth adding, deliberately not
+done mid-review.
+
 ### Post-merge cleanup — one chore, AFTER the PR merges, never during
 
 Dead CSS in `main.css`, unreachable from any routed template (see F10). Removal,
