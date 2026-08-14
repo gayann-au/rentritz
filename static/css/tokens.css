@@ -103,7 +103,9 @@ h1, h2, h3, h4 {
   --ink-rgb:         26,18,20;      /* #1A1214 */
   --ink-2-rgb:       13,7,9;        /* #0D0709 */
   --muted-rgb:       107,92,96;     /* #6B5C60 */
-  --dim-rgb:         154,138,142;   /* #9A8A8E */
+  --dim-rgb:         120,105,109;   /* #78696D  raised from #9A8A8E at Step 6:
+                                       the original was 2.94:1 on --paper-2 and
+                                       failed AA across all three light surfaces */
 
   /* brand. --brand is FILLS ONLY. --brand-deep is red text on light. */
   --brand-rgb:       214,38,58;     /* #D6263A */
@@ -142,7 +144,7 @@ h1, h2, h3, h4 {
 
 
   --rule:       rgba(var(--ink-rgb),0.12);
-  --rule-soft:  rgba(var(--deep-grey-rgb),0.06);
+  --rule-soft:  rgba(var(--ink-rgb),0.06);
 
   --ease:cubic-bezier(0.22,1,0.36,1);
 }
