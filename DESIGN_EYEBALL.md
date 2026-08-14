@@ -96,11 +96,19 @@ those pages are done:
 |---|---|---|---|
 | `core/landing.html` | `/` | 25 literals → tokens, all value-identical | Verified live: every token resolves to its original value, `.on-dark .section-h` still computes `rgb(248,246,242)`. **Expect zero visible change.** Still to do at Step 7: check the Burj Khalifa hero against the new red once Step 5 lands. |
 | `core/for_lawyers.html` | `/for-lawyers` | Font load + 47 literals tokenised | Two things. **(1)** Bold text is now the **real** DM Sans 700 cut, not synthesised faux-bold — headings should look cleaner. **(2)** This page carried more stale values than any other: nav/logo accent `#f5a623` → `#e0a040` **[C2]**, hovers **[C3]**, the "why" band `#f2ede6` → `#f0ece6` **[C5]**. The dark hero stays dark (D5) but its overlay moved from pure black to warm ink — check the hero photo still reads well through it. |
-| `core/terms.html` | `/terms` | See **P1** | Not yet done |
-| `core/privacy.html` | `/privacy` | See **P2** | Not yet done |
-| 4 auth pages | `/auth/login`, `/auth/register`, `/auth/forgot-password`, `/auth/reset-password/<token>` | password-toggle `#555` → `--dim`, hover `#f59e0b` → `--amber` | **Done.** `login` and `reset_password` fully tokenised; `forgot_password` needed nothing. Verified live with a hard reload. Only change: the show/hide toggle is slightly lighter and its hover slightly deeper. |
-| `lawyers/login.html` | `/lawyers/login` | fully tokenised, zero literals | Same toggle change as the auth pages. |
-| 6 error pages | — | — | Not yet done |
+| `core/terms.html` | `/terms` | **Dark → light.** See **P1** | Whole page flipped from near-black to warm white. Headings 19.4:1, body 6.1:1, all AA. |
+| `core/privacy.html` | `/privacy` | **Dark → light.** See **P2** | As terms, plus 11 inline `<strong>` tags now on `--ink`. |
+| `auth/login.html` | `/auth/login` | toggle `#555`→`--dim`, hover→`--brand` | Password show/hide is lighter; its hover is now crimson, not amber. |
+| `auth/register.html` | `/auth/register` | same as login | Same toggle change. |
+| `auth/forgot_password.html` | `/auth/forgot-password` | **nothing** | The only page in the migration that needed no change at all. It should look exactly as before except for the global palette. |
+| `auth/reset_password.html` | `/auth/reset-password/<token>` | toggle + hover | Needs a real token to view; low priority. |
+| `lawyers/login.html` | `/lawyers/login` | fully tokenised | Same toggle change as the auth pages. |
+| `errors/400.html` | — | **nothing** | All six error pages carry no `:root` and no colour literal — one `var(--amber)` each, now `--brand-deep`. |
+| `errors/401.html` | — | **nothing** | The heading accent is the only coloured element. |
+| `errors/403.html` | — | **nothing** | |
+| `errors/404.html` | `/no-such-page` | **nothing** | Easiest to trigger. Verified rendering on `--paper` with a crimson heading. |
+| `errors/429.html` | — | **nothing** | Rate-limit page. |
+| `errors/500.html` | — | **nothing** | |
 
 ---
 
