@@ -1,0 +1,209 @@
+/* ============================================================
+   RENTRITZ DUBAI · DESIGN TOKENS
+   THE single source of truth for colour in this repository.
+
+   Rules:
+   - No colour value may be defined in any other file.
+   - Invent nothing. Every value here was copied from existing code.
+   - main.css maps its legacy names onto these; it defines no values.
+
+   Documented exceptions (see DESIGN_AUDIT.md):
+   - static/css/admin.css .......... dark admin panel, permanent exception
+   - templates/email/ all .html .... email clients lack custom-property support
+   - rentritz-landing/, landing/ ... deferred, blocked on deploy config
+   ============================================================ */
+
+/* ── Section 0 · the single webfont load ─────────────────────
+   THE only DM Sans request in the routed app. Replaces four
+   separate loads that previously fetched four different weight
+   sets (main.css, base.html, core/landing.html,
+   core/for_lawyers.html).
+
+   The URL is landing.html's former load, verbatim: it was already
+   the union — wght 300-700 plus ital 300-600. Nothing was invented
+   and no weight in use was dropped.
+
+   Every routed page reaches this file:
+     base.html + children   -> main.css -> @import tokens.css
+     core/for_lawyers.html  -> main.css -> @import tokens.css
+     core/landing.html      -> <link>  tokens.css
+
+   Must stay the first rule in the file; @import is only valid
+   before any other at-rule or style rule.
+   ──────────────────────────────────────────────────────────── */
+
+@import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600&display=swap');
+
+/* ── Section 0b · type roles ─────────────────────────────────
+   Bricolage Grotesque is a VARIABLE font on the optical-size axis, so the
+   12..96 range is requested once and each heading picks the cut that suits
+   its rendered size. Weights 600/700/800 per the brief.
+
+   One request, not two: Bricolage is added to the SAME Google Fonts URL as
+   DM Sans above rather than a second @import. Two @import rules would mean
+   two round trips.
+   ──────────────────────────────────────────────────────────── */
+
+:root{
+  --font-display: 'Bricolage Grotesque', 'DM Sans', -apple-system,
+                  BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-body:    'DM Sans', -apple-system, BlinkMacSystemFont,
+                  'Segoe UI', sans-serif;
+}
+
+/* h1-h4 only. Body, UI and everything else stay on DM Sans.
+   DM Sans is the first fallback, so if Bricolage fails to load the headings
+   land on the face they use today rather than on a system serif. */
+h1, h2, h3, h4 {
+  font-family: var(--font-display);
+  font-optical-sizing: auto;
+}
+
+/* ── Section 1 ───────────────────────────────────────────────
+   Copied byte for byte from templates/core/landing.html:19-35.
+   The reference page. These values are the agreed collision winners.
+   Do not edit without re-running the collision analysis.
+
+   CHANNEL FORM (F8). 92% of the rgba() literals in this repo are one of
+   these colours at partial opacity, and you cannot vary the alpha of a
+   hex. So each colour is declared ONCE as an "R,G,B" triplet, and the
+   hex token is derived from it with rgb().
+
+   That means ONE source of truth per colour, not two that can drift:
+
+       --paper-rgb : 248,246,242        <- edit here
+       --paper     : rgb(248,246,242)   <- follows automatically
+
+   Use the hex token normally. Reach for the -rgb form only when you need
+   an alpha:
+
+       solid       ...  color:  var(--ink);
+       12% opacity ...  border: 1px solid rgba(var(--ink-rgb),.12);
+
+   No colour is invented by this: every triplet below is the exact
+   decimal form of the hex it replaced.
+
+   Do NOT write a nested comment anywhere in this block. CSS comments do
+   not nest; an inner terminator ends the outer one and silently turns the
+   whole :root that follows into garbage. That exact mistake blanked every
+   token here once already.
+   ──────────────────────────────────────────────────────────── */
+
+:root{
+  /* ── R1 CRIMSON ────────────────────────────────────────────
+     Channels are the single source of truth. Step 5a edited these
+     triplets and nothing else; every solid token, wash, border and
+     shadow follows automatically. That is what the F8 refactor bought.
+     ──────────────────────────────────────────────────────────── */
+
+  /* surfaces and type */
+  --paper-rgb:       255,251,250;   /* #FFFBFA */
+  --paper-2-rgb:     251,240,239;   /* #FBF0EF */
+  --card-rgb:        255,255,255;   /* #FFFFFF */
+  --ink-rgb:         26,18,20;      /* #1A1214 */
+  --ink-2-rgb:       13,7,9;        /* #0D0709 */
+  --muted-rgb:       107,92,96;     /* #6B5C60 */
+  --dim-rgb:         120,105,109;   /* #78696D  raised from #9A8A8E at Step 6:
+                                       the original was 2.94:1 on --paper-2 and
+                                       failed AA across all three light surfaces */
+
+  /* brand. --brand is FILLS ONLY. --brand-deep is red text on light. */
+  --brand-rgb:       214,38,58;     /* #D6263A */
+  --brand-deep-rgb:  155,27,43;     /* #9B1B2B */
+  --brand-soft-rgb:  245,213,217;   /* #F5D5D9 */
+  --brand-light-rgb: 232,84,106;    /* #E8546A  INVENTED. Fill, gradient, and
+                                       text on DARK only. Never text on light. */
+
+  /* signals, never brand. See D7. */
+  --action-rgb:      31,107,69;     /* #1F6B45 success */
+  --error-rgb:       180,83,9;      /* #B45309 error AND warning. Amber on
+                                       purpose, so it cannot be mistaken for
+                                       the brand, which is now red. */
+
+  /* dark surfaces. Kept under D5: heroes, full-bleed sections behind a
+     headline, and admin chrome. Not part of the R1 light palette. */
+  --dark-rgb:        10,8,7;
+
+  /* solid tokens, derived — do not hand-edit these */
+  --paper:       rgb(var(--paper-rgb));
+  --paper-2:     rgb(var(--paper-2-rgb));
+  --card:        rgb(var(--card-rgb));
+  --ink:         rgb(var(--ink-rgb));
+  --ink-2:       rgb(var(--ink-2-rgb));
+  --dark:        rgb(var(--dark-rgb));
+  --dark-mid:    rgb(var(--ink-rgb));
+  --muted:       rgb(var(--muted-rgb));
+  --dim:         rgb(var(--dim-rgb));
+
+  --brand:       rgb(var(--brand-rgb));
+  --brand-deep:  rgb(var(--brand-deep-rgb));
+  --brand-soft:  rgb(var(--brand-soft-rgb));
+  --brand-light: rgb(var(--brand-light-rgb));
+  --action:      rgb(var(--action-rgb));
+  --error:       rgb(var(--error-rgb));
+
+
+  --rule:       rgba(var(--ink-rgb),0.12);
+  --rule-soft:  rgba(var(--ink-rgb),0.06);
+
+  --ease:cubic-bezier(0.22,1,0.36,1);
+}
+
+/* ── Section 2 ───────────────────────────────────────────────
+   Relocated verbatim from static/css/main.css:3-57. These roles
+   exist only in main.css and have no landing counterpart, so there
+   was no collision to resolve — the values are unchanged.
+
+   They live here because they are colour values, and the agreed
+   end state is that exactly one file defines a colour.
+   ──────────────────────────────────────────────────────────── */
+
+:root {
+  /* --light-sand dissolves into --paper-2: same role, warm sunken fill. */
+  --light-sand: var(--paper-2);
+
+  /* --deep-grey dissolves into the ink channel. Kept only so any straggler
+     resolves; the channel itself is aliased in Section 1. */
+  --deep-grey:  rgb(var(--ink-rgb));
+
+  /* brand washes — rgba forms of --brand */
+  --brand-glow:   rgba(var(--brand-rgb),0.12);
+  --brand-border: rgba(var(--brand-rgb),0.25);
+
+  /* stronger rule; --rule / --rule-soft are in Section 1 */
+  --border-strong: rgba(var(--ink-rgb),0.22);
+
+  /* ── STATUS. Signals, NOT brand. D7. ────────────────────────
+     Red is the brand now, so a red error would be indistinguishable from a
+     brand element. These must NEVER become crimson.
+
+       success            -> --action  #1F6B45
+       error AND warning  -> --error   #B45309   deliberately amber
+       info               -> unchanged blue
+
+     --action-rgb and --error-rgb are declared in Section 1 with the rest of
+     the palette. They are NOT redeclared here: a second declaration later in
+     the file would silently win, which nearly happened during the swap.
+     ──────────────────────────────────────────────────────────── */
+  --info-rgb:    96,165,250;
+
+  --success-rgb:  var(--action-rgb);   /* legacy name -> the D7 token */
+  --success-text: rgb(var(--action-rgb));
+  --error-text:   rgb(var(--error-rgb));
+  --info-text:    rgb(var(--info-rgb));
+
+  /* tints, now derived from their own signal instead of being stray hexes,
+     so a pill background always tracks its own text colour */
+  --error-bg:    rgba(var(--error-rgb),0.10);
+  --error-bd:    rgba(var(--error-rgb),0.30);
+  --success-bg:  rgba(var(--action-rgb),0.10);
+  --success-bd:  rgba(var(--action-rgb),0.30);
+
+  /* shadows — colour-bearing, so they belong here. Geometry unchanged;
+     only the colour is routed through the channels. */
+  --shadow:       0 1px 3px rgba(var(--ink-rgb),0.08), 0 1px 2px rgba(var(--ink-rgb),0.06);
+  --shadow-sm:    0 1px 3px rgba(var(--ink-rgb),0.08), 0 1px 2px rgba(var(--ink-rgb),0.06);
+  --shadow-md:    0 4px 16px rgba(var(--ink-rgb),0.10), 0 2px 6px rgba(var(--ink-rgb),0.07);
+  --shadow-lg:    0 12px 40px rgba(var(--ink-rgb),0.14), 0 4px 12px rgba(var(--ink-rgb),0.08);
+  --shadow-amber: 0 4px 24px rgba(var(--brand-rgb),0.18);
+}

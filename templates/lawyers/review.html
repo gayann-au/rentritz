@@ -4,22 +4,14 @@
 
 {% block content %}
 <style>
-:root {
-  --black:      #f8f6f2;
-  --dark-card:  #ffffff;
-  --amber:      #c8820a;
-  --amber-dark: #b8720a;
-  --white:      #1c1916;
-  --text-muted: #6b6259;
-  --text-dim:   #9a8f82;
-  --border:     rgba(58,53,48,0.12);
-  --radius:     14px;
-  --ease-out:   cubic-bezier(0.22, 1, 0.36, 1);
-}
+/* Tokens come from static/css/tokens.css. This page's own :root was removed:
+   it shadowed and inverted the globals, naming the darkest ink "white" and
+   the page background "black". Call sites are mapped by ROLE. See F7.
+   Dropped as dead: --ease-out, declared, never used. */
 
 .rv-page {
   min-height: 100vh;
-  background: var(--black);
+  background: var(--paper);
   padding: 64px 0 100px;
   display: flex;
   align-items: flex-start;
@@ -37,29 +29,29 @@
   font-weight: 600;
   letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: var(--amber);
+  color: var(--brand-deep);
   display: flex;
   align-items: center;
   gap: 10px;
   margin-bottom: 12px;
 }
-.rv-eyebrow::before { content:''; width:22px; height:1px; background:var(--amber); }
+.rv-eyebrow::before { content:''; width:22px; height:1px; background:var(--brand); }
 
 .rv-heading {
   font-size: clamp(1.8rem, 4vw, 2.6rem);
   font-weight: 400;
-  color: var(--white);
+  color: var(--ink);
   letter-spacing: -0.02em;
   margin: 0 0 8px;
 }
 
 .rv-lawyer-meta {
   font-size: 0.88rem;
-  color: var(--text-muted);
+  color: var(--muted);
   margin: 0 0 36px;
 }
 .rv-lawyer-name {
-  color: var(--white);
+  color: var(--ink);
   font-weight: 500;
 }
 .rv-spec-tag {
@@ -67,16 +59,16 @@
   font-size: 0.72rem;
   padding: 2px 7px;
   border-radius: 4px;
-  background: rgba(245,158,11,0.1);
-  border: 1px solid rgba(245,158,11,0.2);
-  color: var(--amber);
+  background: rgba(var(--brand-rgb),0.1);
+  border: 1px solid rgba(var(--brand-rgb),0.2);
+  color: var(--brand-deep);
   margin-left: 6px;
   vertical-align: middle;
 }
 
 .rv-form {
-  background: var(--dark-card);
-  border: 1px solid var(--border);
+  background: var(--card);
+  border: 1px solid var(--rule);
   border-radius: var(--radius);
   padding: 32px;
   display: flex;
@@ -90,7 +82,7 @@
   font-weight: 600;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: var(--text-dim);
+  color: var(--dim);
   margin-bottom: 14px;
 }
 
@@ -102,23 +94,23 @@
 .rv-star {
   font-size: 2rem;
   cursor: pointer;
-  color: rgba(58,53,48,0.22);
+  color: rgba(var(--ink-rgb),0.22);
   transition: color 0.12s, transform 0.1s;
   user-select: none;
   line-height: 1;
 }
 .rv-star:hover,
 .rv-star.hovered,
-.rv-star.selected { color: var(--amber); }
+.rv-star.selected { color: var(--brand-deep); }
 .rv-star:active   { transform: scale(0.9); }
 
 /* ── Textarea ────────────────────────────────────────────────── */
 .rv-textarea {
   width: 100%;
-  background: rgba(58,53,48,0.03);
-  border: 1px solid var(--border);
+  background: rgba(var(--ink-rgb),0.03);
+  border: 1px solid var(--rule);
   border-radius: 8px;
-  color: var(--white);
+  color: var(--ink);
   font-size: 0.9rem;
   font-family: inherit;
   padding: 12px 14px;
@@ -127,14 +119,14 @@
   transition: border-color 0.15s;
   box-sizing: border-box;
 }
-.rv-textarea::placeholder { color: var(--text-dim); }
+.rv-textarea::placeholder { color: var(--dim); }
 .rv-textarea:focus {
   outline: none;
-  border-color: rgba(245,158,11,0.4);
+  border-color: rgba(var(--brand-rgb),0.4);
 }
 .rv-char-count {
   font-size: 0.72rem;
-  color: var(--text-dim);
+  color: var(--dim);
   text-align: right;
   margin-top: 4px;
 }
@@ -150,19 +142,19 @@
   align-items: center;
   gap: 10px;
   padding: 10px 16px;
-  border: 1px solid var(--border);
+  border: 1px solid var(--rule);
   border-radius: 8px;
   cursor: pointer;
   font-size: 0.88rem;
-  color: var(--text-muted);
+  color: var(--muted);
   transition: all 0.15s;
 }
-.rv-radio-label:hover { border-color: rgba(245,158,11,0.3); color: var(--white); }
-.rv-radio-label input[type="radio"] { accent-color: var(--amber); }
+.rv-radio-label:hover { border-color: rgba(var(--brand-rgb),0.3); color: var(--ink); }
+.rv-radio-label input[type="radio"] { accent-color: var(--brand); }
 .rv-radio-label:has(input:checked) {
-  border-color: rgba(245,158,11,0.4);
-  background: rgba(245,158,11,0.05);
-  color: var(--white);
+  border-color: rgba(var(--brand-rgb),0.4);
+  background: rgba(var(--brand-rgb),0.05);
+  color: var(--ink);
 }
 
 /* ── Actions ─────────────────────────────────────────────────── */
@@ -174,8 +166,8 @@
 }
 .rv-btn-submit {
   flex: 1;
-  background: var(--amber);
-  color: #000;
+  background: var(--brand);
+  color: #fff;
   border: none;
   border-radius: 9px;
   padding: 12px 24px;
@@ -184,15 +176,15 @@
   cursor: pointer;
   transition: background 0.2s;
 }
-.rv-btn-submit:hover { background: var(--amber-dark); }
+.rv-btn-submit:hover { background: var(--brand); }
 .rv-btn-cancel {
   font-size: 0.85rem;
-  color: var(--text-muted);
+  color: var(--muted);
   text-decoration: none;
   padding: 12px 16px;
   transition: color 0.15s;
 }
-.rv-btn-cancel:hover { color: var(--white); }
+.rv-btn-cancel:hover { color: var(--ink); }
 
 @media (max-width: 600px) {
   .rv-form { padding: 24px 20px; }
@@ -220,7 +212,7 @@
 
       {# ── Star rating ───────────────────────────────────────── #}
       <div>
-        <span class="rv-field-label">Your rating <span style="color:#ef4444;">*</span></span>
+        <span class="rv-field-label">Your rating <span style="color:var(--error-text);">*</span></span>
         <div class="rv-stars" id="star-row" role="group" aria-label="Rating">
           {% for i in range(1, 6) %}
           <span class="rv-star" data-value="{{ i }}" role="button" tabindex="0"
@@ -231,7 +223,7 @@
 
       {# ── Comment ───────────────────────────────────────────── #}
       <div>
-        <span class="rv-field-label">Your experience <span style="color:var(--text-dim);">(optional)</span></span>
+        <span class="rv-field-label">Your experience <span style="color:var(--dim);">(optional)</span></span>
         <textarea
           name="comment"
           class="rv-textarea"
@@ -318,7 +310,7 @@
     form.addEventListener('submit', function (e) {
       if (!ratingInput.value) {
         e.preventDefault();
-        document.getElementById('star-row').style.outline = '2px solid #ef4444';
+        document.getElementById('star-row').style.outline = '2px solid var(--error-text)';
         document.getElementById('star-row').style.borderRadius = '4px';
         setTimeout(function () {
           document.getElementById('star-row').style.outline = '';

@@ -4,25 +4,22 @@
 
 {% block content %}
 <style>
-:root {
-  --black:#f8f6f2; --dark-card:#ffffff; --dark-card-hover:#f0ece6;
-  --amber:#c8820a; --amber-dark:#b8720a; --white:#1c1916;
-  --text-muted:#6b6259; --text-dim:#9a8f82;
-  --border:rgba(58,53,48,0.12); --border-hover:rgba(200,130,10,0.35);
-  --radius:14px; --ease:cubic-bezier(0.4,0,0.2,1); --ease-out:cubic-bezier(0.22,1,0.36,1);
-}
-.sr{opacity:0;transform:translateY(24px);transition:opacity 0.6s var(--ease-out),transform 0.6s var(--ease-out);}
+/* Tokens come from static/css/tokens.css. This page's own :root was removed:
+   it shadowed and inverted the globals, naming the darkest ink "white" and
+   the page background "black". Call sites are mapped by ROLE. See F7.
+   Dropped as dead: --dark-card-hover and --border-hover, declared, never used. */
+.sr{opacity:0;transform:translateY(24px);transition:opacity 0.6s var(--ease),transform 0.6s var(--ease);}
 .sr.in{opacity:1;transform:translateY(0);}
 
-.lp-page{min-height:100vh;background:var(--black);padding:56px 0 100px;}
+.lp-page{min-height:100vh;background:var(--paper);padding:56px 0 100px;}
 .lp-container{width:100%;max-width:1100px;margin:0 auto;padding:0 32px;}
 
 .lp-back{
   display:inline-flex;align-items:center;gap:8px;
-  font-size:0.8rem;color:var(--text-muted);text-decoration:none;margin-bottom:32px;
+  font-size:0.8rem;color:var(--muted);text-decoration:none;margin-bottom:32px;
   transition:color 0.2s var(--ease);
 }
-.lp-back:hover{color:var(--amber);}
+.lp-back:hover{color:var(--brand-deep);}
 
 .lp-layout{display:grid;grid-template-columns:300px 1fr;gap:32px;align-items:start;}
 @media(max-width:900px){.lp-layout{grid-template-columns:1fr;}}
@@ -31,141 +28,141 @@
 .lp-sidebar{display:flex;flex-direction:column;gap:20px;}
 
 .lp-photo-card{
-  background:var(--dark-card);border:1px solid var(--border);border-radius:var(--radius);
+  background:var(--card);border:1px solid var(--rule);border-radius:var(--radius);
   padding:28px;display:flex;flex-direction:column;align-items:center;gap:16px;text-align:center;
 }
 .lp-photo{
   width:100px;height:100px;border-radius:50%;overflow:hidden;
-  background:rgba(58,53,48,0.06);border:3px solid var(--border);
+  background:rgba(var(--ink-rgb),0.06);border:3px solid var(--rule);
 }
 .lp-photo img{width:100%;height:100%;object-fit:cover;}
-.lp-photo-placeholder{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:2.5rem;color:var(--text-dim);}
+.lp-photo-placeholder{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:2.5rem;color:var(--dim);}
 
-.lp-name{font-size:1.2rem;font-weight:600;color:var(--white);margin:0;}
-.lp-firm{font-size:0.85rem;color:var(--text-muted);margin:4px 0 0;}
+.lp-name{font-size:1.2rem;font-weight:600;color:var(--ink);margin:0;}
+.lp-firm{font-size:0.85rem;color:var(--muted);margin:4px 0 0;}
 
 .lp-badge{
   display:inline-flex;align-items:center;gap:6px;
   font-size:0.72rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;
   border-radius:8px;padding:5px 12px;
 }
-.lp-badge-verified{color:#4ade80;background:rgba(74,222,128,0.1);border:1px solid rgba(74,222,128,0.2);}
-.lp-badge-pending{color:var(--amber);background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.2);}
-.lp-badge-available{color:#60a5fa;background:rgba(96,165,250,0.1);border:1px solid rgba(96,165,250,0.2);}
-.lp-badge-unavailable{color:var(--text-dim);background:rgba(58,53,48,0.05);border:1px solid var(--border);}
+.lp-badge-verified{color:var(--success-text);background:rgba(var(--success-rgb),0.1);border:1px solid rgba(var(--success-rgb),0.2);}
+.lp-badge-pending{color:var(--brand-deep);background:rgba(var(--brand-rgb),0.1);border:1px solid rgba(var(--brand-rgb),0.2);}
+.lp-badge-available{color:var(--info-text);background:rgba(var(--info-rgb),0.1);border:1px solid rgba(var(--info-rgb),0.2);}
+.lp-badge-unavailable{color:var(--dim);background:rgba(var(--ink-rgb),0.05);border:1px solid var(--rule);}
 
 .lp-stats-card{
-  background:var(--border);border:1px solid var(--border);border-radius:var(--radius);
+  background:var(--rule);border:1px solid var(--rule);border-radius:var(--radius);
   display:grid;grid-template-columns:repeat(auto-fit,minmax(80px,1fr));
   gap:1px;overflow:hidden;
 }
 .lp-stat-row{display:flex;flex-direction:column;align-items:center;justify-content:center;
-  text-align:center;padding:16px 10px;background:var(--dark-card);gap:6px;}
-.lp-stat-label{font-size:0.7rem;color:var(--text-dim);letter-spacing:0.04em;}
-.lp-stat-value{font-size:1.3rem;font-weight:700;color:var(--amber);line-height:1;order:-1;}
-.lp-stars{color:var(--amber);}
+  text-align:center;padding:16px 10px;background:var(--card);gap:6px;}
+.lp-stat-label{font-size:0.7rem;color:var(--dim);letter-spacing:0.04em;}
+.lp-stat-value{font-size:1.3rem;font-weight:700;color:var(--brand-deep);line-height:1;order:-1;}
+.lp-stars{color:var(--brand-deep);}
 
 .lp-pricing-card{
-  background:var(--dark-card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;
+  background:var(--card);border:1px solid var(--rule);border-radius:var(--radius);padding:20px;
 }
-.lp-pricing-title{font-size:0.67rem;font-weight:600;letter-spacing:0.2em;text-transform:uppercase;color:var(--text-dim);margin:0 0 14px;}
-.lp-price-item{font-size:0.9rem;color:var(--white);padding:6px 0;}
-.lp-price-item span{color:var(--amber);font-weight:600;}
-.lp-price-note{font-size:0.8rem;color:var(--text-muted);margin-top:10px;line-height:1.6;}
+.lp-pricing-title{font-size:0.67rem;font-weight:600;letter-spacing:0.2em;text-transform:uppercase;color:var(--dim);margin:0 0 14px;}
+.lp-price-item{font-size:0.9rem;color:var(--ink);padding:6px 0;}
+.lp-price-item span{color:var(--brand-deep);font-weight:600;}
+.lp-price-note{font-size:0.8rem;color:var(--muted);margin-top:10px;line-height:1.6;}
 
 /* ── Contact section (inside sidebar) ── */
 .lp-contact-card{
-  background:var(--dark-card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;
+  background:var(--card);border:1px solid var(--rule);border-radius:var(--radius);padding:20px;
 }
-.lp-contact-title{font-size:0.67rem;font-weight:600;letter-spacing:0.2em;text-transform:uppercase;color:var(--text-dim);margin:0 0 14px;}
+.lp-contact-title{font-size:0.67rem;font-weight:600;letter-spacing:0.2em;text-transform:uppercase;color:var(--dim);margin:0 0 14px;}
 
 .lp-contact-detail{
   display:flex;align-items:center;gap:10px;
-  padding:10px 0;border-bottom:1px solid var(--border);
-  font-size:0.9rem;color:var(--white);
+  padding:10px 0;border-bottom:1px solid var(--rule);
+  font-size:0.9rem;color:var(--ink);
 }
 .lp-contact-detail:last-child{border-bottom:none;}
-.lp-contact-icon{color:var(--amber);font-size:1rem;width:20px;text-align:center;}
-.lp-contact-detail a{color:var(--amber);text-decoration:none;}
+.lp-contact-icon{color:var(--brand-deep);font-size:1rem;width:20px;text-align:center;}
+.lp-contact-detail a{color:var(--brand-deep);text-decoration:none;}
 
 .lp-unlock-box{display:flex;flex-direction:column;gap:12px;}
-.lp-unlock-info{font-size:0.85rem;color:var(--text-muted);line-height:1.6;}
-.lp-unlock-cost{font-size:1rem;font-weight:600;color:var(--amber);}
+.lp-unlock-info{font-size:0.85rem;color:var(--muted);line-height:1.6;}
+.lp-unlock-cost{font-size:1rem;font-weight:600;color:var(--brand-deep);}
 
 .lp-unlock-note{
-  background:rgba(58,53,48,0.04);border:1px solid var(--border);
-  border-radius:8px;padding:8px 12px;font-size:0.875rem;color:var(--white);
+  background:rgba(var(--ink-rgb),0.04);border:1px solid var(--rule);
+  border-radius:8px;padding:8px 12px;font-size:0.875rem;color:var(--ink);
   outline:none;resize:vertical;min-height:72px;transition:border-color 0.2s;
   width:100%;box-sizing:border-box;
 }
-.lp-unlock-note:focus{border-color:rgba(245,158,11,0.4);}
-.lp-unlock-note::placeholder{color:var(--text-dim);}
+.lp-unlock-note:focus{border-color:rgba(var(--brand-rgb),0.4);}
+.lp-unlock-note::placeholder{color:var(--dim);}
 
 .lp-unlock-btn{
-  display:block;width:100%;background:var(--amber);color:#fff;border:none;
+  display:block;width:100%;background:var(--brand);color:#fff;border:none;
   border-radius:10px;padding:14px 20px;font-size:0.9rem;font-weight:600;
   cursor:pointer;text-align:center;transition:background 0.2s var(--ease);
 }
-.lp-unlock-btn:hover{background:var(--amber-dark);}
+.lp-unlock-btn:hover{background:var(--brand);}
 .lp-unlock-btn:disabled{opacity:0.5;cursor:not-allowed;}
 
 .lp-signin-note{
-  font-size:0.85rem;color:var(--text-muted);text-align:center;line-height:1.6;
+  font-size:0.85rem;color:var(--muted);text-align:center;line-height:1.6;
 }
-.lp-signin-note a{color:var(--amber);}
+.lp-signin-note a{color:var(--brand-deep);}
 
-.lp-location{font-size:0.8rem;color:var(--text-muted);}
+.lp-location{font-size:0.8rem;color:var(--muted);}
 .lp-spec-tags{display:flex;flex-wrap:wrap;justify-content:center;gap:6px;}
-.lp-languages{font-size:0.8rem;color:var(--text-muted);}
-.lp-exp{font-size:0.8rem;color:var(--text-muted);}
+.lp-languages{font-size:0.8rem;color:var(--muted);}
+.lp-exp{font-size:0.8rem;color:var(--muted);}
 .lp-free-badge{
   display:inline-block;font-size:0.7rem;font-weight:600;letter-spacing:0.05em;
-  color:#10b981;background:rgba(16,185,129,0.1);
-  border:1px solid rgba(16,185,129,0.3);border-radius:6px;padding:3px 10px;
+  color:var(--success-text);background:rgba(var(--success-rgb),0.1);
+  border:1px solid rgba(var(--success-rgb),0.3);border-radius:6px;padding:3px 10px;
 }
 
 /* ── Right column ── */
 .lp-main{display:flex;flex-direction:column;gap:24px;}
 
 .lp-section{
-  background:var(--dark-card);border:1px solid var(--border);border-radius:var(--radius);padding:28px;
+  background:var(--card);border:1px solid var(--rule);border-radius:var(--radius);padding:28px;
 }
 .lp-section-title{
   font-size:0.67rem;font-weight:600;letter-spacing:0.2em;text-transform:uppercase;
-  color:var(--text-dim);margin:0 0 16px;
-  border-left:2px solid var(--amber);padding-left:10px;
+  color:var(--dim);margin:0 0 16px;
+  border-left:2px solid var(--brand);padding-left:10px;
 }
-.lp-bio{font-size:0.95rem;color:var(--white);line-height:1.8;margin:0;white-space:pre-wrap;}
+.lp-bio{font-size:0.95rem;color:var(--ink);line-height:1.8;margin:0;white-space:pre-wrap;}
 .lp-tags{display:flex;flex-wrap:wrap;gap:8px;}
 .lp-tag{
-  font-size:0.78rem;color:var(--text-muted);
-  background:rgba(58,53,48,0.05);border:1px solid var(--border);
+  font-size:0.78rem;color:var(--muted);
+  background:rgba(var(--ink-rgb),0.05);border:1px solid var(--rule);
   border-radius:8px;padding:5px 12px;
 }
-.lp-tag-amber{color:var(--amber);border-color:rgba(245,158,11,0.25);background:rgba(245,158,11,0.06);}
+.lp-tag-amber{color:var(--brand-deep);border-color:rgba(var(--brand-rgb),0.25);background:rgba(var(--brand-rgb),0.06);}
 
 .lp-detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
 @media(max-width:600px){.lp-detail-grid{grid-template-columns:1fr;}}
 .lp-detail-item{}
-.lp-detail-label{font-size:0.72rem;color:var(--text-dim);letter-spacing:0.06em;text-transform:uppercase;margin:0 0 4px;}
-.lp-detail-value{font-size:0.9rem;color:var(--white);}
+.lp-detail-label{font-size:0.72rem;color:var(--dim);letter-spacing:0.06em;text-transform:uppercase;margin:0 0 4px;}
+.lp-detail-value{font-size:0.9rem;color:var(--ink);}
 
 /* Reviews */
-.lp-review-item{padding:20px 0 20px 14px;border-bottom:1px solid var(--border);border-left:2px solid rgba(245,158,11,.35);}
+.lp-review-item{padding:20px 0 20px 14px;border-bottom:1px solid var(--rule);border-left:2px solid rgba(var(--brand-rgb),.35);}
 .lp-review-item:last-child{border-bottom:none;}
 .lp-review-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
-.lp-review-stars{color:var(--amber);letter-spacing:2px;}
-.lp-review-date{font-size:0.75rem;color:var(--text-dim);}
-.lp-review-comment{font-size:0.9rem;color:var(--white);line-height:1.7;margin:0 0 10px;}
-.lp-review-recommend{font-size:0.8rem;color:#4ade80;margin:0 0 10px;}
+.lp-review-stars{color:var(--brand-deep);letter-spacing:2px;}
+.lp-review-date{font-size:0.75rem;color:var(--dim);}
+.lp-review-comment{font-size:0.9rem;color:var(--ink);line-height:1.7;margin:0 0 10px;}
+.lp-review-recommend{font-size:0.8rem;color:var(--success-text);margin:0 0 10px;}
 .lp-review-reply{
   margin-top:10px;padding:12px 16px;
-  background:rgba(245,158,11,0.06);border-left:2px solid var(--amber);border-radius:0 8px 8px 0;
+  background:rgba(var(--brand-rgb),0.06);border-left:2px solid var(--brand);border-radius:0 8px 8px 0;
 }
-.lp-review-reply-label{font-size:0.7rem;font-weight:600;color:var(--amber);letter-spacing:0.1em;text-transform:uppercase;margin:0 0 6px;}
-.lp-review-reply-text{font-size:0.875rem;color:var(--white);line-height:1.6;margin:0;}
+.lp-review-reply-label{font-size:0.7rem;font-weight:600;color:var(--brand-deep);letter-spacing:0.1em;text-transform:uppercase;margin:0 0 6px;}
+.lp-review-reply-text{font-size:0.875rem;color:var(--ink);line-height:1.6;margin:0;}
 
-.lp-no-reviews{font-size:0.9rem;color:var(--text-muted);text-align:center;padding:24px 0;}
+.lp-no-reviews{font-size:0.9rem;color:var(--muted);text-align:center;padding:24px 0;}
 </style>
 
 <div class="lp-page">
@@ -240,7 +237,7 @@
             <span class="lp-stat-value">
               <span class="lp-stars">&#9733;</span>
               {{ "%.1f"|format(lawyer.average_rating) }} / 5
-              <span style="color:var(--text-dim);font-weight:400;">({{ lawyer.total_reviews }})</span>
+              <span style="color:var(--dim);font-weight:400;">({{ lawyer.total_reviews }})</span>
             </span>
           </div>
           {% endif %}
@@ -268,10 +265,10 @@
           <div class="lp-price-item">Hourly: <span>AED {{ "%.0f"|format(lawyer.hourly_rate_aed) }}</span> / hr</div>
           {% endif %}
           {% if lawyer.fee_on_case_basis %}
-          <div class="lp-price-item" style="color:var(--text-muted);">Fee discussed after reviewing case</div>
+          <div class="lp-price-item" style="color:var(--muted);">Fee discussed after reviewing case</div>
           {% endif %}
           {% if not lawyer.initial_consultation_fee_aed and not lawyer.hourly_rate_aed and not lawyer.fee_on_case_basis and not lawyer.offers_free_first_consultation %}
-          <div class="lp-price-item" style="color:var(--text-muted);">Contact for pricing</div>
+          <div class="lp-price-item" style="color:var(--muted);">Contact for pricing</div>
           {% endif %}
           {% if lawyer.pricing_note %}
           <div class="lp-price-note">{{ lawyer.pricing_note }}</div>
@@ -304,11 +301,11 @@
             {% if lawyer.office_address %}
             <div class="lp-contact-detail" style="align-items:flex-start;">
               <span class="lp-contact-icon" style="margin-top:2px;">&#128205;</span>
-              <span style="font-size:0.85rem;color:var(--text-muted);line-height:1.5;">{{ lawyer.office_address }}</span>
+              <span style="font-size:0.85rem;color:var(--muted);line-height:1.5;">{{ lawyer.office_address }}</span>
             </div>
             {% endif %}
             {% if unlocked_booking and unlocked_booking.contact_unlocked_at %}
-            <div style="font-size:0.75rem;color:var(--text-dim);margin-top:12px;padding-top:12px;border-top:1px solid var(--border);">
+            <div style="font-size:0.75rem;color:var(--dim);margin-top:12px;padding-top:12px;border-top:1px solid var(--rule);">
               Unlocked on {{ unlocked_booking.contact_unlocked_at.strftime('%d %b %Y') }}
             </div>
             {% endif %}
@@ -325,7 +322,7 @@
               </div>
               <div class="lp-unlock-cost">{{ lawyer.contact_unlock_credits }} credit{% if lawyer.contact_unlock_credits != 1 %}s{% endif %} to unlock</div>
               {% if user_credits < lawyer.contact_unlock_credits %}
-              <div style="font-size:0.8rem;color:#f87171;">
+              <div style="font-size:0.8rem;color:var(--error-text);">
                 You have {{ user_credits }} credit{% if user_credits != 1 %}s{% endif %}.
                 You need {{ lawyer.contact_unlock_credits - user_credits }} more.
                 Contact support to get credits.
@@ -428,15 +425,15 @@
           <div style="display:flex;flex-direction:column;gap:10px;">
             {% if lawyer.linkedin_url %}
             <a href="{{ lawyer.linkedin_url }}" target="_blank" rel="noopener"
-               style="color:var(--amber);font-size:0.9rem;text-decoration:none;">LinkedIn &#8599;</a>
+               style="color:var(--brand-deep);font-size:0.9rem;text-decoration:none;">LinkedIn &#8599;</a>
             {% endif %}
             {% if lawyer.website_url %}
             <a href="{{ lawyer.website_url }}" target="_blank" rel="noopener"
-               style="color:var(--amber);font-size:0.9rem;text-decoration:none;">Personal website &#8599;</a>
+               style="color:var(--brand-deep);font-size:0.9rem;text-decoration:none;">Personal website &#8599;</a>
             {% endif %}
             {% if lawyer.firm_website %}
             <a href="{{ lawyer.firm_website }}" target="_blank" rel="noopener"
-               style="color:var(--amber);font-size:0.9rem;text-decoration:none;">{{ lawyer.firm_name or 'Firm website' }} &#8599;</a>
+               style="color:var(--brand-deep);font-size:0.9rem;text-decoration:none;">{{ lawyer.firm_name or 'Firm website' }} &#8599;</a>
             {% endif %}
           </div>
         </div>
@@ -480,17 +477,17 @@
           <form method="POST" action="{{ url_for('lawyers.submit_lawyer_review', lawyer_profile_id=lawyer.id) }}">
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
             <div style="margin-bottom:16px;">
-              <div style="font-size:0.8rem;color:var(--text-muted);margin-bottom:8px;">Rating <span style="color:#f87171;">*</span></div>
+              <div style="font-size:0.8rem;color:var(--muted);margin-bottom:8px;">Rating <span style="color:var(--error-text);">*</span></div>
               <div class="lp-star-rating" id="star-rating">
                 {% for i in range(1,6) %}
-                <label style="cursor:pointer;font-size:1.6rem;color:var(--text-dim);transition:color 0.15s;" data-val="{{ i }}">&#9733;
+                <label style="cursor:pointer;font-size:1.6rem;color:var(--dim);transition:color 0.15s;" data-val="{{ i }}">&#9733;
                   <input type="radio" name="rating" value="{{ i }}" style="display:none;" required>
                 </label>
                 {% endfor %}
               </div>
             </div>
             <div style="margin-bottom:16px;">
-              <div style="font-size:0.8rem;color:var(--text-muted);margin-bottom:8px;">Comment (optional)</div>
+              <div style="font-size:0.8rem;color:var(--muted);margin-bottom:8px;">Comment (optional)</div>
               <textarea name="comment" class="lp-unlock-note"
                 placeholder="Share your experience with this lawyer…"
                 rows="4" maxlength="1000"></textarea>
@@ -501,7 +498,7 @@
           </form>
         </div>
         {% elif already_reviewed %}
-        <div class="lp-section sr" style="text-align:center;color:var(--text-muted);font-size:0.9rem;">
+        <div class="lp-section sr" style="text-align:center;color:var(--muted);font-size:0.9rem;">
           You have already reviewed this lawyer.
         </div>
         {% endif %}
@@ -520,17 +517,17 @@
   var labels = document.querySelectorAll('#star-rating label');
   labels.forEach(function(lbl, idx){
     lbl.addEventListener('mouseenter', function(){
-      labels.forEach(function(l,i){ l.style.color = i<=idx ? '#f59e0b' : '#555'; });
+      labels.forEach(function(l,i){ l.style.color = i<=idx ? 'var(--brand-deep)' : 'var(--dim)'; });
     });
     lbl.addEventListener('mouseleave', function(){
       var checked = document.querySelector('#star-rating input:checked');
       var val = checked ? parseInt(checked.value) : 0;
-      labels.forEach(function(l,i){ l.style.color = i<val ? '#f59e0b' : '#555'; });
+      labels.forEach(function(l,i){ l.style.color = i<val ? 'var(--brand-deep)' : 'var(--dim)'; });
     });
     lbl.addEventListener('click', function(){
       var inp = lbl.querySelector('input');
       inp.checked = true;
-      labels.forEach(function(l,i){ l.style.color = i<=idx ? '#f59e0b' : '#555'; });
+      labels.forEach(function(l,i){ l.style.color = i<=idx ? 'var(--brand-deep)' : 'var(--dim)'; });
     });
   });
 })();
@@ -566,7 +563,7 @@
         btn.disabled = false;
         btn.textContent = 'Unlock Contact';
         box.insertAdjacentHTML('afterbegin',
-          '<div style="font-size:0.8rem;color:#f87171;margin-bottom:10px;">Not enough credits. <a href="{{ url_for("core.credits") }}" style="color:var(--amber)">Buy more</a></div>'
+          '<div style="font-size:0.8rem;color:var(--error-text);margin-bottom:10px;">Not enough credits. <a href="{{ url_for("core.credits") }}" style="color:var(--brand-deep)">Buy more</a></div>'
         );
       } else {
         btn.disabled = false;
@@ -581,12 +578,12 @@
 
   function _buildContactHtml(data){
     var html = '<div style="display:flex;flex-direction:column;gap:10px;">';
-    if (data.phone)   html += '<div class="lp-contact-detail"><span class="lp-contact-icon">&#9742;</span><a href="tel:' + data.phone + '" style="color:var(--amber);">' + data.phone + '</a></div>';
-    if (data.whatsapp) html += '<div class="lp-contact-detail"><span class="lp-contact-icon">&#128172;</span><a href="https://wa.me/' + data.whatsapp.replace(/[+ ]/g,'') + '" target="_blank" rel="noopener" style="color:var(--amber);">' + data.whatsapp + '</a></div>';
-    if (data.email)   html += '<div class="lp-contact-detail"><span class="lp-contact-icon">&#9993;</span><a href="mailto:' + data.email + '" style="color:var(--amber);">' + data.email + '</a></div>';
+    if (data.phone)   html += '<div class="lp-contact-detail"><span class="lp-contact-icon">&#9742;</span><a href="tel:' + data.phone + '" style="color:var(--brand-deep);">' + data.phone + '</a></div>';
+    if (data.whatsapp) html += '<div class="lp-contact-detail"><span class="lp-contact-icon">&#128172;</span><a href="https://wa.me/' + data.whatsapp.replace(/[+ ]/g,'') + '" target="_blank" rel="noopener" style="color:var(--brand-deep);">' + data.whatsapp + '</a></div>';
+    if (data.email)   html += '<div class="lp-contact-detail"><span class="lp-contact-icon">&#9993;</span><a href="mailto:' + data.email + '" style="color:var(--brand-deep);">' + data.email + '</a></div>';
     html += '</div>';
     if (data.credits_remaining !== undefined)
-      html += '<div style="font-size:0.78rem;color:var(--text-dim);margin-top:10px;">' + data.credits_remaining + ' credits remaining</div>';
+      html += '<div style="font-size:0.78rem;color:var(--dim);margin-top:10px;">' + data.credits_remaining + ' credits remaining</div>';
     return html;
   }
 })();

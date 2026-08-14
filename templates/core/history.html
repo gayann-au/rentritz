@@ -4,24 +4,10 @@
 
 {% block content %}
 <style>
-/* ============================================================
-   CSS VARIABLES
-   ============================================================ */
-:root {
-  --black:      #f8f6f2;
-  --near-black: #f0ece6;
-  --dark-card:  #ffffff;
-  --dark-card-hover: #f0ece6;
-  --amber:      #c8820a;
-  --amber-dark: #b8720a;
-  --white:      #1c1916;
-  --text-muted: #6b6259;
-  --text-dim:   #9a8f82;
-  --border:     rgba(58,53,48,0.12);
-  --radius:     14px;
-  --ease:       cubic-bezier(0.4, 0, 0.2, 1);
-  --ease-out:   cubic-bezier(0.22, 1, 0.36, 1);
-}
+/* Tokens come from static/css/tokens.css. This page's own :root was removed:
+   it shadowed and inverted the globals, naming the darkest ink "white" and
+   the page background "black". Call sites are mapped by ROLE. See F7.
+   Dropped as dead: --near-black and --text-dim, declared, never used. */
 
 /* ============================================================
    SCROLL REVEAL
@@ -29,7 +15,7 @@
 .sr {
   opacity: 0;
   transform: translateY(36px);
-  transition: opacity 0.7s var(--ease-out), transform 0.7s var(--ease-out);
+  transition: opacity 0.7s var(--ease), transform 0.7s var(--ease);
 }
 .sr.in     { opacity: 1; transform: translateY(0); }
 .sr-d1     { transition-delay: 0.06s; }
@@ -44,7 +30,7 @@
    ============================================================ */
 .hist-page {
   min-height: 100vh;
-  background: var(--black);
+  background: var(--paper);
   padding: 56px 0 100px;
 }
 
@@ -71,7 +57,7 @@
   font-weight: 600;
   letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: var(--amber);
+  color: var(--brand-deep);
   margin-bottom: 14px;
 }
 .hist-eyebrow::before {
@@ -79,7 +65,7 @@
   display: block;
   width: 22px;
   height: 1px;
-  background: var(--amber);
+  background: var(--brand);
   flex-shrink: 0;
 }
 
@@ -87,7 +73,7 @@
   font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   font-size: clamp(2.4rem, 5vw, 4rem);
   font-weight: 400;
-  color: var(--white);
+  color: var(--ink);
   line-height: 1.1;
   letter-spacing: -0.02em;
   margin: 0 0 12px;
@@ -96,7 +82,7 @@
 .hist-header p {
   font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   font-size: 1rem;
-  color: var(--text-muted);
+  color: var(--muted);
   margin: 0;
 }
 
@@ -114,16 +100,16 @@
   align-items: center;
   justify-content: space-between;
   gap: 20px;
-  background: var(--dark-card);
-  border: 1px solid var(--border);
+  background: var(--card);
+  border: 1px solid var(--rule);
   border-radius: var(--radius);
   padding: 22px 24px;
   text-decoration: none;
   transition: background 0.22s var(--ease), border-color 0.22s var(--ease);
 }
 .hist-item:hover {
-  background: var(--dark-card-hover);
-  border-color: rgba(58,53,48,0.12);
+  background: var(--paper-2);
+  border-color: rgba(var(--ink-rgb),0.12);
 }
 
 .hist-item-left {
@@ -137,7 +123,7 @@
   font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   font-size: 0.975rem;
   font-weight: 600;
-  color: var(--white);
+  color: var(--ink);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -146,7 +132,7 @@
 .hist-item-meta {
   font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   font-size: 0.78rem;
-  color: var(--text-muted);
+  color: var(--muted);
 }
 
 .hist-item-right {
@@ -160,9 +146,9 @@
   font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   font-size: 0.8rem;
   font-weight: 500;
-  color: var(--amber);
-  background: rgba(245, 158, 11, 0.08);
-  border: 1px solid rgba(245, 158, 11, 0.3);
+  color: var(--brand-deep);
+  background: rgba(var(--brand-rgb),0.08);
+  border: 1px solid rgba(var(--brand-rgb),0.3);
   border-radius: 8px;
   padding: 7px 16px;
   text-decoration: none;
@@ -170,8 +156,8 @@
   display: inline-block;
 }
 .hist-btn-view:hover {
-  background: rgba(245, 158, 11, 0.15);
-  border-color: var(--amber);
+  background: rgba(var(--brand-rgb),0.15);
+  border-color: var(--brand);
   transform: translateY(-1px);
 }
 
@@ -187,21 +173,21 @@
 }
 
 .hist-badge-completed {
-  color: var(--text-muted);
-  background: rgba(58,53,48,0.04);
-  border: 1px solid var(--border);
+  color: var(--muted);
+  background: rgba(var(--ink-rgb),0.04);
+  border: 1px solid var(--rule);
 }
 
 .hist-badge-answered {
-  color: #4ade80;
-  background: rgba(74, 222, 128, 0.1);
-  border: 1px solid rgba(74, 222, 128, 0.2);
+  color: var(--success-text);
+  background: rgba(var(--success-rgb),0.1);
+  border: 1px solid rgba(var(--success-rgb),0.2);
 }
 
 .hist-badge-generic {
-  color: var(--text-muted);
-  background: rgba(58,53,48,0.04);
-  border: 1px solid var(--border);
+  color: var(--muted);
+  background: rgba(var(--ink-rgb),0.04);
+  border: 1px solid var(--rule);
 }
 
 /* ============================================================
@@ -213,8 +199,8 @@
   align-items: center;
   justify-content: center;
   text-align: center;
-  background: var(--dark-card);
-  border: 1px dashed rgba(58,53,48,0.15);
+  background: var(--card);
+  border: 1px dashed rgba(var(--ink-rgb),0.15);
   border-radius: var(--radius);
   padding: 72px 32px;
 }
@@ -231,7 +217,7 @@
   font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   font-size: 1.8rem;
   font-weight: 500;
-  color: var(--white);
+  color: var(--ink);
   margin: 0 0 10px;
   letter-spacing: -0.01em;
 }
@@ -239,7 +225,7 @@
 .hist-empty p {
   font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   font-size: 0.9rem;
-  color: var(--text-muted);
+  color: var(--muted);
   margin: 0 0 28px;
   max-width: 320px;
   line-height: 1.6;
@@ -249,8 +235,8 @@
   font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   font-size: 0.875rem;
   font-weight: 500;
-  color: #000;
-  background: var(--amber);
+  color: #fff;
+  background: var(--brand);
   border: none;
   border-radius: 9px;
   padding: 11px 24px;
@@ -259,7 +245,7 @@
   display: inline-block;
 }
 .hist-btn-amber:hover {
-  background: var(--amber-dark);
+  background: var(--brand);
   transform: translateY(-1px);
 }
 
@@ -308,21 +294,21 @@
 
     {% if reviewable_bookings %}
     <div style="margin-bottom:1.5rem; padding:1rem 1.25rem;
-         border:1px solid rgba(74,222,128,0.2); border-radius:10px;
-         background:rgba(74,222,128,0.03);">
+         border:1px solid rgba(var(--success-rgb),0.2); border-radius:10px;
+         background:rgba(var(--success-rgb),0.03);">
       <p style="margin:0 0 0.75rem; font-size:0.9rem; font-weight:600;">
         Leave a review
       </p>
       {% for b in reviewable_bookings %}
       <div style="display:flex; align-items:center; justify-content:space-between;
-           padding:0.5rem 0; border-top:1px solid rgba(58,53,48,0.08);">
+           padding:0.5rem 0; border-top:1px solid rgba(var(--ink-rgb),0.08);">
         <span style="font-size:0.85rem;">
           {{ b.lawyer_profile.display_name or b.lawyer_profile.user.full_name }}
         </span>
         <a href="{{ url_for('lawyers.review_form', booking_id=b.id) }}"
            style="font-size:0.8rem; padding:4px 12px;
-                  border:1px solid rgba(74,222,128,0.3); border-radius:6px;
-                  color:#4ade80; text-decoration:none;">
+                  border:1px solid rgba(var(--success-rgb),0.3); border-radius:6px;
+                  color:var(--success-text); text-decoration:none;">
           Write a review →
         </a>
       </div>

@@ -5,8 +5,8 @@
 {% block content %}
 <style>
 body {
-  background: #0a0a0a;
-  color: #e5e5e5;
+  background: var(--paper);
+  color: var(--ink);
 }
 .legal-wrap {
   max-width: 760px;
@@ -18,23 +18,23 @@ body {
   font-weight: 600;
   letter-spacing: 2px;
   text-transform: uppercase;
-  color: #f59e0b;
+  color: var(--brand-deep);
   margin-bottom: 32px;
   display: block;
 }
 .legal-wrap h1 {
   font-size: 2rem;
   font-weight: 700;
-  color: #ffffff;
+  color: var(--ink-2);
   letter-spacing: -0.03em;
   margin-bottom: 8px;
 }
 .legal-meta {
   font-size: 13px;
-  color: #555;
+  color: var(--muted);
   margin-bottom: 56px;
   padding-bottom: 32px;
-  border-bottom: 1px solid #1e1e1e;
+  border-bottom: 1px solid var(--rule);
 }
 .legal-section {
   margin-bottom: 48px;
@@ -42,17 +42,17 @@ body {
 .legal-section h2 {
   font-size: 1rem;
   font-weight: 600;
-  color: #ffffff;
+  color: var(--ink-2);
   text-transform: uppercase;
   letter-spacing: 0.08em;
   margin-bottom: 16px;
   padding-bottom: 10px;
-  border-bottom: 1px solid #1e1e1e;
+  border-bottom: 1px solid var(--rule);
 }
 .legal-section p {
   font-size: 15px;
   line-height: 1.75;
-  color: #a3a3a3;
+  color: var(--muted);
   margin-bottom: 14px;
 }
 .legal-section p:last-child { margin-bottom: 0; }
@@ -63,13 +63,13 @@ body {
 .legal-section ul li {
   font-size: 15px;
   line-height: 1.75;
-  color: #a3a3a3;
+  color: var(--muted);
   margin-bottom: 6px;
 }
 .legal-footer {
   margin-top: 64px;
   padding-top: 32px;
-  border-top: 1px solid #1e1e1e;
+  border-top: 1px solid var(--rule);
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -78,10 +78,10 @@ body {
 }
 .legal-footer p {
   font-size: 13px;
-  color: #444;
+  color: var(--muted);
 }
 .legal-footer a {
-  color: #f59e0b;
+  color: var(--brand-deep);
   text-decoration: none;
 }
 .legal-footer a:hover { text-decoration: underline; }
@@ -111,23 +111,23 @@ body {
     <p>We collect the following categories of personal data:</p>
     <ul>
       <li>
-        <strong style="color:#e5e5e5;">Account data</strong> - your full name,
+        <strong style="color:var(--ink);">Account data</strong> - your full name,
         email address, chosen role (tenant or landlord), and encrypted password
         when you register
       </li>
       <li>
-        <strong style="color:#e5e5e5;">Consultation data</strong> - the category
+        <strong style="color:var(--ink);">Consultation data</strong> - the category
         you selected, the answers you gave in the decision tree, and the scenario
         output delivered to you
       </li>
       <li>
-        <strong style="color:#e5e5e5;">Payment data</strong> - transaction
+        <strong style="color:var(--ink);">Payment data</strong> - transaction
         references, amounts, and statuses for credit purchases. We do not store
         full card numbers or CVV codes; payment card data is handled entirely by
         Network International (nGenius)
       </li>
       <li>
-        <strong style="color:#e5e5e5;">Usage data</strong> - login timestamps,
+        <strong style="color:var(--ink);">Usage data</strong> - login timestamps,
         IP addresses associated with login events, and session activity used for
         security and fraud prevention
       </li>
@@ -160,15 +160,15 @@ body {
     </p>
     <ul>
       <li>
-        <strong style="color:#e5e5e5;">Contract performance</strong> - processing
+        <strong style="color:var(--ink);">Contract performance</strong> - processing
         necessary to deliver the service you have registered for
       </li>
       <li>
-        <strong style="color:#e5e5e5;">Legitimate interests</strong> - security
+        <strong style="color:var(--ink);">Legitimate interests</strong> - security
         monitoring, fraud prevention, and improving platform reliability
       </li>
       <li>
-        <strong style="color:#e5e5e5;">Legal obligation</strong> - where we are
+        <strong style="color:var(--ink);">Legal obligation</strong> - where we are
         required by UAE law to retain or disclose certain records
       </li>
     </ul>
@@ -199,12 +199,12 @@ body {
     <p>We use the following third-party service providers:</p>
     <ul>
       <li>
-        <strong style="color:#e5e5e5;">Network International (nGenius)</strong> -
+        <strong style="color:var(--ink);">Network International (nGenius)</strong> -
         payment processing. Their privacy policy governs how they handle your
         payment card data
       </li>
       <li>
-        <strong style="color:#e5e5e5;">Gmail SMTP</strong> - transactional email
+        <strong style="color:var(--ink);">Gmail SMTP</strong> - transactional email
         delivery for password resets and account notifications
       </li>
     </ul>
@@ -253,8 +253,8 @@ body {
       or to report a data protection concern, please contact us at:
     </p>
     <p>
-      <strong style="color:#e5e5e5;">Email:</strong>
-      <a href="mailto:privacy@rentritz.com" style="color:#f59e0b;">privacy@rentritz.com</a>
+      <strong style="color:var(--ink);">Email:</strong>
+      <a href="mailto:privacy@rentritz.com" style="color:var(--brand-deep);">privacy@rentritz.com</a>
     </p>
   </div>
 

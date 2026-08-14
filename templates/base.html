@@ -11,7 +11,8 @@
   <link rel="manifest" href="/static/manifest.json">
   <meta name="theme-color" content="#f59e0b">
   {% block styles %}{% endblock %}
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  {# DM Sans is loaded once, in static/css/tokens.css (Section 0), which
+     main.css imports on line 1. Do not re-add a font link here. #}
 </head>
 <body class="{% block body_class %}{% endblock %}">
 
