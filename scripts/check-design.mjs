@@ -379,6 +379,120 @@ if (existsSync(tokensAbs)) {
   }
 }
 
+// 9. NO EMOJI, NO ITALICS.
+//
+//    Same shape as the nested-comment rule above: a whole class of problem
+//    that nothing else can see, so it is asserted rather than eyeballed.
+//    Emoji had leaked into 33 files and survived review because most of them
+//    were not faces — they were arrows, checkmarks, stars and a warning
+//    triangle, several of which read as ordinary punctuation in a diff.
+//    Italics are worse: the type stack no longer requests an italic axis at
+//    all, so a stray "font-style: italic" now renders as a SYNTHETIC oblique
+//    rather than failing visibly.
+//
+//    ENTITIES COUNT. Half the emoji in this repo were written as "&#10003;"
+//    or "&#x2B50;", not as literal characters. A scan for the codepoints
+//    alone passed those straight through while the browser still painted the
+//    glyph, so this decodes numeric and named entities and applies the same
+//    ranges to the result. Otherwise the guard is one HTML escape away from
+//    being bypassed by accident.
+//
+//    The geometric marks the admin panel uses for its icon language
+//    (○ ◈ ◎ ◉ ◆, U+25C6..U+25CE) sit OUTSIDE these ranges and stay legal —
+//    they are the sanctioned replacement, not an oversight.
+{
+  const EMOJI = /[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}\u{2190}-\u{21FF}\u{2B00}-\u{2BFF}\u{FE0F}\u{FE0E}\u{200D}]/u;
+  const NAMED = {
+    rarr: 0x2192, larr: 0x2190, uarr: 0x2191, darr: 0x2193, harr: 0x2194,
+    rArr: 0x21d2, lArr: 0x21d0, uArr: 0x21d1, dArr: 0x21d3, hArr: 0x21d4,
+    star: 0x2606, starf: 0x2605, check: 0x2713, cross: 0x2717,
+    phone: 0x260e, sung: 0x266a, spades: 0x2660, clubs: 0x2663,
+    hearts: 0x2665, diams: 0x2666,
+  };
+  const SKIP_DIRS = new Set([
+    'node_modules', 'venv', '.venv', '__pycache__', '.git', '.claude',
+    'landing', 'rentritz-landing', 'backups', 'uploads', 'instance', 'logs',
+  ]);
+
+  const inRanges = (cp) =>
+    (cp >= 0x1f300 && cp <= 0x1faff) || (cp >= 0x2600 && cp <= 0x27bf) ||
+    (cp >= 0x2190 && cp <= 0x21ff) || (cp >= 0x2b00 && cp <= 0x2bff) ||
+    cp === 0xfe0f || cp === 0xfe0e || cp === 0x200d;
+
+  /** Collect every source file the rule applies to: templates, CSS, JS, Python. */
+  const collect = (dir, exts, out) => {
+    if (!existsSync(dir)) return out;
+    for (const entry of readdirSync(dir, { withFileTypes: true })) {
+      if (SKIP_DIRS.has(entry.name)) continue;
+      const p = join(dir, entry.name);
+      if (entry.isDirectory()) collect(p, exts, out);
+      else if (exts.some((e) => entry.name.endsWith(e))) out.push(p);
+    }
+    return out;
+  };
+
+  const guarded = [
+    ...collect(join(ROOT, 'templates'), ['.html'], []),
+    ...collect(join(ROOT, 'static'), ['.css', '.js'], []),
+    ...['app', 'config', 'scripts', 'migrations', 'tests']
+      .flatMap((d) => collect(join(ROOT, d), ['.py'], [])),
+    ...(existsSync(join(ROOT, 'run.py')) ? [join(ROOT, 'run.py')] : []),
+  ];
+
+  for (const abs of guarded) {
+    const rel = abs.slice(ROOT.length + 1).replace(/\\/g, '/');
+    const isTemplate = rel.endsWith('.html');
+
+    readFileSync(abs, 'utf8').split('\n').forEach((line, i) => {
+      const n = i + 1;
+
+      // a. literal characters in the flagged ranges
+      const lit = line.match(EMOJI);
+      if (lit) {
+        const cp = lit[0].codePointAt(0).toString(16).toUpperCase().padStart(4, '0');
+        fail(rel, `emoji/pictograph "${lit[0]}" (U+${cp}) on line ${n}. Delete it, ` +
+          `or use an inline Lucide SVG coloured with currentColor.`);
+      }
+
+      // b. the same codepoints smuggled in as an HTML entity
+      for (const m of line.matchAll(/&#(x?)([0-9A-Fa-f]+);|&([A-Za-z][A-Za-z0-9]*);/g)) {
+        const cp = m[3] ? NAMED[m[3]] : parseInt(m[2], m[1] ? 16 : 10);
+        if (cp !== undefined && inRanges(cp)) {
+          fail(rel, `HTML entity "${m[0]}" on line ${n} decodes to U+` +
+            `${cp.toString(16).toUpperCase().padStart(4, '0')}, inside the banned ` +
+            `emoji ranges. Escaping it does not make it a different glyph.`);
+        }
+      }
+
+      // c. font-style: italic, and the synthetic-oblique sibling
+      const fs = line.match(/font-style\s*:\s*(italic|oblique)/i);
+      if (fs) {
+        fail(rel, `"font-style: ${fs[1]}" on line ${n}. The webfont request no ` +
+          `longer carries an italic axis, so this renders as a synthetic slant.`);
+      }
+
+      // d. an "italic" / "not-italic" class token
+      for (const m of line.matchAll(/class\s*=\s*["']([^"']*)["']/g)) {
+        const bad = m[1].split(/\s+/).find((c) => c === 'italic' || c === 'not-italic');
+        if (bad) {
+          fail(rel, `class "${bad}" on line ${n}. Italic styling is not available ` +
+            `in this design system.`);
+        }
+      }
+
+      // e. <i> and <em>. The lookahead keeps <img>, <input>, <iframe> and
+      //    <embed> out of it — the tag name has to actually end there.
+      if (isTemplate) {
+        const tag = line.match(/<\/?(i|em)(?=[\s/>])/i);
+        if (tag) {
+          fail(rel, `<${tag[1]}> tag on line ${n}. Use <span> for a styling hook, ` +
+            `or an inline SVG for an icon; neither <i> nor <em> may appear.`);
+        }
+      }
+    });
+  }
+}
+
 // ── the check that matters: what does the browser actually receive? ──────────
 if (skipHttp) {
   notes.push('HTTP check skipped (--skip-http). Static checks only.');

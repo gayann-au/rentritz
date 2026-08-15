@@ -17,7 +17,7 @@
       <span class="badge badge-{{ scenario.for_role }}">{{ scenario.for_role }}</span>
       <span class="badge badge-{{ 'active' if scenario.is_active else 'inactive' }}">{{ 'Active' if scenario.is_active else 'Inactive' }}</span>
       {% if scenario.is_complete %}
-      <span class="badge badge-complete">✓ Complete</span>
+      <span class="badge badge-complete">Complete</span>
       {% else %}
       <span class="badge badge-incomplete">Incomplete</span>
       {% endif %}

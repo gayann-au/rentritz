@@ -160,8 +160,7 @@ def register():
             flash('Account created. Sign in to set up your lawyer profile.', 'success')
             return redirect(url_for('lawyers.login'))
 
-        flash(f'Welcome, {user.full_name}! Your account is ready - sign in below.',
-              'success')
+        flash('Your account is ready. Sign in below.', 'success')
         return redirect(url_for('auth.login'))
 
     return render_template('auth/register.html')
@@ -333,7 +332,7 @@ def reset_password(token):
             flash('Password updated. Please sign in.', 'success')
             return redirect(url_for('auth.login'))
 
-        flash('Your password has been reset. Welcome back!', 'success')
+        flash('Your password has been reset.', 'success')
         return redirect(_home_for(user))
 
     return render_template('auth/reset_password.html', token=token)
@@ -387,6 +386,5 @@ def verify_email(token):
         flash('Your email has been verified. Please sign in.', 'success')
         return redirect(url_for('auth.login'))
 
-    flash(f'Your email has been verified. Welcome to Rentritz, {user.full_name}!',
-          'success')
+    flash('Your email has been verified.', 'success')
     return redirect(_home_for(user))

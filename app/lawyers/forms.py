@@ -60,17 +60,17 @@ class LawyerProfileForm(FlaskForm):
     # --- Practice details (comma-separated - split to array in route) ---
     languages           = StringField(
         'Languages Spoken',
-        validators=[Optional()],
+        validators=[Optional(), Length(max=300)],
         description='Comma-separated, e.g. English, Arabic, Hindi',
     )
     courts_practiced_in = StringField(
         'Courts Practiced In',
-        validators=[Optional()],
+        validators=[Optional(), Length(max=300)],
         description='e.g. Dubai Courts, DIFC, Rental Dispute Centre',
     )
     jurisdictions = StringField(
         'Jurisdictions',
-        validators=[Optional()],
+        validators=[Optional(), Length(max=300)],
         description='e.g. Dubai, Abu Dhabi, All UAE',
     )
     consultation_modes = MultiCheckboxField(
@@ -116,10 +116,12 @@ class LawyerProfileForm(FlaskForm):
     # --- Contact (private) ---
     phone         = StringField('Phone',         validators=[Optional(), Length(max=30)])
     whatsapp      = StringField('WhatsApp',       validators=[Optional(), Length(max=30)])
-    contact_email = StringField('Contact Email',  validators=[Optional(), Email()])
-    office_address = TextAreaField('Office Address', validators=[Optional()])
-    office_city    = StringField('City',    validators=[Optional()], default='Dubai')
-    office_country = StringField('Country', validators=[Optional()], default='UAE')
+    contact_email = StringField('Contact Email',  validators=[Optional(), Email(), Length(max=255)])
+    # office_address is an UNBOUNDED text column: the form is the only gate.
+    # A profile once stored 4,705 characters of pasted terminal output here.
+    office_address = TextAreaField('Office Address', validators=[Optional(), Length(max=300)])
+    office_city    = StringField('City',    validators=[Optional(), Length(max=100)], default='Dubai')
+    office_country = StringField('Country', validators=[Optional(), Length(max=100)], default='UAE')
 
     # --- Presentation ---
     notable_cases = TextAreaField(

@@ -49,7 +49,7 @@
     </nav>
     <div class="sidebar-footer">
       <a href="{{ url_for('admin.logout') }}" class="logout-btn">
-        <span>→</span> Sign out
+        <span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-.15em" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></span> Sign out
       </a>
     </div>
   </aside>
@@ -187,20 +187,20 @@ function renderNavNode(node, path, depth) {
   const indent = depth * 14;
   let html = `<div class="nav-node ${isSelected ? 'active' : ''}" style="padding-left:${16 + indent}px" onclick="selectNode(${JSON.stringify(path)})">
     <div class="nav-node-dot"></div>
-    <div class="nav-node-text">${node.question || '<em style="opacity:.5">Untitled question</em>'}</div>
+    <div class="nav-node-text">${node.question || '<span style="opacity:.5">Untitled question</span>'}</div>
     <div class="nav-node-meta">${(node.options || []).length} opt</div>
   </div>`;
 
   (node.options || []).forEach((opt, i) => {
     const hasDest = opt.scenario || opt.next;
     const tag = opt.scenario
-      ? `<span class="nav-tag nav-tag-answer">→ ${opt.scenario}</span>`
+      ? `<span class="nav-tag nav-tag-answer"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-.15em" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg> ${opt.scenario}</span>`
       : opt.next
-        ? `<span class="nav-tag nav-tag-branch">↓ branch</span>`
+        ? `<span class="nav-tag nav-tag-branch"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-.15em" aria-hidden="true"><path d="M12 5v14"/><path d="m19 12-7 7-7-7"/></svg> branch</span>`
         : `<span class="nav-tag nav-tag-empty">unlinked</span>`;
     html += `<div class="nav-option-row" style="padding-left:${24 + indent}px">
       <span class="nav-option-line">└</span>
-      <span class="nav-option-label">${opt.label || '<em style="opacity:.5">Untitled option</em>'}</span>
+      <span class="nav-option-label">${opt.label || '<span style="opacity:.5">Untitled option</span>'}</span>
       ${tag}
     </div>`;
     if (opt.next) {
@@ -244,7 +244,7 @@ function renderEditor() {
 
   let html = `<div class="tree-editor-topbar">
     <div class="node-breadcrumb">${breadcrumb}</div>
-    ${!isRoot ? `<button class="node-delete-btn" onclick="deleteNode()">✕ Delete node</button>` : ''}
+    ${!isRoot ? `<button class="node-delete-btn" onclick="deleteNode()">Delete node</button>` : ''}
   </div>
   <div class="tree-editor-scroll">
   <div class="node-editor">
@@ -262,14 +262,14 @@ function renderEditor() {
     if (opt.scenario) {
       const sc = SCENARIOS.find(s => s.slug === opt.scenario);
       const title = sc ? sc.title : opt.scenario;
-      destHtml = `<span class="dest-icon">✓</span>
-        <span class="dest-text connected answer">→ ${title}</span>
+      destHtml = `<span class="dest-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-.15em" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span>
+        <span class="dest-text connected answer"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-.15em" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg> ${title}</span>
         <div class="dest-actions">
           <button class="dest-btn" onclick="changeScenario(${i})">Change</button>
           <button class="dest-btn danger" onclick="unlinkOption(${i})">Unlink</button>
         </div>`;
     } else if (opt.next) {
-      destHtml = `<span class="dest-icon">↓</span>
+      destHtml = `<span class="dest-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-.15em" aria-hidden="true"><path d="M12 5v14"/><path d="m19 12-7 7-7-7"/></svg></span>
         <span class="dest-text connected branch">Branches to child question</span>
         <div class="dest-actions">
           <button class="dest-btn" onclick="goToChild(${i})">Go to child</button>
@@ -290,10 +290,10 @@ function renderEditor() {
         <span class="option-num">${i + 1}</span>
         <input class="option-label-input" type="text" placeholder="Option label…" value="${opt.label || ''}" oninput="updateOptionLabel(${i}, this.value)">
         <div class="option-order-btns">
-          <button class="order-btn" onclick="moveOption(${i}, -1)" ${isFirst ? 'disabled' : ''}>↑</button>
-          <button class="order-btn" onclick="moveOption(${i}, 1)" ${isLast ? 'disabled' : ''}>↓</button>
+          <button class="order-btn" onclick="moveOption(${i}, -1)" ${isFirst ? 'disabled' : ''}><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-.15em" aria-hidden="true"><path d="m5 12 7-7 7 7"/><path d="M12 19V5"/></svg></button>
+          <button class="order-btn" onclick="moveOption(${i}, 1)" ${isLast ? 'disabled' : ''}><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-.15em" aria-hidden="true"><path d="M12 5v14"/><path d="m19 12-7 7-7-7"/></svg></button>
         </div>
-        <button class="option-remove-btn" onclick="removeOption(${i})">✕</button>
+        <button class="option-remove-btn" onclick="removeOption(${i})"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-.15em" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>
       </div>
       <div class="option-card-body">
         <div class="option-destination">${destHtml}</div>

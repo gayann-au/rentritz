@@ -184,7 +184,7 @@
         >
       </div>
       {% if search %}
-        <a href="{{ url_for('admin.lawyers', status=current_status_filter) }}" class="btn btn-ghost btn-sm">✕ Clear</a>
+        <a href="{{ url_for('admin.lawyers', status=current_status_filter) }}" class="btn btn-ghost btn-sm">Clear</a>
       {% endif %}
       <div class="filter-meta">
         {% if search %}{{ total_count }} result{{ 's' if total_count != 1 }}
@@ -278,9 +278,9 @@
       <div class="pagination-pages">
 
         {% if page > 1 %}
-          <a href="{{ url_for('admin.lawyers', page=page-1, status=current_status_filter, search=search) }}" class="pg-btn">← Prev</a>
+          <a href="{{ url_for('admin.lawyers', page=page-1, status=current_status_filter, search=search) }}" class="pg-btn">Prev</a>
         {% else %}
-          <span class="pg-btn disabled">← Prev</span>
+          <span class="pg-btn disabled">Prev</span>
         {% endif %}
 
         {% set show_pages = [] %}
@@ -298,9 +298,9 @@
         {% endfor %}
 
         {% if page < total_pages %}
-          <a href="{{ url_for('admin.lawyers', page=page+1, status=current_status_filter, search=search) }}" class="pg-btn">Next →</a>
+          <a href="{{ url_for('admin.lawyers', page=page+1, status=current_status_filter, search=search) }}" class="pg-btn">Next</a>
         {% else %}
-          <span class="pg-btn disabled">Next →</span>
+          <span class="pg-btn disabled">Next</span>
         {% endif %}
 
       </div>
@@ -309,7 +309,7 @@
 
     {% else %}
     <div class="table-empty">
-      <div class="table-empty-icon">⚖</div>
+      <div class="table-empty-icon">◆</div>
       <div class="table-empty-title">No lawyers found</div>
       {% if search or current_status_filter %}
         <div class="table-empty-sub">No profiles match your current filters.</div>

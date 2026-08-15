@@ -357,7 +357,7 @@ input[type="file"]{display:none;}
           <div class="lr-field">
             <label class="lr-label">Profile photo <span class="lr-label-opt">optional</span></label>
             <label class="lr-file-label" for="{{ form.photo.id }}">
-              &#128247; Choose photo
+              Choose photo
             </label>
             {{ form.photo(id=form.photo.id, onchange="document.getElementById('photo-name').textContent=this.files[0]?this.files[0].name:'No file chosen'") }}
             <div class="lr-file-name" id="photo-name">No file chosen</div>
@@ -366,7 +366,7 @@ input[type="file"]{display:none;}
           <div class="lr-field">
             <label class="lr-label">Licence / Bar certificate <span class="lr-label-opt">optional</span></label>
             <label class="lr-file-label" for="{{ form.licence_pdf.id }}">
-              &#128196; Choose PDF
+              Choose PDF
             </label>
             {{ form.licence_pdf(id=form.licence_pdf.id, onchange="document.getElementById('licence-name').textContent=this.files[0]?this.files[0].name:'No file chosen'") }}
             <div class="lr-file-name" id="licence-name">No file chosen</div>

@@ -413,7 +413,6 @@
     text-align: center;
     font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     font-size: 0.78rem;
-    font-style: italic;
     color: rgba(var(--ink-rgb),0.5);
     line-height: 1.75;
     max-width: 560px;
@@ -626,7 +625,7 @@
         Your answer references the RERA Rental Index. Use the official Dubai Land Department calculator to check the permitted increase for your specific property.
       </p>
       <a href="https://dubailand.gov.ae/en/eservices/rental-index/rental-index/#/" target="_blank" rel="noopener noreferrer" class="btn-rera">
-        Open RERA Rental Index &rarr;
+        Open RERA Rental Index
       </a>
     </div>
     {% endif %}
@@ -637,7 +636,7 @@
       <p style="margin:0 0 1.25rem; font-size:0.85rem; color:rgba(var(--ink-rgb),0.5); line-height:1.6;">This answer gives you the legal position. If your situation is complex, a verified UAE lawyer can advise you personally.</p>
       <a href="{{ url_for('lawyers.browse') }}{% if specialisation_hint %}?specialisation={{ specialisation_hint }}{% endif %}"
          class="btn-ans-primary">
-        Find a Lawyer &#8594;
+        Find a Lawyer
       </a>
     </div>
     {% endif %}

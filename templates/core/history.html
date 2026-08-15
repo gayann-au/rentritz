@@ -309,7 +309,7 @@
            style="font-size:0.8rem; padding:4px 12px;
                   border:1px solid rgba(var(--success-rgb),0.3); border-radius:6px;
                   color:var(--success-text); text-decoration:none;">
-          Write a review →
+          Write a review
         </a>
       </div>
       {% endfor %}
@@ -343,9 +343,9 @@
     {% else %}
     <!-- Empty State -->
     <div class="hist-empty sr sr-d2">
-      <span class="hist-empty-icon">&#128196;</span>
+      <span class="hist-empty-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-.15em" aria-hidden="true"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></svg></span>
       <h2>No consultations yet.</h2>
-      <p>Pick a topic from your dashboard to get started.</p>
+      <p>Pick a topic from your dashboard.</p>
       <a href="{{ url_for('core.dashboard') }}" class="hist-btn-amber">Go to Dashboard</a>
     </div>
     {% endif %}

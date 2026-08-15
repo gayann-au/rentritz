@@ -48,7 +48,7 @@
         <span class="nav-icon">○</span> Users
       </a>
       <a href="{{ url_for('admin.lawyers') }}" class="nav-link {% if 'lawyer' in request.endpoint %}active{% endif %}" style="display:flex;align-items:center;justify-content:space-between;">
-        <span><span class="nav-icon">⚖</span> Lawyers</span>
+        <span><span class="nav-icon">◆</span> Lawyers</span>
         <span id="nav-lawyer-badge" style="display:none; background:rgba(245,158,11,0.15); color:#f59e0b; border:1px solid rgba(245,158,11,0.4); font-size:10px; font-weight:600; padding:1px 6px; border-radius:999px; min-width:18px; text-align:center;"></span>
       </a>
       <a href="{{ url_for('admin.specialisations') }}" class="nav-link {% if 'specialisation' in request.endpoint %}active{% endif %}">
@@ -64,7 +64,7 @@
     </nav>
     <div class="sidebar-footer">
       <a href="{{ url_for('admin.logout') }}" class="logout-btn">
-        <span>→</span> Sign out
+        <span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-.15em" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></span> Sign out
       </a>
     </div>
   </aside>

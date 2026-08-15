@@ -144,7 +144,7 @@
       <div class="ld-actions">
         <a href="{{ url_for('lawyers.edit_profile') }}" class="ld-btn-outline">Edit profile</a>
         {% if profile.verification_status == 'verified' %}
-        <a href="{{ url_for('lawyers.profile', lawyer_profile_id=profile.id) }}" class="ld-btn-amber">View public profile &#8599;</a>
+        <a href="{{ url_for('lawyers.profile', lawyer_profile_id=profile.id) }}" class="ld-btn-amber">View public profile</a>
         {% endif %}
       </div>
     </div>
@@ -216,7 +216,7 @@
     {% elif profile.verification_status == 'verified' %}
     <div class="ld-banner ld-banner-verified sr">
       <div>
-        <p class="ld-banner-title">&#10003; Your profile is live and visible to clients</p>
+        <p class="ld-banner-title">Your profile is live and visible to clients</p>
         <p class="ld-banner-body">Verified{% if profile.verified_at %} on {{ profile.verified_at.strftime('%d %b %Y') }}{% endif %}.</p>
       </div>
     </div>
@@ -281,42 +281,42 @@
       </div>
       <div class="ld-check-item">
         {% if profile.photo_path %}
-        <span class="ld-check-done">&#10003;</span><span class="ld-check-text-done">Photo</span>
+        <span class="ld-check-done"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-.15em" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span><span class="ld-check-text-done">Photo</span>
         {% else %}
         <span class="ld-check-missing">&#9675;</span><span class="ld-check-text-missing">Photo</span>
         {% endif %}
       </div>
       <div class="ld-check-item">
         {% if profile.bio %}
-        <span class="ld-check-done">&#10003;</span><span class="ld-check-text-done">Bio</span>
+        <span class="ld-check-done"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-.15em" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span><span class="ld-check-text-done">Bio</span>
         {% else %}
         <span class="ld-check-missing">&#9675;</span><span class="ld-check-text-missing">Bio</span>
         {% endif %}
       </div>
       <div class="ld-check-item">
         {% if profile.languages %}
-        <span class="ld-check-done">&#10003;</span><span class="ld-check-text-done">Languages</span>
+        <span class="ld-check-done"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-.15em" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span><span class="ld-check-text-done">Languages</span>
         {% else %}
         <span class="ld-check-missing">&#9675;</span><span class="ld-check-text-missing">Languages</span>
         {% endif %}
       </div>
       <div class="ld-check-item">
         {% if profile.specialisations %}
-        <span class="ld-check-done">&#10003;</span><span class="ld-check-text-done">Practice areas</span>
+        <span class="ld-check-done"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-.15em" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span><span class="ld-check-text-done">Practice areas</span>
         {% else %}
         <span class="ld-check-missing">&#9675;</span><span class="ld-check-text-missing">Practice areas</span>
         {% endif %}
       </div>
       <div class="ld-check-item">
         {% if profile.years_experience %}
-        <span class="ld-check-done">&#10003;</span><span class="ld-check-text-done">Years of experience</span>
+        <span class="ld-check-done"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-.15em" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span><span class="ld-check-text-done">Years of experience</span>
         {% else %}
         <span class="ld-check-missing">&#9675;</span><span class="ld-check-text-missing">Years of experience</span>
         {% endif %}
       </div>
       <div class="ld-check-item">
         {% if profile.whatsapp %}
-        <span class="ld-check-done">&#10003;</span><span class="ld-check-text-done">WhatsApp number</span>
+        <span class="ld-check-done"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-.15em" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span><span class="ld-check-text-done">WhatsApp number</span>
         {% else %}
         <span class="ld-check-missing">&#9675;</span><span class="ld-check-text-missing">WhatsApp number</span>
         {% endif %}
@@ -369,7 +369,7 @@
                     Responded
                   </button>
                   {% else %}
-                  <span style="font-size:0.75rem;color:var(--success-text);margin-right:4px;">Responded &#10003;</span>
+                  <span style="font-size:0.75rem;color:var(--success-text);margin-right:4px;">Responded</span>
                   {% endif %}
                   <button
                     onclick="bookingComplete({{ b.id }})"
@@ -404,7 +404,7 @@
             <span style="font-size:0.75rem;color:var(--dim);">{{ review.created_at.strftime('%d %b %Y') }}</span>
           </div>
           <span class="ld-review-stars">
-            {% for i in range(review.rating) %}&#9733;{% endfor %}{% for i in range(5 - review.rating) %}&#9734;{% endfor %}
+            {% for i in range(review.rating) %}<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="none" style="vertical-align:-.15em" aria-hidden="true"><path d="M11.5 2.6a.55.55 0 0 1 1 0l2.6 5.3 5.8.85a.55.55 0 0 1 .3.94l-4.2 4.1 1 5.8a.55.55 0 0 1-.8.58L12 17.4l-5.2 2.73a.55.55 0 0 1-.8-.58l1-5.8-4.2-4.1a.55.55 0 0 1 .3-.94l5.8-.85z"/></svg>{% endfor %}{% for i in range(5 - review.rating) %}<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-.15em" aria-hidden="true"><path d="M11.5 2.6a.55.55 0 0 1 1 0l2.6 5.3 5.8.85a.55.55 0 0 1 .3.94l-4.2 4.1 1 5.8a.55.55 0 0 1-.8.58L12 17.4l-5.2 2.73a.55.55 0 0 1-.8-.58l1-5.8-4.2-4.1a.55.55 0 0 1 .3-.94l5.8-.85z"/></svg>{% endfor %}
           </span>
           {% if review.comment %}
           <p class="ld-review-comment">{{ review.comment }}</p>

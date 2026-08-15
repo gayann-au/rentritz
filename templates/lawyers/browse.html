@@ -360,7 +360,7 @@ input:checked + .lw-toggle-switch::after { transform:translateX(16px); }
             <div class="lw-card-meta">
               {% if lawyer.average_rating %}
               <span class="lw-meta-item">
-                <span class="lw-stars">&#9733;</span>
+                <span class="lw-stars"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="none" style="vertical-align:-.15em" aria-hidden="true"><path d="M11.5 2.6a.55.55 0 0 1 1 0l2.6 5.3 5.8.85a.55.55 0 0 1 .3.94l-4.2 4.1 1 5.8a.55.55 0 0 1-.8.58L12 17.4l-5.2 2.73a.55.55 0 0 1-.8-.58l1-5.8-4.2-4.1a.55.55 0 0 1 .3-.94l5.8-.85z"/></svg></span>
                 {{ "%.1f"|format(lawyer.average_rating) }}
                 ({{ lawyer.total_reviews }})
               </span>
@@ -381,7 +381,7 @@ input:checked + .lw-toggle-switch::after { transform:translateX(16px); }
                   Contact for pricing
                 {% endif %}
               </span>
-              <span class="lw-view-btn">View Profile →</span>
+              <span class="lw-view-btn">View Profile</span>
             </div>
 
           </a>
@@ -401,7 +401,7 @@ input:checked + .lw-toggle-switch::after { transform:translateX(16px); }
                           'min_rate': current_min_rate, 'max_rate': current_max_rate,
                           'free_consultation': current_free_consultation} %}
           {% if lawyers.has_prev %}
-          <a href="{{ url_for('lawyers.browse', page=lawyers.prev_num, **pargs) }}" class="lw-page-btn">&#8592; Prev</a>
+          <a href="{{ url_for('lawyers.browse', page=lawyers.prev_num, **pargs) }}" class="lw-page-btn">Prev</a>
           {% endif %}
 
           {% for p in lawyers.iter_pages(left_edge=1, right_edge=1, left_current=2, right_current=2) %}
@@ -414,7 +414,7 @@ input:checked + .lw-toggle-switch::after { transform:translateX(16px); }
           {% endfor %}
 
           {% if lawyers.has_next %}
-          <a href="{{ url_for('lawyers.browse', page=lawyers.next_num, **pargs) }}" class="lw-page-btn">Next &#8594;</a>
+          <a href="{{ url_for('lawyers.browse', page=lawyers.next_num, **pargs) }}" class="lw-page-btn">Next</a>
           {% endif %}
         </div>
         {% endif %}

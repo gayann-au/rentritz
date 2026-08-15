@@ -392,9 +392,9 @@ class LawyerBooking(db.Model):
     Records a client unlocking a lawyer's contact details.
 
     Status lifecycle:
-        pending → contact_unlocked → completed
-        pending → cancelled
-        contact_unlocked → cancelled  (admin-only edge case)
+        pending -> contact_unlocked -> completed
+        pending -> cancelled
+        contact_unlocked -> cancelled  (admin-only edge case)
     """
 
     __tablename__  = 'lawyer_bookings'
