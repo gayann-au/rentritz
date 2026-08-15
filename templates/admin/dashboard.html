@@ -338,8 +338,7 @@
   {# ── SECTION 1: Welcome bar ────────────────────────────────────────────── #}
   <div class="welcome-bar">
     <div>
-      <div class="welcome-greeting">{{ greeting }}, Admin.</div>
-      <div class="welcome-sub">Here is what is happening today.</div>
+      <div class="welcome-greeting">Admin</div>
     </div>
     <div class="welcome-time">
       <span class="clock" id="live-clock">{{ server_time.split('|')[1].strip() }}</span>
@@ -438,7 +437,7 @@
     <div class="alert-bar amber">
       <div class="alert-dot"></div>
       <span id="live-alert-pending">{{ q_stats.pending_questions }} consultation{{ 's' if q_stats.pending_questions != 1 }} waiting for answers</span>
-      <a href="{{ url_for('admin.questions') }}">View all →</a>
+      <a href="{{ url_for('admin.questions') }}">View all</a>
     </div>
     {% endif %}
 
@@ -446,7 +445,7 @@
     <div class="alert-bar red">
       <div class="alert-dot"></div>
       <span>{{ user_stats.locked_users }} user account{{ 's' if user_stats.locked_users != 1 }} currently locked out</span>
-      <a href="{{ url_for('admin.users') }}">View users →</a>
+      <a href="{{ url_for('admin.users') }}">View users</a>
     </div>
     {% endif %}
 
@@ -454,7 +453,7 @@
     <div class="alert-bar muted">
       <div class="alert-dot"></div>
       <span>{{ content_stats.incomplete_scenarios }} scenario{{ 's' if content_stats.incomplete_scenarios != 1 }} incomplete - will not appear to users</span>
-      <a href="{{ url_for('admin.scenarios') }}">View scenarios →</a>
+      <a href="{{ url_for('admin.scenarios') }}">View scenarios</a>
     </div>
     {% endif %}
 
@@ -462,7 +461,7 @@
     <div class="alert-bar muted">
       <div class="alert-dot"></div>
       <span>{{ rev_stats.pending_payments }} payment{{ 's' if rev_stats.pending_payments != 1 }} pending verification</span>
-      <a href="{{ url_for('admin.payments') }}">View payments →</a>
+      <a href="{{ url_for('admin.payments') }}">View payments</a>
     </div>
     {% endif %}
 
@@ -476,7 +475,7 @@
     <div class="card" style="padding:0; overflow:hidden;">
       <div class="dash-card-header">
         <div class="dash-card-title">Recent Registrations</div>
-        <a href="{{ url_for('admin.users') }}" class="dash-card-link">All users →</a>
+        <a href="{{ url_for('admin.users') }}" class="dash-card-link">All users</a>
       </div>
 
       {% if recent_users %}
@@ -517,7 +516,7 @@
       <div class="card" style="padding:0; overflow:hidden;">
         <div class="dash-card-header">
           <div class="dash-card-title">Recent Consultations</div>
-          <a href="{{ url_for('admin.questions') }}" class="dash-card-link">All questions →</a>
+          <a href="{{ url_for('admin.questions') }}" class="dash-card-link">All questions</a>
         </div>
 
         {% if recent_questions %}
@@ -539,7 +538,7 @@
       <div class="card" style="padding:0; overflow:hidden;">
         <div class="dash-card-header">
           <div class="dash-card-title">Content Health</div>
-          <a href="{{ url_for('admin.scenarios') }}" class="dash-card-link">Manage →</a>
+          <a href="{{ url_for('admin.scenarios') }}" class="dash-card-link">Manage</a>
         </div>
         <div class="health-grid">
           <div class="health-block">
@@ -582,7 +581,7 @@
   <div class="card full-card" style="padding:0; overflow:hidden;">
     <div class="dash-card-header">
       <div class="dash-card-title">Recent Payments</div>
-      <a href="{{ url_for('admin.payments') }}" class="dash-card-link">All payments →</a>
+      <a href="{{ url_for('admin.payments') }}" class="dash-card-link">All payments</a>
     </div>
     {% if recent_payments %}
     <table class="data-table">
@@ -637,7 +636,7 @@
       <span class="qa-icon">◉</span> View Payments
     </a>
     <a href="{{ url_for('admin.lawyers') }}" class="qa-btn">
-      <span class="qa-icon">⚖</span> Manage Lawyers
+      <span class="qa-icon">◆</span> Manage Lawyers
       {% if lawyer_stats.pending > 0 %}
       <span style="margin-left:auto; font-size:10px; font-weight:600; color:#f59e0b;">{{ lawyer_stats.pending }} pending</span>
       {% endif %}

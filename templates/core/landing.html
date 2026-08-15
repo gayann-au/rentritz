@@ -146,7 +146,7 @@ a:hover .arrow,button:hover .arrow{transform:translateX(4px)}
 .nav.scrolled .nav-mark{background:rgba(28,25,22,0.05);color:var(--brand-deep)}
 .nav-name{
   font-size:0.95rem;font-weight:600;letter-spacing:-0.01em;
-  color:#fff;font-style:italic;
+  color:#fff;
   transition:color .3s var(--ease);
   display:none;
 }
@@ -299,7 +299,7 @@ a:hover .arrow,button:hover .arrow{transform:translateX(4px)}
   color:#fff;
   max-width:14ch;
 }
-.hero-h em{font-style:italic;color:var(--brand-light);font-weight:400}
+.hero-h .accent{color:var(--brand-light);font-weight:400}
 .hero-h > span{display:block}
 .hero-h > span[hidden]{display:none !important}
 .hero-h .word{display:inline-block;margin-right:0.28em}
@@ -308,7 +308,7 @@ a:hover .arrow,button:hover .arrow{transform:translateX(4px)}
   font-size:clamp(1rem,1.4vw,1.2rem);
   color:rgba(248,246,242,0.78);
   max-width:34rem;line-height:1.5;
-  font-style:italic;font-weight:300;
+  font-weight:300;
 }
 .hero-sub strong{color:#fff;font-weight:500;font-style:normal}
 
@@ -346,7 +346,7 @@ a:hover .arrow,button:hover .arrow{transform:translateX(4px)}
   font-size:clamp(1.8rem,3vw,2.6rem);
   font-weight:600;color:#fff;line-height:1;letter-spacing:-0.02em;
 }
-.hero-ledger .num em{font-style:italic;color:var(--brand-light);font-weight:400}
+.hero-ledger .num .accent{color:var(--brand-light);font-weight:400}
 .hero-ledger .lbl{
   font-size:11px;letter-spacing:0.14em;text-transform:uppercase;
   color:rgba(248,246,242,0.55);font-weight:400;
@@ -407,9 +407,9 @@ a:hover .arrow,button:hover .arrow{transform:translateX(4px)}
   font-weight:400;letter-spacing:-0.02em;line-height:1.05;
   color:var(--ink);
 }
-.section-h em{font-style:italic;color:var(--brand-deep)}
+.section-h .accent{color:var(--brand-deep)}
 .on-dark .section-h{color:var(--paper)} /* two-tone: dark surface, roles invert */
-.on-dark .section-h em{color:var(--brand-light)}
+.on-dark .section-h .accent{color:var(--brand-light)}
 .section-sub{font-size:1.05rem;color:var(--muted);line-height:1.6;max-width:38rem}
 .on-dark .section-sub{color:rgba(248,246,242,0.65)}
 
@@ -514,7 +514,7 @@ a:hover .arrow,button:hover .arrow{transform:translateX(4px)}
 .method-step{position:relative;display:grid;grid-template-columns:auto 1fr;gap:1.5rem;align-items:start;margin-bottom:3rem}
 .method-step:last-child{margin-bottom:0}
 .method-step .roman{
-  font-style:italic;font-weight:300;
+  font-weight:300;
   font-size:clamp(3rem,5vw,4.5rem);
   line-height:0.85;color:var(--brand-deep);
   letter-spacing:-0.03em;
@@ -605,7 +605,7 @@ a:hover .arrow,button:hover .arrow{transform:translateX(4px)}
 }
 .law-card .ghost-num{
   position:absolute;top:1rem;right:1.4rem;
-  font-style:italic;font-weight:400;
+  font-weight:400;
   font-size:clamp(3rem,6vw,5.5rem);
   color:rgba(200,130,10,0.18);
   line-height:1;letter-spacing:-0.04em;
@@ -613,7 +613,7 @@ a:hover .arrow,button:hover .arrow{transform:translateX(4px)}
 }
 .law-card .law-chip{align-self:flex-start;position:relative;z-index:2}
 .law-card h3{
-  font-style:italic;font-weight:400;
+  font-weight:400;
   font-size:1.35rem;line-height:1.3;
   color:rgba(248,246,242,0.92);
   letter-spacing:-0.01em;
@@ -643,7 +643,7 @@ a:hover .arrow,button:hover .arrow{transform:translateX(4px)}
 .areas-row .law-chip{font-size:13px;padding:0.55rem 1.1rem}
 
 .areas-intro{
-  font-style:italic;font-weight:300;
+  font-weight:300;
   font-size:clamp(1.5rem,3vw,2.5rem);
   color:var(--muted);
   max-width:30ch;line-height:1.2;letter-spacing:-0.01em;
@@ -742,7 +742,7 @@ a:hover .arrow,button:hover .arrow{transform:translateX(4px)}
   font-weight:300;letter-spacing:-0.025em;line-height:1.05;
   color:#fff;margin-top:1.3rem;
 }
-.areas-card .ac-citation em{font-style:italic;color:var(--brand-light);font-weight:300}
+.areas-card .ac-citation .accent{color:var(--brand-light);font-weight:300}
 .areas-card .ac-article{
   font-size:10px;letter-spacing:0.22em;text-transform:uppercase;
   color:rgba(248,246,242,0.55);font-weight:500;
@@ -750,7 +750,7 @@ a:hover .arrow,button:hover .arrow{transform:translateX(4px)}
   border-top:1px solid rgba(248,246,242,0.10);
 }
 .areas-card .ac-precis{
-  font-style:italic;font-weight:300;
+  font-weight:300;
   font-size:1.02rem;line-height:1.5;letter-spacing:-0.005em;
   color:rgba(248,246,242,0.82);
   margin-top:0.8rem;max-width:30ch;
@@ -766,7 +766,7 @@ a:hover .arrow,button:hover .arrow{transform:translateX(4px)}
   font-size:1.5rem;font-weight:300;color:#fff;
   line-height:1;letter-spacing:-0.02em;font-feature-settings:'tnum';
 }
-.areas-card .ac-key .v em{font-style:italic;color:var(--brand-light);font-weight:300}
+.areas-card .ac-key .v .accent{color:var(--brand-light);font-weight:300}
 .areas-card .ac-key .v sup{font-size:0.6em;color:var(--brand-light);font-weight:400;vertical-align:super;margin-left:0.15em}
 .areas-card .ac-key .k{
   font-size:9.5px;letter-spacing:0.18em;text-transform:uppercase;
@@ -826,7 +826,7 @@ a:hover .arrow,button:hover .arrow{transform:translateX(4px)}
 .counsel-flow li:hover{padding-left:1.1rem;background:rgba(200,130,10,0.025)}
 .counsel-flow li:hover::before{transform:scaleY(1)}
 .cf-num{
-  font-style:italic;font-weight:300;
+  font-weight:300;
   font-size:2.4rem;line-height:0.9;
   color:var(--brand-deep);letter-spacing:-0.02em;
   min-width:3.2rem;
@@ -850,13 +850,13 @@ a:hover .arrow,button:hover .arrow{transform:translateX(4px)}
 .report-feat::before{
   content:'\201C';
   position:absolute;top:0.5rem;left:1.5rem;
-  font-style:italic;font-weight:400;
+  font-weight:400;
   font-size:10rem;line-height:1;
   color:var(--brand-deep);opacity:0.30;pointer-events:none;
 }
 .report-quote{
   position:relative;z-index:1;
-  font-style:italic;font-weight:400;
+  font-weight:400;
   font-size:clamp(1.1rem,2vw,1.5rem);
   line-height:1.5;
   color:rgba(248,246,242,0.92);
@@ -892,7 +892,7 @@ a:hover .arrow,button:hover .arrow{transform:translateX(4px)}
 }
 .report-card:hover{transform:translateY(-2px);border-top-color:var(--brand);box-shadow:0 12px 28px rgba(14,12,10,0.08)}
 .report-card .q{
-  font-style:italic;font-size:0.92rem;color:var(--muted);
+  font-size:0.92rem;color:var(--muted);
   line-height:1.55;font-weight:400;
 }
 .report-card .a{
@@ -925,7 +925,7 @@ a:hover .arrow,button:hover .arrow{transform:translateX(4px)}
   letter-spacing:-0.02em;line-height:1.02;color:var(--ink);
   max-width:14ch;
 }
-.for-counsel h2 em{font-style:italic;color:var(--ink);font-weight:400;border-bottom:2px solid rgba(0,0,0,0.3);padding-bottom:0.05em}
+.for-counsel h2 .accent{color:var(--ink);font-weight:400;border-bottom:2px solid rgba(0,0,0,0.3);padding-bottom:0.05em}
 .for-counsel p{
   font-size:1.05rem;color:rgba(28,25,22,0.78);
   max-width:32rem;margin:1.5rem 0 2rem;line-height:1.6;
@@ -986,10 +986,10 @@ a:hover .arrow,button:hover .arrow{transform:translateX(4px)}
   font-weight:400;line-height:0.98;letter-spacing:-0.025em;color:#fff;
   max-width:14ch;
 }
-.finale-h em{font-style:italic;color:var(--brand-light);font-weight:400}
+.finale-h .accent{color:var(--brand-light);font-weight:400}
 .finale-sub{
   font-size:clamp(1rem,1.4vw,1.2rem);
-  font-style:italic;font-weight:300;
+  font-weight:300;
   color:rgba(248,246,242,0.80);max-width:36rem;line-height:1.5;
 }
 .finale-actions{display:flex;align-items:center;gap:1.6rem;flex-wrap:wrap;margin-top:0.6rem}
@@ -1021,7 +1021,7 @@ a:hover .arrow,button:hover .arrow{transform:translateX(4px)}
   position:relative;border-top:1px solid var(--brand);
 }
 .footer-mast{
-  font-style:italic;font-weight:300;
+  font-weight:300;
   font-size:clamp(2.5rem,8vw,7rem);
   color:rgba(248,246,242,0.10);
   letter-spacing:-0.04em;line-height:0.9;
@@ -1052,7 +1052,7 @@ a:hover .arrow,button:hover .arrow{transform:translateX(4px)}
 .footer-col a:hover{color:var(--brand-light);transform:translateX(3px)}
 .footer-col a:hover::after{width:1.6rem}
 .footer-disc{
-  font-style:italic;font-weight:400;font-size:0.95rem;
+  font-weight:400;font-size:0.95rem;
   color:rgba(248,246,242,0.4);margin-bottom:0.6rem;
 }
 .footer-disc-body{
@@ -1064,7 +1064,7 @@ a:hover .arrow,button:hover .arrow{transform:translateX(4px)}
   padding-top:1.8rem;flex-wrap:wrap;
   font-size:0.78rem;color:rgba(248,246,242,0.4);
 }
-.footer-bottom .right{font-style:italic;color:rgba(248,246,242,0.3)}
+.footer-bottom .right{color:rgba(248,246,242,0.3)}
 
 /* responsive nav adjustments */
 @media(max-width:560px){
@@ -1153,7 +1153,7 @@ a:hover .arrow,button:hover .arrow{transform:translateX(4px)}
       <div class="hero-actions" id="heroActions">
         <a href="#begin" class="amber-btn">
           Begin Free
-          <span class="arrow" aria-hidden="true">→</span>
+          <span class="arrow" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-.15em" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></span>
         </a>
         <a href="#method" class="hero-secondary">See how it works</a>
       </div>
@@ -1161,7 +1161,7 @@ a:hover .arrow,button:hover .arrow{transform:translateX(4px)}
 
     <aside class="hero-ledger" id="heroLedger" aria-label="At a glance">
       <div class="row">
-        <div class="num"><em>3</em><span style="font-size:0.45em;font-weight:400;margin-left:0.3em;color:rgba(255,255,255,0.6)">min</span></div>
+        <div class="num"><span class="accent">3</span><span style="font-size:0.45em;font-weight:400;margin-left:0.3em;color:rgba(255,255,255,0.6)">min</span></div>
         <div class="lbl">average answer time</div>
       </div>
       <div class="row">
@@ -1173,7 +1173,7 @@ a:hover .arrow,button:hover .arrow{transform:translateX(4px)}
         <div class="lbl">UAE statutes cited</div>
       </div>
       <div class="row">
-        <div class="num"><em>Free</em></div>
+        <div class="num"><span class="accent">Free</span></div>
         <div class="lbl">to begin, no card needed</div>
       </div>
     </aside>
@@ -1223,7 +1223,7 @@ a:hover .arrow,button:hover .arrow{transform:translateX(4px)}
       <div>
         <div class="section-head">
           <span class="eyebrow">How It Works</span>
-          <h2 class="section-h">Three minutes. <em>One answer.</em></h2>
+          <h2 class="section-h">Three minutes. <span class="accent">One answer.</span></h2>
         </div>
 
         <div class="method-steps">
@@ -1292,7 +1292,7 @@ a:hover .arrow,button:hover .arrow{transform:translateX(4px)}
   <div class="wrap">
     <div class="section-head">
       <span class="eyebrow">The Statutes That Govern Dubai Tenancy</span>
-      <h2 class="section-h">The law, <em>distilled.</em></h2>
+      <h2 class="section-h">The law, <span class="accent">distilled.</span></h2>
       <p class="section-sub">Every Rentritz answer cites a specific article of UAE property law. These are the four texts that govern almost every tenant-landlord matter in the Emirate.</p>
     </div>
 
@@ -1302,21 +1302,21 @@ a:hover .arrow,button:hover .arrow{transform:translateX(4px)}
         <span class="law-chip">Law 33/2008 · Art. 25</span>
         <h3>The Eviction Statute</h3>
         <p>Governs the twelve grounds on which a landlord may legally serve an eviction notice in Dubai, and the minimum notice periods required.</p>
-        <span class="more">Read the brief <span class="arrow">→</span></span>
+        <span class="more">Read the brief <span class="arrow"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-.15em" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></span></span>
       </a>
       <a href="#begin" class="law-card">
         <span class="ghost-num">02</span>
         <span class="law-chip">Decree 43/2013</span>
         <h3>The RERA Rent Cap</h3>
         <p>Establishes the RERA Rental Index as the ceiling for rent increases, and the exact percentage caps tied to current market deviation.</p>
-        <span class="more">Read the brief <span class="arrow">→</span></span>
+        <span class="more">Read the brief <span class="arrow"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-.15em" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></span></span>
       </a>
       <a href="#begin" class="law-card">
         <span class="ghost-num">03</span>
         <span class="law-chip">Law 26/2007 · Art. 20</span>
         <h3>Security Deposit Rights</h3>
         <p>Defines the maximum deposit amount, the conditions for lawful deduction and the timeline for return after tenancy ends.</p>
-        <span class="more">Read the brief <span class="arrow">→</span></span>
+        <span class="more">Read the brief <span class="arrow"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-.15em" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></span></span>
       </a>
     </div>
   </div>
@@ -1357,7 +1357,7 @@ a:hover .arrow,button:hover .arrow{transform:translateX(4px)}
   <div class="wrap" style="position:relative;z-index:2">
     <div class="section-head">
       <span class="eyebrow">Areas of Practice</span>
-      <h2 class="section-h">Eight areas. <em>One platform.</em> Real UAE law.</h2>
+      <h2 class="section-h">Eight areas. <span class="accent">One platform.</span> Real UAE law.</h2>
     </div>
 
     <div class="areas-split">
@@ -1365,42 +1365,42 @@ a:hover .arrow,button:hover .arrow{transform:translateX(4px)}
         <a href="{{ url_for('auth.register') }}" class="area-row active" data-idx="0">
           <span class="num">§ 01</span>
           <span class="name">Rent Increases</span>
-          <span class="read">Read brief <span class="arrow">→</span></span>
+          <span class="read">Read brief <span class="arrow"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-.15em" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></span></span>
         </a>
         <a href="{{ url_for('auth.register') }}" class="area-row" data-idx="1">
           <span class="num">§ 02</span>
           <span class="name">Eviction Notices</span>
-          <span class="read">Read brief <span class="arrow">→</span></span>
+          <span class="read">Read brief <span class="arrow"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-.15em" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></span></span>
         </a>
         <a href="{{ url_for('auth.register') }}" class="area-row" data-idx="2">
           <span class="num">§ 03</span>
           <span class="name">Maintenance &amp; Repairs</span>
-          <span class="read">Read brief <span class="arrow">→</span></span>
+          <span class="read">Read brief <span class="arrow"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-.15em" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></span></span>
         </a>
         <a href="{{ url_for('auth.register') }}" class="area-row" data-idx="3">
           <span class="num">§ 04</span>
           <span class="name">Security Deposits</span>
-          <span class="read">Read brief <span class="arrow">→</span></span>
+          <span class="read">Read brief <span class="arrow"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-.15em" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></span></span>
         </a>
         <a href="{{ url_for('auth.register') }}" class="area-row" data-idx="4">
           <span class="num">§ 05</span>
           <span class="name">Lease Disputes</span>
-          <span class="read">Read brief <span class="arrow">→</span></span>
+          <span class="read">Read brief <span class="arrow"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-.15em" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></span></span>
         </a>
         <a href="{{ url_for('auth.register') }}" class="area-row" data-idx="5">
           <span class="num">§ 06</span>
           <span class="name">Landlord Rights</span>
-          <span class="read">Read brief <span class="arrow">→</span></span>
+          <span class="read">Read brief <span class="arrow"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-.15em" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></span></span>
         </a>
         <a href="{{ url_for('auth.register') }}" class="area-row" data-idx="6">
           <span class="num">§ 07</span>
           <span class="name">RERA &amp; Ejari</span>
-          <span class="read">Read brief <span class="arrow">→</span></span>
+          <span class="read">Read brief <span class="arrow"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-.15em" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></span></span>
         </a>
         <a href="{{ url_for('auth.register') }}" class="area-row" data-idx="7">
           <span class="num">§ 08</span>
           <span class="name">RDC Hearings</span>
-          <span class="read">Read brief <span class="arrow">→</span></span>
+          <span class="read">Read brief <span class="arrow"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-.15em" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></span></span>
         </a>
       </div>
 
@@ -1415,12 +1415,12 @@ a:hover .arrow,button:hover .arrow{transform:translateX(4px)}
         <article class="areas-card on" data-idx="0">
           <div class="ac-bg" style="background-image:url('https://images.unsplash.com/photo-1582407947304-fd86f028f716?auto=format&amp;fit=crop&amp;w=1600&amp;q=85')"></div>
           <span class="ac-eyebrow">Statute &middot; The Rent Cap</span>
-          <div class="ac-citation">Decree No. <em>43</em> of 2013</div>
+          <div class="ac-citation">Decree No. <span class="accent">43</span> of 2013</div>
           <div class="ac-precis">Establishes the RERA Rental Index as the ceiling on annual rent increases, with a sliding scale tied to current market deviation.</div>
           <div class="ac-article">Governs &middot; Rent Increases</div>
           <div class="ac-keys">
-            <div class="ac-key"><div class="v"><em>0</em><sup>%</sup></div><div class="k">if rent within 10% of index</div></div>
-            <div class="ac-key"><div class="v"><em>20</em><sup>%</sup></div><div class="k">maximum legal increase</div></div>
+            <div class="ac-key"><div class="v"><span class="accent">0</span><sup>%</sup></div><div class="k">if rent within 10% of index</div></div>
+            <div class="ac-key"><div class="v"><span class="accent">20</span><sup>%</sup></div><div class="k">maximum legal increase</div></div>
             <div class="ac-key"><div class="v">90<sup>days</sup></div><div class="k">written notice required</div></div>
             <div class="ac-key"><div class="v">RERA</div><div class="k">official calculator</div></div>
           </div>
@@ -1429,12 +1429,12 @@ a:hover .arrow,button:hover .arrow{transform:translateX(4px)}
         <article class="areas-card" data-idx="1">
           <div class="ac-bg" style="background-image:url('https://images.unsplash.com/photo-1582407947304-fd86f028f716?auto=format&amp;fit=crop&amp;w=1600&amp;q=85')"></div>
           <span class="ac-eyebrow">Statute &middot; The Eviction Code</span>
-          <div class="ac-citation">Law No. <em>33</em> of 2008 &middot; Art. 25</div>
+          <div class="ac-citation">Law No. <span class="accent">33</span> of 2008 &middot; Art. 25</div>
           <div class="ac-precis">Sets out the twelve permitted grounds on which a landlord may legally serve an eviction notice in Dubai, and the form it must take.</div>
           <div class="ac-article">Governs &middot; Eviction Notices</div>
           <div class="ac-keys">
-            <div class="ac-key"><div class="v"><em>12</em></div><div class="k">statutory grounds</div></div>
-            <div class="ac-key"><div class="v"><em>12</em><sup>mo</sup></div><div class="k">minimum notice period</div></div>
+            <div class="ac-key"><div class="v"><span class="accent">12</span></div><div class="k">statutory grounds</div></div>
+            <div class="ac-key"><div class="v"><span class="accent">12</span><sup>mo</sup></div><div class="k">minimum notice period</div></div>
             <div class="ac-key"><div class="v">Notary</div><div class="k">service requirement</div></div>
             <div class="ac-key"><div class="v">RDC</div><div class="k">disputes forum</div></div>
           </div>
@@ -1443,13 +1443,13 @@ a:hover .arrow,button:hover .arrow{transform:translateX(4px)}
         <article class="areas-card" data-idx="2">
           <div class="ac-bg" style="background-image:url('https://images.unsplash.com/photo-1560185007-cde436f6a4d0?auto=format&amp;fit=crop&amp;w=1600&amp;q=85')"></div>
           <span class="ac-eyebrow">Statute &middot; Habitable Premises</span>
-          <div class="ac-citation">Law No. <em>26</em> of 2007 &middot; Art. 16</div>
+          <div class="ac-citation">Law No. <span class="accent">26</span> of 2007 &middot; Art. 16</div>
           <div class="ac-precis">Defines the landlord's repair obligations and the cure-period protocol a tenant must follow before withholding rent or filing.</div>
           <div class="ac-article">Governs &middot; Maintenance &amp; Repairs</div>
           <div class="ac-keys">
             <div class="ac-key"><div class="v">Landlord</div><div class="k">major repairs</div></div>
             <div class="ac-key"><div class="v">Tenant</div><div class="k">minor repairs</div></div>
-            <div class="ac-key"><div class="v"><em>30</em><sup>days</sup></div><div class="k">cure period</div></div>
+            <div class="ac-key"><div class="v"><span class="accent">30</span><sup>days</sup></div><div class="k">cure period</div></div>
             <div class="ac-key"><div class="v">Written</div><div class="k">notice required</div></div>
           </div>
         </article>
@@ -1457,12 +1457,12 @@ a:hover .arrow,button:hover .arrow{transform:translateX(4px)}
         <article class="areas-card" data-idx="3">
           <div class="ac-bg" style="background-image:url('https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?auto=format&amp;fit=crop&amp;w=1600&amp;q=85')"></div>
           <span class="ac-eyebrow">Statute &middot; The Deposit Rule</span>
-          <div class="ac-citation">Law No. <em>26</em> of 2007 &middot; Art. 20</div>
+          <div class="ac-citation">Law No. <span class="accent">26</span> of 2007 &middot; Art. 20</div>
           <div class="ac-precis">Caps the security deposit, defines lawful deductions and fixes the return timeline at the end of tenancy.</div>
           <div class="ac-article">Governs &middot; Security Deposits</div>
           <div class="ac-keys">
-            <div class="ac-key"><div class="v"><em>5</em><sup>%</sup></div><div class="k">unfurnished cap</div></div>
-            <div class="ac-key"><div class="v"><em>10</em><sup>%</sup></div><div class="k">furnished cap</div></div>
+            <div class="ac-key"><div class="v"><span class="accent">5</span><sup>%</sup></div><div class="k">unfurnished cap</div></div>
+            <div class="ac-key"><div class="v"><span class="accent">10</span><sup>%</sup></div><div class="k">furnished cap</div></div>
             <div class="ac-key"><div class="v">Hand-back</div><div class="k">return at exit</div></div>
             <div class="ac-key"><div class="v">Itemised</div><div class="k">deductions only</div></div>
           </div>
@@ -1471,12 +1471,12 @@ a:hover .arrow,button:hover .arrow{transform:translateX(4px)}
         <article class="areas-card" data-idx="4">
           <div class="ac-bg" style="background-image:url('https://images.unsplash.com/photo-1554995207-c18c203602cb?auto=format&amp;fit=crop&amp;w=1600&amp;q=85')"></div>
           <span class="ac-eyebrow">Contract &middot; The Lease</span>
-          <div class="ac-citation"><em>Tenancy</em> Contract</div>
+          <div class="ac-citation"><span class="accent">Tenancy</span> Contract</div>
           <div class="ac-precis">Renewal terms, early termination, sub-letting and the standard contract clauses every Dubai tenancy contains, or omits at its peril.</div>
           <div class="ac-article">Governs &middot; Lease Disputes</div>
           <div class="ac-keys">
             <div class="ac-key"><div class="v">Ejari</div><div class="k">registration required</div></div>
-            <div class="ac-key"><div class="v"><em>90</em><sup>days</sup></div><div class="k">non-renewal notice</div></div>
+            <div class="ac-key"><div class="v"><span class="accent">90</span><sup>days</sup></div><div class="k">non-renewal notice</div></div>
             <div class="ac-key"><div class="v">Art. 24</div><div class="k">sub-letting consent</div></div>
             <div class="ac-key"><div class="v">Art. 6</div><div class="k">renewal terms</div></div>
           </div>
@@ -1485,12 +1485,12 @@ a:hover .arrow,button:hover .arrow{transform:translateX(4px)}
         <article class="areas-card" data-idx="5">
           <div class="ac-bg" style="background-image:url('https://images.unsplash.com/photo-1486325212027-8081e485255e?auto=format&amp;fit=crop&amp;w=1600&amp;q=85')"></div>
           <span class="ac-eyebrow">Statute &middot; Landlord Protections</span>
-          <div class="ac-citation">Law No. <em>33</em> of 2008 &middot; Art. 25(1)</div>
+          <div class="ac-citation">Law No. <span class="accent">33</span> of 2008 &middot; Art. 25(1)</div>
           <div class="ac-precis">The grounds, notice and remedies available to landlords for recovery, lawful entry, and possession actions.</div>
           <div class="ac-article">Governs &middot; Landlord Rights</div>
           <div class="ac-keys">
-            <div class="ac-key"><div class="v"><em>9</em></div><div class="k">in-tenancy grounds</div></div>
-            <div class="ac-key"><div class="v"><em>3</em></div><div class="k">end-of-tenancy grounds</div></div>
+            <div class="ac-key"><div class="v"><span class="accent">9</span></div><div class="k">in-tenancy grounds</div></div>
+            <div class="ac-key"><div class="v"><span class="accent">3</span></div><div class="k">end-of-tenancy grounds</div></div>
             <div class="ac-key"><div class="v">Notary</div><div class="k">service requirement</div></div>
             <div class="ac-key"><div class="v">RDC</div><div class="k">enforcement forum</div></div>
           </div>
@@ -1499,7 +1499,7 @@ a:hover .arrow,button:hover .arrow{transform:translateX(4px)}
         <article class="areas-card" data-idx="6">
           <div class="ac-bg" style="background-image:url('https://images.unsplash.com/photo-1564540583246-934409427776?auto=format&amp;fit=crop&amp;w=1600&amp;q=85')"></div>
           <span class="ac-eyebrow">Regulation &middot; Registration</span>
-          <div class="ac-citation">RERA &middot; <em>Ejari</em> Decree</div>
+          <div class="ac-citation">RERA &middot; <span class="accent">Ejari</span> Decree</div>
           <div class="ac-precis">All Dubai tenancies must be registered with Ejari. An unregistered contract is unenforceable at the Rental Disputes Centre.</div>
           <div class="ac-article">Governs &middot; RERA &amp; Ejari</div>
           <div class="ac-keys">
@@ -1513,12 +1513,12 @@ a:hover .arrow,button:hover .arrow{transform:translateX(4px)}
         <article class="areas-card" data-idx="7">
           <div class="ac-bg" style="background-image:url('https://images.unsplash.com/photo-1589994965851-a8f479c573a9?auto=format&amp;fit=crop&amp;w=1600&amp;q=85')"></div>
           <span class="ac-eyebrow">Tribunal &middot; The Forum</span>
-          <div class="ac-citation"><em>Rental</em> Disputes Centre</div>
+          <div class="ac-citation"><span class="accent">Rental</span> Disputes Centre</div>
           <div class="ac-precis">The judicial body for every Dubai tenancy dispute. Fast, specialised, binding. Filing requires Ejari and a notarised notice trail.</div>
           <div class="ac-article">Governs &middot; RDC Hearings</div>
           <div class="ac-keys">
-            <div class="ac-key"><div class="v"><em>3.5</em><sup>%</sup></div><div class="k">filing fee, of claim</div></div>
-            <div class="ac-key"><div class="v"><em>30</em><sup>days</sup></div><div class="k">first hearing target</div></div>
+            <div class="ac-key"><div class="v"><span class="accent">3.5</span><sup>%</sup></div><div class="k">filing fee, of claim</div></div>
+            <div class="ac-key"><div class="v"><span class="accent">30</span><sup>days</sup></div><div class="k">first hearing target</div></div>
             <div class="ac-key"><div class="v">Binding</div><div class="k">enforcement order</div></div>
             <div class="ac-key"><div class="v">Ejari</div><div class="k">required to file</div></div>
           </div>
@@ -1537,10 +1537,10 @@ a:hover .arrow,button:hover .arrow{transform:translateX(4px)}
 
       <div class="counsel-l">
         <span class="eyebrow">For Lawyers</span>
-        <h2 class="section-h">If you practice UAE property law,<br>your next client arrives <em>briefed.</em></h2>
+        <h2 class="section-h">If you practice UAE property law,<br>your next client arrives <span class="accent">briefed.</span></h2>
         <p class="counsel-l-p">Every Rentritz client has already worked through their matter with our citation-grounded wizard. They arrive knowing what they are asking, and they have actively chosen to engage counsel. You set your terms. You control your availability. We handle verification.</p>
         <div class="counsel-actions">
-          <a href="{{ url_for('lawyers.register') }}" class="amber-btn">Register your practice <span class="arrow">&rarr;</span></a>
+          <a href="{{ url_for('lawyers.register') }}" class="amber-btn">Register your practice <span class="arrow"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-.15em" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></span></a>
           <a href="{{ url_for('lawyers.login') }}" class="counsel-signin">Already registered? Sign in</a>
         </div>
       </div>
@@ -1580,7 +1580,7 @@ a:hover .arrow,button:hover .arrow{transform:translateX(4px)}
   <div class="wrap">
     <div class="section-head">
       <span class="eyebrow">Field Reports</span>
-      <h2 class="section-h">Briefs that <em>resolved.</em></h2>
+      <h2 class="section-h">Briefs that <span class="accent">resolved.</span></h2>
     </div>
 
     <article class="report-feat" id="reportFeat">
@@ -1591,7 +1591,7 @@ a:hover .arrow,button:hover .arrow{transform:translateX(4px)}
         <div class="report-portrait">SM</div>
         <div>
           <div class="report-attr-name">Sarah M. · Tenant, Dubai Marina</div>
-          <div class="report-attr-stars">★★★★★</div>
+          <div class="report-attr-stars"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="none" style="vertical-align:-.15em" aria-hidden="true"><path d="M11.5 2.6a.55.55 0 0 1 1 0l2.6 5.3 5.8.85a.55.55 0 0 1 .3.94l-4.2 4.1 1 5.8a.55.55 0 0 1-.8.58L12 17.4l-5.2 2.73a.55.55 0 0 1-.8-.58l1-5.8-4.2-4.1a.55.55 0 0 1 .3-.94l5.8-.85z"/></svg><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="none" style="vertical-align:-.15em" aria-hidden="true"><path d="M11.5 2.6a.55.55 0 0 1 1 0l2.6 5.3 5.8.85a.55.55 0 0 1 .3.94l-4.2 4.1 1 5.8a.55.55 0 0 1-.8.58L12 17.4l-5.2 2.73a.55.55 0 0 1-.8-.58l1-5.8-4.2-4.1a.55.55 0 0 1 .3-.94l5.8-.85z"/></svg><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="none" style="vertical-align:-.15em" aria-hidden="true"><path d="M11.5 2.6a.55.55 0 0 1 1 0l2.6 5.3 5.8.85a.55.55 0 0 1 .3.94l-4.2 4.1 1 5.8a.55.55 0 0 1-.8.58L12 17.4l-5.2 2.73a.55.55 0 0 1-.8-.58l1-5.8-4.2-4.1a.55.55 0 0 1 .3-.94l5.8-.85z"/></svg><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="none" style="vertical-align:-.15em" aria-hidden="true"><path d="M11.5 2.6a.55.55 0 0 1 1 0l2.6 5.3 5.8.85a.55.55 0 0 1 .3.94l-4.2 4.1 1 5.8a.55.55 0 0 1-.8.58L12 17.4l-5.2 2.73a.55.55 0 0 1-.8-.58l1-5.8-4.2-4.1a.55.55 0 0 1 .3-.94l5.8-.85z"/></svg><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="none" style="vertical-align:-.15em" aria-hidden="true"><path d="M11.5 2.6a.55.55 0 0 1 1 0l2.6 5.3 5.8.85a.55.55 0 0 1 .3.94l-4.2 4.1 1 5.8a.55.55 0 0 1-.8.58L12 17.4l-5.2 2.73a.55.55 0 0 1-.8-.58l1-5.8-4.2-4.1a.55.55 0 0 1 .3-.94l5.8-.85z"/></svg></div>
         </div>
       </div>
     </article>
@@ -1638,10 +1638,10 @@ a:hover .arrow,button:hover .arrow{transform:translateX(4px)}
 
   <div class="wrap finale-c">
     <span class="eyebrow">Begin</span>
-    <h2 class="finale-h">Know what's <em>yours.</em></h2>
+    <h2 class="finale-h">Know what's <span class="accent">yours.</span></h2>
     <p class="finale-sub">Three minutes from your phone to a clear legal position, citation-grounded in UAE law. Free to begin, no card required.</p>
     <div class="finale-actions">
-      <a href="{{ url_for('auth.register') }}" class="amber-btn finale-cta">Begin Free <span class="arrow">→</span></a>
+      <a href="{{ url_for('auth.register') }}" class="amber-btn finale-cta">Begin Free <span class="arrow"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-.15em" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></span></a>
       <a href="#method" class="finale-secondary">See how it works</a>
     </div>
   </div>
@@ -1729,7 +1729,7 @@ a:hover .arrow,button:hover .arrow{transform:translateX(4px)}
         const s = document.createElement('span');
         s.className = 'word';
         s.textContent = t.w;
-        if (t.em){ s.innerHTML = '<em>' + t.w + '</em>'; }
+        if (t.em){ s.innerHTML = '<span class="accent">' + t.w + '</span>'; }
         slot.appendChild(s);
         slot.appendChild(document.createTextNode(' '));
       });

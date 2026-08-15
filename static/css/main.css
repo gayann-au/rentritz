@@ -1,7 +1,7 @@
 @import url("tokens.css"); /* carries the single DM Sans load — see tokens.css Section 0 */
 
 :root {
-  /* ── Legacy name → token map ───────────────────────────────
+  /* ── Legacy name -> token map ───────────────────────────────
      This block defines NO colour values. Every entry points at
      static/css/tokens.css, which is the only file that may hold
      a colour. Names are kept so existing rules and templates
@@ -339,8 +339,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   animation: fadeUp 0.7s ease 0.2s forwards;
 }
 
-.hero-headline em {
-  font-style: italic;
+.hero-headline .accent {
   color: var(--brand-deep);
 }
 

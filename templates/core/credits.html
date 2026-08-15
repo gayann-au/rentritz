@@ -542,14 +542,14 @@
         <div class="cr-page-info">Page {{ page }} of {{ total_pages }}</div>
         <div class="cr-page-btns">
           {% if page > 1 %}
-          <a href="{{ url_for('core.credits', page=page-1) }}" class="cr-page-btn">&#8592; Previous</a>
+          <a href="{{ url_for('core.credits', page=page-1) }}" class="cr-page-btn">Previous</a>
           {% endif %}
           {% for p in range(1, total_pages + 1) %}
           <a href="{{ url_for('core.credits', page=p) }}"
              class="cr-page-btn {% if p == page %}cr-page-btn-active{% endif %}">{{ p }}</a>
           {% endfor %}
           {% if page < total_pages %}
-          <a href="{{ url_for('core.credits', page=page+1) }}" class="cr-page-btn">Next &#8594;</a>
+          <a href="{{ url_for('core.credits', page=page+1) }}" class="cr-page-btn">Next</a>
           {% endif %}
         </div>
       </div>
@@ -557,7 +557,7 @@
 
       {% else %}
       <div class="cr-history-empty">
-        <span class="cr-history-empty-icon">&#128196;</span>
+        <span class="cr-history-empty-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-.15em" aria-hidden="true"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></svg></span>
         <p>No transactions yet. Your credit history will appear here after your first purchase or consultation.</p>
       </div>
       {% endif %}

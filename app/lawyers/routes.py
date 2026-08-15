@@ -358,7 +358,7 @@ def unlock_contact(lawyer_profile_id):
         contact_unlocked_at=datetime.utcnow(),
         source_category_slug=request.form.get('source_category') or None,
         source_question_id=source_question_id,
-        client_note=request.form.get('client_note', '').strip() or None,
+        client_note=request.form.get('client_note', '').strip()[:1000] or None,
         contact_method_chosen=request.form.get('contact_method', 'whatsapp'),
     )
     db.session.add(booking)
@@ -785,7 +785,7 @@ def submit_review(booking_id):
         return jsonify({'error': 'already_reviewed'}), 400
 
     rating = request.form.get('rating', type=int)
-    comment = request.form.get('comment', '').strip() or None
+    comment = request.form.get('comment', '').strip()[:1000] or None
     would_recommend = request.form.get('would_recommend') == 'yes'
 
     if not rating or rating not in range(1, 6):
@@ -890,5 +890,5 @@ def submit_lawyer_review(lawyer_profile_id):
         flash('Something went wrong. Please try again.', 'error')
         return redirect(url_for('lawyers.profile', lawyer_profile_id=lawyer_profile_id))
 
-    flash('Review submitted. Thank you!', 'success')
+    flash('Review submitted.', 'success')
     return redirect(url_for('lawyers.profile', lawyer_profile_id=lawyer_profile_id))

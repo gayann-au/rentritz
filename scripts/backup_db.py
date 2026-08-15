@@ -37,7 +37,7 @@ if not DATABASE_URL:
     print('ERROR: DATABASE_URL not set in .env')
     sys.exit(1)
 
-# Normalise postgres:// → postgresql://
+# Normalise postgres:// -> postgresql://
 if DATABASE_URL.startswith('postgres://'):
     DATABASE_URL = DATABASE_URL.replace('postgres://', 'postgresql://', 1)
 

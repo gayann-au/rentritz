@@ -111,7 +111,7 @@
 {% endblock %}
 
 {% block topbar_actions %}
-  <span class="btn btn-outline btn-sm" style="cursor:default; opacity:0.5;">↓ Export</span>
+  <span class="btn btn-outline btn-sm" style="cursor:default; opacity:0.5;">Export</span>
 {% endblock %}
 
 {% block main %}
@@ -148,7 +148,7 @@
       </select>
 
       {% if search or role_filter or status_filter %}
-      <a href="{{ url_for('admin.users') }}" class="btn btn-ghost btn-sm">✕ Clear</a>
+      <a href="{{ url_for('admin.users') }}" class="btn btn-ghost btn-sm">Clear</a>
       {% endif %}
 
       <div class="filter-meta">
@@ -218,7 +218,7 @@
           {# Verified #}
           <td>
             {% if u.is_verified %}
-              <span class="verified-yes" title="Email verified">✓</span>
+              <span class="verified-yes" title="Email verified"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-.15em" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span>
             {% else %}
               <span class="verified-no" title="Not verified">-</span>
             {% endif %}
@@ -265,9 +265,9 @@
 
         {# Previous #}
         {% if page > 1 %}
-          <a href="{{ url_for('admin.users', page=page-1, search=search, role=role_filter, status=status_filter) }}" class="pg-btn">← Prev</a>
+          <a href="{{ url_for('admin.users', page=page-1, search=search, role=role_filter, status=status_filter) }}" class="pg-btn">Prev</a>
         {% else %}
-          <span class="pg-btn disabled">← Prev</span>
+          <span class="pg-btn disabled">Prev</span>
         {% endif %}
 
         {# Page numbers with ellipsis logic #}
@@ -290,9 +290,9 @@
 
         {# Next #}
         {% if page < total_pages %}
-          <a href="{{ url_for('admin.users', page=page+1, search=search, role=role_filter, status=status_filter) }}" class="pg-btn">Next →</a>
+          <a href="{{ url_for('admin.users', page=page+1, search=search, role=role_filter, status=status_filter) }}" class="pg-btn">Next</a>
         {% else %}
-          <span class="pg-btn disabled">Next →</span>
+          <span class="pg-btn disabled">Next</span>
         {% endif %}
 
       </div>

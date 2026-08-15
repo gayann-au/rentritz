@@ -222,17 +222,8 @@ def dashboard():
                            ), 1),
     }
 
-    hour = now.hour + 4  # GST offset
-    if hour < 12:
-        greeting = 'Good morning'
-    elif hour < 18:
-        greeting = 'Good afternoon'
-    else:
-        greeting = 'Good evening'
-
     return render_template(
         'admin/dashboard.html',
-        greeting       = greeting,
         server_time    = (now + timedelta(hours=4)).strftime('%A, %d %B %Y | %H:%M GST'),
         user_stats     = user_stats,
         q_stats        = q_stats,

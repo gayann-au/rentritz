@@ -127,7 +127,7 @@
     {% if status_filter != 'pending' %}
     <a href="{{ url_for('admin.questions', status='pending') }}"
        style="margin-left:auto; font-size:11px; opacity:.75; text-decoration:underline; color:inherit;">
-      View pending only →
+      View pending only
     </a>
     {% endif %}
   </div>
@@ -167,7 +167,7 @@
       </select>
 
       {% if any_filter %}
-      <a href="{{ url_for('admin.questions') }}" class="btn btn-ghost btn-sm">✕ Clear</a>
+      <a href="{{ url_for('admin.questions') }}" class="btn btn-ghost btn-sm">Clear</a>
       {% endif %}
 
       <span class="filter-meta">
@@ -235,7 +235,7 @@
           {# Credit used #}
           <td>
             {% if q.credit_used %}
-              <span class="icon-yes">✓</span>
+              <span class="icon-yes"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-.15em" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span>
             {% else %}
               <span class="icon-no">-</span>
             {% endif %}
@@ -244,7 +244,7 @@
           {# Viewed #}
           <td>
             {% if q.has_been_viewed %}
-              <span class="icon-yes">✓</span>
+              <span class="icon-yes"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-.15em" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span>
             {% else %}
               <span class="icon-no">-</span>
             {% endif %}
@@ -276,9 +276,9 @@
       <div class="pagination-pages">
 
         {% if page > 1 %}
-          <a href="{{ url_for('admin.questions', page=page-1, status=status_filter, category=category_filter, role=role_filter, date=date_filter) }}" class="pg-btn">← Prev</a>
+          <a href="{{ url_for('admin.questions', page=page-1, status=status_filter, category=category_filter, role=role_filter, date=date_filter) }}" class="pg-btn">Prev</a>
         {% else %}
-          <span class="pg-btn disabled">← Prev</span>
+          <span class="pg-btn disabled">Prev</span>
         {% endif %}
 
         {% set show_pages = [] %}
@@ -297,9 +297,9 @@
         {% endfor %}
 
         {% if page < total_pages %}
-          <a href="{{ url_for('admin.questions', page=page+1, status=status_filter, category=category_filter, role=role_filter, date=date_filter) }}" class="pg-btn">Next →</a>
+          <a href="{{ url_for('admin.questions', page=page+1, status=status_filter, category=category_filter, role=role_filter, date=date_filter) }}" class="pg-btn">Next</a>
         {% else %}
-          <span class="pg-btn disabled">Next →</span>
+          <span class="pg-btn disabled">Next</span>
         {% endif %}
 
       </div>

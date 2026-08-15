@@ -155,7 +155,7 @@
       </select>
 
       {% if any_filter %}
-      <a href="{{ url_for('admin.payments') }}" class="btn btn-ghost btn-sm">✕ Clear</a>
+      <a href="{{ url_for('admin.payments') }}" class="btn btn-ghost btn-sm">Clear</a>
       {% endif %}
 
       <span class="filter-meta">
@@ -238,9 +238,9 @@
       <div class="pagination-pages">
 
         {% if page > 1 %}
-          <a href="{{ url_for('admin.payments', page=page-1, status=status_filter, date=date_filter, search=search) }}" class="pg-btn">← Prev</a>
+          <a href="{{ url_for('admin.payments', page=page-1, status=status_filter, date=date_filter, search=search) }}" class="pg-btn">Prev</a>
         {% else %}
-          <span class="pg-btn disabled">← Prev</span>
+          <span class="pg-btn disabled">Prev</span>
         {% endif %}
 
         {% set show_pages = [] %}
@@ -259,9 +259,9 @@
         {% endfor %}
 
         {% if page < total_pages %}
-          <a href="{{ url_for('admin.payments', page=page+1, status=status_filter, date=date_filter, search=search) }}" class="pg-btn">Next →</a>
+          <a href="{{ url_for('admin.payments', page=page+1, status=status_filter, date=date_filter, search=search) }}" class="pg-btn">Next</a>
         {% else %}
-          <span class="pg-btn disabled">Next →</span>
+          <span class="pg-btn disabled">Next</span>
         {% endif %}
 
       </div>

@@ -168,7 +168,7 @@
 <div class="lp-page">
   <div class="lp-container">
 
-    <a href="{{ url_for('lawyers.browse') }}" class="lp-back">&#8592; Back to lawyers</a>
+    <a href="{{ url_for('lawyers.browse') }}" class="lp-back">Back to lawyers</a>
 
     <div class="lp-layout">
 
@@ -212,7 +212,7 @@
           <span class="lp-free-badge">Free first consultation</span>
           {% endif %}
           {% if lawyer.verification_status == 'verified' %}
-          <span class="lp-badge lp-badge-verified">&#10003; Verified</span>
+          <span class="lp-badge lp-badge-verified">Verified</span>
           {% endif %}
           {% if lawyer.is_available %}
           <span class="lp-badge lp-badge-available">&#9679; Available</span>
@@ -235,7 +235,7 @@
           <div class="lp-stat-row">
             <span class="lp-stat-label">Rating</span>
             <span class="lp-stat-value">
-              <span class="lp-stars">&#9733;</span>
+              <span class="lp-stars"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="none" style="vertical-align:-.15em" aria-hidden="true"><path d="M11.5 2.6a.55.55 0 0 1 1 0l2.6 5.3 5.8.85a.55.55 0 0 1 .3.94l-4.2 4.1 1 5.8a.55.55 0 0 1-.8.58L12 17.4l-5.2 2.73a.55.55 0 0 1-.8-.58l1-5.8-4.2-4.1a.55.55 0 0 1 .3-.94l5.8-.85z"/></svg></span>
               {{ "%.1f"|format(lawyer.average_rating) }} / 5
               <span style="color:var(--dim);font-weight:400;">({{ lawyer.total_reviews }})</span>
             </span>
@@ -282,25 +282,25 @@
           {% if contact_unlocked %}
             {% if lawyer.phone %}
             <div class="lp-contact-detail">
-              <span class="lp-contact-icon">&#9742;</span>
+              <span class="lp-contact-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-.15em" aria-hidden="true"><path d="M13.8 16.6a1 1 0 0 0 1.2-.3l.4-.5a2 2 0 0 1 1.6-.8h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2A18 18 0 0 1 2 4a2 2 0 0 1 2-2h3a2 2 0 0 1 2 2v3a2 2 0 0 1-.8 1.6l-.5.35a1 1 0 0 0-.3 1.25 14 14 0 0 0 6.4 6.4"/></svg></span>
               <a href="tel:{{ lawyer.phone }}">{{ lawyer.phone }}</a>
             </div>
             {% endif %}
             {% if lawyer.whatsapp %}
             <div class="lp-contact-detail">
-              <span class="lp-contact-icon">&#128172;</span>
+              <span class="lp-contact-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-.15em" aria-hidden="true"><path d="M12 20a8 8 0 1 0-6.9-3.9 1 1 0 0 1 .1 1l-1 2.9a.5.5 0 0 0 .64.63l2.9-.96a1 1 0 0 1 .73.06A8 8 0 0 0 12 20"/></svg></span>
               <a href="https://wa.me/{{ lawyer.whatsapp | replace('+','') | replace(' ','') }}" target="_blank" rel="noopener">{{ lawyer.whatsapp }}</a>
             </div>
             {% endif %}
             {% if lawyer.contact_email %}
             <div class="lp-contact-detail">
-              <span class="lp-contact-icon">&#9993;</span>
+              <span class="lp-contact-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-.15em" aria-hidden="true"><path d="m22 7-9 5.7a2 2 0 0 1-2 0L2 7"/><rect x="2" y="4" width="20" height="16" rx="2"/></svg></span>
               <a href="mailto:{{ lawyer.contact_email }}">{{ lawyer.contact_email }}</a>
             </div>
             {% endif %}
             {% if lawyer.office_address %}
             <div class="lp-contact-detail" style="align-items:flex-start;">
-              <span class="lp-contact-icon" style="margin-top:2px;">&#128205;</span>
+              <span class="lp-contact-icon" style="margin-top:2px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-.15em" aria-hidden="true"><path d="M20 10c0 5-5.5 10.2-7.4 11.8a1 1 0 0 1-1.2 0C9.5 20.2 4 15 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/></svg></span>
               <span style="font-size:0.85rem;color:var(--muted);line-height:1.5;">{{ lawyer.office_address }}</span>
             </div>
             {% endif %}
@@ -425,15 +425,15 @@
           <div style="display:flex;flex-direction:column;gap:10px;">
             {% if lawyer.linkedin_url %}
             <a href="{{ lawyer.linkedin_url }}" target="_blank" rel="noopener"
-               style="color:var(--brand-deep);font-size:0.9rem;text-decoration:none;">LinkedIn &#8599;</a>
+               style="color:var(--brand-deep);font-size:0.9rem;text-decoration:none;">LinkedIn</a>
             {% endif %}
             {% if lawyer.website_url %}
             <a href="{{ lawyer.website_url }}" target="_blank" rel="noopener"
-               style="color:var(--brand-deep);font-size:0.9rem;text-decoration:none;">Personal website &#8599;</a>
+               style="color:var(--brand-deep);font-size:0.9rem;text-decoration:none;">Personal website</a>
             {% endif %}
             {% if lawyer.firm_website %}
             <a href="{{ lawyer.firm_website }}" target="_blank" rel="noopener"
-               style="color:var(--brand-deep);font-size:0.9rem;text-decoration:none;">{{ lawyer.firm_name or 'Firm website' }} &#8599;</a>
+               style="color:var(--brand-deep);font-size:0.9rem;text-decoration:none;">{{ lawyer.firm_name or 'Firm website' }}</a>
             {% endif %}
           </div>
         </div>
@@ -447,12 +447,12 @@
             <div class="lp-review-item">
               <div class="lp-review-header">
                 <span class="lp-review-stars">
-                  {% for i in range(review.rating) %}&#9733;{% endfor %}{% for i in range(5 - review.rating) %}&#9734;{% endfor %}
+                  {% for i in range(review.rating) %}<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="none" style="vertical-align:-.15em" aria-hidden="true"><path d="M11.5 2.6a.55.55 0 0 1 1 0l2.6 5.3 5.8.85a.55.55 0 0 1 .3.94l-4.2 4.1 1 5.8a.55.55 0 0 1-.8.58L12 17.4l-5.2 2.73a.55.55 0 0 1-.8-.58l1-5.8-4.2-4.1a.55.55 0 0 1 .3-.94l5.8-.85z"/></svg>{% endfor %}{% for i in range(5 - review.rating) %}<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-.15em" aria-hidden="true"><path d="M11.5 2.6a.55.55 0 0 1 1 0l2.6 5.3 5.8.85a.55.55 0 0 1 .3.94l-4.2 4.1 1 5.8a.55.55 0 0 1-.8.58L12 17.4l-5.2 2.73a.55.55 0 0 1-.8-.58l1-5.8-4.2-4.1a.55.55 0 0 1 .3-.94l5.8-.85z"/></svg>{% endfor %}
                 </span>
                 <span class="lp-review-date">{{ review.created_at.strftime('%d %b %Y') }}</span>
               </div>
               {% if review.would_recommend %}
-              <p class="lp-review-recommend">&#10003; Recommends this lawyer</p>
+              <p class="lp-review-recommend">Recommends this lawyer</p>
               {% endif %}
               {% if review.comment %}
               <p class="lp-review-comment">{{ review.comment }}</p>
@@ -480,7 +480,7 @@
               <div style="font-size:0.8rem;color:var(--muted);margin-bottom:8px;">Rating <span style="color:var(--error-text);">*</span></div>
               <div class="lp-star-rating" id="star-rating">
                 {% for i in range(1,6) %}
-                <label style="cursor:pointer;font-size:1.6rem;color:var(--dim);transition:color 0.15s;" data-val="{{ i }}">&#9733;
+                <label style="cursor:pointer;font-size:1.6rem;color:var(--dim);transition:color 0.15s;" data-val="{{ i }}"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" stroke="none" style="vertical-align:-.15em" aria-hidden="true"><path d="M11.5 2.6a.55.55 0 0 1 1 0l2.6 5.3 5.8.85a.55.55 0 0 1 .3.94l-4.2 4.1 1 5.8a.55.55 0 0 1-.8.58L12 17.4l-5.2 2.73a.55.55 0 0 1-.8-.58l1-5.8-4.2-4.1a.55.55 0 0 1 .3-.94l5.8-.85z"/></svg>
                   <input type="radio" name="rating" value="{{ i }}" style="display:none;" required>
                 </label>
                 {% endfor %}
@@ -578,9 +578,9 @@
 
   function _buildContactHtml(data){
     var html = '<div style="display:flex;flex-direction:column;gap:10px;">';
-    if (data.phone)   html += '<div class="lp-contact-detail"><span class="lp-contact-icon">&#9742;</span><a href="tel:' + data.phone + '" style="color:var(--brand-deep);">' + data.phone + '</a></div>';
-    if (data.whatsapp) html += '<div class="lp-contact-detail"><span class="lp-contact-icon">&#128172;</span><a href="https://wa.me/' + data.whatsapp.replace(/[+ ]/g,'') + '" target="_blank" rel="noopener" style="color:var(--brand-deep);">' + data.whatsapp + '</a></div>';
-    if (data.email)   html += '<div class="lp-contact-detail"><span class="lp-contact-icon">&#9993;</span><a href="mailto:' + data.email + '" style="color:var(--brand-deep);">' + data.email + '</a></div>';
+    if (data.phone)   html += '<div class="lp-contact-detail"><span class="lp-contact-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-.15em" aria-hidden="true"><path d="M13.8 16.6a1 1 0 0 0 1.2-.3l.4-.5a2 2 0 0 1 1.6-.8h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2A18 18 0 0 1 2 4a2 2 0 0 1 2-2h3a2 2 0 0 1 2 2v3a2 2 0 0 1-.8 1.6l-.5.35a1 1 0 0 0-.3 1.25 14 14 0 0 0 6.4 6.4"/></svg></span><a href="tel:' + data.phone + '" style="color:var(--brand-deep);">' + data.phone + '</a></div>';
+    if (data.whatsapp) html += '<div class="lp-contact-detail"><span class="lp-contact-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-.15em" aria-hidden="true"><path d="M12 20a8 8 0 1 0-6.9-3.9 1 1 0 0 1 .1 1l-1 2.9a.5.5 0 0 0 .64.63l2.9-.96a1 1 0 0 1 .73.06A8 8 0 0 0 12 20"/></svg></span><a href="https://wa.me/' + data.whatsapp.replace(/[+ ]/g,'') + '" target="_blank" rel="noopener" style="color:var(--brand-deep);">' + data.whatsapp + '</a></div>';
+    if (data.email)   html += '<div class="lp-contact-detail"><span class="lp-contact-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-.15em" aria-hidden="true"><path d="m22 7-9 5.7a2 2 0 0 1-2 0L2 7"/><rect x="2" y="4" width="20" height="16" rx="2"/></svg></span><a href="mailto:' + data.email + '" style="color:var(--brand-deep);">' + data.email + '</a></div>';
     html += '</div>';
     if (data.credits_remaining !== undefined)
       html += '<div style="font-size:0.78rem;color:var(--dim);margin-top:10px;">' + data.credits_remaining + ' credits remaining</div>';

@@ -82,7 +82,7 @@ input[type="file"]{display:none;}
           <div class="lr-field">
             <label class="lr-label" for="{{ form.bar_number.id }}">Bar / Licence No. <span class="lr-label-opt">optional</span></label>
             {{ form.bar_number(class='lr-input', id='bar-number-input') }}
-            <div class="lr-bar-warn" id="bar-warn">&#9888; Changing your bar number will require re-verification.</div>
+            <div class="lr-bar-warn" id="bar-warn">Changing your bar number will require re-verification.</div>
             {% if form.bar_number.errors %}<div class="lr-error">{{ form.bar_number.errors[0] }}</div>{% endif %}
           </div>
         </div>
@@ -286,7 +286,7 @@ input[type="file"]{display:none;}
             </div>
             {% endif %}
             <label class="lr-file-label" for="{{ form.photo.id }}" style="margin-top:8px;">
-              &#128247; Replace photo
+              Replace photo
             </label>
             {{ form.photo(id=form.photo.id, onchange="document.getElementById('photo-name').textContent=this.files[0]?this.files[0].name:'No file chosen'") }}
             <div class="lr-file-name" id="photo-name">No file chosen</div>
@@ -300,7 +300,7 @@ input[type="file"]{display:none;}
             </div>
             {% endif %}
             <label class="lr-file-label" for="{{ form.licence_pdf.id }}" style="margin-top:8px;">
-              &#128196; Replace PDF
+              Replace PDF
             </label>
             {{ form.licence_pdf(id=form.licence_pdf.id, onchange="document.getElementById('licence-name').textContent=this.files[0]?this.files[0].name:'No file chosen'") }}
             <div class="lr-file-name" id="licence-name">No file chosen</div>
@@ -310,7 +310,7 @@ input[type="file"]{display:none;}
       </div>
 
       <div class="lr-submit-row sr">
-        <a href="{{ url_for('lawyers.dashboard') }}" class="lr-cancel-link">&#8592; Back to dashboard</a>
+        <a href="{{ url_for('lawyers.dashboard') }}" class="lr-cancel-link">Back to dashboard</a>
         <button type="submit" class="lr-submit-btn">Save changes</button>
       </div>
 
